@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://lamfsqyq1lrr"]
+
+[ext_resource type="Script" path="res://scripts/map/P1Verify.gd" id="1_p1"]
+
+[node name="P1Verify" type="Node"]
+script = ExtResource("1_p1")

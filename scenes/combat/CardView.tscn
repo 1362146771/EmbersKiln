@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/CardView.gd" id="1_cv"]
+
+[sub_resource type="StyleBoxFlat" id="SB_card"]
+bg_color = Color(0.941, 0.6, 0.482, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[node name="CardView" type="Panel"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("SB_card")
+script = ExtResource("1_cv")
+
+[node name="Body" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "卡名\n[3能]\n描述文本"
+autowrap_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.18, 0.15, 0.13, 1)
+
+[node name="EnchantIcon" type="TextureRect" parent="."]
+layout_mode = 2
+anchors_preset = 5
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -34.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 34.0
+expand_mode = 1
+stretch_mode = 5
+custom_minimum_size = Vector2(30, 30)
+visible = false

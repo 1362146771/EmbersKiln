@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/SpriteVerify.gd" id="1_spr"]
+
+[node name="SpriteVerify" type="Node"]
+script = ExtResource("1_spr")

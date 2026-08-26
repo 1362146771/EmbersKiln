@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "purpose": "战斗平衡 sweep：多种 build 对打整张敌人表（含新精英 slagbeast、3 敌编成 E、Boss 三阶段），检测离群（打不死/秒杀/过肉/过易）。",
+    "design_record": "AI_Studio/Design/NUMERIC_LEDGER.md#balance_sweep",
+    "note": "本文件所有数值均为「实现方提议、2026-08-17 经用户'编写 harness'指令确认」的平衡探针参数，非玩法最终平衡值；调整需回写本文件并同步台账。"
+  },
+  "sim": {
+    "max_turns": 40,
+    "max_card_plays": 80,
+    "attempts_per_match": 20
+  },
+  "player": {
+    "use_relics": false,
+    "full_hp_each_match": true
+  },
+  "builds": [
+    {"id": "aggro",   "name": "速攻",   "cards": ["strike", "strike", "ember_burst", "kiln_burst", "ember_tide", "shatter_guard"]},
+    {"id": "defense", "name": "防御",   "cards": ["defend", "defend", "kiln_aegis", "shatter_guard", "ash_domain", "ember_tide"]},
+    {"id": "control", "name": "控制",   "cards": ["strike", "defend", "mass_craze", "ash_domain", "shatter_guard", "ember_burst"]},
+    {"id": "burn",    "name": "燃烧",   "cards": ["strike", "defend", "ember_burst", "scorch_field", "ember_tide", "shatter_guard"]},
+    {"id": "summoner", "name": "召主",   "cards": ["summon_hound", "hound_pack", "glaze_ward", "command_horn", "spark_call", "defend"]}
+  ],
+  "encounters": [
+    {"id": "solo_claylump",  "enemies": ["claylump"]},
+    {"id": "solo_sootling",  "enemies": ["sootling"]},
+    {"id": "solo_embermoth", "enemies": ["embermoth"]},
+    {"id": "solo_glazetick", "enemies": ["glazetick"]},
+    {"id": "solo_potsherd",  "enemies": ["potsherd"]},
+    {"id": "solo_ashcantor", "enemies": ["ashcantor"]},
+    {"id": "solo_kilnward",  "enemies": ["kilnward"]},
+    {"id": "solo_glazemaw",  "enemies": ["glazemaw"]},
+    {"id": "solo_slagbeast", "enemies": ["slagbeast"]},
+    {"id": "solo_boss",      "enemies": ["chi_the_first"]},
+    {"id": "form_A",         "enemies": ["claylump", "sootling"]},
+    {"id": "form_B",         "enemies": ["embermoth", "embermoth"]},
+    {"id": "form_C",         "enemies": ["glazetick", "potsherd"]},
+    {"id": "form_D",         "enemies": ["ashcantor", "claylump"]},
+    {"id": "form_E",         "enemies": ["embermoth", "embermoth", "sootling"]}
+  ],
+  "outlier": {
+    "win_rate_floor": 0.5,
+    "trivial_win_turns": 2,
+    "grind_turn_cap": 25,
+    "too_easy_hp_ratio": 0.85,
+    "boss_one_shot_turns": 2
+  }
+}

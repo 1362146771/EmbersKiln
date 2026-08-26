@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "difficulty": "normal",
+  "player": {
+	"max_hp": 80,
+	"energy_per_turn": 3,
+	"draw_per_turn": 5,
+	"hand_max": 10,
+	"block_reset_each_turn": true
+  },
+  "starting_deck": [
+	"strike",
+	"strike",
+	"strike",
+	"strike",
+	"strike",
+	"defend",
+	"defend",
+	"defend",
+	"defend",
+    "bash"
+  ],
+  "starting_relic": "emberheart",
+  "enemy_scaling": {
+	"damage_multiplier": 1.0,
+	"hp_multiplier": 1.0,
+	"max_enemies_per_combat": 3,
+	"note": "难度归位（2026-08-17）：系数回调至正式值 1.0，单场敌人最多 3 个。前期开发期折扣（伤害 0.65 / HP 0.8 / 上限 2）已撤销。"
+  },
+  "rewards": {
+	"card_choice_count": 3,
+	"combat_gold": {
+	  "min": 10,
+	  "max": 20
+	},
+	"elite_gold": {
+	  "min": 25,
+	  "max": 40
+	},
+	"boss_gold": {
+	  "min": 50,
+	  "max": 80
+	}
+  },
+  "shop": {
+	"card_cost": [
+	  50,
+	  75,
+	  100
+	],
+	"relic_cost": [
+	  120,
+	  200
+	],
+	"remove_card_cost": 75,
+	"potion_cost": [
+	  35,
+	  55,
+	  75
+	],
+	"enchant_cost": 75
+  },
+  "rest": {
+	"heal_percent": 0.3,
+	"can_upgrade": true
+  },
+  "card_pool_weights": {
+	"common": 0.6,
+	"uncommon": 0.32,
+	"rare": 0.08
+  },
+  "kiln_temperature": {
+	"threshold": 5,
+	"pierce_damage": 5
+  },
+  "potions": {
+	"max_carry": 3,
+	"drop": {
+	  "combat_normal": 0.25,
+	  "combat_elite": 0.4,
+	  "combat_boss": 1.0,
+	  "chest": 1.0,
+	  "shop_stock": 2
+	}
+  },
+  "summon": {
+	"max_summons": 3,
+	"max_minion_attack": 7
+  }
+}

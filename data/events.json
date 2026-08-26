@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "events": [
+    {
+      "id": "ember_remnant",
+      "title": "窑火余烬",
+      "desc": "你遇见一簇不灭的窑火余烬，暖意渗人，却也灼手。",
+      "options": [
+        {"label": "收集灰烬（获得 30 金）", "effects": {"gold": 30}},
+        {"label": "烤暖身体（恢复 14 生命）", "effects": {"heal": 14}},
+        {"label": "静静离开", "effects": {}}
+      ]
+    },
+    {
+      "id": "lost_potter",
+      "title": "迷途陶人",
+      "desc": "一名陶人被灰壳困住，向你伸出求救的手。",
+      "options": [
+        {"label": "击碎外壳救他（失去 8 生命，获赠遗物）", "effects": {"lose_hp": 8, "add_relic": true}},
+        {"label": "取走他的炭块（获得 20 金）", "effects": {"gold": 20}},
+        {"label": "绕道而行", "effects": {}}
+      ]
+    },
+    {
+      "id": "kiln_scroll",
+      "title": "封窑秘卷",
+      "desc": "一卷前人留下的窑谱，墨迹犹温。",
+      "options": [
+        {"label": "研习窑谱（获得一张随机卡牌）", "effects": {"add_card": true}},
+        {"label": "焚卷取暖（恢复 10 生命）", "effects": {"heal": 10}},
+        {"label": "收入囊中", "effects": {}}
+      ]
+    },
+    {
+      "id": "dead_kiln",
+      "title": "废窑异响",
+      "desc": "废窑深处传来窸窣异响，似有活物在灰堆中蠕动。",
+      "options": [
+        {"label": "翻找灰堆（获得 25 金，失去 5 生命）", "effects": {"gold": 25, "lose_hp": 5}},
+        {"label": "投喂炭块（获得一张随机卡牌）", "effects": {"add_card": true}},
+        {"label": "屏息退避", "effects": {}}
+      ]
+    },
+    {
+      "id": "keeper_remains",
+      "title": "守窑人遗骸",
+      "desc": "一具焦黑的守窑人遗骸倚着窑门，手中仍紧攥半截炭杖。",
+      "options": [
+        {"label": "取走炭杖（获赠遗物）", "effects": {"add_relic": true}},
+        {"label": "合十致意（恢复 12 生命）", "effects": {"heal": 12}},
+        {"label": "搜刮遗物（获得 15 金）", "effects": {"gold": 15}}
+      ]
+    }
+  ]
+}

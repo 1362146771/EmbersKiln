@@ -1,0 +1,25 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Node / dev tooling build artifacts (tools/godot-mcp-server)
+node_modules/
+tools/godot-mcp-server/dist/
+
+# Backups / temp / logs / generated
+backup/
+Logs/
+Temp/
+PBV/
+gen/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+
+# IDE / agent local state (not game source)
+.vs/
+.vscode/
+.idea/
+.promptx/
+.workbuddy/

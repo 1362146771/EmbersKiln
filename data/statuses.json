@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "statuses": [
+    {
+      "id": "heat",
+      "name": "炽热",
+      "type": "buff",
+      "stacks": true,
+      "decay": false,
+      "applies_to": "player_and_enemy",
+      "effect": "每次攻击额外造成等于层数的伤害。",
+      "icon": "ICO_Status_Heat"
+    },
+    {
+      "id": "temper",
+      "name": "塑形",
+      "type": "buff",
+      "stacks": true,
+      "decay": false,
+      "applies_to": "player_and_enemy",
+      "effect": "获得格挡时额外增加等于层数的格挡。",
+      "icon": "ICO_Status_Temper"
+    },
+    {
+      "id": "crazed",
+      "name": "釉裂",
+      "type": "debuff",
+      "stacks": true,
+      "decay": true,
+      "decay_per_turn": 1,
+      "applies_to": "player_and_enemy",
+      "effect": "受到的伤害提高 50%（向下取整）。",
+      "icon": "ICO_Status_Crazed"
+    },
+    {
+      "id": "damp",
+      "name": "受潮",
+      "type": "debuff",
+      "stacks": true,
+      "decay": true,
+      "decay_per_turn": 1,
+      "applies_to": "player_and_enemy",
+      "effect": "造成的攻击伤害降低 25%（向下取整）。",
+      "icon": "ICO_Status_Damp"
+    },
+    {
+      "id": "ashrot",
+      "name": "灰蚀",
+      "type": "debuff",
+      "stacks": true,
+      "decay": true,
+      "decay_per_turn": 1,
+      "trigger": "turn_start",
+      "applies_to": "player_and_enemy",
+      "effect": "回合开始时失去等于层数的生命，随后层数 -1。",
+      "icon": "ICO_Status_Ashrot"
+    },
+    {
+      "id": "anneal",
+      "name": "回火",
+      "type": "buff",
+      "stacks": true,
+      "decay": true,
+      "decay_per_turn": 1,
+      "trigger": "turn_start",
+      "applies_to": "player_and_enemy",
+      "effect": "回合开始时恢复等于层数的生命，随后层数 -1。",
+      "icon": "ICO_Status_Anneal"
+    },
+    {
+      "id": "stoke",
+      "name": "蓄焰",
+      "type": "buff",
+      "stacks": true,
+      "decay": false,
+      "applies_to": "player",
+      "effect": "你的下一张攻击牌伤害 +层数；出手后 -1 层（不按回合衰减）。",
+      "icon": "ICO_Status_Stoke"
+    },
+    {
+      "id": "glaze",
+      "name": "釉光",
+      "type": "buff",
+      "stacks": true,
+      "decay": false,
+      "applies_to": "player",
+      "effect": "受到攻击时减伤等于层数，触发 1 次后 -1 层（类护盾）。",
+      "icon": "ICO_Status_Glaze"
+    },
+    {
+      "id": "thirst",
+      "name": "焦渴",
+      "type": "debuff",
+      "stacks": true,
+      "decay": true,
+      "decay_per_turn": 1,
+      "applies_to": "player",
+      "effect": "回合结束未打出攻击牌，下回合 -1 能量（惩罚空过）。",
+      "icon": "ICO_Status_Thirst"
+    },
+    {
+      "id": "command",
+      "name": "指挥",
+      "type": "buff",
+      "stacks": true,
+      "decay": false,
+      "applies_to": "player",
+      "effect": "你的随从攻击 / 获得格挡时额外 +层数。",
+      "icon": "ICO_Status_Command"
+    }
+  ]
+}

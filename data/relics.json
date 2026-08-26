@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "relics": [
+    {
+      "id": "emberheart",
+      "name": "余温炭",
+      "rarity": "starter",
+      "trigger": "after_combat",
+      "effect": "heal",
+      "value": 6,
+      "description": "每场战斗结束后恢复 6 点生命。",
+      "icon": "ICO_Relic_Emberheart"
+    },
+    {
+      "id": "bellows_glove",
+      "name": "风箱手套",
+      "rarity": "common",
+      "trigger": "combat_start",
+      "effect": "gain_strength_self",
+      "value": 1,
+      "description": "每场战斗开始时获得 1 点炽热。",
+      "icon": "ICO_Relic_BellowsGlove"
+    },
+    {
+      "id": "charcoal_chit",
+      "name": "炭票袋",
+      "rarity": "common",
+      "trigger": "reward_gold",
+      "effect": "gold_bonus_percent",
+      "value": 25,
+      "description": "获得的金币提高 25%。",
+      "icon": "ICO_Relic_CharcoalChit"
+    },
+    {
+      "id": "draft_flue",
+      "name": "抽风口",
+      "rarity": "uncommon",
+      "trigger": "combat_start_first_turn",
+      "effect": "energy",
+      "value": 1,
+      "description": "每场战斗第一回合额外获得 1 点能量。",
+      "icon": "ICO_Relic_DraftFlue"
+    },
+    {
+      "id": "sherd_vest",
+      "name": "陶片背心",
+      "rarity": "common",
+      "trigger": "on_hit",
+      "effect": "reflect",
+      "value": 3,
+      "description": "受到攻击时，对攻击者造成 3 点伤害。",
+      "icon": "ICO_Relic_SherdVest"
+    },
+    {
+      "id": "keeper_apron",
+      "name": "守窑围裙",
+      "rarity": "common",
+      "trigger": "combat_start",
+      "effect": "draw",
+      "value": 1,
+      "description": "每场战斗开始时额外抽 1 张牌。",
+      "icon": "ICO_Relic_KeeperApron"
+    },
+    {
+      "id": "heat_siphon",
+      "name": "汲热钳",
+      "rarity": "uncommon",
+      "trigger": "on_attack_damage",
+      "effect": "heal_percent_of_damage",
+      "value": 0,
+      "effect_flat": 2,
+      "description": "每次造成攻击伤害后恢复 2 点生命。",
+      "icon": "ICO_Relic_HeatSiphon"
+    },
+    {
+      "id": "mending_slip",
+      "name": "补陶泥",
+      "rarity": "common",
+      "trigger": "after_rest",
+      "effect": "heal_bonus",
+      "value": 5,
+      "description": "休息时额外恢复 5 点生命。",
+      "icon": "ICO_Relic_MendingSlip"
+    },
+    {
+      "id": "firewood_axe",
+      "name": "劈薪斧",
+      "rarity": "uncommon",
+      "trigger": "first_attack_each_combat",
+      "effect": "damage_bonus",
+      "value": 4,
+      "description": "每场战斗第一张攻击牌额外造成 4 点伤害。",
+      "icon": "ICO_Relic_FirewoodAxe"
+    },
+    {
+      "id": "hearth_totem",
+      "name": "围炉小灶",
+      "rarity": "common",
+      "trigger": "combat_start",
+      "effect": "block",
+      "value": 5,
+      "description": "每场战斗开始时获得 5 点格挡。",
+      "icon": "ICO_Relic_HearthTotem"
+    },
+    {
+      "id": "kilnmark",
+      "name": "窑主印记",
+      "rarity": "common",
+      "trigger": "combat_start",
+      "effect": "summon",
+      "value": 1,
+      "description": "战斗开始时召唤 1 只 窑犬。",
+      "icon": "ICO_Relic_Kilnmark"
+    }
+  ]
+}

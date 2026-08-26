@@ -1,0 +1,1601 @@
+{
+  "version": 1,
+  "effect_kinds": [
+    "damage",
+    "aoe_damage",
+    "block",
+    "draw",
+    "energy",
+    "heal",
+    "gain_strength",
+    "gain_dexterity",
+    "apply_status",
+    "exhaust",
+    "power_start_turn_block",
+    "power_start_turn_strength",
+    "power_end_turn_aoe",
+    "power_on_attack_strength",
+    "gain_kiln_heat",
+    "summon"
+  ],
+  "cards": [
+    {
+      "id": "strike",
+      "name": "劈薪",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "starter",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 6
+        },
+        {
+          "kind": "apply_status",
+          "status": "stoke",
+          "target": "self",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 9
+          }
+        ]
+      },
+      "build": [
+        "aggro",
+        "defense",
+        "control",
+        "burn"
+      ],
+      "description": "造成 6 点伤害。",
+      "upgrade_description": "造成 9 点伤害。",
+      "art": "CARD_Strike"
+    },
+    {
+      "id": "defend",
+      "name": "护坯",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "starter",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "block",
+          "value": 5
+        },
+        {
+          "kind": "apply_status",
+          "status": "glaze",
+          "target": "self",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "block",
+            "value": 8
+          }
+        ]
+      },
+      "build": [
+        "aggro",
+        "defense",
+        "control",
+        "burn"
+      ],
+      "description": "获得 5 点格挡。",
+      "upgrade_description": "获得 8 点格挡。",
+      "art": "CARD_Defend"
+    },
+    {
+      "id": "bash",
+      "name": "敲釉",
+      "type": "attack",
+      "cost": 2,
+      "rarity": "starter",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 8
+        },
+        {
+          "kind": "apply_status",
+          "status": "crazed",
+          "value": 2,
+          "target": "enemy"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 10
+          },
+          {
+            "kind": "apply_status",
+            "status": "crazed",
+            "value": 3,
+            "target": "enemy"
+          }
+        ]
+      },
+      "build": [
+        "control",
+        "aggro"
+      ],
+      "description": "造成 8 点伤害，施加 2 层釉裂。",
+      "upgrade_description": "造成 10 点伤害，施加 3 层釉裂。",
+      "art": "CARD_Bash"
+    },
+    {
+      "id": "heavy_slash",
+      "name": "重劈",
+      "type": "attack",
+      "cost": 2,
+      "rarity": "common",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 14
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 18
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 14 点伤害。",
+      "upgrade_description": "造成 18 点伤害。",
+      "art": "CARD_HeavySlash"
+    },
+    {
+      "id": "double_strike",
+      "name": "双斧",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "common",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 4,
+          "times": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 5,
+            "times": 2
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 2 次 4 点伤害。",
+      "upgrade_description": "造成 2 次 5 点伤害。",
+      "art": "CARD_DoubleStrike"
+    },
+    {
+      "id": "cleave",
+      "name": "扫炭",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "common",
+      "target": "all_enemies",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "aoe_damage",
+          "value": 8
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "aoe_damage",
+            "value": 11
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "对所有敌人造成 8 点伤害。",
+      "upgrade_description": "对所有敌人造成 11 点伤害。",
+      "art": "CARD_Cleave"
+    },
+    {
+      "id": "thrust",
+      "name": "火钳刺",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "common",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 7
+        },
+        {
+          "kind": "draw",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 10
+          },
+          {
+            "kind": "draw",
+            "value": 1
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 7 点伤害，抽 1 张牌。",
+      "upgrade_description": "造成 10 点伤害，抽 1 张牌。",
+      "art": "CARD_Thrust"
+    },
+    {
+      "id": "charge",
+      "name": "鼓风",
+      "type": "attack",
+      "cost": 0,
+      "rarity": "common",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 3
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 5
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 3 点伤害。（不消耗能量）",
+      "upgrade_description": "造成 5 点伤害。",
+      "art": "CARD_Charge"
+    },
+    {
+      "id": "burning_fist",
+      "name": "炽拳",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "common",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 5
+        },
+        {
+          "kind": "apply_status",
+          "status": "ashrot",
+          "value": 2,
+          "target": "enemy"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 7
+          },
+          {
+            "kind": "apply_status",
+            "status": "ashrot",
+            "value": 3,
+            "target": "enemy"
+          }
+        ]
+      },
+      "build": [
+        "burn",
+        "control"
+      ],
+      "description": "造成 5 点伤害，施加 2 层灰蚀。",
+      "upgrade_description": "造成 7 点伤害，施加 3 层灰蚀。",
+      "art": "CARD_BurningFist"
+    },
+    {
+      "id": "throw_rock",
+      "name": "掷坯",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "common",
+      "target": "enemy",
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 5
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 8
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 5 点伤害。消耗。",
+      "upgrade_description": "造成 8 点伤害。消耗。",
+      "art": "CARD_ThrowRock"
+    },
+    {
+      "id": "iron_wall",
+      "name": "窑壁",
+      "type": "skill",
+      "cost": 2,
+      "rarity": "common",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "block",
+          "value": 12
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "block",
+            "value": 16
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "获得 12 点格挡。",
+      "upgrade_description": "获得 16 点格挡。",
+      "art": "CARD_IronWall"
+    },
+    {
+      "id": "parry",
+      "name": "挡钳",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "block",
+          "value": 8
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "block",
+            "value": 11
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "获得 8 点格挡。",
+      "upgrade_description": "获得 11 点格挡。",
+      "art": "CARD_Parry"
+    },
+    {
+      "id": "battle_stance",
+      "name": "守窑式",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "gain_strength",
+          "value": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "gain_strength",
+            "value": 3
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "获得 2 点炽热。",
+      "upgrade_description": "获得 3 点炽热。",
+      "art": "CARD_BattleStance"
+    },
+    {
+      "id": "quick_step",
+      "name": "绕炉",
+      "type": "skill",
+      "cost": 0,
+      "rarity": "common",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "block",
+          "value": 4
+        },
+        {
+          "kind": "draw",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "block",
+            "value": 6
+          },
+          {
+            "kind": "draw",
+            "value": 1
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "获得 4 点格挡，抽 1 张牌。",
+      "upgrade_description": "获得 6 点格挡，抽 1 张牌。",
+      "art": "CARD_QuickStep"
+    },
+    {
+      "id": "taunt",
+      "name": "引火",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "all_enemies",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "apply_status",
+          "status": "damp",
+          "value": 2,
+          "target": "all_enemies"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "apply_status",
+            "status": "damp",
+            "value": 3,
+            "target": "all_enemies"
+          }
+        ]
+      },
+      "build": [
+        "control"
+      ],
+      "description": "对所有敌人施加 2 层受潮。",
+      "upgrade_description": "对所有敌人施加 3 层受潮。",
+      "art": "CARD_Taunt"
+    },
+    {
+      "id": "bandage",
+      "name": "补釉",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "heal",
+          "value": 6
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "heal",
+            "value": 9
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "恢复 6 点生命。",
+      "upgrade_description": "恢复 9 点生命。",
+      "art": "CARD_Bandage"
+    },
+    {
+      "id": "war_cry",
+      "name": "鼓风令",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "draw",
+          "value": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "draw",
+            "value": 3
+          }
+        ]
+      },
+      "build": [
+        "aggro",
+        "control"
+      ],
+      "description": "抽 2 张牌。",
+      "upgrade_description": "抽 3 张牌。",
+      "art": "CARD_WarCry"
+    },
+    {
+      "id": "rage",
+      "name": "炉怒",
+      "type": "power",
+      "cost": 1,
+      "rarity": "common",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "gain_strength",
+          "value": 3
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "gain_strength",
+            "value": 4
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "获得 3 点炽热（持续）。",
+      "upgrade_description": "获得 4 点炽热（持续）。",
+      "art": "CARD_Rage"
+    },
+    {
+      "id": "harden",
+      "name": "定型",
+      "type": "power",
+      "cost": 1,
+      "rarity": "common",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "power_start_turn_block",
+          "value": 3
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "power_start_turn_block",
+            "value": 4
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "每回合开始获得 3 点格挡（持续）。",
+      "upgrade_description": "每回合开始获得 4 点格挡（持续）。",
+      "art": "CARD_Harden"
+    },
+    {
+      "id": "bloodlust",
+      "name": "嗜热",
+      "type": "power",
+      "cost": 2,
+      "rarity": "uncommon",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "power_on_attack_strength",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "power_on_attack_strength",
+            "value": 2
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "每次打出攻击牌获得 1 点炽热（持续）。",
+      "upgrade_description": "每次打出攻击牌获得 2 点炽热（持续）。",
+      "art": "CARD_Bloodlust"
+    },
+    {
+      "id": "burning_soul",
+      "name": "炽心",
+      "type": "power",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "power_end_turn_aoe",
+          "value": 3
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "power_end_turn_aoe",
+            "value": 4
+          }
+        ]
+      },
+      "build": [
+        "burn"
+      ],
+      "description": "每回合结束对所有敌人造成 3 点伤害（持续）。",
+      "upgrade_description": "每回合结束对所有敌人造成 4 点伤害（持续）。",
+      "art": "CARD_BurningSoul"
+    },
+    {
+      "id": "earthquake",
+      "name": "震窑",
+      "type": "attack",
+      "cost": 2,
+      "rarity": "uncommon",
+      "target": "all_enemies",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "aoe_damage",
+          "value": 10
+        },
+        {
+          "kind": "apply_status",
+          "status": "crazed",
+          "value": 2,
+          "target": "all_enemies"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "aoe_damage",
+            "value": 13
+          },
+          {
+            "kind": "apply_status",
+            "status": "crazed",
+            "value": 3,
+            "target": "all_enemies"
+          }
+        ]
+      },
+      "build": [
+        "control",
+        "aggro"
+      ],
+      "description": "对所有敌人造成 10 点伤害并施加 2 层釉裂。",
+      "upgrade_description": "造成 13 点伤害并施加 3 层釉裂。",
+      "art": "CARD_Earthquake"
+    },
+    {
+      "id": "execute",
+      "name": "收火",
+      "type": "attack",
+      "cost": 2,
+      "rarity": "uncommon",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 18
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 23
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 18 点伤害。",
+      "upgrade_description": "造成 23 点伤害。",
+      "art": "CARD_Execute"
+    },
+    {
+      "id": "unbreakable",
+      "name": "不裂",
+      "type": "skill",
+      "cost": 2,
+      "rarity": "uncommon",
+      "target": "self",
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "block",
+          "value": 20
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "block",
+            "value": 26
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "获得 20 点格挡。消耗。",
+      "upgrade_description": "获得 26 点格挡。消耗。",
+      "art": "CARD_Unbreakable"
+    },
+    {
+      "id": "twin_guard",
+      "name": "双壁",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "block",
+          "value": 6
+        },
+        {
+          "kind": "draw",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "block",
+            "value": 9
+          },
+          {
+            "kind": "draw",
+            "value": 1
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "获得 6 点格挡，抽 1 张牌。",
+      "upgrade_description": "获得 9 点格挡，抽 1 张牌。",
+      "art": "CARD_TwinGuard"
+    },
+    {
+      "id": "empowering",
+      "name": "增焰",
+      "type": "skill",
+      "cost": 0,
+      "rarity": "uncommon",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "energy",
+          "value": 1
+        },
+        {
+          "kind": "draw",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "energy",
+            "value": 1
+          },
+          {
+            "kind": "draw",
+            "value": 2
+          }
+        ]
+      },
+      "build": [
+        "aggro",
+        "control"
+      ],
+      "description": "获得 1 点能量，抽 1 张牌。",
+      "upgrade_description": "获得 1 点能量，抽 2 张牌。",
+      "art": "CARD_Empowering"
+    },
+    {
+      "id": "whirlwind",
+      "name": "卷灰",
+      "type": "attack",
+      "cost": 2,
+      "rarity": "uncommon",
+      "target": "all_enemies",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "aoe_damage",
+          "value": 6,
+          "times": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "aoe_damage",
+            "value": 8,
+            "times": 2
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "对所有敌人造成 2 次 6 点伤害。",
+      "upgrade_description": "对所有敌人造成 2 次 8 点伤害。",
+      "art": "CARD_Whirlwind"
+    },
+    {
+      "id": "ash_blade",
+      "name": "灰刃",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 4
+        },
+        {
+          "kind": "apply_status",
+          "status": "ashrot",
+          "value": 3,
+          "target": "enemy"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 6
+          },
+          {
+            "kind": "apply_status",
+            "status": "ashrot",
+            "value": 4,
+            "target": "enemy"
+          }
+        ]
+      },
+      "build": [
+        "burn",
+        "control"
+      ],
+      "description": "造成 4 点伤害，施加 3 层灰蚀。",
+      "upgrade_description": "造成 6 点伤害，施加 4 层灰蚀。",
+      "art": "CARD_AshBlade"
+    },
+    {
+      "id": "second_wind",
+      "name": "回风",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "heal",
+          "value": 4
+        },
+        {
+          "kind": "block",
+          "value": 4
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "heal",
+            "value": 6
+          },
+          {
+            "kind": "block",
+            "value": 6
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "恢复 4 点生命并获得 4 点格挡。",
+      "upgrade_description": "恢复 6 点生命并获得 6 点格挡。",
+      "art": "CARD_SecondWind"
+    },
+    {
+      "id": "warlord",
+      "name": "大匠之姿",
+      "type": "power",
+      "cost": 2,
+      "rarity": "rare",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "gain_strength",
+          "value": 2
+        },
+        {
+          "kind": "gain_dexterity",
+          "value": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "gain_strength",
+            "value": 3
+          },
+          {
+            "kind": "gain_dexterity",
+            "value": 3
+          }
+        ]
+      },
+      "build": [
+        "aggro",
+        "defense"
+      ],
+      "description": "获得 2 点炽热与 2 点塑形（持续）。",
+      "upgrade_description": "获得 3 点炽热与 3 点塑形（持续）。",
+      "art": "CARD_Warlord"
+    },
+    {
+      "id": "firestorm",
+      "name": "火暴",
+      "type": "attack",
+      "cost": 3,
+      "rarity": "rare",
+      "target": "all_enemies",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "aoe_damage",
+          "value": 7,
+          "times": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "aoe_damage",
+            "value": 9,
+            "times": 2
+          }
+        ]
+      },
+      "build": [
+        "burn",
+        "aggro"
+      ],
+      "description": "对所有敌人造成 2 次 7 点伤害。",
+      "upgrade_description": "对所有敌人造成 2 次 9 点伤害。",
+      "art": "CARD_Firestorm"
+    },
+    {
+      "id": "molten_form",
+      "name": "熔身",
+      "type": "power",
+      "cost": 3,
+      "rarity": "rare",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "power_start_turn_strength",
+          "value": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "power_start_turn_strength",
+            "value": 3
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "每回合开始获得 2 点炽热（持续）。",
+      "upgrade_description": "每回合开始获得 3 点炽热（持续）。",
+      "art": "CARD_MoltenForm"
+    },
+    {
+      "id": "last_stand",
+      "name": "末薪",
+      "type": "skill",
+      "cost": 2,
+      "rarity": "rare",
+      "target": "self",
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "block",
+          "value": 30
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "block",
+            "value": 40
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "获得 30 点格挡。消耗。",
+      "upgrade_description": "获得 40 点格挡。消耗。",
+      "art": "CARD_LastStand"
+    },
+    {
+      "id": "berserk",
+      "name": "狂炉",
+      "type": "power",
+      "cost": 1,
+      "rarity": "rare",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "power_start_turn_strength",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "power_start_turn_strength",
+            "value": 2
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "每回合开始获得 1 点炽热（持续）。",
+      "upgrade_description": "每回合开始获得 2 点炽热（持续）。",
+      "art": "CARD_Berserk"
+    },
+    {
+      "id": "titan_strike",
+      "name": "巨窑一击",
+      "type": "attack",
+      "cost": 3,
+      "rarity": "rare",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 30
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 38
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 30 点伤害。",
+      "upgrade_description": "造成 38 点伤害。",
+      "art": "CARD_TitanStrike"
+    },
+    {
+      "id": "kiln_burst",
+      "name": "燃窑轰击",
+      "type": "attack",
+      "cost": 2,
+      "rarity": "rare",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 16
+        },
+        {
+          "kind": "gain_kiln_heat",
+          "value": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 21
+          },
+          {
+            "kind": "gain_kiln_heat",
+            "value": 3
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 16 点伤害，积累 2 点窑温。",
+      "upgrade_description": "造成 21 点伤害，积累 3 点窑温。",
+      "art": "CARD_KilnBurst"
+    },
+    {
+      "id": "ember_tide",
+      "name": "炽潮",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 5
+        },
+        {
+          "kind": "gain_kiln_heat",
+          "value": 1
+        },
+        {
+          "kind": "draw",
+          "value": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 8
+          },
+          {
+            "kind": "gain_kiln_heat",
+            "value": 1
+          },
+          {
+            "kind": "draw",
+            "value": 1
+          }
+        ]
+      },
+      "build": [
+        "aggro"
+      ],
+      "description": "造成 5 点伤害，积累 1 点窑温，抽 1 张牌。",
+      "upgrade_description": "造成 8 点伤害，积累 1 点窑温，抽 1 张牌。",
+      "art": "CARD_EmberTide"
+    },
+    {
+      "id": "kiln_aegis",
+      "name": "窑盾共鸣",
+      "type": "power",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "power_start_turn_block",
+          "value": 4
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "power_start_turn_block",
+            "value": 6
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "每回合开始获得 4 点格挡（持续）。",
+      "upgrade_description": "每回合开始获得 6 点格挡（持续）。",
+      "art": "CARD_KilnAegis"
+    },
+    {
+      "id": "shatter_guard",
+      "name": "碎甲击",
+      "type": "attack",
+      "cost": 2,
+      "rarity": "rare",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 10
+        },
+        {
+          "kind": "block",
+          "value": 8
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 13
+          },
+          {
+            "kind": "block",
+            "value": 11
+          }
+        ]
+      },
+      "build": [
+        "defense"
+      ],
+      "description": "造成 10 点伤害并获得 8 点格挡。",
+      "upgrade_description": "造成 13 点伤害并获得 11 点格挡。",
+      "art": "CARD_ShatterGuard"
+    },
+    {
+      "id": "mass_craze",
+      "name": "群釉咒",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "all_enemies",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "apply_status",
+          "status": "crazed",
+          "value": 2,
+          "target": "all_enemies"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "apply_status",
+            "status": "crazed",
+            "value": 3,
+            "target": "all_enemies"
+          }
+        ]
+      },
+      "build": [
+        "control"
+      ],
+      "description": "对所有敌人施加 2 层釉裂。",
+      "upgrade_description": "对所有敌人施加 3 层釉裂。",
+      "art": "CARD_MassCraze"
+    },
+    {
+      "id": "ash_domain",
+      "name": "浸灰领域",
+      "type": "power",
+      "cost": 2,
+      "rarity": "rare",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "power_end_turn_aoe",
+          "value": 5
+        },
+        {
+          "kind": "apply_status",
+          "status": "damp",
+          "value": 1,
+          "target": "all_enemies"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "power_end_turn_aoe",
+            "value": 7
+          },
+          {
+            "kind": "apply_status",
+            "status": "damp",
+            "value": 2,
+            "target": "all_enemies"
+          }
+        ]
+      },
+      "build": [
+        "control"
+      ],
+      "description": "每回合结束对所有敌人造成 5 点伤害，并立即对所有敌人施加 1 层受潮。",
+      "upgrade_description": "每回合结束对所有敌人造成 7 点伤害，并立即对所有敌人施加 2 层受潮。",
+      "art": "CARD_AshDomain"
+    },
+    {
+      "id": "ember_burst",
+      "name": "余烬爆发",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 4
+        },
+        {
+          "kind": "apply_status",
+          "status": "ashrot",
+          "value": 3,
+          "target": "enemy"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "damage",
+            "value": 6
+          },
+          {
+            "kind": "apply_status",
+            "status": "ashrot",
+            "value": 4,
+            "target": "enemy"
+          }
+        ]
+      },
+      "build": [
+        "burn"
+      ],
+      "description": "造成 4 点伤害，施加 3 层灰蚀。",
+      "upgrade_description": "造成 6 点伤害，施加 4 层灰蚀。",
+      "art": "CARD_EmberBurst"
+    },
+    {
+      "id": "scorch_field",
+      "name": "焚原",
+      "type": "attack",
+      "cost": 3,
+      "rarity": "rare",
+      "target": "all_enemies",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "aoe_damage",
+          "value": 8
+        },
+        {
+          "kind": "apply_status",
+          "status": "ashrot",
+          "value": 3,
+          "target": "all_enemies"
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "aoe_damage",
+            "value": 11
+          },
+          {
+            "kind": "apply_status",
+            "status": "ashrot",
+            "value": 4,
+            "target": "all_enemies"
+          }
+        ]
+      },
+      "build": [
+        "burn"
+      ],
+      "description": "对所有敌人造成 8 点伤害，施加 3 层灰蚀。",
+      "upgrade_description": "对所有敌人造成 11 点伤害，施加 4 层灰蚀。",
+      "art": "CARD_ScorchField"
+    },
+    {
+      "id": "summon_hound",
+      "name": "召窑犬",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "none",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "summon",
+          "minion_id": "emberhound",
+          "count": 1
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "summon",
+            "minion_id": "emberhound",
+            "count": 2
+          }
+        ]
+      },
+      "build": [
+        "summoner"
+      ],
+      "description": "召唤 窑犬（10 HP，攻击 5，存活 3 回合）。",
+      "upgrade_description": "召唤 2 只 窑犬。",
+      "art": "CARD_SummonHound"
+    },
+    {
+      "id": "hound_pack",
+      "name": "窑犬群",
+      "type": "skill",
+      "cost": 2,
+      "rarity": "uncommon",
+      "target": "none",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "summon",
+          "minion_id": "emberhound",
+          "count": 2
+        }
+      ],
+      "build": [
+        "summoner"
+      ],
+      "description": "召唤 2 只 窑犬。",
+      "art": "CARD_HoundPack"
+    },
+    {
+      "id": "glaze_ward",
+      "name": "釉卫结界",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "none",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "summon",
+          "minion_id": "glazeward",
+          "count": 1
+        }
+      ],
+      "build": [
+        "summoner"
+      ],
+      "description": "召唤 釉卫（14 HP，起始格挡 5，防御，存活 3 回合）。",
+      "art": "CARD_GlazeWard"
+    },
+    {
+      "id": "command_horn",
+      "name": "指挥号",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "none",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "apply_status",
+          "status": "command",
+          "target": "self",
+          "value": 2
+        }
+      ],
+      "upgrade": {
+        "effects": [
+          {
+            "kind": "apply_status",
+            "status": "command",
+            "target": "self",
+            "value": 3
+          }
+        ]
+      },
+      "build": [
+        "summoner"
+      ],
+      "description": "获得 指挥 2（你的随从攻击 / 格挡 +2）。",
+      "upgrade_description": "获得 指挥 3。",
+      "art": "CARD_CommandHorn"
+    },
+    {
+      "id": "spark_call",
+      "name": "引火",
+      "type": "skill",
+      "cost": 0,
+      "rarity": "common",
+      "target": "none",
+      "exhaust": false,
+      "effects": [
+        {
+          "kind": "summon",
+          "minion_id": "spark",
+          "count": 1
+        }
+      ],
+      "build": [
+        "summoner"
+      ],
+      "description": "召唤 火灵（6 HP，攻击 4，存活 2 回合）。",
+      "art": "CARD_SparkCall"
+    }
+  ]
+}

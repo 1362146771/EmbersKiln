@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "potions": [
+    {
+      "id": "ash_salve",
+      "name": "灰烬膏",
+      "rarity": "common",
+      "target": "self",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "heal",
+          "value": 12
+        }
+      ],
+      "description": "恢复 12 点生命。",
+      "icon": "ICO_Potion_AshSalve"
+    },
+    {
+      "id": "warmth_vial",
+      "name": "余温瓶",
+      "rarity": "uncommon",
+      "target": "self",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "heal",
+          "value": 14
+        },
+        {
+          "kind": "apply_status",
+          "status": "anneal",
+          "target": "self",
+          "value": 2
+        }
+      ],
+      "description": "恢复 14 点生命，并获得 2 层回火（回合开始回血后递减）。",
+      "icon": "ICO_Potion_WarmthVial"
+    },
+    {
+      "id": "kiln_plaster",
+      "name": "窑壁釉",
+      "rarity": "common",
+      "target": "self",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "block",
+          "value": 12
+        }
+      ],
+      "description": "获得 12 点格挡。",
+      "icon": "ICO_Potion_KilnPlaster"
+    },
+    {
+      "id": "tinder_oil",
+      "name": "引火油",
+      "rarity": "common",
+      "target": "self",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "energy",
+          "value": 1
+        }
+      ],
+      "description": "获得 1 点能量。",
+      "icon": "ICO_Potion_TinderOil"
+    },
+    {
+      "id": "waking_clay",
+      "name": "醒神陶土",
+      "rarity": "common",
+      "target": "self",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "draw",
+          "value": 2
+        }
+      ],
+      "description": "抽 2 张牌。",
+      "icon": "ICO_Potion_WakingClay"
+    },
+    {
+      "id": "ember_heart",
+      "name": "余烬之心",
+      "rarity": "rare",
+      "target": "self",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "energy",
+          "value": 2
+        }
+      ],
+      "description": "获得 2 点能量。",
+      "icon": "ICO_Potion_EmberHeart"
+    },
+    {
+      "id": "kiln_fire_oil",
+      "name": "窑火油",
+      "rarity": "uncommon",
+      "target": "all_enemies",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "aoe_damage",
+          "value": 8
+        }
+      ],
+      "description": "对所有敌人造成 8 点伤害。",
+      "icon": "ICO_Potion_KilnFireOil"
+    },
+    {
+      "id": "titan_anoint",
+      "name": "巨窑圣油",
+      "rarity": "rare",
+      "target": "enemy",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "damage",
+          "value": 18
+        }
+      ],
+      "description": "造成 18 点伤害。",
+      "icon": "ICO_Potion_TitanAnoint"
+    },
+    {
+      "id": "mud_bolt",
+      "name": "湿泥弹",
+      "rarity": "common",
+      "target": "all_enemies",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "apply_status",
+          "status": "damp",
+          "target": "all_enemies",
+          "value": 2
+        }
+      ],
+      "description": "对所有敌人施加 2 层受潮（攻击 -25%）。",
+      "icon": "ICO_Potion_MudBolt"
+    },
+    {
+      "id": "craze_dust",
+      "name": "釉裂粉",
+      "rarity": "common",
+      "target": "enemy",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "apply_status",
+          "status": "crazed",
+          "target": "enemy",
+          "value": 2
+        }
+      ],
+      "description": "对目标敌人施加 2 层釉裂（受伤 +50%）。",
+      "icon": "ICO_Potion_CrazeDust"
+    },
+    {
+      "id": "ashrot_vial",
+      "name": "灰蚀瓶",
+      "rarity": "uncommon",
+      "target": "all_enemies",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "apply_status",
+          "status": "ashrot",
+          "target": "all_enemies",
+          "value": 2
+        }
+      ],
+      "description": "对所有敌人施加 2 层灰蚀（回合开始掉血后递减）。",
+      "icon": "ICO_Potion_AshrotVial"
+    },
+    {
+      "id": "stoke_brew",
+      "name": "蓄焰酒",
+      "rarity": "uncommon",
+      "target": "self",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "apply_status",
+          "status": "stoke",
+          "target": "self",
+          "value": 3
+        }
+      ],
+      "description": "获得 3 层蓄焰（你的下一张攻击牌伤害 +3，出手后 -1 层）。",
+      "icon": "ICO_Potion_StokeBrew"
+    },
+    {
+      "id": "temper_paste",
+      "name": "塑形膏",
+      "rarity": "uncommon",
+      "target": "self",
+      "combat_only": true,
+      "exhaust": true,
+      "effects": [
+        {
+          "kind": "gain_dexterity",
+          "value": 2
+        }
+      ],
+      "description": "获得 2 层塑形（此后获得格挡时额外 +2）。",
+      "icon": "ICO_Potion_TemperPaste"
+    }
+  ]
+}

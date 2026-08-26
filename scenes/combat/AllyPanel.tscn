@@ -1,0 +1,96 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/AllyPanel.gd" id="1_ap"]
+
+[sub_resource type="StyleBoxFlat" id="SB_panel"]
+bg_color = Color(0.20, 0.32, 0.40, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.30, 0.27, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+
+[sub_resource type="StyleBoxFlat" id="SB_fill"]
+bg_color = Color(0.847, 0.353, 0.188, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_bg"]
+bg_color = Color(0.12, 0.1, 0.1, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[node name="AllyPanel" type="Panel"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("SB_panel")
+script = ExtResource("1_ap")
+
+[node name="Inner" type="VBoxContainer" parent="."]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="IntentLabel" type="Label" parent="Inner"]
+layout_mode = 2
+text = "意图"
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(0.4, 0.8, 0.95, 1)
+
+[node name="SpriteRect" type="TextureRect" parent="Inner"]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+custom_minimum_size = Vector2(144, 144)
+
+[node name="NameLabel" type="Label" parent="Inner"]
+layout_mode = 2
+text = "随从"
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.984, 0.953, 0.894, 1)
+
+[node name="HpBar" type="ProgressBar" parent="Inner"]
+layout_mode = 2
+show_percentage = false
+custom_minimum_size = Vector2(0, 14)
+theme_override_styles/fill = SubResource("SB_fill")
+theme_override_styles/background = SubResource("SB_bg")
+
+[node name="HpBlockLabel" type="Label" parent="Inner"]
+layout_mode = 2
+text = "HP 0/0  格 0"
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.365, 0.792, 0.647, 1)
+
+[node name="LifetimeLabel" type="Label" parent="Inner"]
+layout_mode = 2
+text = "寿命 0"
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1.0, 0.92, 0.65, 1)
+
+[node name="StatusLabel" type="Label" parent="Inner"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.498, 0.467, 0.867, 1)

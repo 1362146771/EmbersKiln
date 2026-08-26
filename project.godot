@@ -1,0 +1,47 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="炽窑"
+config/description="《炽窑》Ember's Kiln — 2D 回合制卡组构筑 Roguelike（战士单职业）"
+run/main_scene="res://scenes/main/MainMenu.tscn"
+config/features=PackedStringArray("4.7", "Mobile")
+
+[autoload]
+
+TestBridge="*res://test_bridge.gd"
+SignalBus="*res://scripts/core/SignalBus.gd"
+GameData="*res://scripts/data/GameData.gd"
+RunState="*res://scripts/core/RunState.gd"
+SaveManager="*res://scripts/core/SaveManager.gd"
+PauseManager="*res://scripts/core/PauseManager.gd"
+VFXSystem="*res://scripts/core/VFXSystem.gd"
+BattleDirector="*res://scripts/combat/BattleDirector.gd"
+
+[display]
+
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/stretch/mode="canvas_items"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+renderer/rendering_method="mobile"
+environment/defaults/default_clear_color=Color(0.984, 0.953, 0.894, 1)

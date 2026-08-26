@@ -1,0 +1,766 @@
+{
+  "version": 1,
+  "enemies": [
+    {
+      "id": "claylump",
+      "name": "陶泥团",
+      "tier": "normal",
+      "hp": 44,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "tackle",
+          "intent": "attack",
+          "value": 12,
+          "chance": 0.5
+        },
+        {
+          "id": "mighty_charge",
+          "intent": "charge",
+          "value": 0,
+          "next": "heavy_slam",
+          "chance": 0.4
+        },
+        {
+          "id": "heavy_slam",
+          "intent": "attack",
+          "value": 17,
+          "chance": 0.0
+        },
+        {
+          "id": "harden",
+          "intent": "defend",
+          "value": 6,
+          "chance": 0.2
+        }
+      ],
+      "sprite": "SPR_Enemy_Claylump"
+    },
+    {
+      "id": "sootling",
+      "name": "煤灰仔",
+      "tier": "normal",
+      "hp": 38,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "stab",
+          "intent": "attack",
+          "value": 14,
+          "chance": 0.55
+        },
+        {
+          "id": "sear_charge",
+          "intent": "charge",
+          "value": 0,
+          "next": "searing_jab",
+          "chance": 0.35
+        },
+        {
+          "id": "searing_jab",
+          "intent": "attack",
+          "value": 16,
+          "chance": 0.0
+        },
+        {
+          "id": "curse",
+          "intent": "debuff",
+          "status": "damp",
+          "value": 1,
+          "chance": 0.2
+        }
+      ],
+      "sprite": "SPR_Enemy_Sootling"
+    },
+    {
+      "id": "embermoth",
+      "name": "火蛾",
+      "tier": "normal",
+      "hp": 34,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "bite",
+          "intent": "attack",
+          "value": 9,
+          "times": 2,
+          "chance": 0.5
+        },
+        {
+          "id": "ember_heavy",
+          "intent": "attack",
+          "value": 16,
+          "chance": 0.2
+        },
+        {
+          "id": "screech",
+          "intent": "debuff",
+          "status": "damp",
+          "value": 1,
+          "chance": 0.3
+        }
+      ],
+      "sprite": "SPR_Enemy_Embermoth"
+    },
+    {
+      "id": "potsherd",
+      "name": "陶片兵",
+      "tier": "normal",
+      "hp": 42,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "slash",
+          "intent": "attack",
+          "value": 14,
+          "chance": 0.55
+        },
+        {
+          "id": "crush",
+          "intent": "attack",
+          "value": 16,
+          "chance": 0.3
+        },
+        {
+          "id": "guard",
+          "intent": "defend",
+          "value": 8,
+          "chance": 0.2
+        }
+      ],
+      "sprite": "SPR_Enemy_Potsherd"
+    },
+    {
+      "id": "glazetick",
+      "name": "釉蛭",
+      "tier": "normal",
+      "hp": 36,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "sting",
+          "intent": "attack",
+          "value": 11,
+          "chance": 0.45
+        },
+        {
+          "id": "venom_charge",
+          "intent": "charge",
+          "value": 0,
+          "next": "venom_bite",
+          "chance": 0.35
+        },
+        {
+          "id": "venom_bite",
+          "intent": "attack",
+          "value": 15,
+          "chance": 0.0
+        },
+        {
+          "id": "venom",
+          "intent": "debuff",
+          "status": "ashrot",
+          "value": 2,
+          "chance": 0.25
+        }
+      ],
+      "sprite": "SPR_Enemy_Glazetick"
+    },
+    {
+      "id": "kilnstatue",
+      "name": "窑龛像",
+      "tier": "normal",
+      "hp": 52,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "slam",
+          "intent": "attack",
+          "value": 10,
+          "chance": 0.4
+        },
+        {
+          "id": "stone",
+          "intent": "defend",
+          "value": 8,
+          "chance": 0.4
+        },
+        {
+          "id": "gather_power",
+          "intent": "charge",
+          "value": 8,
+          "next": "pillar_slam",
+          "chance": 0.2
+        },
+        {
+          "id": "pillar_slam",
+          "intent": "attack",
+          "value": 18,
+          "chance": 0.0
+        }
+      ],
+      "sprite": "SPR_Enemy_Kilnstatue"
+    },
+    {
+      "id": "ashcantor",
+      "name": "灰颂者",
+      "tier": "normal",
+      "hp": 48,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "ritual",
+          "intent": "buff",
+          "status": "heat",
+          "value": 2,
+          "chance": 0.35
+        },
+        {
+          "id": "hex",
+          "intent": "attack",
+          "value": 15,
+          "chance": 0.45
+        },
+        {
+          "id": "drain",
+          "intent": "debuff",
+          "status": "thirst",
+          "value": 2,
+          "chance": 0.25
+        },
+        {
+          "id": "chant",
+          "intent": "charge",
+          "value": 0,
+          "next": "grand_hex",
+          "chance": 0.2
+        },
+        {
+          "id": "grand_hex",
+          "intent": "attack",
+          "value": 20,
+          "chance": 0.0
+        }
+      ],
+      "sprite": "SPR_Enemy_Ashcantor"
+    },
+    {
+      "id": "kilnward",
+      "name": "陶偶将",
+      "tier": "elite",
+      "hp": 84,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "cleave",
+          "intent": "attack",
+          "value": 16,
+          "chance": 0.5
+        },
+        {
+          "id": "roar",
+          "intent": "buff",
+          "status": "heat",
+          "value": 2,
+          "chance": 0.25
+        },
+        {
+          "id": "shield",
+          "intent": "defend",
+          "value": 12,
+          "chance": 0.25
+        }
+      ],
+      "sprite": "SPR_Enemy_Kilnward"
+    },
+    {
+      "id": "glazemaw",
+      "name": "釉裂兽",
+      "tier": "elite",
+      "hp": 82,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "triple",
+          "intent": "attack",
+          "value": 8,
+          "times": 3,
+          "chance": 0.5
+        },
+        {
+          "id": "maul",
+          "intent": "attack",
+          "value": 16,
+          "chance": 0.5
+        }
+      ],
+      "sprite": "SPR_Enemy_Glazemaw"
+    },
+    {
+      "id": "slagbeast",
+      "name": "熔渣兽",
+      "tier": "elite",
+      "hp": 82,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "scald",
+          "intent": "attack",
+          "value": 13,
+          "chance": 0.5
+        },
+        {
+          "id": "brand",
+          "intent": "debuff",
+          "status": "crazed",
+          "value": 2,
+          "chance": 0.25
+        },
+        {
+          "id": "guard",
+          "intent": "defend",
+          "value": 11,
+          "chance": 0.25
+        }
+      ],
+      "sprite": "SPR_Enemy_Slagbeast"
+    },
+    {
+      "id": "kilnwarden",
+      "name": "炽窑卫",
+      "tier": "normal",
+      "hp": 48,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "bash",
+          "intent": "attack",
+          "value": 13,
+          "chance": 0.5
+        },
+        {
+          "id": "kindle",
+          "intent": "charge",
+          "value": 0,
+          "next": "molten_slam",
+          "chance": 0.3
+        },
+        {
+          "id": "molten_slam",
+          "intent": "attack",
+          "value": 18,
+          "chance": 0.0
+        },
+        {
+          "id": "ward",
+          "intent": "defend",
+          "value": 10,
+          "chance": 0.2
+        }
+      ],
+      "sprite": "SPR_Enemy_Kilnwarden"
+    },
+    {
+      "id": "cindermoth",
+      "name": "烬蝶",
+      "tier": "normal",
+      "hp": 36,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "wingbeat",
+          "intent": "attack",
+          "value": 10,
+          "times": 2,
+          "chance": 0.5
+        },
+        {
+          "id": "cinder_charge",
+          "intent": "charge",
+          "value": 0,
+          "next": "flare",
+          "chance": 0.2
+        },
+        {
+          "id": "flare",
+          "intent": "attack",
+          "value": 16,
+          "chance": 0.0
+        },
+        {
+          "id": "ash_cloud",
+          "intent": "debuff",
+          "status": "damp",
+          "value": 1,
+          "chance": 0.3
+        }
+      ],
+      "sprite": "SPR_Enemy_Cindermoth"
+    },
+    {
+      "id": "meltgolem",
+      "name": "熔心傀儡",
+      "tier": "normal",
+      "hp": 54,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "pound",
+          "intent": "attack",
+          "value": 12,
+          "chance": 0.45
+        },
+        {
+          "id": "kindle",
+          "intent": "charge",
+          "value": 0,
+          "next": "eruption",
+          "chance": 0.2
+        },
+        {
+          "id": "eruption",
+          "intent": "attack",
+          "value": 22,
+          "chance": 0.0
+        },
+        {
+          "id": "quench",
+          "intent": "defend",
+          "value": 9,
+          "chance": 0.35
+        }
+      ],
+      "sprite": "SPR_Enemy_Meltgolem"
+    },
+    {
+      "id": "kiln_captain",
+      "name": "窑卫长",
+      "tier": "elite",
+      "hp": 92,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "sweep",
+          "intent": "attack",
+          "value": 18,
+          "chance": 0.5
+        },
+        {
+          "id": "rally",
+          "intent": "buff",
+          "status": "heat",
+          "value": 2,
+          "chance": 0.25
+        },
+        {
+          "id": "bulwark",
+          "intent": "defend",
+          "value": 14,
+          "chance": 0.25
+        }
+      ],
+      "sprite": "SPR_Enemy_KilnCaptain"
+    },
+    {
+      "id": "cinderfiend",
+      "name": "烬魈",
+      "tier": "normal",
+      "hp": 42,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "rip",
+          "intent": "attack",
+          "value": 16,
+          "chance": 0.5
+        },
+        {
+          "id": "immolate_charge",
+          "intent": "charge",
+          "value": 0,
+          "next": "immolate",
+          "chance": 0.3
+        },
+        {
+          "id": "immolate",
+          "intent": "attack",
+          "value": 20,
+          "chance": 0.0
+        },
+        {
+          "id": "cackle",
+          "intent": "debuff",
+          "status": "damp",
+          "value": 1,
+          "chance": 0.2
+        }
+      ],
+      "sprite": "SPR_Enemy_Cinderfiend"
+    },
+    {
+      "id": "magmawhelp",
+      "name": "岩浆幼兽",
+      "tier": "normal",
+      "hp": 46,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "chomp",
+          "intent": "attack",
+          "value": 14,
+          "chance": 0.5
+        },
+        {
+          "id": "lava_charge",
+          "intent": "charge",
+          "value": 0,
+          "next": "lava_glob",
+          "chance": 0.3
+        },
+        {
+          "id": "lava_glob",
+          "intent": "attack",
+          "value": 18,
+          "chance": 0.0
+        },
+        {
+          "id": "smother",
+          "intent": "debuff",
+          "status": "ashrot",
+          "value": 2,
+          "chance": 0.2
+        }
+      ],
+      "sprite": "SPR_Enemy_Magmawhelp"
+    },
+    {
+      "id": "coalseer",
+      "name": "煤烟先知",
+      "tier": "normal",
+      "hp": 50,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "bolt",
+          "intent": "attack",
+          "value": 16,
+          "chance": 0.45
+        },
+        {
+          "id": "smog",
+          "intent": "debuff",
+          "status": "thirst",
+          "value": 2,
+          "chance": 0.3
+        },
+        {
+          "id": "prophecy",
+          "intent": "charge",
+          "value": 0,
+          "next": "doom_blast",
+          "chance": 0.25
+        },
+        {
+          "id": "doom_blast",
+          "intent": "attack",
+          "value": 22,
+          "chance": 0.0
+        }
+      ],
+      "sprite": "SPR_Enemy_Coalseer"
+    },
+    {
+      "id": "ember_eater",
+      "name": "烬噬",
+      "tier": "elite",
+      "hp": 96,
+      "ai": "weighted_random",
+      "moves": [
+        {
+          "id": "devour",
+          "intent": "attack",
+          "value": 19,
+          "chance": 0.5
+        },
+        {
+          "id": "sear",
+          "intent": "debuff",
+          "status": "crazed",
+          "value": 2,
+          "chance": 0.25
+        },
+        {
+          "id": "shell",
+          "intent": "defend",
+          "value": 13,
+          "chance": 0.25
+        }
+      ],
+      "sprite": "SPR_Enemy_EmberEater"
+    },
+    {
+      "id": "kilnheart_ember",
+      "name": "窑心·烬",
+      "tier": "boss",
+      "hp": 165,
+      "ai": "scripted_phases",
+      "phases": [
+        {
+          "hp_threshold": 1.0,
+          "moves": [
+            {
+              "id": "ember_claw",
+              "intent": "attack",
+              "value": 13,
+              "chance": 0.5
+            },
+            {
+              "id": "cinder_wave",
+              "intent": "attack",
+              "value": 11,
+              "aoe": true,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
+          "hp_threshold": 0.5,
+          "moves": [
+            {
+              "id": "pyre_fist",
+              "intent": "attack",
+              "value": 20,
+              "chance": 0.4
+            },
+            {
+              "id": "smolder",
+              "intent": "debuff",
+              "status": "ashrot",
+              "value": 2,
+              "chance": 0.2
+            },
+            {
+              "id": "stoke",
+              "intent": "buff",
+              "status": "heat",
+              "value": 3,
+              "chance": 0.15
+            },
+            {
+              "id": "gathering",
+              "intent": "charge",
+              "value": 0,
+              "next": "kilnburst",
+              "chance": 0.25
+            },
+            {
+              "id": "kilnburst",
+              "intent": "attack",
+              "value": 26,
+              "chance": 0.0
+            }
+          ]
+        },
+        {
+          "hp_threshold": 0.25,
+          "on_enter": [
+            {"status": "heat", "value": 3}
+          ],
+          "moves": [
+            {
+              "id": "final_gasp",
+              "intent": "aoe_debuff",
+              "value": 6,
+              "status": "crazed",
+              "status_value": 2,
+              "chance": 1.0
+            }
+          ]
+        }
+      ],
+      "sprite": "SPR_Enemy_KilnheartEmber"
+    },
+    {
+      "id": "chi_the_first",
+      "name": "窑主·熾",
+      "tier": "boss",
+      "hp": 150,
+      "ai": "scripted_phases",
+      "phases": [
+        {
+          "hp_threshold": 1.0,
+          "moves": [
+            {
+              "id": "swipe",
+              "intent": "attack",
+              "value": 12,
+              "chance": 0.5
+            },
+            {
+              "id": "quake",
+              "intent": "attack",
+              "value": 10,
+              "aoe": true,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
+          "hp_threshold": 0.5,
+          "moves": [
+            {
+              "id": "crush",
+              "intent": "attack",
+              "value": 18,
+              "chance": 0.4
+            },
+            {
+              "id": "curse",
+              "intent": "debuff",
+              "status": "crazed",
+              "value": 2,
+              "chance": 0.2
+            },
+            {
+              "id": "rage",
+              "intent": "buff",
+              "status": "heat",
+              "value": 3,
+              "chance": 0.15
+            },
+            {
+              "id": "seethe",
+              "intent": "charge",
+              "value": 0,
+              "next": "inferno",
+              "chance": 0.25
+            },
+            {
+              "id": "inferno",
+              "intent": "attack",
+              "value": 22,
+              "chance": 0.0
+            }
+          ]
+        },
+        {
+          "hp_threshold": 0.25,
+          "on_enter": [
+            {"status": "heat", "value": 3}
+          ],
+          "moves": [
+            {
+              "id": "awaken_blast",
+              "intent": "aoe_debuff",
+              "value": 6,
+              "status": "crazed",
+              "status_value": 2,
+              "chance": 1.0
+            }
+          ]
+        }
+      ],
+      "sprite": "SPR_Enemy_ChiTheFirst"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/CombatController.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/combat/RelicTest.gd" id="2"]
+
+[node name="RelicTest" type="Node2D"]
+script = ExtResource("2")
+
+[node name="CombatController" type="Node" parent="."]
+script = ExtResource("1")

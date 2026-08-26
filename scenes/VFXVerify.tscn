@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cvfxverifysc1"]
+
+[ext_resource type="Script" path="res://scripts/combat/VFXVerify.gd" id="1_vfx"]
+
+[node name="VFXVerify" type="Node"]
+script = ExtResource("1_vfx")

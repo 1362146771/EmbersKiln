@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "minions": [
+    {
+      "id": "emberhound",
+      "name": "窑犬",
+      "hp": 10,
+      "block": 0,
+      "lifetime": 3,
+      "ai": "fixed",
+      "moves": [
+        {
+          "id": "bite",
+          "intent": "attack",
+          "value": 5,
+          "chance": 1.0
+        }
+      ],
+      "sprite": "SPR_Minion_Emberhound"
+    },
+    {
+      "id": "glazeward",
+      "name": "釉卫",
+      "hp": 14,
+      "block": 5,
+      "lifetime": 3,
+      "ai": "fixed",
+      "moves": [
+        {
+          "id": "guard",
+          "intent": "defend",
+          "value": 5,
+          "chance": 1.0
+        }
+      ],
+      "sprite": "SPR_Minion_Glazeward"
+    },
+    {
+      "id": "spark",
+      "name": "火灵",
+      "hp": 6,
+      "block": 0,
+      "lifetime": 2,
+      "ai": "fixed",
+      "moves": [
+        {
+          "id": "spark",
+          "intent": "attack",
+          "value": 4,
+          "chance": 1.0
+        }
+      ],
+      "sprite": "SPR_Minion_Spark"
+    }
+  ]
+}

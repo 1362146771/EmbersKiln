@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "enchants": [
+    {
+      "id": "kiln_quench",
+      "name": "窑淬",
+      "rarity": "common",
+      "description": "打出的攻击牌伤害 +2。",
+      "restriction": {
+        "card_type": [
+          "attack"
+        ]
+      },
+      "mods": {
+        "damage_bonus": 2
+      },
+      "icon": "ICO_Enchant_KilnQuench"
+    },
+    {
+      "id": "glaze_seal",
+      "name": "釉封",
+      "rarity": "common",
+      "description": "打出的防御/技能牌获得格挡 +2。",
+      "restriction": {
+        "card_type": [
+          "skill",
+          "power"
+        ]
+      },
+      "mods": {
+        "block_bonus": 2
+      },
+      "icon": "ICO_Enchant_GlazeSeal"
+    },
+    {
+      "id": "ember_return",
+      "name": "余烬",
+      "rarity": "common",
+      "description": "打出的牌额外抽 1 张。",
+      "mods": {
+        "extra_effects": [
+          {
+            "kind": "draw",
+            "value": 1
+          }
+        ]
+      },
+      "icon": "ICO_Enchant_EmberReturn"
+    },
+    {
+      "id": "wind_lead",
+      "name": "风引",
+      "rarity": "uncommon",
+      "description": "打出的牌获得 1 点能量（仅费用≥1 的牌）。",
+      "mods": {
+        "extra_effects": [
+          {
+            "kind": "energy",
+            "value": 1
+          }
+        ]
+      },
+      "condition": {
+        "min_cost": 1
+      },
+      "icon": "ICO_Enchant_WindLead"
+    },
+    {
+      "id": "heat_trace",
+      "name": "炽痕",
+      "rarity": "uncommon",
+      "description": "打出攻击牌后，自身获得 1 层炽热。",
+      "restriction": {
+        "card_type": [
+          "attack"
+        ]
+      },
+      "mods": {
+        "extra_effects": [
+          {
+            "kind": "gain_strength",
+            "value": 1,
+            "target": "self"
+          }
+        ]
+      },
+      "icon": "ICO_Enchant_HeatTrace"
+    },
+    {
+      "id": "ember_craze",
+      "name": "釉裂",
+      "rarity": "uncommon",
+      "description": "打出攻击牌时，对目标敌人施加 1 层釉裂。",
+      "restriction": {
+        "card_type": [
+          "attack"
+        ]
+      },
+      "mods": {
+        "extra_effects": [
+          {
+            "kind": "apply_status",
+            "status": "crazed",
+            "value": 1,
+            "target": "enemy"
+          }
+        ]
+      },
+      "icon": "ICO_Enchant_EmberCraze"
+    },
+    {
+      "id": "anneal_glow",
+      "name": "回火",
+      "rarity": "common",
+      "description": "打出防御牌时，自身获得 1 层回火。",
+      "restriction": {
+        "card_type": [
+          "skill",
+          "power"
+        ]
+      },
+      "mods": {
+        "extra_effects": [
+          {
+            "kind": "apply_status",
+            "status": "anneal",
+            "value": 1,
+            "target": "self"
+          }
+        ]
+      },
+      "icon": "ICO_Enchant_AnnealGlow"
+    },
+    {
+      "id": "kiln_warmth",
+      "name": "窑温",
+      "rarity": "uncommon",
+      "description": "打出的牌积累 1 点窑温。",
+      "mods": {
+        "extra_effects": [
+          {
+            "kind": "gain_kiln_heat",
+            "value": 1
+          }
+        ]
+      },
+      "icon": "ICO_Enchant_KilnWarmth"
+    },
+    {
+      "id": "ash_bite",
+      "name": "灰蚀",
+      "rarity": "rare",
+      "description": "攻击牌伤害 +3，但打出后自身获得 2 层灰蚀。",
+      "restriction": {
+        "card_type": [
+          "attack"
+        ]
+      },
+      "mods": {
+        "damage_bonus": 3,
+        "extra_effects": [
+          {
+            "kind": "apply_status",
+            "status": "ashrot",
+            "value": 2,
+            "target": "self"
+          }
+        ]
+      },
+      "icon": "ICO_Enchant_AshBite"
+    },
+    {
+      "id": "temper_bind",
+      "name": "塑形",
+      "rarity": "uncommon",
+      "description": "打出获得格挡的牌时，自身获得 1 层塑形。",
+      "restriction": {
+        "card_type": [
+          "skill",
+          "power"
+        ]
+      },
+      "mods": {
+        "extra_effects": [
+          {
+            "kind": "apply_status",
+            "status": "temper",
+            "value": 1,
+            "target": "self"
+          }
+        ]
+      },
+      "icon": "ICO_Enchant_TemperBind"
+    }
+  ]
+}
