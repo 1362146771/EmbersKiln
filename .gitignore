@@ -23,3 +23,7 @@ Thumbs.db
 .idea/
 .promptx/
 .workbuddy/
+
+# Project AI Studio docs & agent rules (not game source)
+AGENTS.md
+AI_Studio/
