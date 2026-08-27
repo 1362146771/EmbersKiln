@@ -4,7 +4,7 @@ extends Resource
 
 @export var id: StringName = &""
 @export var name: String = ""
-@export var rarity: StringName = &"common"     # starter / common / uncommon / rare
+@export var rarity: StringName = &"common"     # common / uncommon / rare；starter 仅为历史保留分类，不自动发放
 @export var trigger: StringName = &""
 @export var effect: StringName = &""
 @export var value: int = 0
@@ -25,7 +25,3 @@ static func from_dict(d: Dictionary) -> RelicData:
 	r.description = d.get("description", "")
 	r.icon = d.get("icon", "")
 	return r
-
-
-func is_starter() -> bool:
-	return rarity == &"starter"

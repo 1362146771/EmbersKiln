@@ -22,6 +22,7 @@ var enchants: Array = []
 var _pressing := false
 var _dragging := false
 var _enabled := true
+var _playable := true
 var _ghost := false
 var _start_global := Vector2.ZERO
 
@@ -77,6 +78,7 @@ func build_visual(cd: CardData, idx: int, ench: Array) -> void:
 func set_ghost(v: bool) -> void:
 	_ghost = v
 	if _ghost:
+		set_anchors_preset(Control.PRESET_TOP_LEFT)
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
@@ -86,10 +88,35 @@ func set_enabled(v: bool) -> void:
 		return
 	if _enabled:
 		mouse_filter = Control.MOUSE_FILTER_STOP
-		modulate.a = 1.0
+		modulate.a = 1.0 if _playable else 0.65
 	else:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		modulate.a = 0.4
+		_pressing = false
+		_dragging = false
+
+
+## 能量不足只禁出牌，不能禁拖拽弃牌。
+func set_playable(v: bool) -> void:
+	_playable = v
+	tooltip_text = "" if v else "能量不足，仍可拖到弃牌堆弃置"
+	set_enabled(_enabled)
+
+
+## 全局接收移动/松手，使用事件坐标（兼容触摸模拟鼠标及输入回放）。
+## _input 的位置是视口坐标；转为 canvas 全局坐标后与落点层一致。
+func _input(ev: InputEvent) -> void:
+	if not _enabled or not _pressing:
+		return
+	if ev is InputEventMouseMotion:
+		_update_drag_position(get_canvas_transform().affine_inverse() * ev.position)
+		if _dragging:
+			get_viewport().set_input_as_handled()
+	elif _dragging and ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and not ev.pressed:
+		_pressing = false
+		_dragging = false
+		drag_ended.emit(self, get_canvas_transform().affine_inverse() * ev.position)
+		get_viewport().set_input_as_handled()
 
 
 func _on_gui_input(ev: InputEvent) -> void:
@@ -102,27 +129,20 @@ func _on_gui_input(ev: InputEvent) -> void:
 		if mb.pressed:
 			_pressing = true
 			_dragging = false
-			_start_global = get_global_mouse_position()
+			_start_global = get_global_transform() * mb.position
 			get_viewport().set_input_as_handled()
 		else:
 			if _pressing:
 				_pressing = false
 				if _dragging:
 					_dragging = false
-					drag_ended.emit(self, get_global_mouse_position())
+					drag_ended.emit(self, get_global_transform() * mb.position)
 				else:
 					tapped.emit(self)
 				get_viewport().set_input_as_handled()
-	elif ev is InputEventMouseMotion and _pressing:
-		pass  # 实际位移在 _process 中按全局鼠标位置判定（指针移出卡外也能续拖）
 
 
-func _process(_d: float) -> void:
-	if Engine.is_editor_hint():
-		return
-	if not _pressing or not _enabled:
-		return
-	var g := get_global_mouse_position()
+func _update_drag_position(g: Vector2) -> void:
 	if not _dragging:
 		if g.distance_to(_start_global) >= DRAG_THRESHOLD:
 			_dragging = true

@@ -1,9 +1,16 @@
 class_name CombatController
 extends Node
-## 战斗状态机（战斗核心）。主持单场战斗：抽/手/弃/耗牌堆、能量、回合循环、
+## 战斗状态机（战斗核心）门面。主持单场战斗：抽/手/弃/耗牌堆、能量、回合循环、
 ## 卡牌效果结算、伤害/格挡/状态、敌人意图与行动、胜负判定。
 ## 铁律：所有数值取自 GameData / balance，禁止在脚本里写死。
-## UI 不直接访问此类的内部字段，只通过 TurnManager 与 SignalBus 交互。
+## UI 不直接访问内部字段，只通过 TurnManager 与 SignalBus 交互。
+##
+## P4 拆分：重逻辑下放到三个助手类（均 class_name + RefCounted，经 attach(ctrl) 持有门面，
+## 跨子系统调用统一走 ctrl 转发，避免 preload 环路）：
+##   - DamageResolver  : 伤害/格挡/窑变结算
+##   - StatusEngine    : 状态/回合始末结算/玩家 Power
+##   - IntentRoller    : 敌人&随从意图滚动与行动、召唤系统
+## 本文件保留编排骨架、公开 API（被 BattleDirector / CombatUI / 各 verify 直接调用）与状态字段。
 
 enum Phase { NONE, PLAYER, ENEMY, ENDED }
 
@@ -12,8 +19,6 @@ const POWER_START_TURN_BLOCK := &"power_start_turn_block"
 const POWER_START_TURN_STRENGTH := &"power_start_turn_strength"
 const POWER_END_TURN_AOE := &"power_end_turn_aoe"
 const POWER_ON_ATTACK_STRENGTH := &"power_on_attack_strength"
-
-## 窑温·共鸣（P2 新机制）
 
 var player: CombatUnit
 var enemies: Array[CombatUnit] = []
@@ -45,16 +50,33 @@ var _first_attack_done: bool = false
 ## 当前由「持续型药水」施加的残留状态（§1.5 规则 2：新持续型顶旧持续型）
 var _active_potion_statuses: Array = []
 
+## 助手类实例（P4 拆分，经 attach 持有本门面引用）
+var _dmg: DamageResolver
+var _status: StatusEngine
+var _intent: IntentRoller
+
 
 func _ready() -> void:
-	# 由上层场景显式调用 start_combat，这里不自动开局。
-	pass
+	_init_helpers()
+
+
+## 惰性初始化助手类；start_combat 也会调用，覆盖 .new() 路径下 _ready 不触发的情况。
+func _init_helpers() -> void:
+	if _dmg != null:
+		return
+	_dmg = DamageResolver.new()
+	_status = StatusEngine.new()
+	_intent = IntentRoller.new()
+	_dmg.attach(self)
+	_status.attach(self)
+	_intent.attach(self)
 
 
 # =====================================================================
 # 战斗生命周期
 # =====================================================================
 func start_combat(enemy_ids: Array) -> void:
+	_init_helpers()
 	if not GameData.is_loaded:
 		push_error("[CombatController] GameData 未就绪")
 		return
@@ -103,7 +125,7 @@ func start_combat(enemy_ids: Array) -> void:
 
 	# 敌人初始意图
 	for e in enemies:
-		_roll_enemy_intent(e)
+		_intent.roll_enemy_intent(e)
 
 	SignalBus.combat_started.emit(enemy_ids)
 	_start_player_turn()
@@ -126,8 +148,8 @@ func _start_player_turn() -> void:
 
 	# 回合开始：清理旧格挡 → 状态触发 → 玩家 Power
 	player.block = 0
-	_process_turn_start_statuses(player)
-	_apply_player_start_turn_powers()
+	_status.process_turn_start_statuses(player)
+	_status.apply_player_start_turn_powers()
 	_apply_relics_combat_start()   # 遗物：开局（格挡/炽热/抽牌）— 必须在 block 清零之后
 	if turn == 1:
 		_apply_relics_first_turn()  # 遗物：第一回合额外能量
@@ -136,9 +158,6 @@ func _start_player_turn() -> void:
 	var draw_n: int = int(GameData.player_config().get("draw_per_turn", 5))
 	_draw_cards(draw_n)
 
-	# 注意：随从阶段不再在此同步执行。召唤物改为「玩家结束回合后、敌人回合前」
-	# 由 BattleDirector.run_summon_turn 异步演出（带动画/VFX），与敌人回合范式一致。
-
 	SignalBus.turn_started.emit(true)
 	_log("玩家回合 %d 开始 — 能量 %d，手牌 %d" % [turn, energy, hand.size()])
 
@@ -146,112 +165,50 @@ func _start_player_turn() -> void:
 func end_player_turn() -> void:
 	if phase != Phase.PLAYER:
 		return
-	# 注意：玩家格挡不清空 —— 必须保留到敌人阶段，先扛过敌人攻击，
-	# 再在下个玩家回合开始（_start_player_turn）时清零。
-	_apply_player_end_turn_powers()
+	# 玩家格挡不清空 —— 保留到敌人阶段，先扛过敌人攻击，再在下个玩家回合开始清零。
+	_status.apply_player_end_turn_powers()
 	# 焦渴（thirst）：回合结束未打出攻击牌 → 下回合 -1 能量（读 thirst 先于衰减）
 	if player.has_status(&"thirst") and not _attack_played_this_turn:
 		_thirst_penalty_next = true
-	_decay_statuses_at_turn_end(player)
+	_status.decay_statuses_at_turn_end(player)
 	phase = Phase.ENEMY
-	# 玩家回合结束信号（UI 可据此切换状态）；敌人回合的碰撞卡演出与
-	# "全部播完才进下一回合"由 BattleDirector.run_enemy_turn 异步编排，
+	# 敌人回合的碰撞卡演出与"全部播完才进下一回合"由 BattleDirector.run_enemy_turn 异步编排，
 	# CombatUI._on_end_turn 在调用本方法后触发它，本方法不再同步跑敌人阶段。
 	SignalBus.turn_ended.emit(true)
 
 
-## （P3 起废弃）原同步敌人阶段已拆为 BattleDirector.run_enemy_turn + 上述薄包装。
-## 保留 _run_enemy_phase_async 名称作为历史占位已删除；逻辑全部在 Director 内。
-
-
-func _execute_enemy_intent(e: CombatUnit) -> void:
-	var mv: Dictionary = e.intent
-	if mv.is_empty():
-		return
-	var kind: String = mv.get("intent", "unknown")
-	var value: int = int(mv.get("value", 0))
-	var times: int = int(mv.get("times", 1))
-
-	match kind:
-		"attack":
-			for i in times:
-				if not player.is_alive():
-					break
-				var dmg := _compute_outgoing(e, player, value)
-				enemy_attack_hit(e, dmg)
-		"defend":
-			e.add_block(value)
-		"buff":
-			var sid := StringName(mv.get("status", ""))
-			if sid != &"":
-				_apply_status(e, sid, value)
-		"debuff":
-			var sid := StringName(mv.get("status", ""))
-			if sid != &"":
-				_apply_status(player, sid, value)
-		"charge":
-			# 蓄力：本回合不造成输出，给玩家一回合决策窗口。
-			# 可选 value=自身格挡（蓄势防御）；下回合通过 next 强制释放招式。
-			var brace: int = int(mv.get("value", 0))
-			if brace > 0:
-				e.add_block(brace)
-			var nx := StringName(mv.get("next", ""))
-			if nx != &"":
-				e.charge_next = nx
-			_log("敌人 %s 蓄力（下回合释放 %s）" % [e.unit_name, nx])
-		"unknown":
-			pass
-		"aoe_debuff":
-			var dmg := _compute_outgoing(e, player, value)
-			enemy_aoe_hit(e, dmg, mv)
-	_log("敌人 %s 行动：%s" % [e.unit_name, kind])
-
-
-# =====================================================================
-# P3 薄包装（供 BattleDirector.run_enemy_turn 异步驱动；逻辑与上方 _execute_enemy_intent 共用，不重复实现）
-# =====================================================================
 ## 敌方回合开始：清旧格挡 + 回合开始状态（ashrot 等可能致死 → _post_enemy_death）。
 ## 返回行动后是否仍存活。
 func enemy_pre(e: CombatUnit) -> bool:
 	e.block = 0
-	_process_turn_start_statuses(e)
+	_status.process_turn_start_statuses(e)
 	return e.is_alive()
 
 
 ## 敌方回合结束：状态衰减 + 滚动下一手意图。
 func enemy_post(e: CombatUnit) -> void:
-	_decay_statuses_at_turn_end(e)
-	_roll_enemy_intent(e)
+	_status.decay_statuses_at_turn_end(e)
+	_intent.roll_enemy_intent(e)
 
 
 ## 计算敌人 outgoing（含炽热加成等，不含格挡——格挡在 apply_damage 内结算）。
 func enemy_outgoing(e: CombatUnit, base: int) -> int:
-	return _compute_outgoing(e, player, base)
+	return _dmg.compute_outgoing(e, player, base)
 
 
 ## 单次攻击命中结算（供碰撞卡撞击点回调）。
 func enemy_attack_hit(e: CombatUnit, dmg: int) -> void:
-	_deal_to_player(dmg)
-	_tick_sherd_vest(e)   # 遗物：受击反伤（陶片背心）
+	_dmg.enemy_attack_hit(e, dmg)
 
 
-## AOE 伤害 + 对玩家施加 debuff（如釉裂）；友方随从同步受击（Q2）。
+## AOE 伤害 + 对玩家施加 debuff（如釉裂）；友方随从同步受击。
 func enemy_aoe_hit(e: CombatUnit, dmg: int, mv: Dictionary) -> void:
-	_deal_to_player(dmg)
-	_tick_sherd_vest(e)
-	for a in allies:
-		if a.is_alive():
-			var ad := _compute_outgoing(e, a, int(mv.get("value", 0)))
-			_deal_to_ally(a, ad)
-	var sid := StringName(mv.get("status", ""))
-	var sval := int(mv.get("status_value", 0))
-	if sid != &"" and sval != 0:
-		_apply_status(player, sid, sval)
+	_dmg.enemy_aoe_hit(e, dmg, mv)
 
 
 ## 非攻击意图（防御/buff/debuff/charge/unknown）整体结算（自身出牌演出后回调）。
 func enemy_act(e: CombatUnit) -> void:
-	_execute_enemy_intent(e)
+	_intent.execute_enemy_intent(e)
 
 
 ## 敌人全灭/玩家阵亡判定 + 开启下一玩家回合。由 Director 在全部敌方演出完毕后调用。
@@ -274,255 +231,6 @@ func player_alive() -> bool:
 func check_player_death() -> void:
 	if not player.is_alive():
 		_on_player_death()
-
-
-## 为敌人滚动下一手意图（加权随机 / Boss 分阶段），并广播给 UI。
-## 若上一回合处于蓄力（charge_next 非空），则跳过随机、直接强制打出释放招式。
-func _roll_enemy_intent(e: CombatUnit) -> void:
-	var ed: EnemyData = e.data
-	if e.charge_next != &"":
-		var forced: Dictionary = {}
-		if ed != null:
-			forced = ed.find_move(e.charge_next)
-		e.charge_next = &""   # 消费掉，只强制一次
-		if forced.is_empty() and ed != null:
-			# 释放招式不存在时回退到正常选择（不卡死）
-			forced = EnemyAI.choose_intent(ed, float(e.hp) / float(e.max_hp) if e.max_hp > 0 else 1.0)
-		e.intent = _scale_intent_damage(forced)
-		SignalBus.enemy_intent_changed.emit(
-			_index_of(e),
-			StringName(e.intent.get("intent", "unknown")),
-			int(e.intent.get("value", 0))
-		)
-		return
-	if ed == null:
-		e.intent = {}
-		return
-	var ratio: float = float(e.hp) / float(e.max_hp) if e.max_hp > 0 else 1.0
-	# 阶段切换检测（scripted_phases）：进入新阶段时触发 on_enter（如觉醒自身加炽热）
-	if ed.ai == &"scripted_phases" and not ed.phases.is_empty():
-		var pidx := EnemyAI.phase_index_for(ed, ratio)
-		if pidx > e.phase_index:
-			_apply_phase_on_enter(e, ed.phases[pidx])
-		e.phase_index = pidx
-	e.intent = _scale_intent_damage(EnemyAI.choose_intent(ed, ratio))
-	SignalBus.enemy_intent_changed.emit(
-		_index_of(e),
-		StringName(e.intent.get("intent", "unknown")),
-		int(e.intent.get("value", 0))
-	)
-
-
-## 伤害类意图（attack / aoe_debuff）按难度系数 × 当前幕 act_dmg_mult 缩放（P-D 接线）。
-## 注意：choose_intent 返回的是 EnemyData.moves 内部字典的引用，必须 duplicate 后再改，
-## 否则每次重抽都会在基础数据上重复累乘。
-func _scale_intent_damage(intent: Dictionary) -> Dictionary:
-	if intent.is_empty():
-		return intent
-	var kind: String = intent.get("intent", "")
-	if kind != "attack" and kind != "aoe_debuff":
-		return intent
-	var out: Dictionary = intent.duplicate()
-	out["value"] = GameData.scaled_enemy_damage(int(intent.get("value", 0)))
-	return out
-
-
-## 阶段切换时触发该阶段的 on_enter（自增益类，如觉醒自身加 3 炽热）。
-## 数据驱动：阶段条目可含 on_enter: [{status, value}, ...]，作用于敌人自身。
-func _apply_phase_on_enter(e: CombatUnit, phase: Dictionary) -> void:
-	for buff in phase.get("on_enter", []):
-		if not (buff is Dictionary):
-			continue
-		var sid := StringName(buff.get("status", ""))
-		if sid != &"":
-			_apply_status(e, sid, int(buff.get("value", 0)))
-	_log("敌人 %s 进入新阶段，触发 on_enter" % e.unit_name)
-
-
-# =====================================================================
-# 随从 / 召唤（Summon System，见 SUMMON_SYSTEM_DESIGN.md）
-# =====================================================================
-func _index_of_ally(a: CombatUnit) -> int:
-	return allies.find(a)
-
-
-## 随从 / 召唤（异步演出薄包装，供 BattleDirector.run_summon_turn 驱动；
-## 与敌人 enemy_pre/enemy_attack_hit/enemy_post 范式一致，不重复实现）
-## ---------------------------------------------------------------------
-
-## 友方回合开始：清旧格挡 + 回合开始状态（ashrot 等可能致死 → _post_ally_death）。
-## 返回行动后是否仍存活；存活则提亮面板（ally_action_start），死亡则不提亮。
-func ally_pre(a: CombatUnit) -> bool:
-	a.block = 0
-	_process_turn_start_statuses(a, _post_ally_death)
-	if not a.is_alive():
-		return false
-	SignalBus.ally_action_start.emit(_index_of_ally(a))
-	return true
-
-
-## 友方攻击 outgoing（含指挥加成、炽热/防潮/釉裂等，不含格挡）。
-func ally_outgoing(a: CombatUnit, target: CombatUnit, base: int) -> int:
-	var dmg := _compute_outgoing(a, target, base)
-	var cmd: int = player.get_status(&"command") if player.has_status(&"command") else 0
-	return dmg + cmd
-
-
-## 单次攻击命中结算（供光弹撞击点回调）。目标已亡则改打首个存活敌人。
-func ally_attack_hit(a: CombatUnit, target: CombatUnit, dmg: int) -> void:
-	if target == null or not target.is_alive():
-		target = _first_alive_enemy()
-	if target == null:
-		return
-	_deal_to_unit(target, dmg)
-
-
-## 非攻击意图（防御/buff/debuff/unknown）整体结算（自身出牌演出后回调）。
-func ally_act(a: CombatUnit) -> void:
-	_execute_minion_non_attack(a)
-
-
-## 友方行动结束：状态衰减 + 寿命-1/到期消失 + 滚动下一意图。
-func ally_post(a: CombatUnit) -> void:
-	_decay_statuses_at_turn_end(a)
-	a.lifetime -= 1
-	SignalBus.ally_lifetime_changed.emit(_index_of_ally(a), a.lifetime)
-	if a.lifetime <= 0:
-		_post_ally_death(a)
-	else:
-		_roll_minion_intent(a)
-	SignalBus.ally_action_end.emit(_index_of_ally(a))
-
-
-## 召唤随从：受上场上限约束；满场则广播 summon_rejected 并停止。
-func _summon_minion(mid: StringName, count: int) -> void:
-	var md: MinionData = GameData.get_minion(mid)
-	if md == null:
-		push_warning("[Combat] 未知随从: %s" % mid)
-		return
-	var cap: int = int(GameData.balance.get("summon", {}).get("max_summons", 3))
-	for n in count:
-		if allies.size() >= cap:
-			SignalBus.summon_rejected.emit(cap)
-			_log("召唤栏已满（上限 %d），无法继续召唤" % cap)
-			break
-		var a := CombatUnit.new()
-		a.setup(false, md.id, md.name, md.hp, md.sprite)
-		a.block = md.block
-		a.lifetime = md.lifetime
-		a.data = md
-		a.move_cursor = 0
-		allies.append(a)
-		_roll_minion_intent(a)
-		SignalBus.ally_hp_changed.emit(_index_of_ally(a), a.hp, a.max_hp)
-		SignalBus.ally_block_changed.emit(_index_of_ally(a), a.block)
-		_log("召唤随从 %s（%d/%d）" % [md.name, allies.size(), cap])
-	SignalBus.allies_changed.emit()
-
-
-## 随从阶段：清旧格挡 → turn_start 状态 → 行动 → 寿命-1/到期消失。
-func _summon_phase() -> void:
-	if not _combat_active:
-		return
-	for a in allies.duplicate():
-		if not is_instance_valid(a):
-			continue
-		a.block = 0
-		_process_turn_start_statuses(a, _post_ally_death)
-		if not a.is_alive():
-			continue
-		_execute_minion_intent(a)
-		if not _combat_active:
-			return
-		_decay_statuses_at_turn_end(a)
-		a.lifetime -= 1
-		SignalBus.ally_lifetime_changed.emit(_index_of_ally(a), a.lifetime)
-		if a.lifetime <= 0:
-			_post_ally_death(a)
-
-
-## 随从按意图行动（attack/defend/buff/debuff）。指挥(command) 给攻击/格挡加成。
-## 攻击走 Director 撞击点（异步演出用 ally_outgoing），此处攻击循环供同步测试路径复用同一逻辑。
-func _execute_minion_intent(a: CombatUnit) -> void:
-	var mv: Dictionary = a.intent
-	if mv.is_empty():
-		return
-	SignalBus.ally_action_start.emit(_index_of_ally(a))
-	var kind: String = mv.get("intent", "unknown")
-	var value: int = int(mv.get("value", 0))
-	var times: int = int(mv.get("times", 1))
-	match kind:
-		"attack":
-			for i in times:
-				var tgt: CombatUnit = _first_alive_enemy()
-				if tgt == null:
-					break
-				var dmg := ally_outgoing(a, tgt, value)
-				_deal_to_unit(tgt, dmg)
-		"defend", "buff", "debuff", "unknown":
-			_execute_minion_non_attack(a)
-	_roll_minion_intent(a)   # 滚动下一意图（fixed：循环 moves）
-	SignalBus.ally_action_end.emit(_index_of_ally(a))
-
-
-## 随从非攻击意图结算（defend/buff/debuff/unknown）。攻击意图由 Director 撞击点驱动，不走这里。
-## 与 _execute_minion_intent 共用，避免逻辑重复（同步测试路径与异步演出路径一致）。
-func _execute_minion_non_attack(a: CombatUnit) -> void:
-	var mv: Dictionary = a.intent
-	if mv.is_empty():
-		return
-	var kind: String = mv.get("intent", "unknown")
-	var value: int = int(mv.get("value", 0))
-	var cmd: int = player.get_status(&"command") if player.has_status(&"command") else 0
-	match kind:
-		"defend":
-			_add_block(a, value + cmd)
-		"buff":
-			var sid := StringName(mv.get("status", ""))
-			if sid != &"":
-				_apply_status(a, sid, value)
-		"debuff":
-			var sid := StringName(mv.get("status", ""))
-			if sid != &"":
-				_apply_status(player, sid, value)
-		"unknown":
-			pass
-
-
-## 随从意图：fixed AI 循环 moves（复用敌人意图 schema，随从无难度缩放）。
-## 软约束：随从单次攻击不超过上限（防数据溢出，SM-03）。
-func _roll_minion_intent(a: CombatUnit) -> void:
-	var md: MinionData = a.data as MinionData
-	if md == null or md.moves.is_empty():
-		a.intent = {}
-		return
-	var atk_cap: int = int(GameData.balance.get("summon", {}).get("max_minion_attack", 7))
-	var idx: int = int(a.move_cursor) % md.moves.size()
-	var mv: Dictionary = md.moves[idx].duplicate()
-	if String(mv.get("intent", "")) == "attack":
-		mv["value"] = mini(int(mv.get("value", 0)), atk_cap)
-	a.intent = mv
-	a.move_cursor = (idx + 1) % md.moves.size()
-	SignalBus.ally_intent_changed.emit(_index_of_ally(a), StringName(mv.get("intent", "unknown")), int(mv.get("value", 0)))
-
-
-## 友方随从受击（AoE 敌人用）：扣血 → 广播 → 死亡清理。
-func _deal_to_ally(a: CombatUnit, final_dmg: int) -> void:
-	a.apply_damage(final_dmg)
-	SignalBus.ally_hp_changed.emit(_index_of_ally(a), a.hp, a.max_hp)
-	if not a.is_alive():
-		_post_ally_death(a)
-
-
-func _post_ally_death(a: CombatUnit) -> void:
-	# 注意：随从死亡/到期都走这里。寿命到期时 HP 仍 > 0（is_alive 为真），
-	# 故不能按 is_alive 判定，只能按"是否还在友方列表"防重复移除。
-	if not allies.has(a):
-		return
-	var idx: int = _index_of_ally(a)
-	SignalBus.ally_died.emit(idx)
-	allies.erase(a)
-	_log("随从 %s 消失" % a.unit_name)
 
 
 # =====================================================================
@@ -568,16 +276,16 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 	# Power：每次打出攻击牌获得炽热
 	if cd.type == &"attack":
 		if powers.has(POWER_ON_ATTACK_STRENGTH):
-			_apply_status(player, &"heat", int(powers[POWER_ON_ATTACK_STRENGTH]))
+			_status.apply_status(player, &"heat", int(powers[POWER_ON_ATTACK_STRENGTH]))
 		_first_attack_done = true
 		_attack_played_this_turn = true
 		# 窑温·共鸣：每打出 1 张 attack 牌 +1 窑温
 		kiln_heat += 1
 		SignalBus.kiln_heat_changed.emit(kiln_heat, _kiln_threshold())
-		_check_kiln_resonance()
+		_dmg.check_kiln_resonance()
 		# 蓄焰（stoke）：攻击牌出手后 -1 层
 		if player.has_status(&"stoke"):
-			_apply_status(player, &"stoke", -1)
+			_status.apply_status(player, &"stoke", -1)
 
 	# 卡牌离手
 	hand.remove_at(hand_index)
@@ -607,10 +315,10 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 				for i in times:
 					if primary == null or not primary.is_alive():
 						break
-					var dmg := _compute_outgoing(source, primary, value)
+					var dmg := _dmg.compute_outgoing(source, primary, value)
 					if source.is_player and source.has_status(&"stoke"):
 						dmg += source.get_status(&"stoke")
-					_deal_to_unit(primary, dmg)
+					_dmg.deal_to_unit(primary, dmg)
 					_tick_heat_siphon(source)
 			"aoe_damage":
 				for e in enemies:
@@ -619,13 +327,13 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 					for i in times:
 						if not e.is_alive():
 							break
-						var dmg := _compute_outgoing(source, e, value)
+						var dmg := _dmg.compute_outgoing(source, e, value)
 						if source.is_player and source.has_status(&"stoke"):
 							dmg += source.get_status(&"stoke")
-						_deal_to_unit(e, dmg)
+						_dmg.deal_to_unit(e, dmg)
 						_tick_heat_siphon(source)
 			"block":
-				_add_block(source, value)
+				_dmg.add_block(source, value)
 			"draw":
 				_draw_cards(value)
 			"energy":
@@ -638,11 +346,11 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 			"gain_strength":
 				# 设计命名 strength -> 状态「炽热 heat」
 				if potion_apply: _apply_potion_status(source, &"heat", value)
-				else: _apply_status(source, &"heat", value)
+				else: _status.apply_status(source, &"heat", value)
 			"gain_dexterity":
 				# 设计命名 dexterity -> 状态「塑形 temper」
 				if potion_apply: _apply_potion_status(source, &"temper", value)
-				else: _apply_status(source, &"temper", value)
+				else: _status.apply_status(source, &"temper", value)
 			"apply_status":
 				var tgt_name: String = String(eff.get("target", "enemy"))
 				var sid: StringName = StringName(eff.get("status", ""))
@@ -650,12 +358,12 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 					for e in enemies:
 						if e.is_alive():
 							if potion_apply: _apply_potion_status(e, sid, value)
-							else: _apply_status(e, sid, value)
+							else: _status.apply_status(e, sid, value)
 				else:
 					var tgt: CombatUnit = _resolve_status_target(tgt_name, primary)
 					if tgt != null:
 						if potion_apply: _apply_potion_status(tgt, sid, value)
-						else: _apply_status(tgt, sid, value)
+						else: _status.apply_status(tgt, sid, value)
 			"exhaust":
 				pass  # 消耗由 play_card 处理
 			"power_start_turn_block", "power_start_turn_strength", "power_end_turn_aoe", "power_on_attack_strength":
@@ -664,11 +372,11 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 				# 窑温联动：直接积累窑温，可能立即触发窑变
 				kiln_heat += value
 				SignalBus.kiln_heat_changed.emit(kiln_heat, _kiln_threshold())
-				_check_kiln_resonance()
+				_dmg.check_kiln_resonance()
 			"summon":
 				var mid: StringName = StringName(eff.get("minion_id", ""))
 				var cnt: int = int(eff.get("count", 1))
-				_summon_minion(mid, cnt)
+				_intent.summon_minion(mid, cnt)
 			_:
 				push_warning("[CombatController] 未识别的 effect_kind: %s" % kind)
 
@@ -690,10 +398,7 @@ func _register_power(kind: StringName, value: int) -> void:
 # =====================================================================
 # 附魔结算（卡牌第二定制层）与药水使用
 # =====================================================================
-
 ## 将一张卡的附魔修正叠加到其效果序列（加法，不触碰状态/力量结算）。
-## 顺序：升级覆盖已在此前 get_effects 完成；此处仅做「附魔加法」。
-## 深拷贝避免改到 CardData 静态数据。
 func _apply_enchant_mods(effects: Array, cd: CardData, enchants: Array) -> Array:
 	if enchants.is_empty():
 		return effects
@@ -735,8 +440,6 @@ func _apply_enchant_mods(effects: Array, cd: CardData, enchants: Array) -> Array
 
 
 ## 使用携带格中的第 slot_index 瓶药水（战斗中、Free Action、消耗）。
-## 规则：不耗能量、不打断出牌、不触发焦渴；用后 exhaust 移除。
-## §1.5 互斥：持续型药水先清除上一瓶持续型残留，再施加本次（新顶旧）。
 func use_potion(slot_index: int, target_index: int = -1) -> bool:
 	if phase != Phase.PLAYER or not _combat_active:
 		return false
@@ -771,13 +474,12 @@ func use_potion(slot_index: int, target_index: int = -1) -> bool:
 
 
 ## 施加「由持续型药水」带来的状态，并记录以便规则 2 顶替。
-## 规则 1（同类型不重复生效）：目标已带该状态（无论来源）则不叠加、不记录。
 func _apply_potion_status(unit: CombatUnit, status_id: StringName, amount: int) -> void:
 	if unit == null or status_id == &"":
 		return
 	if unit.get_status(status_id) > 0:
 		return
-	_apply_status(unit, status_id, amount)
+	_status.apply_status(unit, status_id, amount)
 	_active_potion_statuses.append({"unit": unit, "status_id": status_id})
 
 
@@ -795,98 +497,57 @@ func _clear_active_potion_statuses() -> void:
 
 
 # =====================================================================
-# 伤害 / 格挡 / 状态
+# 公开转发（供外部直接调用：verify 调 _apply_status / _execute_enemy_intent）
 # =====================================================================
-## 计算从 attacker 对 target 的最终伤害：含炽热加成、防潮削弱、釉裂易伤。
-func _compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int) -> int:
-	var dmg := base
-	if attacker.has_status(&"heat"):
-		dmg += attacker.get_status(&"heat")
-	if attacker.has_status(&"damp"):
-		dmg = int(floor(dmg * 0.75))
-	if target.has_status(&"crazed"):
-		dmg = int(floor(dmg * 1.5))
-	return maxi(0, dmg)
-
-
-func _deal_to_unit(unit: CombatUnit, final_dmg: int) -> void:
-	unit.apply_damage(final_dmg)
-	SignalBus.damage_dealt.emit(not unit.is_player, _index_of(unit), final_dmg)
-	if unit.is_player:
-		_sync_player_hp()
-	else:
-		SignalBus.enemy_hp_changed.emit(_index_of(unit), unit.hp, unit.max_hp)
-		if not unit.is_alive():
-			_post_enemy_death(unit)
-
-
-func _deal_to_player(final_dmg: int) -> void:
-	var dmg := maxi(0, final_dmg)
-	# 釉光（glaze）：受到攻击时减伤等于层数，触发 1 次后 -1 层
-	if player.has_status(&"glaze"):
-		dmg = maxi(0, dmg - player.get_status(&"glaze"))
-		_apply_status(player, &"glaze", -1)
-	player.apply_damage(dmg)
-	_sync_player_hp()
-	SignalBus.damage_dealt.emit(false, -1, dmg)
-
-
-## 窑温·共鸣：累计满 _kiln_threshold() 时立即触发「窑变」——
-## 对所有敌人造成 _kiln_pierce() 点贯穿伤害（无视格挡），并消耗阈值点窑温。
-## 用 while 而非 if，避免极端情况下一次超出多倍阈值时只触发一次。
-func _kiln_threshold() -> int:
-	return int(GameData.balance.get("kiln_temperature", {}).get("threshold", 5))
-
-func _kiln_pierce() -> int:
-	return int(GameData.balance.get("kiln_temperature", {}).get("pierce_damage", 5))
-
-func _check_kiln_resonance() -> void:
-	while kiln_heat >= _kiln_threshold():
-		kiln_heat -= _kiln_threshold()
-		SignalBus.kiln_heat_changed.emit(kiln_heat, _kiln_threshold())
-		for e in enemies:
-			if e.is_alive():
-				_deal_kiln_resonance(e, _kiln_pierce())
-		_check_combat_end()
-
-
-## 窑变贯穿伤害：绕过格挡直接扣血。
-func _deal_kiln_resonance(unit: CombatUnit, dmg: int) -> void:
-	unit.lose_hp_direct(dmg)
-	SignalBus.enemy_hp_changed.emit(_index_of(unit), unit.hp, unit.max_hp)
-	SignalBus.damage_dealt.emit(true, _index_of(unit), dmg)
-	if not unit.is_alive():
-		_post_enemy_death(unit)
-
-
-func _add_block(unit: CombatUnit, amount: int) -> void:
-	var real := amount
-	if unit.has_status(&"temper"):
-		real += unit.get_status(&"temper")
-	unit.add_block(real)
-	if unit.is_player:
-		SignalBus.player_block_changed.emit(player.block)
-	else:
-		SignalBus.ally_block_changed.emit(_index_of_ally(unit), unit.block)
-
-
+## 状态施加（转发到 StatusEngine）。被 verify 直接调用，故保留在门面。
 func _apply_status(unit: CombatUnit, status_id: StringName, amount: int) -> void:
-	if status_id == &"":
-		return
-	if allies.has(unit):
-		unit.add_status(status_id, amount)
-		SignalBus.ally_status_applied.emit(_index_of_ally(unit), status_id, unit.get_status(status_id))
-		return
-	unit.add_status(status_id, amount)
-	if unit.is_player:
-		SignalBus.status_applied.emit(true, -1, status_id, unit.get_status(status_id))
-	else:
-		SignalBus.status_applied.emit(false, _index_of(unit), status_id, unit.get_status(status_id))
+	_status.apply_status(unit, status_id, amount)
+
+
+## 敌人按意图行动（转发到 IntentRoller）。被 P2Verify 直接调用。
+func _execute_enemy_intent(e: CombatUnit) -> void:
+	_intent.execute_enemy_intent(e)
+
+
+## 敌人意图滚动（转发到 IntentRoller）。被 P3Verify 直接调用。
+func _roll_enemy_intent(e: CombatUnit) -> void:
+	_intent.roll_enemy_intent(e)
+
+
+## 召唤随从（转发到 IntentRoller）。被 SummonVerify / SummonTurnVerify 直接调用。
+func _summon_minion(mid: StringName, count: int) -> void:
+	_intent.summon_minion(mid, count)
+
+
+## 随从阶段（转发到 IntentRoller）。被 SummonVerify / SummonTurnVerify 直接调用。
+func _summon_phase() -> void:
+	_intent.summon_phase()
+
+
+## 友方随从受击（转发到 IntentRoller）。被 SummonVerify 直接调用。
+func _deal_to_ally(ally: CombatUnit, final_dmg: int) -> void:
+	_intent.deal_to_ally(ally, final_dmg)
 
 
 # =====================================================================
 # 牌堆
 # =====================================================================
+## 手动弃牌不是出牌：仅移动原条目，不耗能、不结算效果、不补牌。
+## 没有回合次数限制；升级、附魔及其他实例字段随条目保留。
+func discard_card(hand_index: int) -> bool:
+	if not _combat_active or phase != Phase.PLAYER or not player_alive():
+		return false
+	if hand_index < 0 or hand_index >= hand.size():
+		return false
+	var card: Dictionary = hand[hand_index]
+	hand.remove_at(hand_index)
+	discard_pile.append(card)
+	SignalBus.card_discarded.emit(StringName(card["id"]))
+	var cd: CardData = GameData.get_card(StringName(card["id"]))
+	_log("弃牌：%s" % (cd.name if cd != null else String(card["id"])))
+	return true
+
+
 func _draw_cards(n: int) -> void:
 	var hand_max: int = int(GameData.player_config().get("hand_max", 10))
 	for i in n:
@@ -918,58 +579,13 @@ func _shuffle(arr: Array) -> void:
 
 
 # =====================================================================
-# 回合开始/结束 状态结算
+# 窑温·共鸣（阈值/贯穿值从 balance 读取；结算逻辑在 DamageResolver）
 # =====================================================================
-func _process_turn_start_statuses(unit: CombatUnit, on_death: Callable = Callable()) -> void:
-	for sid in unit.status_ids():
-		var sd: StatusData = GameData.get_status(sid)
-		if sd == null or sd.trigger != &"turn_start":
-			continue
-		if sid == &"ashrot":
-			unit.lose_hp_direct(unit.get_status(sid))
-			if unit.is_player:
-				_sync_player_hp()
-			else:
-				SignalBus.enemy_hp_changed.emit(_index_of(unit), unit.hp, unit.max_hp)
-		elif sid == &"anneal":
-			unit.heal(unit.get_status(sid))
-			if unit.is_player:
-				_sync_player_hp()
-			else:
-				SignalBus.enemy_hp_changed.emit(_index_of(unit), unit.hp, unit.max_hp)
-		unit.add_status(sid, -1)  # 触发型：层数 -1
-		if not unit.is_alive():
-			if unit.is_player:
-				_sync_player_hp()
-				_on_player_death()
-			elif on_death.is_valid():
-				on_death.call(unit)
-			else:
-				_post_enemy_death(unit)
+func _kiln_threshold() -> int:
+	return int(GameData.balance.get("kiln_temperature", {}).get("threshold", 5))
 
-
-func _decay_statuses_at_turn_end(unit: CombatUnit) -> void:
-	for sid in unit.status_ids():
-		var sd: StatusData = GameData.get_status(sid)
-		if sd == null or not sd.decay or sd.trigger == &"turn_start":
-			continue
-		unit.add_status(sid, -sd.decay_per_turn)
-
-
-func _apply_player_start_turn_powers() -> void:
-	if powers.has(POWER_START_TURN_BLOCK):
-		_add_block(player, int(powers[POWER_START_TURN_BLOCK]))
-	if powers.has(POWER_START_TURN_STRENGTH):
-		_apply_status(player, &"heat", int(powers[POWER_START_TURN_STRENGTH]))
-
-
-func _apply_player_end_turn_powers() -> void:
-	if powers.has(POWER_END_TURN_AOE):
-		for e in enemies:
-			if not e.is_alive():
-				continue
-			var dmg := int(powers[POWER_END_TURN_AOE])
-			_deal_to_unit(e, dmg)
+func _kiln_pierce() -> int:
+	return int(GameData.balance.get("kiln_temperature", {}).get("pierce_damage", 5))
 
 
 # =====================================================================
@@ -1021,13 +637,13 @@ func _apply_relics_combat_start() -> void:
 	for r in RunState.relics_with_trigger(&"combat_start"):
 		match r.id:
 			&"bellows_glove":
-				_apply_status(player, &"heat", int(r.value))
+				_status.apply_status(player, &"heat", int(r.value))
 			&"keeper_apron":
 				_draw_cards(int(r.value))
 			&"hearth_totem":
-				_add_block(player, int(r.value))
+				_dmg.add_block(player, int(r.value))
 			&"kilnmark":
-				_summon_minion(&"emberhound", int(r.value))
+				_intent.summon_minion(&"emberhound", int(r.value))
 
 
 func _apply_relics_first_turn() -> void:
@@ -1071,13 +687,32 @@ func _tick_heat_siphon(source: CombatUnit) -> void:
 func _tick_sherd_vest(attacker: CombatUnit) -> void:
 	for r in RunState.relics_with_trigger(&"on_hit"):
 		if r.id == &"sherd_vest" and attacker.is_alive():
-			_deal_to_unit(attacker, int(r.value))
+			_dmg.deal_to_unit(attacker, int(r.value))
 
 
 func _apply_relics_after_combat() -> void:
 	for r in RunState.relics_with_trigger(&"after_combat"):
 		if r.id == &"emberheart":
 			RunState.heal(int(r.value))
+
+
+# =====================================================================
+# 随从 / 召唤（异步演出薄包装，供 BattleDirector.run_summon_turn 驱动）
+# =====================================================================
+func ally_pre(a: CombatUnit) -> bool:
+	return _intent.ally_pre(a)
+
+func ally_outgoing(a: CombatUnit, target: CombatUnit, base: int) -> int:
+	return _intent.ally_outgoing(a, target, base)
+
+func ally_attack_hit(a: CombatUnit, target: CombatUnit, dmg: int) -> void:
+	_intent.ally_attack_hit(a, target, dmg)
+
+func ally_act(a: CombatUnit) -> void:
+	_intent.ally_act(a)
+
+func ally_post(a: CombatUnit) -> void:
+	_intent.ally_post(a)
 
 
 # =====================================================================
@@ -1088,7 +723,6 @@ func _first_alive_enemy() -> CombatUnit:
 		if e.is_alive():
 			return e
 	return null
-
 
 ## 首个存活敌人（公开包装，供 BattleDirector.run_summon_turn 取攻击目标）。
 func first_alive_enemy() -> CombatUnit:

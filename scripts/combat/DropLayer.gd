@@ -8,6 +8,7 @@ class_name DropLayer
 
 const C_VALID := Color(0.365, 0.792, 0.647)   # 绿：合法落点
 const C_HOVER := Color(1.0, 0.92, 0.65)        # 金：悬停（指针所在落点）
+const DISCARD_TARGET := -4                  # 独立于玩家(-1)、无落点(-2)、无悬停(-3)
 
 var _targets: Array = []          # [{node:Control, types:Array[StringName], index:int, rect:Rect2}]
 var _card_type: StringName = &""  # 当前拖拽卡的 target 类型，用于筛选合法落点
@@ -59,7 +60,7 @@ func hover_update(global_pos: Vector2) -> void:
 	queue_redraw()
 
 
-## 命中测试：返回目标 index（-1=玩家面板，>=0=敌人面板，-2=无合法落点）。
+## 命中测试：返回目标 index（-1=玩家，>=0=敌人，-2=无落点，DISCARD_TARGET=弃牌）。
 func hit_test(global_pos: Vector2) -> int:
 	var lp := global_pos - get_global_position()
 	for t in _targets:
@@ -80,6 +81,11 @@ func _draw() -> void:
 		var c := C_HOVER if is_hover else C_VALID
 		var lw := 7.0 if is_hover else 4.0
 		var rect := Rect2(t.rect)
+		if t.index == DISCARD_TARGET:
+			# 弃牌堆只描边，不用圆环遮住紧邻的手牌。使用 v3 米白/铁灰。
+			c = Color("f2e8d5") if is_hover else Color("94826f")
+			draw_rect(rect.grow(-2.0), c, false, lw)
+			continue
 		var center: Vector2 = rect.get_center()
 		var r := minf(rect.size.x, rect.size.y) * 0.55 + 10.0
 		# 外环

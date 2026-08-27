@@ -28,7 +28,7 @@ func check(name: String, cond: bool, detail: String = "") -> void:
 		results.append("[FAIL] " + name + "  " + detail)
 
 
-## 统计当前存活且意图为 attack 的友方数量（用于稳健断言，避免起始遗物自动召唤干扰）。
+## 统计当前存活且意图为 attack 的友方数量（用于稳健断言，避免持有遗物的入场召唤干扰）。
 func _attackers(ctrl: CombatController) -> int:
 	var n := 0
 	for a in ctrl.allies:

@@ -59,11 +59,7 @@ func _ready() -> void:
 			var c: CardData = GameData.get_card(entry["id"])
 			names.append(c.name if c != null else String(entry["id"]))
 		lines.append("    起始牌组（%d）：%s" % [RunState.deck.size(), ", ".join(names)])
-		var rnames: Array[String] = []
-		for rid in RunState.relic_ids:
-			var r: RelicData = GameData.get_relic(rid)
-			rnames.append(r.name if r != null else String(rid))
-		lines.append("    起始遗物：%s" % ", ".join(rnames))
+		lines.append("    持有遗物：%d 件（新局不发放遗物）" % RunState.relic_ids.size())
 	else:
 		lines.append("[color=#D85A30]✗[/color] RunState 开局失败")
 

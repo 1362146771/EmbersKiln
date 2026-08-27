@@ -123,6 +123,7 @@ func run() -> void:
 	controller.player.max_hp = 300
 	controller._attack_played_this_turn = false
 	controller.end_player_turn()
+	controller.enemy_phase_done()   # 推进敌人阶段→下一玩家回合（BattleDirector 异步驱动）
 	check("焦渴：空过回合 → 下回合能量 -1",
 		controller.energy == controller.max_energy - 1,
 		"energy=%d max=%d" % [controller.energy, controller.max_energy])
@@ -137,7 +138,8 @@ func run() -> void:
 	controller.player.max_hp = 300
 	play_attacks(1)
 	controller.end_player_turn()
-	check("焦渴：打出攻击则不惩罚（能量 = max）",
+	controller.enemy_phase_done()
+	check("焦渴：打出攻击则不惩罚（下一回合能量 = max）",
 		controller.energy == controller.max_energy,
 		"energy=%d max=%d" % [controller.energy, controller.max_energy])
 

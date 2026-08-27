@@ -6,6 +6,7 @@ extends RefCounted
 
 var floor: int = 0
 var index: int = 0
+var col: int = 0            # 稀疏网格下的显式列坐标（0..columns-1）
 var type: StringName = &"combat"
 var enemy_ids: Array = []
 var links: Array[int] = []      # 指向下一层节点的 index

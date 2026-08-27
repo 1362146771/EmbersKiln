@@ -134,7 +134,7 @@ func _read_json(path: String) -> Variant:
 	return json.data
 
 
-## 交叉引用校验：卡牌/敌人引用的 status 必须存在；起始牌组与起始遗物必须存在。
+## 交叉引用校验：卡牌/敌人引用的 status 必须存在；起始牌组必须有效。
 func _validate() -> void:
 	for cid in cards:
 		var c: CardData = cards[cid]
@@ -159,10 +159,6 @@ func _validate() -> void:
 	for cid in balance.get("starting_deck", []):
 		if not cards.has(StringName(cid)):
 			load_errors.append("起始牌组引用了不存在的卡牌 %s" % cid)
-
-	var starter := StringName(balance.get("starting_relic", ""))
-	if starter != &"" and not relics.has(starter):
-		load_errors.append("起始遗物不存在: %s" % starter)
 
 	# 编成表校验：引用的敌人必须存在，且不超过单场上限
 	var max_en := int(balance.get("enemy_scaling", {}).get("max_enemies_per_combat", 2))
@@ -274,7 +270,7 @@ func get_enchant(id: StringName) -> EnchantData:
 
 
 # ---------- 图标 ----------
-## 由 icon id 解析资源路径：ICO_Potion_* -> art/icons/potion/，ICO_Enchant_* -> art/icons/enchant/。
+## 由 icon id 解析药水 / 附魔 / 遗物资源路径。
 func icon_path(icon_id: String) -> String:
 	if icon_id == "":
 		return ""
@@ -282,13 +278,15 @@ func icon_path(icon_id: String) -> String:
 		return "res://art/icons/potion/" + icon_id + ".png"
 	if icon_id.begins_with("ICO_Enchant_"):
 		return "res://art/icons/enchant/" + icon_id + ".png"
+	if icon_id.begins_with("ICO_Relic_"):
+		return "res://art/icons/relic/" + icon_id + ".png"
 	return ""
 
 
 ## 加载图标纹理；失败/缺失返回 null，调用方自行处理占位。
 func icon_texture(icon_id: String) -> Texture2D:
 	var p := icon_path(icon_id)
-	if p == "":
+	if p == "" or not ResourceLoader.exists(p):
 		return null
 	var tex = load(p)
 	if tex is Texture2D:

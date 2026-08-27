@@ -25,7 +25,8 @@ var _index: int = -1
 ## 填充动态内容。enemy_count 用于决定立绘尺寸（1 个大、2 个中、3+ 个小）。
 func build(e: CombatUnit, index: int, selected: bool, enemy_count: int) -> void:
 	_index = index
-	var ic_sz := 360 if enemy_count <= 1 else (300 if enemy_count == 2 else 260)
+	# 单敌面板已收紧高度以容纳顶部遗物栏；图片仍保持原始比例。
+	var ic_sz := 280 if enemy_count <= 1 else (300 if enemy_count == 2 else 260)
 	_intent_l.text = _format_intent(e)
 	var ed := e.data as EnemyData
 	if ed != null:

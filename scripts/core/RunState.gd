@@ -13,6 +13,7 @@ var relic_ids: Array[StringName] = []
 var max_hp: int = 0
 var hp: int = 0
 var gold: int = 0
+var _removing_card := false
 
 var current_floor: int = 0
 var current_node_type: StringName = &""
@@ -35,6 +36,11 @@ var defeated: Array[StringName] = []
 var pending_combat_enemy_ids: Array = []   # 进入战斗前由 MapUI 写入，CombatUI 读取
 var last_combat_victory: bool = false       # 战斗结果，回地图后结算用
 var pending_post_combat: bool = false       # 标记当前是「战斗结束返回地图」，MapPlay._ready 据此走结算分支
+
+## 子屏场景化（P2）瞬时字段：非战斗节点 / 奖励界面完成后经 RunState 通知地图重建。
+var pending_node_resolved: bool = false    # 非战斗节点（休/店/宝/事/坛）完成，回地图弹「行动完成」面板
+var pending_post_reward: bool = false       # 奖励界面完成，回地图走 _on_reward_done（幕转场/通关/继续）
+var pending_reward_data: Dictionary = {}   # 奖励数据，由 _grant_reward 写入、RewardUI._ready 读取
 
 
 func _ready() -> void:
@@ -63,20 +69,21 @@ func start_new_run() -> bool:
 	current_node_type = &""
 	victory = false
 	defeated.clear()
-	# 重置战斗场景化瞬时字段，避免上一局残留污染新局
+	# 重置战斗/子屏场景化瞬时字段，避免上一局残留污染新局
 	pending_combat_enemy_ids.clear()
 	last_combat_victory = false
 	pending_post_combat = false
+	pending_node_resolved = false
+	pending_post_reward = false
+	pending_reward_data.clear()
 
 	deck.clear()
 	potions.clear()
 	for cid in GameData.balance.get("starting_deck", []):
 		deck.append({"id": StringName(cid), "upgraded": false, "enchants": []})
 
+	# 新局不携带遗物；仅保留后续获得与读档恢复机制。
 	relic_ids.clear()
-	var starter := StringName(GameData.balance.get("starting_relic", ""))
-	if starter != &"":
-		relic_ids.append(starter)
 
 	generate_acts()
 
@@ -178,6 +185,28 @@ func remove_card_at(index: int) -> bool:
 		return false
 	deck.remove_at(index)
 	SignalBus.deck_changed.emit()
+	return true
+
+
+## 永久移除服务：来源场景提供选中的原实例和费用；一次提交后再发库存信号。
+## 防止扣费信号重入或列表变更导致删错同名牌；普通 add/remove API 保持兼容。
+func can_remove_card() -> bool:
+	return deck.size() > int(GameData.balance["card_removal"]["minimum_remaining"])
+
+
+func try_remove_card(index: int, expected_entry: Dictionary, cost: int) -> bool:
+	if _removing_card or not can_remove_card() or cost < 0 or gold < cost:
+		return false
+	if index < 0 or index >= deck.size() or not is_same(deck[index], expected_entry):
+		return false
+	_removing_card = true
+	gold -= cost
+	deck.remove_at(index)
+	# 两个状态都已提交；所有监听者看到的都是一致结果。
+	SignalBus.deck_changed.emit()
+	if cost > 0:
+		SignalBus.gold_changed.emit(gold)
+	_removing_card = false
 	return true
 
 
@@ -322,6 +351,7 @@ func to_save_dict() -> Dictionary:
 					floor_arr.append({
 						"floor": node.floor,
 						"index": node.index,
+						"col": node.col,
 						"type": String(node.type),
 						"enemy_ids": eids,
 						"links": node.links,
@@ -410,6 +440,7 @@ func from_save_dict(d: Dictionary) -> bool:
 				var n := MapNode.new()
 				n.floor = int(nd.get("floor", 0))
 				n.index = int(nd.get("index", 0))
+				n.col = int(nd.get("col", 0))
 				n.type = StringName(nd.get("type", "combat"))
 				n.enemy_ids = []
 				for e in nd.get("enemy_ids", []):

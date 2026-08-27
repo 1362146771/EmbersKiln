@@ -46,10 +46,10 @@ func _test_generation() -> void:
 	RunState.start_new_run()
 	check("开局生成 3 幕", RunState.act_maps.size() == 3, "acts=%d" % RunState.act_maps.size())
 	check("开局 current_act=0", RunState.current_act == 0, "cur=%d" % RunState.current_act)
-	check("Act1 层数=10", RunState.current_map().size() == 10, "floors=%d" % RunState.current_map().size())
+	check("Act1 层数=floor_count", RunState.current_map().size() == int(GameData.act_configs[0].get("floor_count", 15)), "floors=%d" % RunState.current_map().size())
 	check("开局非终幕", not RunState.is_last_act(), "")
 	check("每幕 floor_count 正确",
-		RunState.act_maps[0].size() == 10 and RunState.act_maps[1].size() == 9 and RunState.act_maps[2].size() == 8,
+		RunState.act_maps[0].size() == int(GameData.act_configs[0].get("floor_count", 15)) and RunState.act_maps[1].size() == int(GameData.act_configs[1].get("floor_count", 15)) and RunState.act_maps[2].size() == int(GameData.act_configs[2].get("floor_count", 15)),
 		"%d/%d/%d" % [RunState.act_maps[0].size(), RunState.act_maps[1].size(), RunState.act_maps[2].size()])
 	check("每幕末层为 Boss",
 		RunState.act_maps[0][-1][0].type == &"boss" and RunState.act_maps[1][-1][0].type == &"boss" and RunState.act_maps[2][-1][0].type == &"boss",
@@ -64,7 +64,7 @@ func _test_advance_and_heal() -> void:
 	RunState.advance_act()
 	check("advance_act -> current_act=1", RunState.current_act == 1, "cur=%d" % RunState.current_act)
 	check("Act1 标记通关", RunState.act_cleared_flags[0] == true, "")
-	check("Act2 层数=9", RunState.current_map().size() == 9, "floors=%d" % RunState.current_map().size())
+	check("Act2 层数=floor_count", RunState.current_map().size() == int(GameData.act_configs[1].get("floor_count", 15)), "floors=%d" % RunState.current_map().size())
 	var expect2: int = mini(mh, (mh - 30) + int(round(mh * 0.30)))
 	check("Act2 进场回血 30%%", RunState.hp == expect2, "hp=%d expect=%d" % [RunState.hp, expect2])
 
@@ -72,7 +72,7 @@ func _test_advance_and_heal() -> void:
 	RunState.hp = mh - 50
 	RunState.advance_act()
 	check("advance_act -> current_act=2", RunState.current_act == 2, "cur=%d" % RunState.current_act)
-	check("Act3 层数=8", RunState.current_map().size() == 8, "floors=%d" % RunState.current_map().size())
+	check("Act3 层数=floor_count", RunState.current_map().size() == int(GameData.act_configs[2].get("floor_count", 15)), "floors=%d" % RunState.current_map().size())
 	var expect3: int = mini(mh, (mh - 50) + int(round(mh * 0.20)))
 	check("Act3 进场回血 20%%", RunState.hp == expect3, "hp=%d expect=%d" % [RunState.hp, expect3])
 
@@ -216,7 +216,7 @@ func _test_v2_roundtrip() -> void:
 	check("v2 current_act 一致", RunState.current_act == pre_act, "%d vs %d" % [RunState.current_act, pre_act])
 	check("v2 act_maps 幕数一致", RunState.act_maps.size() == pre_maps, "%d vs %d" % [RunState.act_maps.size(), pre_maps])
 	check("v2 各幕层数一致",
-		RunState.act_maps[0].size() == 10 and RunState.act_maps[1].size() == 9 and RunState.act_maps[2].size() == 8,
+		RunState.act_maps[0].size() == int(GameData.act_configs[0].get("floor_count", 15)) and RunState.act_maps[1].size() == int(GameData.act_configs[1].get("floor_count", 15)) and RunState.act_maps[2].size() == int(GameData.act_configs[2].get("floor_count", 15)),
 		"%d/%d/%d" % [RunState.act_maps[0].size(), RunState.act_maps[1].size(), RunState.act_maps[2].size()])
 	check("v2 HP 一致", RunState.hp == pre_hp, "%d vs %d" % [RunState.hp, pre_hp])
 

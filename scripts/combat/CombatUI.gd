@@ -1,8 +1,10 @@
 @tool
+class_name CombatUI
 extends Control
-## 竖屏三段式战斗 UI（MVP）。
-## 布局：顶部敌人卡片区 + 中部手牌区 + 底部玩家状态/结束回合。
-## 代码全部动态构建，桥接 CombatController + SignalBus。
+## 竖屏三段式战斗 UI（MVP）—— 门面（P4b 拆分后）。
+## 编排骨架 + 节点持有 + 公开 API（被场景/各 verify 直接调用）+ 跨域 SignalBus 回调。
+## 重逻辑已下放到助手类：CombatHUD / HandView / EnemyViewManager / LogView / TargetingController。
+## 助手类通过 ui 引用本门面的节点字段与共享 helper（样式/格式化工厂）。零 preload 循环。
 
 var controller: CombatController
 var combat_over := false
@@ -14,9 +16,12 @@ var pending_enemy_ids: Array = ["claylump"]
 # 在 .new() 路径（测试 / MapUI 叠加层）下为 null → 改走 _build_ui 代码生成后备。
 # 用 get_node_or_null 避免 .new() 路径下因节点不存在而刷 "Node not found" 错误。
 @onready var enemy_area: HBoxContainer = get_node_or_null("Safe/Layout/EnemyArea")
-@onready var hand_container: HBoxContainer = get_node_or_null("Safe/Layout/HandArea/HandScroll/HandContainer")
+@onready var hand_container: HBoxContainer = get_node_or_null("Safe/Layout/HandArea/HandRow/HandScroll/HandContainer")
+@onready var discard_pile_view: PanelContainer = get_node_or_null("Safe/Layout/HandArea/HandRow/DiscardPile")
+@onready var draw_pile_button: Button = get_node_or_null("Safe/Layout/HandArea/EnergyRow/DrawPile")
 @onready var end_turn_btn: Button = get_node_or_null("Safe/Layout/Bottom/EndTurnBtn")
 @onready var potion_bar: HBoxContainer = get_node_or_null("Safe/Layout/PotionBar")
+@onready var relic_bar = get_node_or_null("Safe/Layout/TopRow/RelicBar")
 var potion_slots: Array = []
 var potion_icons: Array = []    # 与 potion_slots 一一对应：每个槽的图标 TextureRect
 @onready var result_label: Label = get_node_or_null("ResultLabel")
@@ -52,7 +57,11 @@ const DropLayerScript := preload("res://scripts/combat/DropLayer.gd")
 const EnemyPanelScene := preload("res://scenes/combat/EnemyPanel.tscn")
 const ENEMY_PANEL_OFFSET_Y := 30   # 敌人框整体垂直下偏移（像素，720×1280 基准）
 const AllyPanelScene := preload("res://scenes/combat/AllyPanel.tscn")
-const MapPlayScene := preload("res://scenes/map/MapPlay.tscn")   # P1：战斗结束切回地图（重入重建）
+const RelicBarScene := preload("res://scenes/combat/RelicBar.tscn")
+const DiscardPileScene := preload("res://scenes/combat/DiscardPile.tscn")
+const DrawPileScene := preload("res://scenes/combat/DrawPile.tscn")
+const CardBrowserScript := preload("res://scripts/ui/CardBrowser.gd")
+var _card_browser: CanvasLayer
 var drop_layer: DropLayer
 var drag_layer: Control
 var _casting := false             # 出牌演出进行中：锁 refresh 与输入
@@ -94,6 +103,13 @@ const ALLY_STEP_X := -290                         # 多随从向左排开（从�
 const ALLY_CHIP_W := 280                          # 放大 100%（原 140 → 280）
 const ALLY_CHIP_H := 300                          # 放大 100%（原 150 → 300）
 
+# 助手类（门面 + 助手类模式，P4b）
+var _hud: CombatHUD
+var _hand: HandView
+var _enemy: EnemyViewManager
+var _log_view: LogView
+var _targeting: TargetingController
+
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
@@ -102,11 +118,24 @@ func _ready() -> void:
 
 	controller = CombatController.new()
 	add_child(controller)
+	# 实例化并挂载助手类（顺序无关，因 connect 发生在后续 refresh 调用时）
+	_hud = CombatHUD.new()
+	_hand = HandView.new()
+	_enemy = EnemyViewManager.new()
+	_log_view = LogView.new()
+	_targeting = TargetingController.new()
+	_hud.attach(self)
+	_hand.attach(self)
+	_enemy.attach(self)
+	_log_view.attach(self)
+	_targeting.attach(self)
+
 	if enemy_area == null:
 		_build_ui()            # .new() 路径（测试 / MapUI 叠加层）：代码生成全部 HUD
 	else:
 		_wire_ui_signals()     # .tscn 路径（CombatPlay）：节点已在场景烘焙，仅连信号
 	_create_overlay_layers()
+	draw_pile_button.pressed.connect(_open_draw_pile)
 	_connect_signals()
 	# P1 场景化：敌人 id 优先取自 RunState（由地图写入），仅在直接启动 CombatPlay.tscn
 	# （编辑器预览 / 旧 verify）且 RunState 未置时回退到默认 pending_enemy_ids。
@@ -141,6 +170,19 @@ func _build_ui() -> void:
 	layout.add_theme_constant_override("separation", 10)
 	safe.add_child(layout)
 
+	# 顶部左侧遗物栏；右侧留空给全局暂停按钮，不覆盖敌人意图。
+	var top_row := HBoxContainer.new()
+	top_row.name = "TopRow"
+	layout.add_child(top_row)
+	relic_bar = RelicBarScene.instantiate()
+	relic_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	relic_bar.size_flags_stretch_ratio = 2.0
+	top_row.add_child(relic_bar)
+	var top_spacer := Control.new()
+	top_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top_row.add_child(top_spacer)
+
 	# --- 顶部：敌人区（横向卡片，尽可能占满竖向空间）---
 	enemy_area = HBoxContainer.new()
 	enemy_area.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -173,14 +215,26 @@ func _build_ui() -> void:
 	var energy_row := HBoxContainer.new()
 	energy_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	player_energy = _orb_label("能量 3 / 3", 26, ORANGE)
+	player_energy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	player_energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	energy_row.add_child(player_energy)
+	draw_pile_button = DrawPileScene.instantiate()
+	energy_row.add_child(draw_pile_button)
 	hand_area.add_child(energy_row)
 
+	var hand_row := HBoxContainer.new()
+	hand_row.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	hand_row.add_theme_constant_override("separation", 10)
+	hand_area.add_child(hand_row)
+
 	var hand_scroll := ScrollContainer.new()
+	hand_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hand_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	hand_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	hand_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	hand_area.add_child(hand_scroll)
+	hand_row.add_child(hand_scroll)
+	discard_pile_view = DiscardPileScene.instantiate()
+	hand_row.add_child(discard_pile_view)
 
 	hand_container = HBoxContainer.new()
 	hand_container.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -195,9 +249,9 @@ func _build_ui() -> void:
 	potion_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	potion_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	layout.add_child(potion_bar)
-	_spawn_potion_slots()
-	_collect_potion_slots()
-	_connect_potion_slots()
+	_hud.spawn_potion_slots()
+	_hud.collect_potion_slots()
+	_hud.connect_potion_slots()
 
 	# --- 底部：玩家状态 + 结束回合 ---
 	var bottom := HBoxContainer.new()
@@ -218,7 +272,6 @@ func _build_ui() -> void:
 
 	# 玩家立绘：直接挂在 root(self) 上，避开所有 Container 的尺寸挤压与重排覆盖。
 	# 位置/尺寸由 position + custom_minimum_size 完全手控（720×1280 基准）。
-	# 想要上下移就改 position.y：负值=上移，正值=下移，单位 px。
 	player_sprite = TextureRect.new()
 	player_sprite.name = "PlayerSprite"
 	player_sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -241,7 +294,6 @@ func _build_ui() -> void:
 	plv.add_child(player_hp)
 
 	player_hp_bar = ProgressBar.new()
-	# start_combat 前 player 可能尚未创建，先给默认值，_refresh_resources 会覆盖
 	player_hp_bar.max_value = controller.player.max_hp if controller.player != null else 80
 	player_hp_bar.value = controller.player.hp if controller.player != null else 80
 	player_hp_bar.show_percentage = false
@@ -278,7 +330,7 @@ func _build_ui() -> void:
 	end_turn_btn.add_theme_stylebox_override("hover", _btn_style(ORANGE.lightened(0.12)))
 	end_turn_btn.add_theme_stylebox_override("pressed", _btn_style(ORANGE.darkened(0.15)))
 	end_turn_btn.add_theme_stylebox_override("disabled", _btn_style(Color(0.45, 0.42, 0.40)))
-	end_turn_btn.pressed.connect(_on_end_turn)
+	end_turn_btn.pressed.connect(_targeting.on_end_turn)
 	bottom.add_child(end_turn_btn)
 
 	# --- 胜负面板（全屏覆盖）---
@@ -314,10 +366,10 @@ func _build_ui() -> void:
 ## .tscn 路径：HUD 节点已在 CombatPlay.tscn 烘焙，这里只做运行时信号接线。
 ## 样式（面板/血条/按钮底色）由场景自带，无需在此重设。
 func _wire_ui_signals() -> void:
-	if end_turn_btn != null and not end_turn_btn.pressed.is_connected(_on_end_turn):
-		end_turn_btn.pressed.connect(_on_end_turn)
-	_collect_potion_slots()
-	_connect_potion_slots()
+	if end_turn_btn != null and not end_turn_btn.pressed.is_connected(_targeting.on_end_turn):
+		end_turn_btn.pressed.connect(_targeting.on_end_turn)
+	_hud.collect_potion_slots()
+	_hud.connect_potion_slots()
 
 
 ## 拖拽 / 落点层（P1 交互，置于最上层，均不拦截输入）。两路径共用。
@@ -397,56 +449,9 @@ func _editor_preview() -> void:
 			ic.texture = GameData.icon_texture(pd.icon)
 
 
-## .new() 路径：创建 3 个药水槽（VBox: Icon + SlotButton），挂到 potion_bar。
-## .tscn 路径则直接烘焙这 3 个槽，无需此函数（由 _collect_potion_slots 读取场景节点）。
-func _spawn_potion_slots() -> void:
-	potion_slots.clear()
-	potion_icons.clear()
-	for i in 3:
-		var slot_box := VBoxContainer.new()
-		slot_box.alignment = BoxContainer.ALIGNMENT_CENTER
-		slot_box.add_theme_constant_override("separation", 2)
-		slot_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		var ic := TextureRect.new()
-		ic.name = "Icon"
-		ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ic.custom_minimum_size = Vector2(56, 56)
-		ic.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		ic.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		slot_box.add_child(ic)
-		var slot := Button.new()
-		slot.name = "SlotButton"
-		slot.custom_minimum_size = Vector2(72, 28)
-		slot.add_theme_font_size_override("font_size", 14)
-		slot.text = "空"
-		slot_box.add_child(slot)
-		potion_bar.add_child(slot_box)
-
-
-## 从 potion_bar 的 SlotBox 子节点读取 Icon / SlotButton，填充 potion_slots / potion_icons。
-## 两条路径共用：代码路径由 _spawn_potion_slots 生成、.tscn 路径由场景烘焙。
-func _collect_potion_slots() -> void:
-	potion_slots.clear()
-	potion_icons.clear()
-	if potion_bar == null:
-		return
-	for sb in potion_bar.get_children():
-		var ic: TextureRect = sb.get_node_or_null("Icon")
-		var btn: Button = sb.get_node_or_null("SlotButton")
-		if ic != null:
-			potion_icons.append(ic)
-		if btn != null:
-			potion_slots.append(btn)
-
-
-func _connect_potion_slots() -> void:
-	for i in potion_slots.size():
-		var slot: Button = potion_slots[i]
-		if slot != null and not slot.pressed.is_connected(_on_potion_pressed.bind(i)):
-			slot.pressed.connect(_on_potion_pressed.bind(i))
-
-
+# =====================================================================
+# 共享样式 / 格式化工厂（被 _build_ui、各助手类与场景共用，留门面避免跨文件依赖）
+# =====================================================================
 func _styled_panel(bg: Color) -> Panel:
 	var p := Panel.new()
 	var s := StyleBoxFlat.new()
@@ -530,269 +535,17 @@ func _orb_label(text: String, size: int, color: Color) -> Label:
 	return l
 
 
-# =====================================================================
-# 信号连接
-# =====================================================================
-func _connect_signals() -> void:
-	SignalBus.player_hp_changed.connect(_on_php)
-	SignalBus.player_block_changed.connect(_on_pblock)
-	SignalBus.energy_changed.connect(_on_energy)
-	SignalBus.enemy_hp_changed.connect(_on_ehp)
-	SignalBus.enemy_intent_changed.connect(_on_eintent)
-	SignalBus.status_applied.connect(_on_status)
-	SignalBus.kiln_heat_changed.connect(_on_kiln)
-	SignalBus.combat_ended.connect(_on_combat_end)
-	SignalBus.turn_started.connect(_on_turn_started)
-	SignalBus.damage_dealt.connect(_on_damage)
-	SignalBus.unit_died.connect(_on_unit_died)
-	SignalBus.card_played.connect(_on_card_played)
-	# 随从 / 召唤（友方单位）
-	SignalBus.ally_hp_changed.connect(_on_ally_hp)
-	SignalBus.ally_block_changed.connect(_on_ally_block)
-	SignalBus.ally_intent_changed.connect(_on_ally_intent)
-	SignalBus.ally_status_applied.connect(_on_ally_status)
-	SignalBus.ally_lifetime_changed.connect(_on_ally_lifetime)
-	SignalBus.ally_action_start.connect(_on_ally_action_start)
-	SignalBus.ally_action_end.connect(_on_ally_action_end)
-	SignalBus.ally_died.connect(_on_ally_died)
-	SignalBus.allies_changed.connect(_on_allies_changed)
-	SignalBus.summon_rejected.connect(_on_summon_rejected)
-
-
-func _exit_tree() -> void:
-	if SignalBus.player_hp_changed.is_connected(_on_php):
-		SignalBus.player_hp_changed.disconnect(_on_php)
-	if SignalBus.player_block_changed.is_connected(_on_pblock):
-		SignalBus.player_block_changed.disconnect(_on_pblock)
-	if SignalBus.energy_changed.is_connected(_on_energy):
-		SignalBus.energy_changed.disconnect(_on_energy)
-	if SignalBus.enemy_hp_changed.is_connected(_on_ehp):
-		SignalBus.enemy_hp_changed.disconnect(_on_ehp)
-	if SignalBus.enemy_intent_changed.is_connected(_on_eintent):
-		SignalBus.enemy_intent_changed.disconnect(_on_eintent)
-	if SignalBus.status_applied.is_connected(_on_status):
-		SignalBus.status_applied.disconnect(_on_status)
-	if SignalBus.kiln_heat_changed.is_connected(_on_kiln):
-		SignalBus.kiln_heat_changed.disconnect(_on_kiln)
-	if SignalBus.combat_ended.is_connected(_on_combat_end):
-		SignalBus.combat_ended.disconnect(_on_combat_end)
-	if SignalBus.turn_started.is_connected(_on_turn_started):
-		SignalBus.turn_started.disconnect(_on_turn_started)
-	if SignalBus.damage_dealt.is_connected(_on_damage):
-		SignalBus.damage_dealt.disconnect(_on_damage)
-	if SignalBus.unit_died.is_connected(_on_unit_died):
-		SignalBus.unit_died.disconnect(_on_unit_died)
-	if SignalBus.card_played.is_connected(_on_card_played):
-		SignalBus.card_played.disconnect(_on_card_played)
-	if SignalBus.ally_hp_changed.is_connected(_on_ally_hp):
-		SignalBus.ally_hp_changed.disconnect(_on_ally_hp)
-	if SignalBus.ally_block_changed.is_connected(_on_ally_block):
-		SignalBus.ally_block_changed.disconnect(_on_ally_block)
-	if SignalBus.ally_intent_changed.is_connected(_on_ally_intent):
-		SignalBus.ally_intent_changed.disconnect(_on_ally_intent)
-	if SignalBus.ally_status_applied.is_connected(_on_ally_status):
-		SignalBus.ally_status_applied.disconnect(_on_ally_status)
-	if SignalBus.ally_lifetime_changed.is_connected(_on_ally_lifetime):
-		SignalBus.ally_lifetime_changed.disconnect(_on_ally_lifetime)
-	if SignalBus.ally_action_start.is_connected(_on_ally_action_start):
-		SignalBus.ally_action_start.disconnect(_on_ally_action_start)
-	if SignalBus.ally_action_end.is_connected(_on_ally_action_end):
-		SignalBus.ally_action_end.disconnect(_on_ally_action_end)
-	if SignalBus.ally_died.is_connected(_on_ally_died):
-		SignalBus.ally_died.disconnect(_on_ally_died)
-	if SignalBus.allies_changed.is_connected(_on_allies_changed):
-		SignalBus.allies_changed.disconnect(_on_allies_changed)
-	if SignalBus.summon_rejected.is_connected(_on_summon_rejected):
-		SignalBus.summon_rejected.disconnect(_on_summon_rejected)
-
-
-# =====================================================================
-# 刷新
-# =====================================================================
-func _refresh_all() -> void:
-	_refresh_enemy()
-	_refresh_resources()
-	_refresh_hand()
-	_refresh_potions()
-	_sync_ally_panels()
-
-
-## 重绘敌人区（v2 in-place）：存活敌人首次创建面板并存 unit_panels；之后只更新内容，不销毁面板。
-## 面板持久化使 VFX 子节点不被刷新误杀（见 VFX_DESIGN.md）。死亡敌人由 _on_unit_died 延后释放。
-func _refresh_enemy() -> void:
-	if _casting or _drag_active or BattleDirector.input_locked or controller.phase != CombatController.Phase.PLAYER:
-		_needs_refresh = true
-		return
-	for i in controller.enemies.size():
-		var e: CombatUnit = controller.enemies[i]
-		if not e.is_alive():
-			continue
-		if not unit_panels.has(e):
-			_create_enemy_panel(e, i)
-		else:
-			_update_enemy_panel(e, i)
-
-
-func _create_enemy_panel(e: CombatUnit, index: int) -> void:
-	var p = EnemyPanelScene.instantiate()
-	p.custom_minimum_size = _enemy_size()
-	p.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	p.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	p.mouse_filter = Control.MOUSE_FILTER_STOP
-	p.gui_input.connect(_on_enemy_gui_input.bind(index))
-	# 用 MarginContainer 承载垂直偏移：HBox 每帧重排会覆盖直接设的 position.y
-	var holder := MarginContainer.new()
-	holder.add_theme_constant_override("margin_top", ENEMY_PANEL_OFFSET_Y)
-	holder.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	holder.add_child(p)
-	enemy_area.add_child(holder)
-	unit_panels[e] = p
-	_prev_ehp[e] = e.hp
-	var sel := (index == selected_target)
-	p.build(e, index, sel, controller.enemies.size())
-
-
-func _update_enemy_panel(e: CombatUnit, index: int) -> void:
-	var p = unit_panels.get(e)
-	if p == null:
-		_create_enemy_panel(e, index)
-		return
-	var sel := (index == selected_target)
-	p.build(e, index, sel, controller.enemies.size())
-
-
-# 敌人面板内层内容现由 EnemyPanel.build() 就地更新（见 scenes/combat/EnemyPanel.tscn），不再销毁重建。
-
-
-func _enemy_size() -> Vector2:
-	var n := controller.enemies.size()
-	var pw := 480 if n <= 1 else (330 if n == 2 else 230)
-	var ph := 540 if n <= 1 else (380 if n == 2 else 340)
-	return Vector2(pw, ph)
-
-
-func _free_enemy(e: CombatUnit) -> void:
-	if unit_panels.has(e):
-		var p: Panel = unit_panels[e]
-		unit_panels.erase(e)
-		if is_instance_valid(p):
-			var parent = p.get_parent()
-			if parent != null and parent != enemy_area:
-				parent.queue_free()   # 连带包裹的 MarginContainer 一起释放（避免残留空壳）
-			else:
-				p.queue_free()
-	if _prev_ehp.has(e):
-		_prev_ehp.erase(e)
-
-
-func _format_intent(e: CombatUnit) -> String:
-	var kind: String = e.intent.get("intent", "未知")
-	if kind == "charge":
-		var nx := StringName(e.intent.get("next", ""))
-		var rel: Dictionary = {}
-		if e.data != null:
-			rel = e.data.find_move(nx)
-		var rel_kind: String = _intent_cn(String(rel.get("intent", "未知")))
-		var rel_val: int = int(rel.get("value", 0))
-		var rel_times: int = int(rel.get("times", 1))
-		var t := "蓄力→%s %d" % [rel_kind, rel_val]
-		if rel_times > 1:
-			t += " ×%d" % rel_times
-		return t
-	else:
-		var val: int = int(e.intent.get("value", 0))
-		var times: int = int(e.intent.get("times", 1))
-		var t := "%s %d" % [_intent_cn(kind), val]
-		if times > 1:
-			t += " ×%d" % times
-		return t
-
-
-func _refresh_resources() -> void:
-	if _casting or _drag_active or BattleDirector.input_locked or controller.phase != CombatController.Phase.PLAYER:
-		_needs_refresh = true
-		return
-	if player_sprite != null and player_sprite.texture == null:
-		if controller.player != null and controller.player.sprite != "":
-			var ptex = load(controller.player.sprite)
-			if ptex != null:
-				player_sprite.texture = ptex
-	player_hp.text = "玩家 炭  HP %d / %d" % [controller.player.hp, controller.player.max_hp]
-	if player_hp_bar != null:
-		player_hp_bar.max_value = controller.player.max_hp
-		player_hp_bar.value = controller.player.hp
-	player_block.text = "格挡 %d" % controller.player.block
-	player_energy.text = "能量 %d / %d" % [controller.energy, controller.max_energy]
-	player_kiln.text = "窑温 %d / %d" % [controller.kiln_heat, controller._kiln_threshold()]
-	player_status.text = _status_text(controller.player)
-
-
-func _refresh_hand() -> void:
-	if _casting or _drag_active or BattleDirector.input_locked or controller.phase != CombatController.Phase.PLAYER:
-		_needs_refresh = true
-		return
-	for c in hand_container.get_children():
-		c.queue_free()
-	for i in range(controller.hand.size()):
-		var entry: Dictionary = controller.hand[i]
-		var cd: CardData = GameData.get_card(StringName(entry["id"]))
-		if cd == null:
-			continue
-		var enchants: Array = entry.get("enchants", [])
-		var b := _build_card_view(cd, i, enchants)
-		hand_container.add_child(b)
-
-
-func _refresh_potions() -> void:
-	if potion_bar == null:
-		return
-	var inv: Array = RunState.potions
-	for i in potion_slots.size():
-		var slot: Button = potion_slots[i]
-		var ic: TextureRect = potion_icons[i] if i < potion_icons.size() else null
-		if i >= inv.size():
-			slot.text = "空"
-			slot.disabled = true
-			slot.tooltip_text = ""
-			slot.add_theme_stylebox_override("normal", _disabled_card_style())
-			if ic != null:
-				ic.texture = null
-			continue
-		var pid: StringName = inv[i]
-		var pd: PotionData = GameData.get_potion(pid)
-		if pd == null:
-			slot.text = "?"
-			slot.disabled = true
-			slot.tooltip_text = ""
-			slot.add_theme_stylebox_override("normal", _disabled_card_style())
-			if ic != null:
-				ic.texture = null
-			continue
-		slot.text = pd.name
-		slot.disabled = combat_over or controller.phase != CombatController.Phase.PLAYER
-		slot.tooltip_text = pd.description
-		if ic != null:
-			ic.texture = GameData.icon_texture(pd.icon)
-		var col := CREAM
-		match pd.rarity:
-			&"common": col = CREAM
-			&"uncommon": col = GREEN
-			&"rare": col = PURPLE
-			_: col = CREAM
-		slot.add_theme_stylebox_override("normal", _card_style(col))
-
-
-func _build_card_view(cd: CardData, i: int, enchants: Array = []) -> CardView:
-	var v := CardViewScene.instantiate()
-	v.build_visual(cd, i, enchants)
-	if controller.energy < cd.cost or combat_over:
-		v.set_enabled(false)
-	v.drag_started.connect(_on_card_drag_started)
-	v.drag_moved.connect(_on_card_drag_moved)
-	v.drag_ended.connect(_on_card_drag_ended)
-	v.tapped.connect(_on_card_tapped)
-	return v
+## 带彩色边框的卡面样式（附魔角标用，边框按附魔稀有度着色）。
+func _framed_card_style(body: Color, frame: Color) -> StyleBoxFlat:
+	var s := StyleBoxFlat.new()
+	s.bg_color = body
+	s.border_color = frame
+	s.set_border_width_all(4)
+	s.corner_radius_top_left = 10
+	s.corner_radius_top_right = 10
+	s.corner_radius_bottom_left = 10
+	s.corner_radius_bottom_right = 10
+	return s
 
 
 ## 取附魔数组对应的边框色（按首个附魔的稀有度：rare=PURPLE / uncommon=GREEN / 其他=CREAM）。
@@ -806,19 +559,6 @@ func _enchant_frame_color(enchants: Array) -> Color:
 			&"uncommon": return GREEN
 			_: return CREAM
 	return CREAM
-
-
-## 带彩色边框的卡面样式（附魔角标用，边框按附魔稀有度着色）。
-func _framed_card_style(body: Color, frame: Color) -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color = body
-	s.border_color = frame
-	s.set_border_width_all(4)
-	s.corner_radius_top_left = 10
-	s.corner_radius_top_right = 10
-	s.corner_radius_bottom_left = 10
-	s.corner_radius_bottom_right = 10
-	return s
 
 
 ## 由 enchants 数组生成卡面角标文本（如 "✦ 烈焰"）；空数组返回 ""。
@@ -860,8 +600,9 @@ func _intent_cn(kind: String) -> String:
 		_ : return kind
 
 
+## 日志转发（门面保留方法名，供助手类通过 ui._log 调用）。
 func _log(msg: String) -> void:
-	log_label.text = msg
+	_log_view.log(msg)
 
 
 func _first_alive_index() -> int:
@@ -872,404 +613,163 @@ func _first_alive_index() -> int:
 
 
 # =====================================================================
-# 交互
+# 信号连接（全部连门面回调；跨域回调留门面，域内回调转助手类）
 # =====================================================================
-func _on_enemy_gui_input(ev: InputEvent, index: int) -> void:
-	if combat_over or controller.phase != CombatController.Phase.PLAYER:
-		return
-	if ev is InputEventMouseButton and (ev as InputEventMouseButton).pressed:
-		if index < controller.enemies.size() and controller.enemies[index].is_alive():
-			selected_target = index
-			_refresh_enemy()
-			_log("已选中目标：%s" % controller.enemies[index].unit_name)
+func _connect_signals() -> void:
+	SignalBus.player_hp_changed.connect(_on_php)
+	SignalBus.player_block_changed.connect(_on_pblock)
+	SignalBus.energy_changed.connect(_on_energy)
+	SignalBus.enemy_hp_changed.connect(_on_ehp)
+	SignalBus.enemy_intent_changed.connect(_on_eintent)
+	SignalBus.status_applied.connect(_on_status)
+	SignalBus.kiln_heat_changed.connect(_on_kiln)
+	SignalBus.combat_ended.connect(_on_combat_end)
+	SignalBus.turn_started.connect(_on_turn_started)
+	SignalBus.damage_dealt.connect(_on_damage)
+	SignalBus.unit_died.connect(_on_unit_died)
+	SignalBus.card_played.connect(_on_card_played)
+	SignalBus.card_discarded.connect(_on_card_discarded)
+	SignalBus.card_drawn.connect(_on_card_drawn)
+	# 随从 / 召唤（友方单位）
+	SignalBus.ally_hp_changed.connect(_on_ally_hp)
+	SignalBus.ally_block_changed.connect(_on_ally_block)
+	SignalBus.ally_intent_changed.connect(_on_ally_intent)
+	SignalBus.ally_status_applied.connect(_on_ally_status)
+	SignalBus.ally_lifetime_changed.connect(_on_ally_lifetime)
+	SignalBus.ally_action_start.connect(_on_ally_action_start)
+	SignalBus.ally_action_end.connect(_on_ally_action_end)
+	SignalBus.ally_died.connect(_on_ally_died)
+	SignalBus.allies_changed.connect(_on_allies_changed)
+	SignalBus.summon_rejected.connect(_on_summon_rejected)
+
+
+func _exit_tree() -> void:
+	if SignalBus.player_hp_changed.is_connected(_on_php):
+		SignalBus.player_hp_changed.disconnect(_on_php)
+	if SignalBus.player_block_changed.is_connected(_on_pblock):
+		SignalBus.player_block_changed.disconnect(_on_pblock)
+	if SignalBus.energy_changed.is_connected(_on_energy):
+		SignalBus.energy_changed.disconnect(_on_energy)
+	if SignalBus.enemy_hp_changed.is_connected(_on_ehp):
+		SignalBus.enemy_hp_changed.disconnect(_on_ehp)
+	if SignalBus.enemy_intent_changed.is_connected(_on_eintent):
+		SignalBus.enemy_intent_changed.disconnect(_on_eintent)
+	if SignalBus.status_applied.is_connected(_on_status):
+		SignalBus.status_applied.disconnect(_on_status)
+	if SignalBus.kiln_heat_changed.is_connected(_on_kiln):
+		SignalBus.kiln_heat_changed.disconnect(_on_kiln)
+	if SignalBus.combat_ended.is_connected(_on_combat_end):
+		SignalBus.combat_ended.disconnect(_on_combat_end)
+	if SignalBus.turn_started.is_connected(_on_turn_started):
+		SignalBus.turn_started.disconnect(_on_turn_started)
+	if SignalBus.damage_dealt.is_connected(_on_damage):
+		SignalBus.damage_dealt.disconnect(_on_damage)
+	if SignalBus.unit_died.is_connected(_on_unit_died):
+		SignalBus.unit_died.disconnect(_on_unit_died)
+	if SignalBus.card_played.is_connected(_on_card_played):
+		SignalBus.card_played.disconnect(_on_card_played)
+	if SignalBus.card_discarded.is_connected(_on_card_discarded):
+		SignalBus.card_discarded.disconnect(_on_card_discarded)
+	if SignalBus.card_drawn.is_connected(_on_card_drawn):
+		SignalBus.card_drawn.disconnect(_on_card_drawn)
+	if SignalBus.ally_hp_changed.is_connected(_on_ally_hp):
+		SignalBus.ally_hp_changed.disconnect(_on_ally_hp)
+	if SignalBus.ally_block_changed.is_connected(_on_ally_block):
+		SignalBus.ally_block_changed.disconnect(_on_ally_block)
+	if SignalBus.ally_intent_changed.is_connected(_on_ally_intent):
+		SignalBus.ally_intent_changed.disconnect(_on_ally_intent)
+	if SignalBus.ally_status_applied.is_connected(_on_ally_status):
+		SignalBus.ally_status_applied.disconnect(_on_ally_status)
+	if SignalBus.ally_lifetime_changed.is_connected(_on_ally_lifetime):
+		SignalBus.ally_lifetime_changed.disconnect(_on_ally_lifetime)
+	if SignalBus.ally_action_start.is_connected(_on_ally_action_start):
+		SignalBus.ally_action_start.disconnect(_on_ally_action_start)
+	if SignalBus.ally_action_end.is_connected(_on_ally_action_end):
+		SignalBus.ally_action_end.disconnect(_on_ally_action_end)
+	if SignalBus.ally_died.is_connected(_on_ally_died):
+		SignalBus.ally_died.disconnect(_on_ally_died)
+	if SignalBus.allies_changed.is_connected(_on_allies_changed):
+		SignalBus.allies_changed.disconnect(_on_allies_changed)
+	if SignalBus.summon_rejected.is_connected(_on_summon_rejected):
+		SignalBus.summon_rejected.disconnect(_on_summon_rejected)
 
 
 # =====================================================================
-# 拖拽出牌（P1）：CardView 广播手势 → CombatUI 解算落点 → 播放 cast 动画 + VFX → 结算
+# 刷新（编排）
 # =====================================================================
+func _refresh_all() -> void:
+	_enemy.refresh_enemy()
+	_hud.refresh_resources()
+	_hand.refresh_hand()
+	_hud.refresh_potions()
+	_hud.sync_ally_panels()
 
-## 轻点：self/none/all_enemies 卡 → 直接对自己（玩家面板）释放并播动画；
-## enemy 卡 → 若有已选/存活目标则对其放，否则拒绝提示。
-func _on_card_tapped(view: CardView) -> void:
-	if _casting or _drag_active or BattleDirector.input_locked or combat_over or controller.phase != CombatController.Phase.PLAYER:
+
+# =====================================================================
+# SignalBus 回调（薄转发 + 跨域编排）
+# =====================================================================
+func _on_card_discarded(_card_id: StringName) -> void:
+	_hand.refresh_hand()
+
+
+func _on_card_drawn(_card_id: StringName) -> void:
+	_close_card_browser()
+	_hand.refresh_discard_pile()
+
+
+func card_browser_open() -> bool:
+	return is_instance_valid(_card_browser) and not _card_browser.is_queued_for_deletion()
+
+
+func _open_draw_pile() -> void:
+	if card_browser_open() or _casting or _drag_active or BattleDirector.input_locked or combat_over or controller.phase != CombatController.Phase.PLAYER:
 		return
-	var cd: CardData = view.card_data
-	if cd.target == &"enemy":
-		var tgt := -1
-		if selected_target >= 0 and selected_target < controller.enemies.size() and controller.enemies[selected_target].is_alive():
-			tgt = selected_target
-		else:
-			tgt = _first_alive_index()
-		if tgt < 0:
-			_reject_card(view, "没有可攻击的目标")
-			return
-		_cast_card(view, tgt)
-	else:
-		# self / none / all_enemies：轻点即对自己释放（仍播动画 + VFX）
-		_cast_card(view, -1)
-
-
-func _on_card_drag_started(view: CardView) -> void:
-	if _casting or _drag_active or BattleDirector.input_locked or combat_over or controller.phase != CombatController.Phase.PLAYER:
-		return
-	_drag_active = true
-	_drag_card = view
-	view.modulate.a = 0.3                       # 原卡淡出，由幽灵卡代为飞行
-	_build_drop_targets()
-	drop_layer.highlight(view.card_data.target)
-	var gr := view.get_global_rect()
-	_ghost = CardViewScene.instantiate()
-	_ghost.set_ghost(true)
-	_ghost.build_visual(view.card_data, -1, view.enchants)
-	_ghost.custom_minimum_size = gr.size
-	drag_layer.add_child(_ghost)
-	_ghost.global_position = gr.position
-	_ghost.size = gr.size
-	_ghost.scale = Vector2(1.0, 1.0)
-
-
-func _on_card_drag_moved(view: CardView, gpos: Vector2) -> void:
-	if _ghost == null:
-		return
-	# 卡牌浮在手指上方一点，避免被手指遮挡
-	_ghost.global_position = gpos - _ghost.size * 0.5 - Vector2(0, _ghost.size.y * 0.25)
-	drop_layer.hover_update(gpos)
-
-
-func _on_card_drag_ended(view: CardView, gpos: Vector2) -> void:
-	if _ghost == null:
-		return
-	var idx := drop_layer.hit_test(gpos)
-	if idx == -2:
-		_snap_back(view)
-		return
-	_cast_card(view, idx)
-
-
-## 注入本次拖拽的合法落点：玩家面板（self/none）+ 各存活敌人面板（enemy/all_enemies）。
-func _build_drop_targets() -> void:
-	var targets := []
-	targets.append({"node": player_panel, "types": [&"self", &"none"], "index": -1})
-	for i in controller.enemies.size():
-		var e: CombatUnit = controller.enemies[i]
-		if e.is_alive():
-			var p: Panel = unit_panels.get(e)
-			if p != null:
-				targets.append({"node": p, "types": [&"enemy", &"all_enemies"], "index": i})
-	drop_layer.set_targets(targets)
-
-
-## 施放演出：幽灵卡飞向目标，到达瞬间才真正结算（play_card），既有飘字/血条 VFX 自然接管。
-## 轻点路径无幽灵卡，此处现建一张从原卡位置起飞。
-## 飞行 + 到达结算 + 元素爆发 + 缓冲统一交给 BattleDirector.play_card_cast（await 编排）；
-## 本方法只负责幽灵卡创建/清理与演出后的刷新解锁。
-func _cast_card(view: CardView, target_index: int) -> void:
-	_casting = true
-	_drag_active = false
-	var idx: int = view.card_index
-	var cd: CardData = view.card_data
-
-	var target_node: Control = player_panel
-	if target_index >= 0 and target_index < controller.enemies.size():
-		var e: CombatUnit = controller.enemies[target_index]
-		var p: Panel = unit_panels.get(e)
-		if p != null:
-			target_node = p
-
-	var ghost = _ghost
-	if ghost == null:
-		var gr := view.get_global_rect()
-		ghost = CardViewScene.instantiate()
-		ghost.set_ghost(true)
-		ghost.build_visual(cd, -1, view.enchants)
-		ghost.custom_minimum_size = gr.size
-		drag_layer.add_child(ghost)
-		ghost.global_position = gr.position
-		ghost.size = gr.size
-		_ghost = ghost
-		view.modulate.a = 0.0                          # 隐藏原卡（轻点路径）
-
-	# 演出（飞行 + 到达结算 + 爆发 + 缓冲）交由 BattleDirector 编排
-	await BattleDirector.play_card_cast(ghost, target_node, cd, idx, target_index, controller)
-
-	selected_target = -1
-	if is_instance_valid(ghost):
-		ghost.queue_free()
-	_ghost = null
-	_drag_card = null
-	_casting = false
-	drop_layer.clear()
-	_finish_cast_refresh()
-
-
-## 非法落点：幽灵卡弹回原位并释放，原卡恢复。
-func _snap_back(view: CardView) -> void:
-	var gr := view.get_global_rect()
-	var ghost = _ghost
-	_ghost = null
-	drop_layer.clear()
-	_drag_active = false
-	_drag_card = null
-	if ghost == null:
-		view.modulate.a = 1.0
-		return
-	var tw := create_tween()
-	tw.tween_property(ghost, "global_position", gr.position, 0.16).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(ghost, "scale", Vector2(1.0, 1.0), 0.16)
-	tw.tween_callback(func():
-		if is_instance_valid(ghost):
-			ghost.queue_free()
-		view.modulate.a = 1.0
+	# 只排序深拷贝，既不泄露实际顺序，也不消耗任何随机数。
+	var cards := controller.draw_pile.duplicate(true)
+	cards.sort_custom(func(a: Dictionary, b: Dictionary):
+		var key_a := String(a.get("id", "")) + str(a.get("upgraded", false)) + str(a.get("enchants", []))
+		var key_b := String(b.get("id", "")) + str(b.get("upgraded", false)) + str(b.get("enchants", []))
+		return key_a < key_b
 	)
+	var browser := CardBrowserScript.new()
+	browser.setup("抽牌堆", "剩余 %d 张 · 仅供查看\n按卡牌分类排列，不代表抽取顺序。" % cards.size(), cards)
+	_card_browser = browser
+	browser.closed.connect(func():
+		_card_browser = null
+		draw_pile_button.grab_focus()
+	)
+	add_child(browser)
 
 
-## 解锁后统一刷新（演出期间累计的刷新需求在此一次性落地）。
-func _finish_cast_refresh() -> void:
-	_casting = false
-	_needs_refresh = false
-	_refresh_all()
+func _close_card_browser() -> void:
+	if card_browser_open():
+		_card_browser.close()
+	_card_browser = null
 
 
-## 拒绝反馈：卡牌红色脉冲，并提示原因（不消耗牌）。
-func _reject_card(view: CardView, msg: String) -> void:
-	_log(msg)
-	var tw := create_tween()
-	tw.tween_property(view, "modulate", Color(1.0, 0.5, 0.5), 0.08)
-	tw.tween_property(view, "modulate", Color(1.0, 1.0, 1.0), 0.22)
-
-
-func _on_end_turn() -> void:
-	if _casting or _drag_active or BattleDirector.input_locked or combat_over or controller.phase != CombatController.Phase.PLAYER:
-		return
-	_log("结束回合 —— 召唤阶段 + 敌人行动中…")
-	controller.end_player_turn()
-	# 阶段顺序：玩家结束回合 → 召唤物阶段（友色光弹攻击，带动画/VFX）→ 敌人回合。
-	# 两者均由 BattleDirector 异步编排（input_locked 期间阻塞输入），"全播完才进下一回合"。
-	# 先 await 召唤阶段，结束解锁后再驱动敌人回合（run_enemy_turn 自身再上锁）。
-	var enemy_getter := func(e): return unit_panels.get(e) if is_instance_valid(e) else null
-	var ally_getter := func(a): return ally_panels.get(a) if is_instance_valid(a) else null
-	await BattleDirector.run_summon_turn(controller, player_panel, enemy_getter, ally_getter)
-	BattleDirector.run_enemy_turn(controller, player_panel, enemy_getter)
-
-
-func _on_potion_pressed(i: int) -> void:
-	if _casting or _drag_active or BattleDirector.input_locked or combat_over or controller.phase != CombatController.Phase.PLAYER:
-		return
-	if i < 0 or i >= RunState.potions.size():
-		return
-	var pid: StringName = RunState.potions[i]
-	var pd: PotionData = GameData.get_potion(pid)
-	if pd == null:
-		return
-	var target := -1
-	if pd.target == &"enemy":
-		if selected_target >= 0 and selected_target < controller.enemies.size() and controller.enemies[selected_target].is_alive():
-			target = selected_target
-		else:
-			target = _first_alive_index()
-	var ok := controller.use_potion(i, target)
-	if ok:
-		_log("使用药水：%s" % pd.name)
-		selected_target = -1
-		_refresh_potions()
-		_refresh_resources()
-		_refresh_enemy()
-
-
-# =====================================================================
-# 随从 / 召唤 UI（友方单位 chip，见 SUMMON_SYSTEM_DESIGN.md §6.1）
-# =====================================================================
-
-## 同步 chip 面板：为当前每个存活随从补建面板并重新布局。死亡由 _on_ally_died 单独淡出。
-func _sync_ally_panels() -> void:
-	for i in controller.allies.size():
-		var a: CombatUnit = controller.allies[i]
-		if not ally_panels.has(a):
-			_create_ally_panel(a, i)
-	_reposition_allies()
-
-
-## 创建随从 chip：青蓝底面板（AllyPanel.tscn 内含底色），挂在 root 上（与 player_sprite 同层），手动定位以支持 §6.1 遮挡层级。
-func _create_ally_panel(a: CombatUnit, index: int) -> void:
-	var p = AllyPanelScene.instantiate()
-	p.custom_minimum_size = Vector2(ALLY_CHIP_W, ALLY_CHIP_H)
-	p.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	p.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	p.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	p.z_index = ALLY_DARK_Z          # 暗态：玩家立绘之下 → 被遮挡
-	p.modulate = Color(1, 1, 1, 1)
-	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(p)
-	ally_panels[a] = p
-	p.build(a, index)
-	_reposition_allies()
-	# §6.1 登场高亮：放大 + 全亮，随后回落到暗态（被玩家立绘遮挡）
-	p.scale = Vector2(1.15, 1.15)
-	var tw := create_tween()
-	tw.tween_property(p, "scale", Vector2(1.0, 1.0), 0.4).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(p, "modulate:a", ALLY_DARK_ALPHA, 0.4).set_ease(Tween.EASE_OUT)
-
-
-## 横向排布：起始 X 在屏幕右下（与玩家立绘左下对称），多随从向左排开（ALLY_STEP_X 为负）。
-func _reposition_allies() -> void:
-	var i := 0
-	for a in controller.allies:
-		var p: Panel = ally_panels.get(a)
-		if p == null or not is_instance_valid(p):
-			continue
-		p.position = Vector2(ALLY_BASE_X + i * ALLY_STEP_X, ALLY_BASE_Y)
-		i += 1
-
-
-# 随从面板内层内容现由 AllyPanel.build() 就地更新（见 scenes/combat/AllyPanel.tscn），不再销毁重建。
-
-
-func _format_ally_intent(a: CombatUnit) -> String:
-	var kind: String = a.intent.get("intent", "未知")
-	var val: int = int(a.intent.get("value", 0))
-	var times: int = int(a.intent.get("times", 1))
-	var t := "%s %d" % [_intent_cn(kind), val]
-	if times > 1:
-		t += " ×%d" % times
-	return t
-
-
-func _ally_at(index: int) -> CombatUnit:
-	if index < 0 or index >= controller.allies.size():
-		return null
-	return controller.allies[index]
-
-
-func _refresh_ally(index: int) -> void:
-	var a := _ally_at(index)
-	if a == null:
-		return
-	var p = ally_panels.get(a)
-	if p != null:
-		p.build(a, index)
-
-
-# ---------- 随从 SignalBus 回调 ----------
-
-func _on_ally_hp(index: int, _cur: int, _maxv: int) -> void:
-	_refresh_ally(index)
-
-
-func _on_ally_block(index: int, _cur: int) -> void:
-	_refresh_ally(index)
-
-
-func _on_ally_intent(index: int, _intent: StringName, _value: int) -> void:
-	_refresh_ally(index)
-
-
-func _on_ally_status(index: int, _status_id: StringName, _stacks: int) -> void:
-	_refresh_ally(index)
-
-
-func _on_ally_lifetime(index: int, _lifetime: int) -> void:
-	_refresh_ally(index)
-
-
-func _on_allies_changed() -> void:
-	_sync_ally_panels()
-
-
-## §6.1 行动态：亮度拉满 + 层级提到玩家立绘之上（盖住玩家）。
-func _on_ally_action_start(index: int) -> void:
-	var a := _ally_at(index)
-	if a == null:
-		return
-	var p: Panel = ally_panels.get(a)
-	if p == null:
-		return
-	p.z_index = ALLY_ACT_Z
-	var tw := create_tween()
-	tw.tween_property(p, "modulate:a", 1.0, 0.18).set_ease(Tween.EASE_OUT)
-
-
-## §6.1 行动结束：恢复暗态亮度 + 层级落回玩家立绘之下（恢复被遮挡状态）。
-func _on_ally_action_end(index: int) -> void:
-	var a := _ally_at(index)
-	if a == null:
-		return
-	var p: Panel = ally_panels.get(a)
-	if p == null:
-		return
-	p.z_index = ALLY_DARK_Z
-	var tw := create_tween()
-	tw.tween_property(p, "modulate:a", ALLY_DARK_ALPHA, 0.18).set_ease(Tween.EASE_OUT)
-
-
-## 死亡淡出：动画播完才释放面板，并让存活随从前移补位。
-func _on_ally_died(index: int) -> void:
-	var a := _ally_at(index)
-	if a == null:
-		return
-	var p: Panel = ally_panels.get(a)
-	ally_panels.erase(a)
-	if p == null or not is_instance_valid(p):
-		_reposition_allies()
-		return
-	VFXSystem.spawn_death(p, func(): if is_instance_valid(p): p.queue_free())
-	_reposition_allies()
-
-
-## 满场提示：横幅淡入 1.2s 后淡出。
-func _on_summon_rejected(cap: int) -> void:
-	if toast_label == null:
-		return
-	toast_label.text = "召唤栏已满（上限 %d）" % cap
-	toast_label.modulate.a = 1.0
-	toast_label.visible = true
-	var tw := create_tween()
-	tw.tween_interval(1.2)
-	tw.tween_property(toast_label, "modulate:a", 0.0, 0.4)
-	tw.tween_callback(func(): toast_label.visible = false)
-
-
-# =====================================================================
-# SignalBus 回调
-# =====================================================================
 func _on_php(cur: int, maxv: int) -> void:
-	player_hp.text = "玩家 炭  HP %d / %d" % [cur, maxv]
-	if player_hp_bar != null:
-		player_hp_bar.max_value = maxv
-		player_hp_bar.value = cur
-	if _prev_php >= 0 and cur > _prev_php:
-		VFXSystem.spawn_heal(player_panel, cur - _prev_php)
-	_prev_php = cur
+	_hud.on_php(cur, maxv)
 
 
 func _on_pblock(cur: int) -> void:
-	player_block.text = "格挡 %d" % cur
-	VFXSystem.spawn_block(player_panel)
+	_hud.on_pblock(cur)
 
 
 func _on_energy(cur: int, maxv: int) -> void:
-	player_energy.text = "能量 %d / %d" % [cur, maxv]
-	_refresh_hand()
+	_hud.on_energy(cur, maxv)
 
 
 func _on_ehp(index: int, cur: int, maxv: int) -> void:
-	_refresh_enemy()
-	if index >= 0 and index < controller.enemies.size():
-		var e: CombatUnit = controller.enemies[index]
-		var prev: int = _prev_ehp.get(e, -1)
-		if prev >= 0 and cur > prev:
-			var p: Panel = unit_panels.get(e)
-			if p != null:
-				VFXSystem.spawn_heal(p, cur - prev)
-		_prev_ehp[e] = cur
+	_enemy.on_ehp(index, cur, maxv)
 
 
 func _on_eintent(index: int, intent: StringName, value: int) -> void:
-	_refresh_enemy()
+	_enemy.on_eintent(index, intent, value)
 
 
 func _on_status(is_player: bool, index: int, status_id: StringName, _stacks: int) -> void:
-	_refresh_enemy()
-	_refresh_resources()
+	_enemy.refresh_enemy()
+	_hud.refresh_resources()
 	var is_buff: bool = _is_buff(status_id)
 	if is_player:
 		VFXSystem.spawn_status(player_panel, is_buff)
@@ -1281,23 +781,24 @@ func _on_status(is_player: bool, index: int, status_id: StringName, _stacks: int
 
 
 func _on_kiln(current: int, threshold: int) -> void:
-	player_kiln.text = "窑温 %d / %d" % [current, threshold]
-	# threshold 参数来自 SignalBus，与 controller._kiln_threshold() 一致
+	_hud.on_kiln(current, threshold)
 
 
 func _on_turn_started(is_player: bool) -> void:
+	_close_card_browser()
 	if is_player:
 		# 玩家回合开始：立绘回 idle（死亡锁定除外）
 		if not _player_dead:
 			_set_player_pose(&"idle")
-		_refresh_hand()
-		_refresh_resources()
-		_refresh_enemy()
+		_hand.refresh_hand()
+		_hud.refresh_resources()
+		_enemy.refresh_enemy()
 
 
 func _on_combat_end(victory: bool) -> void:
+	_close_card_browser()
 	combat_over = true
-	_refresh_hand()
+	_hand.refresh_hand()
 	result_label.visible = true
 	if victory:
 		result_label.text = "胜  利  !"
@@ -1313,7 +814,7 @@ func _on_combat_end(victory: bool) -> void:
 	RunState.last_combat_victory = victory
 	RunState.pending_post_combat = true
 	await get_tree().create_timer(VFXSystem.DEATH_DUR + 0.35).timeout
-	get_tree().change_scene_to_packed(MapPlayScene)
+	get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
 
 
 ## ---------- VFX 回调（依据 VFX_DESIGN.md，由 SignalBus 事件驱动）----------
@@ -1350,17 +851,51 @@ func _on_unit_died(is_player: bool, index: int) -> void:
 	var p: Panel = unit_panels.get(e)
 	if p == null:
 		return
-	VFXSystem.spawn_death(p, func(): _free_enemy(e))
+	VFXSystem.spawn_death(p, func(): _enemy.free_enemy(e))
 
 
 func _on_card_played(card_id: StringName, _target_index: int) -> void:
-	VFXSystem.spawn_card_played(player_panel)
-	# 攻击牌：立绘短暂切 attack 姿态
-	if _player_dead:
-		return
-	var cd: CardData = GameData.get_card(card_id)
-	if cd != null and cd.type == &"attack":
-		_set_player_pose(&"attack", PLAYER_POSE_HOLD)
+	_hand.on_card_played(card_id, _target_index)
+
+
+func _on_ally_hp(index: int, _cur: int, _maxv: int) -> void:
+	_hud.on_ally_hp(index, _cur, _maxv)
+
+
+func _on_ally_block(index: int, _cur: int) -> void:
+	_hud.on_ally_block(index, _cur)
+
+
+func _on_ally_intent(index: int, _intent: StringName, _value: int) -> void:
+	_hud.on_ally_intent(index, _intent, _value)
+
+
+func _on_ally_status(index: int, _status_id: StringName, _stacks: int) -> void:
+	_hud.on_ally_status(index, _status_id, _stacks)
+
+
+func _on_ally_lifetime(index: int, _lifetime: int) -> void:
+	_hud.on_ally_lifetime(index, _lifetime)
+
+
+func _on_allies_changed() -> void:
+	_hud.on_allies_changed()
+
+
+func _on_ally_action_start(index: int) -> void:
+	_hud.on_ally_action_start(index)
+
+
+func _on_ally_action_end(index: int) -> void:
+	_hud.on_ally_action_end(index)
+
+
+func _on_ally_died(index: int) -> void:
+	_hud.on_ally_died(index)
+
+
+func _on_summon_rejected(cap: int) -> void:
+	_log_view.on_summon_rejected(cap)
 
 
 ## 切换玩家立绘姿态。hold_sec > 0 时到时自动回 idle（死亡锁定后忽略一切非 death 切换）。

@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://art/ui/ICO_DrawPile.svg" id="1_icon"]
+
+[sub_resource type="StyleBoxFlat" id="Normal"]
+bg_color = Color(0.227, 0.271, 0.329, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.106, 0.086, 0.071, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+content_margin_left = 12.0
+content_margin_right = 12.0
+
+[sub_resource type="StyleBoxFlat" id="Hover"]
+bg_color = Color(0.227, 0.271, 0.329, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.878, 0.757, 0.675, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+content_margin_left = 12.0
+content_margin_right = 12.0
+
+[node name="DrawPile" type="Button"]
+custom_minimum_size = Vector2(204, 64)
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_colors/font_hover_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_colors/font_pressed_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_colors/icon_normal_color = Color(1, 1, 1, 1)
+theme_override_constants/icon_max_width = 40
+theme_override_constants/h_separation = 8
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("Normal")
+theme_override_styles/hover = SubResource("Hover")
+theme_override_styles/pressed = SubResource("Hover")
+theme_override_styles/focus = SubResource("Hover")
+text = "抽牌堆 0"
+tooltip_text = "查看剩余卡牌（不显示抽取顺序）"
+icon = ExtResource("1_icon")
+expand_icon = true

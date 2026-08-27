@@ -1,0 +1,250 @@
+extends CanvasLayer
+## 共用卡牌浏览器：只展示快照。选择模式只发确认信号，扣费/移除由来源场景校验。
+
+signal confirmed(index: int, snapshot: Dictionary)
+signal closed
+
+const INK := Color("1b1612")
+const SLATE := Color("3a4554")
+const PAPER := Color("f2e8d5")
+const HIGHLIGHT := Color("e0c1ac")
+const CardTypes := {"attack": "攻击", "skill": "技能", "power": "能力", "status": "状态", "curse": "诅咒"}
+const Rarities := {"starter": "初始", "common": "普通", "uncommon": "精良", "rare": "稀有", "special": "特殊"}
+
+var entries: Array = []
+var selectable := false
+var selected_index := -1
+var _title := ""
+var _subtitle := ""
+var _confirm_text := ""
+var _warning := ""
+var _finished := false
+var _cover: ColorRect
+var _body: VBoxContainer
+var _scroll: ScrollContainer
+var _cards: GridContainer
+var _detail: VBoxContainer
+var _hint: Label
+var _back: Button
+var _confirm: Button
+
+
+func setup(title: String, subtitle: String, cards: Array, allow_selection: bool = false,
+		confirm_text: String = "", warning: String = "") -> void:
+	_title = title
+	_subtitle = subtitle
+	entries = cards.duplicate(true)
+	selectable = allow_selection
+	_confirm_text = confirm_text
+	_warning = warning
+
+
+func _ready() -> void:
+	layer = 100  # 高于战斗/VFX，低于全局暂停菜单。
+	_cover = ColorRect.new()
+	_cover.color = Color(0.08, 0.07, 0.08, 0.94)
+	_cover.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_cover.mouse_filter = Control.MOUSE_FILTER_STOP
+	# 独立主题避免从旧浅色页面继承文字颜色。
+	_cover.theme = Theme.new()
+	_cover.theme.default_font = ThemeDB.fallback_font
+	add_child(_cover)
+	var outer := MarginContainer.new()
+	_cover.add_child(outer)
+	outer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for edge in ["left", "right", "top", "bottom"]:
+		outer.add_theme_constant_override("margin_" + edge, 24)
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", style(SLATE, Color("68665e")))
+	outer.add_child(panel)
+	_body = VBoxContainer.new()
+	_body.add_theme_constant_override("separation", 16)
+	panel.add_child(_body)
+	_body.add_child(label(_title, 56))
+	_hint = label(_subtitle, 22)
+	_body.add_child(_hint)
+	_scroll = ScrollContainer.new()
+	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_body.add_child(_scroll)
+	_cards = GridContainer.new()
+	_cards.columns = 2
+	_cards.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_cards.add_theme_constant_override("h_separation", 14)
+	_cards.add_theme_constant_override("v_separation", 14)
+	_scroll.add_child(_cards)
+	for i in entries.size():
+		_cards.add_child(_card_panel(entries[i], i, selectable))
+	if entries.is_empty():
+		var empty := label("抽牌堆已空\n再次需要抽牌时，会将弃牌堆洗回。\n消耗牌不会参与洗回。", 26)
+		empty.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_cards.columns = 1
+		_cards.add_child(empty)
+	_detail = VBoxContainer.new()
+	_detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_detail.add_theme_constant_override("separation", 20)
+	_detail.hide()
+	_scroll.add_child(_detail)
+	var footer := HBoxContainer.new()
+	footer.add_theme_constant_override("separation", 14)
+	_body.add_child(footer)
+	_back = button("取消" if selectable else "返回战斗", _go_back)
+	footer.add_child(_back)
+	_confirm = button(_confirm_text, _confirm_selection)
+	_confirm.add_theme_stylebox_override("normal", style(Color("7e504e"), HIGHLIGHT))
+	_confirm.hide()
+	footer.add_child(_confirm)
+	_back.grab_focus()
+
+
+static func label(text: String, font_size: int) -> Label:
+	var node := Label.new()
+	node.text = text
+	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	node.add_theme_font_size_override("font_size", font_size)
+	node.add_theme_color_override("font_color", PAPER)
+	node.add_theme_color_override("font_outline_color", INK)
+	node.add_theme_constant_override("outline_size", 1)
+	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return node
+
+
+static func style(fill: Color, border: Color = INK) -> StyleBoxFlat:
+	var box := StyleBoxFlat.new()
+	box.bg_color = fill
+	box.border_color = border
+	box.set_border_width_all(2)
+	box.set_corner_radius_all(8)
+	box.content_margin_left = 16
+	box.content_margin_right = 16
+	box.content_margin_top = 14
+	box.content_margin_bottom = 14
+	return box
+
+
+static func button(text: String, callback: Callable) -> Button:
+	var node := Button.new()
+	node.text = text
+	node.custom_minimum_size.y = 64
+	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	node.add_theme_font_size_override("font_size", 24)
+	for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		node.add_theme_color_override(state, PAPER)
+	node.add_theme_color_override("font_disabled_color", Color("94826f"))
+	node.add_theme_stylebox_override("normal", style(Color("332831")))
+	node.add_theme_stylebox_override("hover", style(SLATE, HIGHLIGHT))
+	node.add_theme_stylebox_override("pressed", style(INK, HIGHLIGHT))
+	node.add_theme_stylebox_override("focus", style(Color.TRANSPARENT, HIGHLIGHT))
+	node.add_theme_stylebox_override("disabled", style(Color("35392c")))
+	node.pressed.connect(callback)
+	return node
+
+
+static func card_name(entry: Dictionary) -> String:
+	var cd: CardData = GameData.get_card(StringName(entry.get("id", "")))
+	return (cd.name if cd != null else String(entry.get("id", "未知卡牌"))) + ("+" if entry.get("upgraded", false) else "")
+
+
+func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelContainer:
+	var cd: CardData = GameData.get_card(StringName(entry.get("id", "")))
+	var panel := PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.add_theme_stylebox_override("panel", style(Color("332831")))
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 10)
+	panel.add_child(column)
+	var title := label(card_name(entry), 28)
+	if entry.get("upgraded", false):
+		title.add_theme_color_override("font_color", Color("d9a441"))
+	column.add_child(title)
+	if cd != null:
+		column.add_child(label("%d 能量 · %s · %s" % [cd.cost, CardTypes.get(String(cd.type), cd.type), Rarities.get(String(cd.rarity), cd.rarity)], 20))
+		var texture := GameData.icon_texture(cd.art)
+		if texture != null:
+			var art := TextureRect.new()
+			art.texture = texture
+			art.custom_minimum_size = Vector2(128, 128)
+			art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			column.add_child(art)
+		column.add_child(label(cd.get_description(entry.get("upgraded", false)), 22))
+		if cd.exhaust:
+			column.add_child(label("消耗：打出后本场不再抽到", 20))
+	else:
+		column.add_child(label("卡牌资料暂不可用", 22))
+	for id in entry.get("enchants", []):
+		var enchant: EnchantData = GameData.get_enchant(StringName(id))
+		column.add_child(label("附魔 · %s\n%s" % [enchant.name if enchant != null else String(id), enchant.description if enchant != null else "资料暂不可用"], 20))
+	if with_select:
+		var spacer := Control.new()
+		spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		column.add_child(spacer)
+		var select := button("选择此牌", select_card.bind(index))
+		select.name = "SelectCard"
+		select.set_meta("card_index", index)
+		select.disabled = cd == null
+		column.add_child(select)
+	return panel
+
+
+func select_card(index: int) -> void:
+	if _finished or not selectable or index < 0 or index >= entries.size():
+		return
+	selected_index = index
+	for child in _detail.get_children():
+		_detail.remove_child(child)
+		child.queue_free()
+	_hint.text = "确认永久移除 · %s" % card_name(entries[index])
+	_detail.add_child(label(_warning + "\n\n该卡会从本局牌组中永久消失，后续战斗不再抽到。此操作不是弃牌，也不是消耗。", 24))
+	_detail.add_child(_card_panel(entries[index], index, false))
+	_cards.hide()
+	_detail.show()
+	_scroll.scroll_vertical = 0
+	_back.text = "重新选牌"
+	_confirm.show()
+	_back.grab_focus()  # 不默认聚焦破坏性确认。
+
+
+func _go_back() -> void:
+	if selected_index >= 0:
+		selected_index = -1
+		_detail.hide()
+		_cards.show()
+		_hint.text = _subtitle
+		_back.text = "取消"
+		_confirm.hide()
+	else:
+		close()
+
+
+func _confirm_selection() -> void:
+	if _finished or not selectable or selected_index < 0:
+		return
+	_finished = true  # 同步信号可能导致来源场景销毁；先锁定并隐藏。
+	hide()
+	queue_free()
+	confirmed.emit(selected_index, entries[selected_index])
+
+
+func close() -> void:
+	if _finished:
+		return
+	_finished = true
+	hide()
+	queue_free()
+	closed.emit()
+
+
+func _input(event: InputEvent) -> void:
+	if _finished:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		_go_back()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey:
+		# 键盘焦点只能在本窗口内，不能激活底层结束回合/服务按钮。
+		var focus := get_viewport().gui_get_focus_owner()
+		if focus == null or not _cover.is_ancestor_of(focus):
+			_back.grab_focus()
+			get_viewport().set_input_as_handled()

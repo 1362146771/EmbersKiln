@@ -57,6 +57,7 @@ func run() -> void:
 
 	# 第 1 次结束回合：敌人执行蓄力（不输出），并锁定下回合释放招式
 	controller.end_player_turn()
+	_advance_to_player_turn()   # 驱动敌人回合（真实战斗由 BattleDirector 异步编排）
 	var intent_after_charge: String = String(controller.enemies[0].intent.get("intent", ""))
 	var val_after_charge: int = int(controller.enemies[0].intent.get("value", 0))
 	check("蓄力后下一回合意图被强制为攻击(释放招式)",
@@ -68,6 +69,7 @@ func run() -> void:
 
 	# 第 2 次结束回合：敌人执行释放招式，玩家应受到伤害
 	controller.end_player_turn()
+	_advance_to_player_turn()
 	check("释放招式实际造成伤害",
 		controller.player.hp < hp_after_charge_turn,
 		"hp %d -> %d" % [hp_after_charge_turn, controller.player.hp])
@@ -75,6 +77,25 @@ func run() -> void:
 	# 数据层自洽：find_move 能解析释放招式（UI 预告用）
 	var rel := test_enemy.find_move(&"t_release")
 	check("EnemyData.find_move 能解析释放招式", not rel.is_empty(), "rel=%s" % str(rel))
+
+
+## 模拟 BattleDirector 驱动一整轮敌人阶段（与真实战斗走同一组公开 API）：
+## 对每个存活敌人执行 清旧格挡 → 执行意图(攻击走 outgoing/attack_hit，其余走 act)
+## → 状态衰减+滚动下一意图，最后 enemy_phase_done 收尾回到下一玩家回合。
+func _advance_to_player_turn() -> void:
+	for e in controller.enemies:
+		if not e.is_alive():
+			continue
+		controller.enemy_pre(e)
+		var mv: Dictionary = e.intent
+		var kind: String = String(mv.get("intent", "unknown"))
+		if kind == "attack":
+			var dmg: int = controller.enemy_outgoing(e, int(mv.get("value", 0)))
+			controller.enemy_attack_hit(e, dmg)
+		else:
+			controller.enemy_act(e)
+		controller.enemy_post(e)
+	controller.enemy_phase_done()
 
 
 func _print_report() -> void:

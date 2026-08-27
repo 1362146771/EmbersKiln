@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://hkojxxrd1jrt"
-path="res://.godot/imported/SPR_Player_Warrior.png-93c16f8e0a4d9a71007d2b4635e5d8cd.ctex"
+uid="uid://c2awqh2d1acvu"
+path="res://.godot/imported/ICO_DrawPile.svg-e476cf1ce5e2955c70eb69fab381a159.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/player/SPR_Player_Warrior.png"
-dest_files=["res://.godot/imported/SPR_Player_Warrior.png-93c16f8e0a4d9a71007d2b4635e5d8cd.ctex"]
+source_file="res://art/ui/ICO_DrawPile.svg"
+dest_files=["res://.godot/imported/ICO_DrawPile.svg-e476cf1ce5e2955c70eb69fab381a159.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

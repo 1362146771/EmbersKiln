@@ -88,6 +88,7 @@ func run() -> void:
 	# ===== Phase 4：结束回合 → 敌人阶段不崩溃 =====
 	controller.start_combat(["claylump"])
 	controller.end_player_turn()
+	_advance_to_player_turn()   # 驱动敌人回合（真实战斗由 BattleDirector 异步编排）
 	check("结束回合后回到玩家回合或战斗结束",
 		controller.phase == CombatController.Phase.PLAYER or controller.phase == CombatController.Phase.ENDED)
 	check("敌人阶段未崩溃(玩家存在)", controller.player != null)
@@ -98,7 +99,8 @@ func run() -> void:
 	controller.player.block = 10
 	controller.enemies[0].intent = {"kind": "attack", "value": 6, "times": 1, "intent": "attack"}
 	var hp_before_block_test: int = controller.player.hp
-	controller.end_player_turn()  # 触发敌人阶段 → 攻击应被格挡吸收
+	controller.end_player_turn()
+	_advance_to_player_turn()   # 驱动敌人真实攻击 → 应被格挡 10 吸收
 	check("格挡扛过敌人攻击：HP 不变", controller.player.hp == hp_before_block_test,
 		"hp=%d (攻击6应被格挡10吸收)" % controller.player.hp)
 	check("格挡扛过敌人攻击：玩家仍存活", controller.player.hp > 0, "hp=%d" % controller.player.hp)
@@ -120,6 +122,7 @@ func run() -> void:
 						played = true
 						break
 		controller.end_player_turn()
+		_advance_to_player_turn()   # 驱动敌人回合（真实战斗由 BattleDirector 异步编排）
 		if controller.phase == CombatController.Phase.ENDED:
 			break
 
@@ -146,6 +149,25 @@ func _first_alive_enemy_index() -> int:
 		if controller.enemies[i].is_alive():
 			return i
 	return 0
+
+
+## 模拟 BattleDirector 驱动一整轮敌人阶段（与真实战斗走同一组公开 API）：
+## 对每个存活敌人执行 清旧格挡 → 执行意图(攻击走 outgoing/attack_hit，其余走 act)
+## → 状态衰减+滚动下一意图，最后 enemy_phase_done 收尾回到下一玩家回合。
+func _advance_to_player_turn() -> void:
+	for e in controller.enemies:
+		if not e.is_alive():
+			continue
+		controller.enemy_pre(e)
+		var mv: Dictionary = e.intent
+		var kind: String = String(mv.get("intent", "unknown"))
+		if kind == "attack":
+			var dmg: int = controller.enemy_outgoing(e, int(mv.get("value", 0)))
+			controller.enemy_attack_hit(e, dmg)
+		else:
+			controller.enemy_act(e)
+		controller.enemy_post(e)
+	controller.enemy_phase_done()
 
 
 func _print_report() -> void:
