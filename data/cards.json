@@ -489,7 +489,7 @@
     },
     {
       "id": "taunt",
-      "name": "引火",
+      "name": "泼水",
       "type": "skill",
       "cost": 1,
       "rarity": "common",

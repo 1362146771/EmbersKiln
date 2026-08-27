@@ -17,6 +17,10 @@ gen/
 .DS_Store
 Thumbs.db
 
+# Office lock files and generated workbook inspection caches
+~$*
+*.xlsx.inspect.ndjson
+
 # IDE / agent local state (not game source)
 .vs/
 .vscode/
