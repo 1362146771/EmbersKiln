@@ -26,7 +26,11 @@ func _solid_bg(color: Color) -> TextureRect:
 	return tr
 
 
+## P2 场景化：作为独立场景加载时（生产路径），setup 不会被外部调用，奖励数据来自 RunState；
+## 作为 verify overlay 时 setup 已注入 data，此处保留即用。
 func _ready() -> void:
+	if data.is_empty():
+		data = RunState.pending_reward_data
 	_build_main()
 
 
@@ -220,9 +224,10 @@ func _on_skip() -> void:
 
 
 func _finish() -> void:
-	# 先标记自己待移除（deferred，本帧回调仍可正常执行）
-	queue_free()
-	if on_done.is_valid():
+	if self == get_tree().current_scene:
+		RunState.pending_post_reward = true
+		get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
+	elif on_done.is_valid():
 		on_done.call()
 
 

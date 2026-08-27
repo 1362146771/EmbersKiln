@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://a1t5r7u9i3s0c"]
+
+[ext_resource type="Script" uid="uid://d14d1hk4kt4r7" path="res://scripts/map/AltarUI.gd" id="1"]
+
+[node name="AltarUI" type="Control" unique_id=1320572748]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")

@@ -5,86 +5,104 @@
     {"id": "B", "enemies": ["embermoth", "embermoth"], "acts": [1], "min_floor": 1, "max_floor": 9, "weight": 1.0},
     {"id": "C", "enemies": ["glazetick", "potsherd"], "acts": [1], "min_floor": 1, "max_floor": 9, "weight": 1.0},
     {"id": "D", "enemies": ["ashcantor", "claylump"], "acts": [1], "min_floor": 5, "max_floor": 9, "weight": 1.0},
-    {"id": "E", "enemies": ["embermoth", "embermoth", "sootling"], "acts": [1], "min_floor": 5, "max_floor": 6, "weight": 1.0},
-    {"id": "F", "enemies": ["kilnwarden", "cindermoth"], "acts": [2], "min_floor": 1, "max_floor": 7, "weight": 1.0},
-    {"id": "G", "enemies": ["meltgolem", "embermoth", "cindermoth"], "acts": [2], "min_floor": 4, "max_floor": 7, "weight": 1.0},
-    {"id": "H", "enemies": ["cinderfiend", "magmawhelp"], "acts": [3], "min_floor": 1, "max_floor": 6, "weight": 1.0},
-    {"id": "I", "enemies": ["coalseer", "magmawhelp", "cinderfiend"], "acts": [3], "min_floor": 3, "max_floor": 6, "weight": 1.0}
+    {"id": "E", "enemies": ["embermoth", "embermoth", "sootling"], "acts": [1], "min_floor": 5, "max_floor": 9, "weight": 1.0},
+    {"id": "F", "enemies": ["kilnwarden", "cindermoth"], "acts": [2], "min_floor": 1, "max_floor": 9, "weight": 1.0},
+    {"id": "G", "enemies": ["meltgolem", "embermoth", "cindermoth"], "acts": [2], "min_floor": 4, "max_floor": 9, "weight": 1.0},
+    {"id": "H", "enemies": ["cinderfiend", "magmawhelp"], "acts": [3], "min_floor": 1, "max_floor": 9, "weight": 1.0},
+    {"id": "I", "enemies": ["coalseer", "magmawhelp", "cinderfiend"], "acts": [3], "min_floor": 3, "max_floor": 9, "weight": 1.0}
   ],
   "acts": [
     {
       "act": 1,
       "title": "陶原初探",
-      "floor_count": 10,
-      "boss_floor": 9,
+      "floor_count": 15,
+      "boss_floor": 14,
       "boss_id": "chi_the_first",
       "transition_heal": 0.0,
       "act_hp_mult": 1.0,
       "act_dmg_mult": 1.0,
+      "columns": 6,
+      "num_paths": 6,
+      "mid_treasure_floor": 7,
       "enemy_pool": {
         "normal": ["claylump", "sootling", "embermoth", "potsherd", "glazetick", "kilnstatue", "ashcantor"],
         "elite": ["kilnward", "glazemaw", "slagbeast"]
       },
-      "nodes_per_floor": [1, 2, 2, 2, 2, 2, 2, 2, 1, 1],
-      "fixed": {
-        "floor_0": "combat",
-        "floor_4": "shop",
-        "floor_7": "rest",
-        "floor_8": "elite",
-        "floor_9": "boss"
+      "fixed_rows": {
+        "0": "combat",
+        "7": "treasure",
+        "13": "rest",
+        "14": "boss"
+      },
+      "type_gates": {
+        "elite": 3,
+        "rest": 5,
+        "shop": 2
       },
       "type_weights": {
-        "combat": 0.55, "elite": 0.18, "event": 0.12, "shop": 0.08, "rest": 0.10, "treasure": 0.05, "altar": 0.05
+        "combat": 0.50, "elite": 0.18, "event": 0.13, "shop": 0.07, "rest": 0.07, "treasure": 0.05, "altar": 0.06
       }
     },
     {
       "act": 2,
       "title": "炽窑升焰",
-      "floor_count": 9,
-      "boss_floor": 8,
+      "floor_count": 15,
+      "boss_floor": 14,
       "boss_id": "kilnheart_ember",
       "transition_heal": 0.30,
       "act_hp_mult": 1.15,
       "act_dmg_mult": 1.15,
+      "columns": 6,
+      "num_paths": 6,
+      "mid_treasure_floor": 7,
       "enemy_pool": {
         "normal": ["kilnwarden", "cindermoth", "meltgolem", "embermoth", "ashcantor"],
         "elite": ["kiln_captain", "slagbeast"]
       },
-      "nodes_per_floor": [1, 2, 2, 2, 2, 2, 2, 2, 1],
-      "fixed": {
-        "floor_0": "combat",
-        "floor_4": "shop",
-        "floor_6": "rest",
-        "floor_7": "elite",
-        "floor_8": "boss"
+      "fixed_rows": {
+        "0": "combat",
+        "7": "treasure",
+        "13": "rest",
+        "14": "boss"
+      },
+      "type_gates": {
+        "elite": 3,
+        "rest": 5,
+        "shop": 2
       },
       "type_weights": {
-        "combat": 0.50, "elite": 0.22, "event": 0.13, "shop": 0.07, "rest": 0.08, "treasure": 0.06, "altar": 0.05
+        "combat": 0.48, "elite": 0.20, "event": 0.13, "shop": 0.07, "rest": 0.06, "treasure": 0.06, "altar": 0.06
       }
     },
     {
       "act": 3,
       "title": "窑主终焰",
-      "floor_count": 8,
-      "boss_floor": 7,
+      "floor_count": 15,
+      "boss_floor": 14,
       "boss_id": "chi_the_first",
       "transition_heal": 0.20,
       "act_hp_mult": 1.30,
       "act_dmg_mult": 1.30,
+      "columns": 6,
+      "num_paths": 6,
+      "mid_treasure_floor": 7,
       "enemy_pool": {
         "normal": ["cinderfiend", "magmawhelp", "coalseer", "kilnstatue", "glazetick"],
         "elite": ["ember_eater", "glazemaw"]
       },
-      "nodes_per_floor": [1, 2, 2, 2, 2, 2, 2, 1],
-      "fixed": {
-        "floor_0": "combat",
-        "floor_3": "shop",
-        "floor_5": "rest",
-        "floor_6": "elite",
-        "floor_7": "boss"
+      "fixed_rows": {
+        "0": "combat",
+        "7": "treasure",
+        "13": "rest",
+        "14": "boss"
+      },
+      "type_gates": {
+        "elite": 3,
+        "rest": 5,
+        "shop": 2
       },
       "type_weights": {
-        "combat": 0.46, "elite": 0.24, "event": 0.14, "shop": 0.06, "rest": 0.07, "treasure": 0.07, "altar": 0.05
+        "combat": 0.45, "elite": 0.22, "event": 0.13, "shop": 0.06, "rest": 0.06, "treasure": 0.06, "altar": 0.06
       }
     }
   ]

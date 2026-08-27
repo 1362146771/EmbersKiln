@@ -27,6 +27,11 @@ func setup(done: Callable) -> void:
 	_build_main()
 
 
+## P2 场景化：作为独立场景被 change_scene_to_packed 加载时，自构建界面（不依赖外部 setup）。
+func _ready() -> void:
+	_build_main()
+
+
 func _build_main() -> void:
 	for c in get_children():
 		c.queue_free()
@@ -163,8 +168,11 @@ func _on_upgrade_card(i: int) -> void:
 
 
 func _finish() -> void:
-	queue_free()
-	if on_done.is_valid():
+	# 双模兼容：作为独立场景（生产）时置标记并切回地图；作为 verify 的 overlay 子节点时走 on_done 回调。
+	if self == get_tree().current_scene:
+		RunState.pending_node_resolved = true
+		get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
+	elif on_done.is_valid():
 		on_done.call()
 
 

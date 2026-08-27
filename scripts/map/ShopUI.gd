@@ -5,11 +5,12 @@ extends Control
 const CREAM := Color(0.984, 0.953, 0.894)
 const ORANGE := Color(0.941, 0.600, 0.482)
 const GREEN := Color(0.365, 0.792, 0.647)
-const DARK := Color(0.25, 0.20, 0.18)
+const TEXT := Color("f2e8d5")
 const AMBER := Color(0.937, 0.624, 0.153)
 const PURPLE := Color(0.498, 0.467, 0.867)
 const RED := Color(0.847, 0.353, 0.188)
 const BG_DARK := Color(0.12, 0.10, 0.09)
+const CardBrowserScript := preload("res://scripts/ui/CardBrowser.gd")
 
 var on_done: Callable = Callable()
 
@@ -28,13 +29,25 @@ func _solid_bg(color: Color) -> TextureRect:
 var card_stock: Array = []    # [{card:Dictionary, price:int, bought:bool}]
 var relic_stock: Array = []   # [{id:StringName, price:int, bought:bool}]
 var potion_stock: Array = []  # [{id:StringName, price:int, bought:bool}]
-var remove_cost: int = 75
+var remove_cost: int = 0
 var removing: bool = false
+var _remove_browser: CanvasLayer
+var _remove_sources: Array = []
+var _remove_quote := 0
+var _remove_status := ""
+var _finished := false
 
 
 func setup(done: Callable) -> void:
 	on_done = done
 	_generate_stock()
+	_build_main()
+
+
+## P2 场景化：作为独立场景加载时自构建（货架只生成一次，避免重复刷新）。
+func _ready() -> void:
+	if card_stock.is_empty():
+		_generate_stock()
 	_build_main()
 
 
@@ -44,7 +57,7 @@ func _generate_stock() -> void:
 	var cfg: Dictionary = GameData.balance.get("shop", {})
 	var card_prices: Array = cfg.get("card_cost", [50, 75, 100])
 	var relic_prices: Array = cfg.get("relic_cost", [120, 200])
-	remove_cost = int(cfg.get("remove_card_cost", 75))
+	remove_cost = int(cfg["remove_card_cost"])
 
 	var choices: Array = RewardBuilder.roll_card_choices(4)
 	for c in choices:
@@ -74,7 +87,10 @@ func _generate_stock() -> void:
 
 func _build_main() -> void:
 	removing = false
+	_remove_browser = null
+	_remove_sources.clear()
 	for c in get_children():
+		remove_child(c)
 		c.queue_free()
 
 	var dim := _solid_bg(BG_DARK)
@@ -86,10 +102,15 @@ func _build_main() -> void:
 
 	var panel := Panel.new()
 	panel.custom_minimum_size = Vector2(680, 1160)
+	panel.add_theme_stylebox_override("panel", CardBrowserScript.style(Color("3a4554")))
 	center.add_child(panel)
 
 	var v := VBoxContainer.new()
 	v.set_anchors_preset(Control.PRESET_FULL_RECT)
+	v.offset_left = 20
+	v.offset_right = -20
+	v.offset_top = 16
+	v.offset_bottom = -16
 	v.add_theme_constant_override("margin_left", 24)
 	v.add_theme_constant_override("margin_right", 24)
 	v.add_theme_constant_override("margin_top", 22)
@@ -97,11 +118,28 @@ func _build_main() -> void:
 	v.add_theme_constant_override("separation", 14)
 	panel.add_child(v)
 
-	v.add_child(_label("商 店", 40, DARK))
+	v.add_child(_label("商 店", 40, TEXT))
 	v.add_child(_label("金币：%d" % RunState.gold, 26, AMBER))
 
+	# 将永久移除放在金币下方，避免服务入口被货架挤出屏幕。
+	var removal := VBoxContainer.new()
+	removal.add_theme_constant_override("separation", 6)
+	var rm_btn := CardBrowserScript.button("永久移除卡牌 · %d 金" % remove_cost, _on_remove_pressed)
+	rm_btn.name = "RemoveCardButton"
+	rm_btn.disabled = RunState.gold < remove_cost or not RunState.can_remove_card()
+	removal.add_child(rm_btn)
+	var hint := "选牌后确认 · 仅移除本局牌组中的该卡"
+	if not RunState.can_remove_card():
+		hint = "牌组至少保留 %d 张卡" % int(GameData.balance["card_removal"]["minimum_remaining"])
+	elif RunState.gold < remove_cost:
+		hint = "金币不足 · 需要 %d 金，当前 %d 金" % [remove_cost, RunState.gold]
+	if _remove_status != "":
+		hint = _remove_status + "\n" + hint
+	removal.add_child(_label(hint, 20, TEXT))
+	v.add_child(removal)
+
 	# 卡牌货架
-	v.add_child(_label("卡牌", 24, DARK))
+	v.add_child(_label("卡牌", 24, TEXT))
 	var card_scroll := ScrollContainer.new()
 	card_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	card_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -114,11 +152,11 @@ func _build_main() -> void:
 		card_row.add_child(_card_offer(i))
 
 	# 遗物货架
-	v.add_child(_label("遗物", 24, DARK))
+	v.add_child(_label("遗物", 24, TEXT))
 	for i in relic_stock.size():
 		v.add_child(_relic_offer(i))
 	# 药水货架
-	v.add_child(_label("药水", 24, DARK))
+	v.add_child(_label("药水", 24, TEXT))
 	for i in potion_stock.size():
 		v.add_child(_potion_offer(i))
 	# 附魔服务
@@ -130,15 +168,6 @@ func _build_main() -> void:
 	enc_btn.disabled = RunState.gold < enc_cost or not RewardBuilder.can_any_card_enchant()
 	enc_btn.pressed.connect(_on_enchant_pressed.bind(enc_cost))
 	v.add_child(enc_btn)
-
-	# 移除卡
-	var rm_btn := Button.new()
-	rm_btn.text = "移除一张卡（%d 金）" % remove_cost
-	rm_btn.custom_minimum_size = Vector2(560, 64)
-	rm_btn.add_theme_font_size_override("font_size", 22)
-	rm_btn.disabled = RunState.gold < remove_cost or RunState.deck.size() <= 1
-	rm_btn.pressed.connect(_on_remove_pressed)
-	v.add_child(rm_btn)
 
 	# 离开
 	var leave_btn := Button.new()
@@ -164,7 +193,7 @@ func _card_offer(i: int) -> Control:
 	]
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.add_theme_font_size_override("font_size", 20)
-	info.add_theme_color_override("font_color", DARK)
+	info.add_theme_color_override("font_color", TEXT)
 	box.add_child(info)
 
 	var buy := Button.new()
@@ -213,6 +242,8 @@ func _relic_offer(i: int) -> Control:
 
 
 func _on_buy_card(i: int) -> void:
+	if removing:
+		return
 	if i < 0 or i >= card_stock.size():
 		return
 	var item: Dictionary = card_stock[i]
@@ -227,6 +258,8 @@ func _on_buy_card(i: int) -> void:
 
 
 func _on_buy_relic(i: int) -> void:
+	if removing:
+		return
 	if i < 0 or i >= relic_stock.size():
 		return
 	var item: Dictionary = relic_stock[i]
@@ -271,6 +304,8 @@ func _potion_offer(i: int) -> Control:
 
 
 func _on_buy_potion(i: int) -> void:
+	if removing:
+		return
 	if i < 0 or i >= potion_stock.size():
 		return
 	var item: Dictionary = potion_stock[i]
@@ -289,6 +324,8 @@ func _on_buy_potion(i: int) -> void:
 
 
 func _on_enchant_pressed(cost: int) -> void:
+	if removing:
+		return
 	if RunState.gold < cost or not RewardBuilder.can_any_card_enchant():
 		return
 	_build_enchant(cost)
@@ -313,8 +350,8 @@ func _build_enchant(cost: int) -> void:
 	v.add_theme_constant_override("margin_bottom", 22)
 	v.add_theme_constant_override("separation", 12)
 	panel.add_child(v)
-	v.add_child(_label("附魔服务（%d 金）" % cost, 30, DARK))
-	v.add_child(_label("选择要附魔的卡牌", 20, DARK))
+	v.add_child(_label("附魔服务（%d 金）" % cost, 30, TEXT))
+	v.add_child(_label("选择要附魔的卡牌", 20, TEXT))
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	v.add_child(scroll)
@@ -336,7 +373,7 @@ func _build_enchant(cost: int) -> void:
 		var ename: String = ed.name if ed != null else String(eid)
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(600, 56)
-		b.add_theme_color_override("font_color", DARK)
+		b.add_theme_color_override("font_color", TEXT)
 		b.text = "%s -> %s" % [cd.name, ename]
 		b.add_theme_font_size_override("font_size", 20)
 		b.pressed.connect(_on_enchant_card.bind(i, cost))
@@ -376,83 +413,56 @@ func _on_enchant_card(i: int, cost: int) -> void:
 
 
 func _on_remove_pressed() -> void:
-	if RunState.gold < remove_cost or RunState.deck.size() <= 1:
+	if removing or _finished or not is_inside_tree() or is_queued_for_deletion() or RunState.gold < remove_cost or not RunState.can_remove_card():
 		return
 	removing = true
 	_build_remove()
 
 
 func _build_remove() -> void:
-	for c in get_children():
-		c.queue_free()
-
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1080)
-	center.add_child(panel)
-
-	var v := VBoxContainer.new()
-	v.set_anchors_preset(Control.PRESET_FULL_RECT)
-	v.add_theme_constant_override("margin_left", 24)
-	v.add_theme_constant_override("margin_right", 24)
-	v.add_theme_constant_override("margin_top", 22)
-	v.add_theme_constant_override("margin_bottom", 22)
-	v.add_theme_constant_override("separation", 12)
-	panel.add_child(v)
-
-	v.add_child(_label("移除一张卡（%d 金）" % remove_cost, 30, DARK))
-	v.add_child(_label("选择要销毁的卡牌", 20, DARK))
-
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	v.add_child(scroll)
-	var col := VBoxContainer.new()
-	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col.add_theme_constant_override("separation", 10)
-	scroll.add_child(col)
-	for i in RunState.deck.size():
-		var entry: Dictionary = RunState.deck[i]
-		var cd: CardData = GameData.get_card(StringName(entry["id"]))
-		var nm: String = cd.name if cd != null else String(entry["id"])
-		if entry["upgraded"]:
-			nm += "+"
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(600, 56)
-		b.add_theme_color_override("font_color", DARK)
-		b.text = nm
-		b.add_theme_font_size_override("font_size", 20)
-		b.pressed.connect(_on_remove_card.bind(i))
-		col.add_child(b)
-
-	var back := Button.new()
-	back.text = "返回"
-	back.custom_minimum_size = Vector2(300, 60)
-	back.add_theme_font_size_override("font_size", 22)
-	back.pressed.connect(_build_main)
-	v.add_child(back)
+	_remove_sources = RunState.deck.duplicate()
+	_remove_quote = remove_cost
+	var browser := CardBrowserScript.new()
+	browser.setup("永久移除", "商店服务 · %d 金 / 张 · 当前 %d 金\n牌组共 %d 张，选择要移除的卡牌。" % [_remove_quote, RunState.gold, RunState.deck.size()],
+		RunState.deck, true, "确认 · 支付 %d 金" % _remove_quote, "确认后支付 %d 金。取消或重新选牌不会扣费。" % _remove_quote)
+	_remove_browser = browser
+	browser.confirmed.connect(_confirm_remove)
+	browser.closed.connect(func():
+		removing = false
+		_remove_browser = null
+		_remove_sources.clear()
+	)
+	add_child(browser)
 
 
 func _on_remove_card(i: int) -> void:
-	if i < 0 or i >= RunState.deck.size():
+	if removing and is_instance_valid(_remove_browser):
+		_remove_browser.select_card(i)
+
+
+func _confirm_remove(i: int, snapshot: Dictionary) -> void:
+	if not removing or not is_inside_tree():
 		return
-	if RunState.gold < remove_cost:
-		return
-	if not RunState.spend_gold(remove_cost):
-		return
-	RunState.remove_card_at(i)
-	_log("移除卡牌：-%d 金" % remove_cost)
+	removing = false  # 锁定此轮确认，库存信号同步重入不可再次结算。
+	var valid := i >= 0 and i < _remove_sources.size() and i < RunState.deck.size()
+	if valid:
+		valid = RunState.deck[i] == snapshot and is_same(RunState.deck[i], _remove_sources[i])
+	var removed := valid and RunState.try_remove_card(i, _remove_sources[i], _remove_quote)
+	_remove_status = "已永久移除：%s（-%d 金）" % [CardBrowserScript.card_name(snapshot), _remove_quote] if removed else "未移除、未扣费：金币或牌组已变化，请重新选择。"
+	_log(_remove_status)
 	_build_main()
 
 
 func _finish() -> void:
-	queue_free()
-	if on_done.is_valid():
+	if _finished or removing or not is_inside_tree():
+		return
+	_finished = true
+	var tree := get_tree()
+	if self == tree.current_scene:
+		RunState.pending_node_resolved = true
+		tree.change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
+	elif on_done.is_valid():
+		queue_free()
 		on_done.call()
 
 

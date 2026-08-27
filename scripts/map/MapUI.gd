@@ -6,12 +6,12 @@ extends Control
 ## 美术为占位级（代码内建控件），后续由美术设计师细化。
 
 const CombatPlayScene := preload("res://scenes/combat/CombatPlay.tscn")
-const RewardUIScript := preload("res://scripts/rewards/RewardUI.gd")
-const RestUIScript := preload("res://scripts/map/RestUI.gd")
-const ShopUIScript := preload("res://scripts/map/ShopUI.gd")
-const TreasureUIScript := preload("res://scripts/map/TreasureUI.gd")
-const EventUIScript := preload("res://scripts/map/EventUI.gd")
-const AltarUIScript := preload("res://scripts/map/AltarUI.gd")
+const RestScene := preload("res://scenes/map/RestUI.tscn")
+const ShopScene := preload("res://scenes/map/ShopUI.tscn")
+const TreasureScene := preload("res://scenes/map/TreasureUI.tscn")
+const EventScene := preload("res://scenes/map/EventUI.tscn")
+const AltarScene := preload("res://scenes/map/AltarUI.tscn")
+const RewardScene := preload("res://scenes/rewards/RewardUI.tscn")
 
 # ART_STYLE 限制色板
 const CREAM := Color(0.984, 0.953, 0.894)
@@ -58,13 +58,12 @@ const TYPE_SHORT := {
 	&"altar": "坛",
 }
 
-# 布局（虚拟画布 680x1180，竖屏基准 720x1280 内，置于 CenterContainer 内）
+# 布局（虚拟画布宽 680；高度随幕内层数动态，外层 ScrollContainer 纵向滚动）
 const CANVAS_W := 680.0
-const CANVAS_H := 1180.0
 const MARGIN_TOP := 48.0
 const FLOOR_GAP := 120.0
-const NODE_GAP := 180.0
-const NODE_SIZE := 80
+const COL_GAP := 110.0
+const NODE_SIZE := 76
 
 var map_area: Control
 var topbar: HBoxContainer
@@ -84,8 +83,14 @@ func _ready() -> void:
 		push_error("[MapUI] GameData 未就绪")
 		return
 	_build_static_ui()
-	# 战后返回：从 RunState 恢复结算流程（P1 场景化，地图每次重入重建）。
-	# 不再监听 combat_ended——战斗是独立场景，MapUI 不在场；结算改由本分支驱动。
+	# —— 场景化回程分支（P1+P2）：地图每次重入重建，靠 RunState 瞬时标记区分来源 ——
+	# 1) 奖励界面返回：走 _on_reward_done（boss→幕转场/通关，普通→继续面板）
+	if RunState.pending_post_reward:
+		RunState.pending_post_reward = false
+		start_new_map()
+		_on_reward_done()
+		return
+	# 2) 战斗返回：胜利发奖励（场景切到 RewardUI），失败弹结算屏
 	if RunState.pending_post_combat:
 		RunState.pending_post_combat = false
 		var victory := RunState.last_combat_victory
@@ -94,6 +99,12 @@ func _ready() -> void:
 			_show_result(false)
 			return
 		_grant_reward()
+		return
+	# 3) 非战斗节点返回：弹「行动完成」面板
+	if RunState.pending_node_resolved:
+		RunState.pending_node_resolved = false
+		start_new_map()
+		_show_continue_panel("行动完成", "继续前进")
 		return
 	start_new_map()
 
@@ -143,16 +154,16 @@ func _build_static_ui() -> void:
 	topbar.add_child(top_gold)
 	topbar.add_child(top_floor)
 
-	# 地图画布容器（居中）
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	center.offset_top = 40
-	add_child(center)
+	# 地图画布容器（纵向滚动，承载 StS 式高地图）
+	var scroller := ScrollContainer.new()
+	scroller.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scroller.offset_top = 40
+	scroller.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(scroller)
 	map_area = Control.new()
-	map_area.custom_minimum_size = Vector2(CANVAS_W, CANVAS_H)
 	map_area.set_meta("draw", true)
 	map_area.gui_input.connect(_on_map_gui_input)
-	center.add_child(map_area)
+	scroller.add_child(map_area)
 	# 让 map_area 自身负责绘制连线
 	map_area.draw.connect(_on_map_draw)
 
@@ -194,13 +205,16 @@ func _build_map_view() -> void:
 	node_pos.clear()
 
 	var floor_count: int = RunState.current_map().size()
+	var width: int = int(RunState.current_act_config().get("columns", 6))
+	var canvas_h: float = MARGIN_TOP * 2.0 + float(floor_count - 1) * FLOOR_GAP
+	map_area.custom_minimum_size = Vector2(CANVAS_W, canvas_h)
 	for f in floor_count:
 		var row: Array = RunState.current_map()[f]
 		var n: int = row.size()
 		var y: float = MARGIN_TOP + (floor_count - 1 - f) * FLOOR_GAP
 		for i in n:
 			var node = row[i]
-			var x: float = CANVAS_W * 0.5 + (i - (n - 1) / 2.0) * NODE_GAP
+			var x: float = CANVAS_W * 0.5 + (node.col - (width - 1) / 2.0) * COL_GAP
 			node_pos["%d_%d" % [f, i]] = Vector2(x, y)
 			_add_node_button(node, f, i, x, y)
 
@@ -307,35 +321,22 @@ func _start_combat_node(node) -> void:
 
 
 func _start_noncombat(node) -> void:
+	# P2 场景化：非战斗节点改为独立场景切换（不再 add_child 叠加到 MapPlay，避免层级冲突）。
+	# 子屏 _finish 置 pending_node_resolved 后切回本场景，由 _ready 的对应分支重建地图并弹面板。
 	match node.type:
 		&"rest":
-			_open_node_ui(RestUIScript)
+			get_tree().change_scene_to_packed(RestScene)
 		&"treasure":
-			_open_node_ui(TreasureUIScript)
+			get_tree().change_scene_to_packed(TreasureScene)
 		&"shop":
-			_open_node_ui(ShopUIScript)
+			get_tree().change_scene_to_packed(ShopScene)
 		&"event":
-			_open_node_ui(EventUIScript)
+			get_tree().change_scene_to_packed(EventScene)
 		&"altar":
-			_open_node_ui(AltarUIScript)
+			get_tree().change_scene_to_packed(AltarScene)
 		_:
 			_refresh_topbar()
 			_show_continue_panel("未知节点", "继续前进")
-
-
-## 打开一个全屏节点 UI（休息/宝箱/商店/事件），完成后回地图。
-func _open_node_ui(ui_script: Variant) -> void:
-	var ui = ui_script.new()
-	var done := func():
-		_on_node_resolved()
-	ui.setup(done)
-	add_child(ui)
-
-
-## 非战斗节点 UI 处理完毕后，刷新状态并回地图。
-func _on_node_resolved() -> void:
-	_refresh_topbar()
-	_show_continue_panel("行动完成", "继续前进")
 
 
 ## 战斗结束流程已移到 _ready 的 pending_post_combat 分支驱动：
@@ -355,13 +356,11 @@ func _grant_reward() -> void:
 	if potion_id != &"":
 		RunState.add_potion(potion_id)
 	var rw_data := {"tier": tier, "gold": gold, "relic_id": relic_id, "potion_id": potion_id, "cards": cards}
-
-	var done := func():
-		_on_reward_done()
-	var rw = RewardUIScript.new()
-	rw.setup(rw_data, done)
-	add_child(rw)
+	# P2 场景化：奖励界面改为独立场景。先把数据交给 RunState，再切场景；
+	# RewardUI._finish 置 pending_post_reward 后切回本场景，_ready 走 _on_reward_done。
+	RunState.pending_reward_data = rw_data
 	print("[MapUI] 发放奖励 tier=%s 金币+%d 遗物=%s 药水=%s 卡牌%d张" % [tier, gold, relic_id, potion_id, cards.size()])
+	get_tree().call_deferred("change_scene_to_packed", RewardScene)
 
 
 func _on_reward_done() -> void:

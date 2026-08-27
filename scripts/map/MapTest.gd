@@ -1,44 +1,130 @@
 extends Control
-## T3 地图生成冒烟测试。验证：层数、节点数、固定层、连通性、敌人编成、Boss 路径。
+## T3 地图生成测试（StS 式稀疏网格 DAG）。
+## 覆盖：层数/列界/固定层/单 Boss/出入边/连接列差/敌人编成/祭坛≤1/类型门控/BFS 可达；
+## 每幕再压力跑 100 次，校验结构不变量恒成立。
 
 var _results: Array[bool] = []
 var _names: Array[String] = []
 
 
 func _ready() -> void:
+	if not GameData.is_loaded:
+		printerr("[FAIL] GameData 未加载")
+		return
 	RunState.start_new_run()
-	var m: Array = RunState.current_map()
-	var cfg: Dictionary = GameData.map_config
+	var acts: Array = GameData.act_configs
+	for act_cfg in acts:
+		_test_act(act_cfg)
+	_report()
 
-	# 1 层数 == floor_count
-	check("层数 == floor_count", m.size() == int(cfg.get("floor_count", 10)))
 
-	# 2 每层节点数符合 nodes_per_floor
-	var npf: Array = cfg.get("nodes_per_floor", [])
-	var counts_ok := true
-	for f in m.size():
-		var exp := int(npf[f]) if f < npf.size() else 1
-		if m[f].size() != exp:
-			counts_ok = false
-	check("每层节点数符合配置", counts_ok)
+func _test_act(cfg: Dictionary) -> void:
+	var act_id: int = int(cfg.get("act", 0))
+	var width: int = int(cfg.get("columns", 6))
+	var height: int = int(cfg.get("floor_count", 15))
+	var boss_floor: int = height - 1
+	var preboss: int = height - 2
+	var mid_t: int = int(cfg.get("mid_treasure_floor", height / 2))
+	var gates: Dictionary = cfg.get("type_gates", {})
+	var elite_min: int = int(gates.get("elite", 3))
+	var rest_min: int = int(gates.get("rest", 5))
+	var shop_min: int = int(gates.get("shop", 2))
 
-	# 3 固定层类型正确
-	var fixed: Dictionary = cfg.get("fixed", {})
-	for key in fixed.keys():
-		var f := int(String(key).replace("floor_", ""))
-		var t: StringName = StringName(fixed[key])
-		check("固定层 %s == %s" % [key, t], m[f][0].type == t)
+	# 单次结构详细检查
+	var m: Array = MapGenerator.generate(cfg)
+	check("Act%d 层数==floor_count" % act_id, m.size() == height)
+	check("Act%d 首层全 combat" % act_id, _row_all_type(m, 0, &"combat"))
+	check("Act%d 次顶层全 rest" % act_id, _row_all_type(m, preboss, &"rest"))
+	check("Act%d 中层全 treasure" % act_id, _row_all_type(m, mid_t, &"treasure"))
+	check("Act%d 顶层单节点且为 boss" % act_id, _boss_singleton(m, boss_floor))
+	check("Act%d 所有次顶层连向 Boss" % act_id, _all_preboss_link_boss(m, preboss, boss_floor))
+	check("Act%d 列坐标合法(0..width-1)" % act_id, _cols_in_range(m, width))
+	check("Act%d 每非末层节点有出边" % act_id, _all_have_out(m))
+	check("Act%d 每非首层节点可达(有入边)" % act_id, _all_reachable(m))
+	check("Act%d 出边列差合规" % act_id, _link_deltas_ok(m, boss_floor))
+	check("Act%d 战斗/精英/Boss 含敌, 非战斗空" % act_id, _enemy_assignment_ok(m))
+	check("Act%d BFS 可达 Boss" % act_id, _reach_boss(m))
 
-	# 4 每非末层节点都有出边
-	var out_ok := true
+	# 压力：N 次生成，结构不变量必须恒成立
+	var N := 100
+	var altar_max := 0
+	var gates_ok := true
+	var cols_ok := true
+	var boss_ok := true
+	var reachable_ok := true
+	for it in N:
+		var mm: Array = MapGenerator.generate(cfg)
+		var altar := 0
+		for row in mm:
+			for node in row:
+				if node.type == &"altar":
+					altar += 1
+				if node.col < 0 or node.col >= width:
+					cols_ok = false
+				if _gated_bad(node.type, node.floor, elite_min, rest_min, shop_min):
+					gates_ok = false
+		if altar > altar_max:
+			altar_max = altar
+		if not _boss_singleton(mm, boss_floor):
+			boss_ok = false
+		if not _all_reachable(mm):
+			reachable_ok = false
+	check("Act%d 压力:%d次 祭坛≤1(实测max=%d)" % [act_id, N, altar_max], altar_max <= 1)
+	check("Act%d 压力:%d次 类型门控恒定" % [act_id, N], gates_ok)
+	check("Act%d 压力:%d次 列坐标恒定合法" % [act_id, N], cols_ok)
+	check("Act%d 压力:%d次 顶层单Boss恒定" % [act_id, N], boss_ok)
+	check("Act%d 压力:%d次 全节点可达恒定" % [act_id, N], reachable_ok)
+
+
+# ---------- 断言辅助 ----------
+func check(n: String, c: bool) -> void:
+	_names.append(n)
+	_results.append(c)
+
+
+func _row_all_type(m: Array, r: int, t: StringName) -> bool:
+	if r < 0 or r >= m.size():
+		return false
+	if m[r].is_empty():
+		return false
+	for node in m[r]:
+		if node.type != t:
+			return false
+	return true
+
+
+func _boss_singleton(m: Array, boss_floor: int) -> bool:
+	var row: Array = m[boss_floor]
+	if row.size() != 1:
+		return false
+	var b: MapNode = row[0]
+	return b.type == &"boss" and b.enemy_ids.size() == 1
+
+
+func _all_preboss_link_boss(m: Array, preboss: int, boss_floor: int) -> bool:
+	for node in m[preboss]:
+		if node.links.is_empty() or not node.links.has(0):
+			return false
+	return true
+
+
+func _cols_in_range(m: Array, width: int) -> bool:
+	for row in m:
+		for node in row:
+			if node.col < 0 or node.col >= width:
+				return false
+	return true
+
+
+func _all_have_out(m: Array) -> bool:
 	for f in m.size() - 1:
 		for node in m[f]:
 			if node.links.is_empty():
-				out_ok = false
-	check("每非末层节点有出边", out_ok)
+				return false
+	return true
 
-	# 5 每层(除首层)节点都有入边（可达）
-	var reach_ok := true
+
+func _all_reachable(m: Array) -> bool:
 	for f in range(1, m.size()):
 		var incoming: Dictionary = {}
 		for prev in m[f - 1]:
@@ -46,35 +132,41 @@ func _ready() -> void:
 				incoming[j] = true
 		for j in m[f].size():
 			if not incoming.has(j):
-				reach_ok = false
-	check("每层节点可达(有入边)", reach_ok)
-
-	# 6 战斗/精英/Boss 节点含敌人编成
-	var enemy_ok := true
-	for f in m:
-		for node in f:
-			if node.is_combat_like():
-				if node.enemy_ids.is_empty():
-					enemy_ok = false
-	check("战斗/精英/Boss 节点含敌人", enemy_ok)
-
-	# 7 Boss 层节点指向 Boss 敌人
-	var boss_id: StringName = &""
-	for e in GameData.get_enemies_by_tier(&"boss"):
-		boss_id = e.id
-	var last: Array = m[m.size() - 1]
-	check("Boss 层节点指向 Boss 敌人",
-		last[0].type == &"boss" and last[0].enemy_ids.size() == 1 and last[0].enemy_ids[0] == boss_id)
-
-	# 8 从首层 BFS 能到达 Boss 层
-	check("存在通往 Boss 的路径", _reach_boss(m))
-
-	_report()
+				return false
+	return true
 
 
-func check(n: String, c: bool) -> void:
-	_names.append(n)
-	_results.append(c)
+func _link_deltas_ok(m: Array, boss_floor: int) -> bool:
+	for f in m.size() - 1:
+		for node in m[f]:
+			for j in node.links:
+				var target: MapNode = m[f + 1][j]
+				var d: int = absi(node.col - target.col)
+				var limit: int = 2 if (f + 1) == boss_floor else 1
+				if d > limit:
+					return false
+	return true
+
+
+func _enemy_assignment_ok(m: Array) -> bool:
+	for row in m:
+		for node in row:
+			var combat_like: bool = node.type == &"combat" or node.type == &"elite" or node.type == &"boss"
+			if combat_like and node.enemy_ids.is_empty():
+				return false
+			if not combat_like and not node.enemy_ids.is_empty():
+				return false
+	return true
+
+
+func _gated_bad(t: StringName, r: int, elite_min: int, rest_min: int, shop_min: int) -> bool:
+	if t == &"elite" and r < elite_min:
+		return true
+	if t == &"rest" and r < rest_min:
+		return true
+	if t == &"shop" and r < shop_min:
+		return true
+	return false
 
 
 func _reach_boss(m: Array) -> bool:
@@ -103,5 +195,5 @@ func _report() -> void:
 			pass_c += 1
 		print("%s %s" % [mark, _names[i]])
 	var total := _results.size()
-	print("==== T3 地图冒烟 %d/%d PASS ====" % [pass_c, total])
+	print("==== T3 地图(StS式) %d/%d PASS ====" % [pass_c, total])
 	print("RESULT: %s" % ("PASS" if pass_c == total else "FAIL"))

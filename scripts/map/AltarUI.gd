@@ -1,7 +1,8 @@
 extends Control
 ## 附魔祭坛（免费附魔节点，方案B）。
 ## 玩家从牌组中选一张未附魔的卡牌，免费永久套用一个合法附魔。
-## setup(done) 由 MapUI._open_node_ui 调用；完成后 queue_free 并回调 done。
+## setup(done) 由 verify 直接调用（overlay 模式）；生产路径下本脚本作为独立场景被
+## change_scene_to_packed 加载，_ready 自构建，_finish 经 RunState 标记切回地图。
 
 const CREAM := Color(0.984, 0.953, 0.894)
 const ORANGE := Color(0.941, 0.600, 0.482)
@@ -29,7 +30,7 @@ func _solid_bg(color: Color) -> TextureRect:
 	return tr
 
 
-## 由 MapUI._open_node_ui 调用，done 为节点结算回调（_on_node_resolved）。
+## 由 verify 直接调用（done 为可选的 overlay 完成回调）；生产路径不调用，改由 _ready 自构建。
 func setup(done: Callable) -> void:
 	on_done = done
 
@@ -178,8 +179,10 @@ func _show_result(ch: Dictionary, applied: bool) -> void:
 
 
 func _finish() -> void:
-	queue_free()
-	if on_done.is_valid():
+	if self == get_tree().current_scene:
+		RunState.pending_node_resolved = true
+		get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
+	elif on_done.is_valid():
 		on_done.call()
 
 

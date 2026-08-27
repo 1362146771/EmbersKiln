@@ -8,6 +8,7 @@
       "options": [
         {"label": "收集灰烬（获得 30 金）", "effects": {"gold": 30}},
         {"label": "烤暖身体（恢复 14 生命）", "effects": {"heal": 14}},
+        {"label": "投入旧牌（永久移除一张卡牌）", "effects": {"remove_card": true}},
         {"label": "静静离开", "effects": {}}
       ]
     },

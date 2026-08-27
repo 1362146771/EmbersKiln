@@ -7,7 +7,7 @@ var results: Array[String] = []
 var pass_count := 0
 var fail_count := 0
 
-const ALLOWED_EFFECT_KEYS := ["gold", "heal", "lose_hp", "add_card", "add_relic"]
+const ALLOWED_EFFECT_KEYS := ["gold", "heal", "lose_hp", "add_card", "add_relic", "remove_card"]
 
 
 func _ready() -> void:
