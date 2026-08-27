@@ -66,6 +66,8 @@ const COL_GAP := 110.0
 const NODE_SIZE := 76
 
 var map_area: Control
+var map_scroller: ScrollContainer
+var _map_view_revision := 0
 var topbar: HBoxContainer
 var top_act: Label
 var top_hp: Label
@@ -155,15 +157,15 @@ func _build_static_ui() -> void:
 	topbar.add_child(top_floor)
 
 	# 地图画布容器（纵向滚动，承载 StS 式高地图）
-	var scroller := ScrollContainer.new()
-	scroller.set_anchors_preset(Control.PRESET_FULL_RECT)
-	scroller.offset_top = 40
-	scroller.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	add_child(scroller)
+	map_scroller = ScrollContainer.new()
+	map_scroller.set_anchors_preset(Control.PRESET_FULL_RECT)
+	map_scroller.offset_top = 40
+	map_scroller.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(map_scroller)
 	map_area = Control.new()
 	map_area.set_meta("draw", true)
 	map_area.gui_input.connect(_on_map_gui_input)
-	scroller.add_child(map_area)
+	map_scroller.add_child(map_area)
 	# 让 map_area 自身负责绘制连线
 	map_area.draw.connect(_on_map_draw)
 
@@ -199,6 +201,7 @@ func _label(text: String, size: int, color: Color) -> Label:
 # 构建地图节点
 # =====================================================================
 func _build_map_view() -> void:
+	_map_view_revision += 1
 	# 清空旧节点（保留 map_area 本身）
 	for c in map_area.get_children():
 		c.queue_free()
@@ -219,6 +222,27 @@ func _build_map_view() -> void:
 			_add_node_button(node, f, i, x, y)
 
 	map_area.queue_redraw()
+	if floor_count > 0:
+		var player_floor := clampi(RunState.current_floor, 0, floor_count - 1)
+		var player_index := maxi(0, chosen[player_floor])  # 新局/新幕未选节点时定位首层。
+		var key := "%d_%d" % [player_floor, player_index]
+		if node_pos.has(key):
+			var player_position: Vector2 = node_pos[key]
+			_focus_player_position.call_deferred(player_position.y, _map_view_revision)
+
+
+## 等容器完成布局后按实际可视高度居中；到首尾时由滚动范围夹取。
+## 只在地图重建时执行，用户之后可自由滚动，不每帧追踪或抢回视角。
+func _focus_player_position(player_y: float, revision: int) -> void:
+	if not is_inside_tree() or is_queued_for_deletion() or revision != _map_view_revision:
+		return
+	await get_tree().process_frame
+	# 回程可能立即切奖励场景，或同一帧推进新幕；废弃旧布局的定位请求。
+	if not is_inside_tree() or is_queued_for_deletion() or revision != _map_view_revision:
+		return
+	var bar := map_scroller.get_v_scroll_bar()
+	var max_scroll := maxf(0.0, bar.max_value - bar.page)
+	map_scroller.scroll_vertical = roundi(clampf(player_y - bar.page * 0.5, 0.0, max_scroll))
 
 
 func _add_node_button(node, f: int, i: int, x: float, y: float) -> void:
