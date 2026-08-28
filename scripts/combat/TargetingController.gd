@@ -26,30 +26,9 @@ func on_enemy_gui_input(ev: InputEvent, index: int) -> void:
 # 拖拽出牌（P1）：CardView 广播手势 → 解算落点 → 播放 cast 动画 + VFX → 结算
 # =====================================================================
 
-## 轻点：self/none/all_enemies 卡 → 直接对自己（玩家面板）释放并播动画；
-## enemy 卡 → 若有已选/存活目标则对其放，否则拒绝提示。
+## 轻点只查看详情，不消耗能量、不选取默认目标、不结算卡牌。
 func on_card_tapped(view: CardView) -> void:
-	if ui.card_browser_open():
-		return
-	if ui._casting or ui._drag_active or BattleDirector.input_locked or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
-		return
-	var cd: CardData = view.card_data
-	if ui.controller.energy < cd.cost:
-		reject_card(view, "能量不足，可拖到弃牌堆弃置")
-		return
-	if cd.target == &"enemy":
-		var tgt := -1
-		if ui.selected_target >= 0 and ui.selected_target < ui.controller.enemies.size() and ui.controller.enemies[ui.selected_target].is_alive():
-			tgt = ui.selected_target
-		else:
-			tgt = ui._first_alive_index()
-		if tgt < 0:
-			reject_card(view, "没有可攻击的目标")
-			return
-		cast_card(view, tgt)
-	else:
-		# self / none / all_enemies：轻点即对自己释放（仍播动画 + VFX）
-		cast_card(view, -1)
+	ui._open_card_details(view)
 
 
 func on_card_drag_started(view: CardView) -> void:
@@ -65,7 +44,7 @@ func on_card_drag_started(view: CardView) -> void:
 	var gr := view.get_global_rect()
 	ui._ghost = ui.CardViewScene.instantiate()
 	ui._ghost.set_ghost(true)
-	ui._ghost.build_visual(view.card_data, -1, view.enchants)
+	ui._ghost.build_visual(view.card_data, -1, view.enchants, view.upgraded)
 	ui._ghost.custom_minimum_size = gr.size
 	ui.drag_layer.add_child(ui._ghost)
 	ui._ghost.global_position = gr.position
@@ -115,6 +94,8 @@ func build_drop_targets() -> void:
 		ui.drop_layer.set_targets(targets)
 		return
 	targets.append({"node": ui.player_panel, "types": [&"self", &"none"], "index": -1})
+	if ui.player_sprite != null and ui.player_sprite.is_visible_in_tree():
+		targets.append({"node": ui.player_sprite, "types": [&"self", &"none"], "index": -1})
 	for i in ui.controller.enemies.size():
 		var e: CombatUnit = ui.controller.enemies[i]
 		if e.is_alive():
@@ -149,10 +130,11 @@ func discard_card(view: CardView) -> void:
 
 
 ## 施放演出：幽灵卡飞向目标，到达瞬间才真正结算（play_card），既有飘字/血条 VFX 自然接管。
-## 轻点路径无幽灵卡，此处现建一张从原卡位置起飞。
 ## 飞行 + 到达结算 + 元素爆发 + 缓冲统一交给 BattleDirector.play_card_cast（await 编排）；
-## 本方法只负责幽灵卡创建/清理与演出后的刷新解锁。
+## 必须来自当前拖拽，不再保留点击施放或无拖拽直接施放路径。
 func cast_card(view: CardView, target_index: int) -> void:
+	if not ui._drag_active or ui._drag_card != view or ui._ghost == null:
+		return
 	ui._hand.set_discard_hover(false)
 	ui._casting = true
 	ui._drag_active = false
@@ -167,17 +149,6 @@ func cast_card(view: CardView, target_index: int) -> void:
 			target_node = p
 
 	var ghost = ui._ghost
-	if ghost == null:
-		var gr := view.get_global_rect()
-		ghost = ui.CardViewScene.instantiate()
-		ghost.set_ghost(true)
-		ghost.build_visual(cd, -1, view.enchants)
-		ghost.custom_minimum_size = gr.size
-		ui.drag_layer.add_child(ghost)
-		ghost.global_position = gr.position
-		ghost.size = gr.size
-		ui._ghost = ghost
-		view.modulate.a = 0.0                          # 隐藏原卡（轻点路径）
 
 	# 演出（飞行 + 到达结算 + 爆发 + 缓冲）交由 BattleDirector 编排
 	await BattleDirector.play_card_cast(ghost, target_node, cd, idx, target_index, ui.controller)

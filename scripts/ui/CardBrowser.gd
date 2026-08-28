@@ -19,6 +19,10 @@ var _subtitle := ""
 var _confirm_text := ""
 var _warning := ""
 var _finished := false
+var _single_card := false
+var _source_card: Control
+var _popup: PanelContainer
+var _popup_layout_pending := false
 var _cover: ColorRect
 var _body: VBoxContainer
 var _scroll: ScrollContainer
@@ -39,16 +43,25 @@ func setup(title: String, subtitle: String, cards: Array, allow_selection: bool 
 	_warning = warning
 
 
+func setup_details(entry: Dictionary, hint: String, source_card: Control) -> void:
+	setup("", hint, [entry])
+	_single_card = true
+	_source_card = source_card
+
+
 func _ready() -> void:
 	layer = 100  # 高于战斗/VFX，低于全局暂停菜单。
 	_cover = ColorRect.new()
-	_cover.color = Color(0.08, 0.07, 0.08, 0.94)
+	_cover.color = Color.TRANSPARENT if _single_card else Color(0.08, 0.07, 0.08, 0.94)
 	_cover.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_cover.mouse_filter = Control.MOUSE_FILTER_STOP
 	# 独立主题避免从旧浅色页面继承文字颜色。
 	_cover.theme = Theme.new()
 	_cover.theme.default_font = ThemeDB.fallback_font
 	add_child(_cover)
+	if _single_card:
+		_build_popup()
+		return
 	var outer := MarginContainer.new()
 	_cover.add_child(outer)
 	outer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -68,7 +81,7 @@ func _ready() -> void:
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_body.add_child(_scroll)
 	_cards = GridContainer.new()
-	_cards.columns = 2
+	_cards.columns = 1 if _single_card else 2
 	_cards.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_cards.add_theme_constant_override("h_separation", 14)
 	_cards.add_theme_constant_override("v_separation", 14)
@@ -95,6 +108,75 @@ func _ready() -> void:
 	_confirm.hide()
 	footer.add_child(_confirm)
 	_back.grab_focus()
+
+
+## 单卡详情只显示卡片附近的小浮窗；透明输入层用于点外部关闭，不遮暗战斗。
+func _build_popup() -> void:
+	_popup = PanelContainer.new()
+	_popup.name = "CardDetailPopup"
+	_popup.modulate.a = 0.0
+	_popup.mouse_filter = Control.MOUSE_FILTER_STOP
+	var box := style(SLATE, Color("68665e"))
+	box.content_margin_left = 10
+	box.content_margin_right = 10
+	box.content_margin_top = 10
+	box.content_margin_bottom = 10
+	_popup.add_theme_stylebox_override("panel", box)
+	_cover.add_child(_popup)
+	_scroll = ScrollContainer.new()
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_scroll.mouse_filter = Control.MOUSE_FILTER_STOP
+	_popup.add_child(_scroll)
+	_cards = GridContainer.new()
+	_cards.columns = 1
+	_cards.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_scroll.add_child(_cards)
+	_cards.add_child(_card_panel(entries[0], 0, false))
+	_cover.gui_input.connect(_on_popup_backdrop)
+	get_viewport().size_changed.connect(_schedule_popup_layout)
+	_schedule_popup_layout()
+
+
+func _schedule_popup_layout() -> void:
+	if _finished or _popup_layout_pending:
+		return
+	_popup_layout_pending = true
+	_layout_popup.call_deferred()
+
+
+func _layout_popup() -> void:
+	if _finished or not is_instance_valid(_source_card):
+		_popup_layout_pending = false
+		close()
+		return
+	var viewport_rect := get_viewport().get_visible_rect().grow(-8.0)
+	var source_rect := _source_card.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, _source_card.size)
+	# 仅呈现尺寸：比手牌稍大；长文滚动，不扩张为全屏详情。
+	var popup_width := minf(maxf(source_rect.size.x * 1.8, 216.0), viewport_rect.size.x)
+	var max_height := minf(maxf(source_rect.size.y * 1.65, 260.0), viewport_rect.size.y)
+	_popup.size = Vector2(popup_width, max_height)
+	# 容器先按指定宽度折行，再收紧至实际内容高度。
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if _finished:
+		return
+	var content_height := _cards.get_combined_minimum_size().y + 20.0
+	_popup.size.y = minf(maxf(content_height, source_rect.size.y * 1.15), max_height)
+	var position := Vector2(source_rect.get_center().x - _popup.size.x * 0.5, source_rect.position.y - _popup.size.y - 8.0)
+	if position.y < viewport_rect.position.y:
+		position.y = source_rect.end.y + 8.0
+	position.x = clampf(position.x, viewport_rect.position.x, viewport_rect.end.x - _popup.size.x)
+	position.y = clampf(position.y, viewport_rect.position.y, viewport_rect.end.y - _popup.size.y)
+	_popup.position = position
+	_popup.modulate.a = 1.0
+	_popup_layout_pending = false
+
+
+func _on_popup_backdrop(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		_cover.accept_event()
+		if not event.pressed:
+			close()
 
 
 static func label(text: String, font_size: int) -> Label:
@@ -149,18 +231,18 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 	var cd: CardData = GameData.get_card(StringName(entry.get("id", "")))
 	var panel := PanelContainer.new()
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel", style(Color("332831")))
+	panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new() if _single_card else style(Color("332831")))
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 10)
+	column.add_theme_constant_override("separation", 6 if _single_card else 10)
 	panel.add_child(column)
-	var title := label(card_name(entry), 28)
+	var title := label(card_name(entry), 22 if _single_card else 28)
 	if entry.get("upgraded", false):
 		title.add_theme_color_override("font_color", Color("d9a441"))
 	column.add_child(title)
 	if cd != null:
-		column.add_child(label("%d 能量 · %s · %s" % [cd.cost, CardTypes.get(String(cd.type), cd.type), Rarities.get(String(cd.rarity), cd.rarity)], 20))
+		column.add_child(label("%d 能量 · %s · %s" % [cd.cost, CardTypes.get(String(cd.type), cd.type), Rarities.get(String(cd.rarity), cd.rarity)], 18 if _single_card else 20))
 		var texture := GameData.icon_texture(cd.art)
-		if texture != null:
+		if texture != null and not _single_card:
 			var art := TextureRect.new()
 			art.texture = texture
 			art.custom_minimum_size = Vector2(128, 128)
@@ -168,7 +250,7 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 			art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			column.add_child(art)
-		column.add_child(label(cd.get_description(entry.get("upgraded", false)), 22))
+		column.add_child(label(cd.get_description(entry.get("upgraded", false)), 20 if _single_card else 22))
 		if cd.exhaust:
 			column.add_child(label("消耗：打出后本场不再抽到", 20))
 	else:
@@ -176,6 +258,10 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 	for id in entry.get("enchants", []):
 		var enchant: EnchantData = GameData.get_enchant(StringName(id))
 		column.add_child(label("附魔 · %s\n%s" % [enchant.name if enchant != null else String(id), enchant.description if enchant != null else "资料暂不可用"], 20))
+	if _single_card:
+		_hint = label(_subtitle, 18)
+		column.add_child(_hint)
+		column.add_child(label("点击外部关闭", 16))
 	if with_select:
 		var spacer := Control.new()
 		spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -243,6 +329,9 @@ func _input(event: InputEvent) -> void:
 		_go_back()
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey:
+		if _single_card:
+			get_viewport().set_input_as_handled()
+			return
 		# 键盘焦点只能在本窗口内，不能激活底层结束回合/服务按钮。
 		var focus := get_viewport().gui_get_focus_owner()
 		if focus == null or not _cover.is_ancestor_of(focus):

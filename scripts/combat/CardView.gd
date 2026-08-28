@@ -18,6 +18,7 @@ const DRAG_THRESHOLD := 14.0
 var card_index: int = -1
 var card_data: CardData
 var enchants: Array = []
+var upgraded := false
 
 var _pressing := false
 var _dragging := false
@@ -43,10 +44,11 @@ func _ready() -> void:
 
 
 ## 由 CombatUI 调用，填充卡面视觉与索引。ghost 卡传 idx=-1。
-func build_visual(cd: CardData, idx: int, ench: Array) -> void:
+func build_visual(cd: CardData, idx: int, ench: Array, is_upgraded: bool = false) -> void:
 	card_data = cd
 	card_index = idx
 	enchants = ench
+	upgraded = is_upgraded
 	custom_minimum_size = Vector2(120, 180)
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
@@ -56,23 +58,14 @@ func build_visual(cd: CardData, idx: int, ench: Array) -> void:
 		style = _framed_card_style(body, _enchant_frame_color(enchants))
 	add_theme_stylebox_override("panel", style)
 
-	var txt := "%s\n[%d能]\n%s" % [cd.name, cd.cost, cd.get_description(false)]
-	var badge := _enchant_badge_text(enchants)
-	if badge != "":
-		txt += "\n" + badge
+	# 手牌与拖拽卡只保留名称/费用，完整效果及附魔在点击详情中展示。
+	var txt := "%s%s\n[%d能]" % [cd.name, "+" if upgraded else "", cd.cost]
 	# 即时取子节点（不依赖 @onready 时机：build_visual 可能在 add_child 之前被调用）
 	var body_l: Label = $Body
 	body_l.text = txt
 
 	var enchant_icon: TextureRect = $EnchantIcon
-	if not enchants.is_empty():
-		var eid: StringName = enchants[0]
-		var ed: EnchantData = GameData.get_enchant(eid)
-		if ed != null and ed.icon != "":
-			enchant_icon.texture = GameData.icon_texture(ed.icon)
-		enchant_icon.visible = true
-	else:
-		enchant_icon.visible = false
+	enchant_icon.visible = false
 
 
 func set_ghost(v: bool) -> void:

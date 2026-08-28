@@ -48,7 +48,7 @@ var unit_panels := {}      # CombatUnit -> EnemyPanel（持久，刷新只更新
 var _prev_php := -1        # 上一帧玩家 HP（检测治疗飘字）
 var _prev_ehp := {}        # CombatUnit -> int（上一帧敌人 HP，检测治疗飘字）
 
-## 当前选中的攻击目标索引（-1 表示未选，出牌时自动取首个存活敌）
+## 当前选中的药水目标索引（-1 表示未选）；卡牌只由拖拽落点决定目标。
 var selected_target: int = -1
 
 # 拖拽 / 演出层（P1）
@@ -709,6 +709,7 @@ func _refresh_all() -> void:
 # SignalBus 回调（薄转发 + 跨域编排）
 # =====================================================================
 func _on_card_discarded(_card_id: StringName) -> void:
+	_close_card_browser()
 	_hand.refresh_hand()
 
 
@@ -719,6 +720,24 @@ func _on_card_drawn(_card_id: StringName) -> void:
 
 func card_browser_open() -> bool:
 	return is_instance_valid(_card_browser) and not _card_browser.is_queued_for_deletion()
+
+
+func _open_card_details(view: CardView) -> void:
+	if card_browser_open() or _casting or _drag_active or BattleDirector.input_locked or combat_over or controller.phase != CombatController.Phase.PLAYER:
+		return
+	if not is_instance_valid(view) or view.card_index < 0 or view.card_index >= controller.hand.size():
+		return
+	var hint := "拖至玩家使用"
+	match view.card_data.target:
+		&"enemy": hint = "拖至目标敌人使用"
+		&"all_enemies": hint = "拖至任一敌人，作用于全体"
+	if controller.energy < view.card_data.cost:
+		hint += "\n能量不足，仍可弃牌"
+	var browser := CardBrowserScript.new()
+	browser.setup_details(controller.hand[view.card_index], hint, view)
+	_card_browser = browser
+	browser.closed.connect(func(): _card_browser = null)
+	add_child(browser)
 
 
 func _open_draw_pile() -> void:

@@ -23,13 +23,13 @@ func refresh_hand() -> void:
 		if cd == null:
 			continue
 		var enchants: Array = entry.get("enchants", [])
-		var b := build_card_view(cd, i, enchants)
+		var b := build_card_view(cd, i, enchants, entry.get("upgraded", false))
 		ui.hand_container.add_child(b)
 
 
-func build_card_view(cd: CardData, i: int, enchants: Array = []) -> CardView:
+func build_card_view(cd: CardData, i: int, enchants: Array = [], upgraded: bool = false) -> CardView:
 	var v := ui.CardViewScene.instantiate()
-	v.build_visual(cd, i, enchants)
+	v.build_visual(cd, i, enchants, upgraded)
 	v.set_playable(ui.controller.energy >= cd.cost)
 	if ui.combat_over:
 		v.set_enabled(false)
