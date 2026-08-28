@@ -1,0 +1,618 @@
+{
+  "date": "2026-08-28",
+  "status": "installed",
+  "visual_qa": "2026-08-28: inspected all 20 on dark and white backgrounds; inspected and cleared enclosed arm/handle/cloth/claw gaps; preserved pottery, ash and flames. Godot 4.7.1: headless 367/0; Compatibility and default Mobile/D3D12 each 391/0, 24 real combat screenshots; player poses 8/0; Sagger production 40/0. See AI_Studio/Reports/DEV_REPORT_ENEMY_PORTRAIT_ROLLOUT_20260828.md. Full playthrough, device testing, GUT and export NOT VERIFIED.",
+  "presentation_changes": {
+    "scripts/combat/EnemyPanel.gd": {
+      "before": "5b40e2ba68f815f46d4bc67110a9dbd56bec121cce3afb70f246eb8204c52f69",
+      "after": "eac96174f7337e201e3884c31073636af34015a117c980fe3f7d6c7c4964e4f0"
+    },
+    "scripts/combat/EnemyViewManager.gd": {
+      "before": "a4cf4f33a9c2fe375f24c1b5b62aeb9ff37683e14c76adfd2fb6d5380140d4d0",
+      "after": "c0da625b0ad67ed528a6965e09feb21b0d241751817cb2224f733fc26a80acd1"
+    }
+  },
+  "authorization": "用户批准全部新版怪物实装并沿用本地抠图；主角明确排除，匣母保持不变。",
+  "method": "local_exterior_flood_and_narrow_edge_unmatting",
+  "images": [
+    {
+      "key": "EmberEater",
+      "name": "烬噬",
+      "source": "art/enemies/review_20260827_v6/01_EmberEater_celadon.png",
+      "source_sha256": "368fdf8756204de4682603f07f8b227a74e102df4bc07f66b6259e714a699f04",
+      "production": "art/enemies/SPR_Enemy_EmberEater.png",
+      "output_sha256": "4ed120f71c64d4b0f81d8dc7c12bd171b1982795f22e8d062b9079b12a5ff34f",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        72,
+        86,
+        1180,
+        1182
+      ],
+      "transparent": 790323,
+      "partial": 6471,
+      "opaque": 775722,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          900,
+          195
+        ],
+        [
+          411,
+          240
+        ],
+        [
+          910,
+          665
+        ],
+        [
+          853,
+          945
+        ]
+      ],
+      "previous_sha256": "653b179accd6b69c190732b624af65fbdf1c735b0eb687aedcc0b1b36c6c06ea",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_EmberEater.png"
+    },
+    {
+      "key": "KilnheartEmber",
+      "name": "窑心·烬",
+      "source": "art/enemies/review_20260827_v6/02_KilnheartEmber_smoky_violet.png",
+      "source_sha256": "ea1a59f7e2605dc2790beecf71e23de69ffb32a1862647d6c7882b862a1a5772",
+      "production": "art/enemies/SPR_Enemy_KilnheartEmber.png",
+      "output_sha256": "46e89c6355662fa177e41480e35444d0110f7c2ddda04d7e05b7bcf7b315c08e",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        50,
+        54,
+        1173,
+        1227
+      ],
+      "transparent": 823593,
+      "partial": 6879,
+      "opaque": 742044,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          910,
+          650
+        ]
+      ],
+      "previous_sha256": "cd1cdcf866e99080d3c8c96d2b6ea920a7451bfe0ece0649b3a933da642b4348",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_KilnheartEmber.png"
+    },
+    {
+      "key": "Embermoth",
+      "name": "火蛾",
+      "source": "art/enemies/review_20260827_v6/03_Embermoth_dusty_brick.png",
+      "source_sha256": "2e864fbdc08b45400580c31c11c3d4698599a88557ceff10a3be1c44d08c958d",
+      "production": "art/enemies/SPR_Enemy_Embermoth.png",
+      "output_sha256": "73599fcd70fa1a8497324e3eac376550888596d0e7f93e5af6d3a7d4d33decb9",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        59,
+        64,
+        1199,
+        1064
+      ],
+      "transparent": 1091617,
+      "partial": 7198,
+      "opaque": 473701,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          445,
+          810
+        ]
+      ],
+      "previous_sha256": "ab1d17257c2d575f8b78e3d3c2119b5fcea07d909115ea736d08cdb88365edd0",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Embermoth.png"
+    },
+    {
+      "key": "Glazemaw",
+      "name": "釉裂兽",
+      "source": "art/enemies/review_20260827_v6/04_Glazemaw_mist_blue.png",
+      "source_sha256": "0e7ab6cf4eed0b2b540c57e26b1bd9ce359dbc0e1eddb32692804d60383696c4",
+      "production": "art/enemies/SPR_Enemy_Glazemaw.png",
+      "output_sha256": "16eef4ce72096d9e5ffc88f4f1335026ff7925f89ea9167110337e1e9c60df84",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        16,
+        165,
+        1209,
+        1100
+      ],
+      "transparent": 944640,
+      "partial": 6198,
+      "opaque": 621678,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "bf8243ddb6fc5c6598d8a66ab6ad84ebd7dcd854287779fb9d772c4a3182d83b",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Glazemaw.png"
+    },
+    {
+      "key": "Claylump",
+      "name": "陶泥团",
+      "source": "art/enemies/review_20260827_v6/05_Claylump_user_selected.png",
+      "source_sha256": "bd0593956835d0c95ff434189bf9131718d59ce96ec4b03beab140a6d629fe69",
+      "production": "art/enemies/SPR_Enemy_Claylump.png",
+      "output_sha256": "93b928c07f3812ad6535294b94d305415394d17d50f57fd006dbc3f69ccf0ef5",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        146,
+        79,
+        1108,
+        1175
+      ],
+      "transparent": 844891,
+      "partial": 5112,
+      "opaque": 722513,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "d629e2a9ba3a1316488ceed1334de0d6ce39f82f2aa5791aa7b4f418c9c5b0ce",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Claylump.png"
+    },
+    {
+      "key": "Sootling",
+      "name": "煤灰仔",
+      "source": "art/enemies/review_20260827_v6/06_Sootling_user_selected.png",
+      "source_sha256": "f88f89a12973f51e2bf6b0202ccc0984aa2a8a5f92da1e6cb5daf8ce1f31162d",
+      "production": "art/enemies/SPR_Enemy_Sootling.png",
+      "output_sha256": "6ddc040d9851af04c7995131473abf3683c5c52ac66a9e3f37b4f691d42de853",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        217,
+        108,
+        1028,
+        1160
+      ],
+      "transparent": 1161581,
+      "partial": 6788,
+      "opaque": 404147,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "882382b98f604b5018d1e8be0b4b5a1dab8389719d07150da73bb31b436a8a85",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Sootling.png"
+    },
+    {
+      "key": "Potsherd",
+      "name": "陶片兵",
+      "source": "art/enemies/review_20260827_v6/07_Potsherd_new_design_color.png",
+      "source_sha256": "618b995f595ff9d585d1dbd28fde899752f2a3b1b49fcc12d90251fdbc88afe6",
+      "production": "art/enemies/SPR_Enemy_Potsherd.png",
+      "output_sha256": "7acb0bd85cfb3b629a044c0f8690315e2c4548aa4acb561f39f5c5d731df987b",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        94,
+        63,
+        1081,
+        1205
+      ],
+      "transparent": 1172550,
+      "partial": 7822,
+      "opaque": 392144,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "29867ee2d4e8ffae537a4bb7d3016baa58468e7bcb873be25bb2c004a4837451",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Potsherd.png"
+    },
+    {
+      "key": "Glazetick",
+      "name": "釉蛭",
+      "source": "art/enemies/review_20260827_v6/08_Glazetick_new_design_color.png",
+      "source_sha256": "f6042df160d716e24874c6ae8ccd430584b6a408cc864b44ec5ab4a023935c57",
+      "production": "art/enemies/SPR_Enemy_Glazetick.png",
+      "output_sha256": "3fada79a6f27adcef3f013ed3eba52f2328d88e0b2e2db00a6b6b36431d84813",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        47,
+        195,
+        1225,
+        1032
+      ],
+      "transparent": 1022333,
+      "partial": 4192,
+      "opaque": 545991,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "fc44a35207208a9228650b9421383a0662802bc4bb193163b1673b8fd566b323",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Glazetick.png"
+    },
+    {
+      "key": "Kilnstatue",
+      "name": "窑龛像",
+      "source": "art/enemies/review_20260827_v6/09_Kilnstatue_new_design_color.png",
+      "source_sha256": "3313af3778f53735699ec70b3d430aedaae06c246521e32854d7f36cf5b62a3c",
+      "production": "art/enemies/SPR_Enemy_Kilnstatue.png",
+      "output_sha256": "78b5aa37da3e88110e4561c2cba094703a3dc398e481b8c7a5ca5ed93ff6da81",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        302,
+        44,
+        951,
+        1222
+      ],
+      "transparent": 1042873,
+      "partial": 4410,
+      "opaque": 525233,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "c31c21a5f1e87a7c81bc6f033e9048b019ceefbdb638fc34e650a5b7841c186a",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Kilnstatue.png"
+    },
+    {
+      "key": "Ashcantor",
+      "name": "灰颂者",
+      "source": "art/enemies/review_20260827_v8/10_Ashcantor_purple_ash_witch.png",
+      "source_sha256": "ae13acb356be8bb8232b8f25f42588e0992dad4ab75af09bdb3c04b147363f94",
+      "production": "art/enemies/SPR_Enemy_Ashcantor.png",
+      "output_sha256": "774553ce8093df3a203b66fa2a6f70384858b1c9fb9a6b99ae6f97eebbdd86e5",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        130,
+        65,
+        1135,
+        1204
+      ],
+      "transparent": 905150,
+      "partial": 17064,
+      "opaque": 650302,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          1025,
+          961
+        ],
+        [
+          177,
+          1041
+        ]
+      ],
+      "previous_sha256": "87209576d5797949fa67bc9007f8bc1f77758d05bd32f99f1684223f3ebdf694",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Ashcantor.png"
+    },
+    {
+      "key": "Kilnward",
+      "name": "陶偶将",
+      "source": "art/enemies/review_20260827_v6/11_Kilnward_new_design_color.png",
+      "source_sha256": "814e6c1b329019f0d5ede78a9d2e98d60a1159a7a1d7f04ab2fa847955210d10",
+      "production": "art/enemies/SPR_Enemy_Kilnward.png",
+      "output_sha256": "5b4076bbb9c0910f5577c741de1e51fe2db77fcd4b7873c7ac7d36fdd105db7b",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        211,
+        38,
+        956,
+        1218
+      ],
+      "transparent": 1109218,
+      "partial": 5019,
+      "opaque": 458279,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          790,
+          610
+        ]
+      ],
+      "previous_sha256": "e527e9b3107311b4d7435dcf098879bcb42a486806d065bb6f14fd14ca2225bd",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Kilnward.png"
+    },
+    {
+      "key": "Slagbeast",
+      "name": "熔渣兽",
+      "source": "art/enemies/review_20260827_v6/12_Slagbeast_new_design_color.png",
+      "source_sha256": "b0750b13e9ca37ec44e8a570d7a2d96184bad9bcf0e2a4a2cca16f106e845b05",
+      "production": "art/enemies/SPR_Enemy_Slagbeast.png",
+      "output_sha256": "3df708b9f7f3d3bb90ff4f76afe7a0e7940a1f7581f385ff6262181acbe62ffe",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        73,
+        84,
+        1141,
+        1139
+      ],
+      "transparent": 812353,
+      "partial": 5542,
+      "opaque": 754621,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          844,
+          675
+        ]
+      ],
+      "previous_sha256": "37113da07c3fe9dc13cbb8c61dc0b474d7cb0ce430d7853674e1eedefd5f3715",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Slagbeast.png"
+    },
+    {
+      "key": "Kilnwarden",
+      "name": "炽窑卫",
+      "source": "art/enemies/review_20260827_v7/13_Kilnwarden_head_fire.png",
+      "source_sha256": "08fed092e35c7b9e77cefd7d0f3a118e87335d753f3c055d2c30db9ad95def0b",
+      "production": "art/enemies/SPR_Enemy_Kilnwarden.png",
+      "output_sha256": "8857f803e9d13c5710bd6a1bd34e323d1edf242c088babaea3c4de248c1bcd59",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        171,
+        28,
+        933,
+        1205
+      ],
+      "transparent": 1226298,
+      "partial": 6300,
+      "opaque": 339918,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          800,
+          530
+        ],
+        [
+          380,
+          850
+        ]
+      ],
+      "previous_sha256": "931973a9f65aa061a159393bda91b7a255a298e908825ff8cad40e85c4a76251",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Kilnwarden.png"
+    },
+    {
+      "key": "Cindermoth",
+      "name": "烬蝶",
+      "source": "art/enemies/review_20260827_v7/14_Cindermoth_ash_texture.png",
+      "source_sha256": "841db5a7798e52f924cf06bf8e05d1474900eef287bd47c8de0a95b67d6cf695",
+      "production": "art/enemies/SPR_Enemy_Cindermoth.png",
+      "output_sha256": "59f286b7f5177d018b666025b3579136a1a04cfc43a320efc39e968dba7727e2",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        47,
+        35,
+        1173,
+        1159
+      ],
+      "transparent": 1114683,
+      "partial": 7119,
+      "opaque": 450714,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "c6f0d9e2ebc02e83298741e12a7ad037928184342abb18bfa8c0f9b6bf2e15b3",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Cindermoth.png"
+    },
+    {
+      "key": "Meltgolem",
+      "name": "熔心傀儡",
+      "source": "art/enemies/review_20260827_v7/15_Meltgolem_roaring_furnace.png",
+      "source_sha256": "898110d8ce6faaa56fa334ee3ceefbfe74a9fb886c1840857fe1c5a20929233d",
+      "production": "art/enemies/SPR_Enemy_Meltgolem.png",
+      "output_sha256": "de2be5a2e0dcbf92f550239c8686737d2c8c27852e89d45d3fb748742b87ec3b",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        63,
+        60,
+        1201,
+        1190
+      ],
+      "transparent": 751620,
+      "partial": 6224,
+      "opaque": 814672,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          856,
+          600
+        ],
+        [
+          840,
+          780
+        ]
+      ],
+      "previous_sha256": "38eea6cba76baee466b2579d36ca7b12df8ce2cf20cce7a9ffcdfbb5549e13e2",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Meltgolem.png"
+    },
+    {
+      "key": "KilnCaptain",
+      "name": "窑卫长",
+      "source": "art/enemies/review_20260827_v6/16_KilnCaptain_new_design_color.png",
+      "source_sha256": "6bbdddd8aad1adbe94f2a97ed5d257cd3b186852ee0fd347454084d1f5fc8811",
+      "production": "art/enemies/SPR_Enemy_KilnCaptain.png",
+      "output_sha256": "14af0f9b448df93470eef2a84a080958414ffc189a9c8bce94d556e5b034f808",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        45,
+        21,
+        911,
+        1238
+      ],
+      "transparent": 1121716,
+      "partial": 5980,
+      "opaque": 444820,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          700,
+          515
+        ]
+      ],
+      "previous_sha256": "457f4260cc5ee74c0bf1bdaa8dd7a2b30be064aae4bc55a34f371e40c78e8728",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_KilnCaptain.png"
+    },
+    {
+      "key": "Cinderfiend",
+      "name": "烬魈",
+      "source": "art/enemies/review_20260827_v6/17_Cinderfiend_new_design_color.png",
+      "source_sha256": "3f3bbd5f27557eac57d246636725721e8ed6280bc6d9209170842b3584d092db",
+      "production": "art/enemies/SPR_Enemy_Cinderfiend.png",
+      "output_sha256": "44bf7ded3e4891a735cac93d16800e60c86086cb57f856e64ebde260ec9a2151",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        79,
+        55,
+        1170,
+        1199
+      ],
+      "transparent": 1016530,
+      "partial": 10708,
+      "opaque": 545278,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          877,
+          530
+        ],
+        [
+          941,
+          840
+        ],
+        [
+          984,
+          895
+        ]
+      ],
+      "previous_sha256": "585914d4d994d7d5cc88095264019fb2464adac202d0dbb8489b68ea2bae8778",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Cinderfiend.png"
+    },
+    {
+      "key": "Magmawhelp",
+      "name": "岩浆幼兽",
+      "source": "art/enemies/review_20260827_v6/18_Magmawhelp_new_design_color.png",
+      "source_sha256": "f42ae0ba3a6a823b3137ad78405ea6fb95b66226382d2578f48c13d5ec45edd2",
+      "production": "art/enemies/SPR_Enemy_Magmawhelp.png",
+      "output_sha256": "a6a9d03755686468d30b7a02a3f67f73a70d943e81085334bb474343a6e0ecf3",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        80,
+        169,
+        1213,
+        1079
+      ],
+      "transparent": 1003298,
+      "partial": 4885,
+      "opaque": 564333,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "adc4c29c75be6b5092824d724418ee3fd79793b1600b78e1fc24817fa5e71eab",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Magmawhelp.png"
+    },
+    {
+      "key": "Coalseer",
+      "name": "煤烟先知",
+      "source": "art/enemies/review_20260827_v7/19_Coalseer_human_feet.png",
+      "source_sha256": "ab45b0847584b15afd462737cf74823f9c693214d1be2e2145568fe4bb8138eb",
+      "production": "art/enemies/SPR_Enemy_Coalseer.png",
+      "output_sha256": "85d9b206c624b4e9936f2b97e66b42e9263c5d46c53681cfcfa883af9e6794e3",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        258,
+        28,
+        897,
+        1230
+      ],
+      "transparent": 1114979,
+      "partial": 4170,
+      "opaque": 453367,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [],
+      "previous_sha256": "d0df5d3541c14c5e70d77c6ed3f7f3b9d3e43c6c3765d4f24a0d2bc57a994646",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_Coalseer.png"
+    },
+    {
+      "key": "ChiTheFirst",
+      "name": "窑主·熾",
+      "source": "art/enemies/review_20260827_v8/20_ChiTheFirst_possessed_undead.png",
+      "source_sha256": "90d2da1e2d4417540dbfcdf85e3669aa6da7f7dec14cfbe91ab6c6bc8e2de2e8",
+      "production": "art/enemies/SPR_Enemy_ChiTheFirst.png",
+      "output_sha256": "ac674964ee76098db08ac3aa66faf5777e089758a7729bfcf1ab97f77a6cdb77",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_bbox": [
+        42,
+        15,
+        1203,
+        1231
+      ],
+      "transparent": 737611,
+      "partial": 19755,
+      "opaque": 815150,
+      "opaque_rgb_unchanged": true,
+      "gap_seeds": [
+        [
+          870,
+          650
+        ],
+        [
+          390,
+          560
+        ],
+        [
+          925,
+          1020
+        ],
+        [
+          1103,
+          1055
+        ]
+      ],
+      "previous_sha256": "a277a9b3ce479f4b17a1cdc284e5cf966890eb90d8b426a5951791d1d92cc016",
+      "backup": "art/_archive/enemies_before_20260828/SPR_Enemy_ChiTheFirst.png"
+    }
+  ]
+}
