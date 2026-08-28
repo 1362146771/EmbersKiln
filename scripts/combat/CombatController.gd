@@ -150,8 +150,8 @@ func _start_player_turn() -> void:
 	player.block = 0
 	_status.process_turn_start_statuses(player)
 	_status.apply_player_start_turn_powers()
-	_apply_relics_combat_start()   # 遗物：开局（格挡/炽热/抽牌）— 必须在 block 清零之后
 	if turn == 1:
+		_apply_relics_combat_start()  # 战斗开始遗物仅首回合触发，且必须在 block 清零之后
 		_apply_relics_first_turn()  # 遗物：第一回合额外能量
 
 	# 抽牌
