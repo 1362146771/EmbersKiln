@@ -1,5 +1,6 @@
 extends Control
 ## 宝箱：卡牌 / 遗物 / 药水三选一，仅领取一次；独立场景或 done 回调回地图。
+const CardBrowserScript := preload("res://scripts/ui/CardBrowser.gd")
 
 const CREAM := Color(0.984, 0.953, 0.894)
 const AMBER := Color(0.937, 0.624, 0.153)
@@ -11,6 +12,13 @@ var on_done: Callable = Callable()
 var _claimed := false
 var _finished := false
 var _choice_buttons: Array[Button] = []
+var _choice_panel: Panel
+var _result_panel: PanelContainer
+var _result_title: Label
+var _result_icon: TextureRect
+var _result_name: Label
+var _result_description: Label
+var _continue_button: Button
 
 func _solid_bg(color: Color) -> TextureRect:
 	var img := Image.create(4, 4, false, Image.FORMAT_RGBA8)
@@ -49,6 +57,7 @@ func _build_main() -> void:
 	add_child(center)
 
 	var panel := Panel.new()
+	_choice_panel = panel
 	panel.custom_minimum_size = Vector2(680, 980)
 	center.add_child(panel)
 
@@ -86,6 +95,42 @@ func _build_main() -> void:
 	potion_btn.pressed.connect(_on_take_potion)
 	_choice_buttons.append(potion_btn)
 	v.add_child(potion_btn)
+	_build_result(center)
+
+
+func _build_result(center: CenterContainer) -> void:
+	_result_panel = PanelContainer.new()
+	_result_panel.custom_minimum_size = Vector2(620, 0)
+	_result_panel.add_theme_stylebox_override("panel", CardBrowserScript.style(CardBrowserScript.SLATE))
+	center.add_child(_result_panel)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 24)
+	_result_panel.add_child(column)
+	_result_title = CardBrowserScript.label("获得遗物", 56)
+	column.add_child(_result_title)
+	_result_icon = TextureRect.new()
+	_result_icon.custom_minimum_size = Vector2(128, 128)
+	_result_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_result_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	column.add_child(_result_icon)
+	_result_name = CardBrowserScript.label("", 32)
+	column.add_child(_result_name)
+	_result_description = CardBrowserScript.label("", 26)
+	column.add_child(_result_description)
+	_continue_button = CardBrowserScript.button("继续", _finish)
+	column.add_child(_continue_button)
+	_result_panel.hide()
+
+
+func _show_result(title: String, reward_name: String, description: String, icon: String = "") -> void:
+	_result_title.text = title
+	_result_name.text = reward_name
+	_result_description.text = description
+	_result_icon.texture = GameData.icon_texture(icon)
+	_result_icon.visible = _result_icon.texture != null
+	_choice_panel.hide()
+	_result_panel.show()
+	_continue_button.grab_focus()
 
 
 func _on_take_card() -> void:
@@ -96,13 +141,14 @@ func _on_take_card() -> void:
 
 
 ## 共用发卡逻辑：遗物池空时仍走当前领取，不再次进入带锁的按钮回调。
-func _grant_card() -> void:
+func _grant_card() -> Dictionary:
 	var cd: Dictionary = RewardBuilder.roll_single_card()
 	if cd.is_empty():
 		_log("卡牌池为空")
-		return
+		return {}
 	RunState.add_card(StringName(cd.get("id", "")), false)
 	_log("宝箱获得卡牌：%s" % cd.get("name", ""))
+	return cd
 
 
 func _on_take_relic() -> void:
@@ -111,11 +157,17 @@ func _on_take_relic() -> void:
 	var rid: StringName = RewardBuilder.roll_shop_relic()
 	if rid == &"":
 		_log("遗物已全部拥有，改发卡牌")
-		_grant_card()
+		var card := _grant_card()
+		if card.is_empty():
+			_show_result("宝箱已打开", "暂无可领取的奖励", "遗物已全部拥有，卡牌池为空。")
+		else:
+			_show_result("获得卡牌", String(card.get("name", "")), "遗物已全部拥有，改为获得卡牌。\n\n" + String(card.get("desc", "")))
 	else:
 		RunState.add_relic(rid)
-		_log("宝箱获得遗物：%s" % rid)
-	_finish()
+		var relic: RelicData = GameData.get_relic(rid)
+		var relic_name := relic.name if relic != null else String(rid)
+		_log("宝箱获得遗物：%s" % relic_name)
+		_show_result("获得遗物", relic_name, relic.description if relic != null else "遗物资料暂不可用。", relic.icon if relic != null else "")
 
 
 func _on_take_potion() -> void:
@@ -147,7 +199,7 @@ func _disable_choices() -> void:
 
 
 func _finish() -> void:
-	if _finished or not is_inside_tree():
+	if _finished or not _claimed or not is_inside_tree():
 		return
 	_finished = true
 	_claimed = true
