@@ -17,7 +17,7 @@
       "title": "陶原初探",
       "floor_count": 15,
       "boss_floor": 14,
-      "boss_id": "chi_the_first",
+      "boss_id": "sagger_matron",
       "transition_heal": 0.0,
       "act_hp_mult": 1.0,
       "act_dmg_mult": 1.0,

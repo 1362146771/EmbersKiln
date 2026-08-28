@@ -23,11 +23,11 @@ var _index: int = -1
 
 
 ## 填充动态内容。enemy_count 用于决定立绘尺寸（1 个大、2 个中、3+ 个小）。
-func build(e: CombatUnit, index: int, selected: bool, enemy_count: int) -> void:
+func build(e: CombatUnit, index: int, selected: bool, enemy_count: int, controller: CombatController = null) -> void:
 	_index = index
 	# 单敌面板已收紧高度以容纳顶部遗物栏；图片仍保持原始比例。
 	var ic_sz := 280 if enemy_count <= 1 else (300 if enemy_count == 2 else 260)
-	_intent_l.text = _format_intent(e)
+	_intent_l.text = _format_intent(e, controller)
 	var ed := e.data as EnemyData
 	if ed != null:
 		var tex := ed.sprite_texture()
@@ -38,10 +38,15 @@ func build(e: CombatUnit, index: int, selected: bool, enemy_count: int) -> void:
 	_hp_bar.max_value = e.max_hp
 	_hp_bar.value = e.hp
 	_status_l.text = "格挡 %d    %s" % [e.block, _status_text(e)]
+	if e.block_break_next != &"":
+		_status_l.text = "封匣格挡 %d    %s" % [e.block, _status_text(e)]
 	self_modulate = HILITE if selected else Color.WHITE
 
 
-func _format_intent(e: CombatUnit) -> String:
+func _format_intent(e: CombatUnit, controller: CombatController = null) -> String:
+	var scripted := format_scripted_intent(e, controller)
+	if not scripted.is_empty():
+		return scripted
 	var kind: String = e.intent.get("intent", "未知")
 	if kind == "charge":
 		var nx := StringName(e.intent.get("next", ""))
@@ -61,6 +66,31 @@ func _format_intent(e: CombatUnit) -> String:
 	if times > 1:
 		t += " ×%d" % times
 	return t
+
+
+## 新循环 Boss 的双行提示；复用真实 outgoing 计算，不另写伤害倍率。
+static func format_scripted_intent(e: CombatUnit, controller: CombatController = null) -> String:
+	var ed := e.data as EnemyData
+	if ed == null or ed.ai != &"scripted_cycle":
+		return ""
+	var mv := e.intent
+	var title: String = mv.get("name", mv.get("id", ""))
+	var kind: String = mv.get("intent", "unknown")
+	if kind == "charge":
+		var release := ed.find_move(StringName(mv.get("next", "")))
+		var value := GameData.scaled_enemy_damage(int(release.get("value", 0)))
+		if controller != null:
+			value = controller.enemy_outgoing(e, value)
+		return "%s 格挡 %d\n下回合喷火 %d" % [title, int(mv.get("value", 0)), value]
+	if kind == "attack":
+		var value := int(mv.get("value", 0))
+		if controller != null:
+			value = controller.enemy_outgoing(e, value)
+		var text := "%s %d" % [title, value]
+		if e.block_break_next != &"":
+			text += "\n打掉格挡可打断"
+		return text
+	return "%s · 不攻击" % title
 
 
 func _intent_cn(kind: String) -> String:

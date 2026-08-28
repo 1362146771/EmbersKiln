@@ -253,17 +253,30 @@ func _add_node_button(node, f: int, i: int, x: float, y: float) -> void:
 	b.add_theme_color_override("font_color", Color.WHITE)
 	b.add_theme_color_override("font_pressed_color", Color.WHITE)
 	var ename := "?"
+	var enemy_hint := ""
 	var label_txt: String = TYPE_SHORT.get(node.type, "?")
 	if node.type == &"combat" or node.type == &"elite" or node.type == &"boss":
 		if node.enemy_ids.size() > 0:
 			var ed: EnemyData = GameData.get_enemy(StringName(node.enemy_ids[0]))
 			if ed != null:
 				ename = ed.name
+				if node.type == &"boss":
+					enemy_hint = ed.combat_hint
 		# 地图节点只显示类型文字，怪物立绘留给战斗界面；敌名见 tooltip
 		label_txt = "%s\n%s" % [TYPE_SHORT.get(node.type, "?"), ename]
 	b.text = label_txt
 	b.add_theme_font_size_override("font_size", 20)
 	b.tooltip_text = "第 %d 层 · %s · %s" % [f, String(node.type), ename]
+	if not enemy_hint.is_empty():
+		b.tooltip_text += "\n" + enemy_hint
+		# 手机端不能依赖悬停：Boss节点下直接显示数据中的机制提示。
+		var hint := _label(enemy_hint, 20, DARK)
+		hint.name = "BossCombatHint"
+		hint.position = Vector2(10, y + NODE_SIZE * 0.5 + 4)
+		hint.size = Vector2(CANVAS_W - 20, 30)
+		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		map_area.add_child(hint)
 
 	var reachable: bool = _is_reachable(f, i)
 	b.disabled = not reachable

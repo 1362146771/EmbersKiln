@@ -681,6 +681,24 @@
       "sprite": "SPR_Enemy_KilnheartEmber"
     },
     {
+      "id": "sagger_matron",
+      "name": "封窑兽·匣母",
+      "tier": "boss",
+      "hp": 160,
+      "ai": "scripted_cycle",
+      "first_move": "bar",
+      "description": "她记得护坯，忘了开匣。",
+      "combat_hint": "封匣蓄火时，打掉格挡可阻止喷火。",
+      "moves": [
+        {"id": "bar", "name": "拦路", "intent": "attack", "value": 12, "next": "seal"},
+        {"id": "seal", "name": "封匣", "intent": "charge", "value": 14, "next": "fire", "on_block_break": "vent"},
+        {"id": "fire", "name": "开窑", "intent": "attack", "value": 20, "next": "cool"},
+        {"id": "vent", "name": "泄压", "intent": "unknown", "next": "cool"},
+        {"id": "cool", "name": "散热", "intent": "unknown", "next": "bar"}
+      ],
+      "sprite": "SPR_Enemy_SaggerMatron"
+    },
+    {
       "id": "chi_the_first",
       "name": "窑主·熾",
       "tier": "boss",

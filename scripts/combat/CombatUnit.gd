@@ -24,6 +24,8 @@ var intent: Dictionary = {}
 ## 蓄力招式（charge/telegraph）释放后要强制打出的招式 id。
 ## 非空时，下一回合 _roll_enemy_intent 会跳过随机、直接打出该招，给玩家决策窗口。
 var charge_next: StringName = &""
+## 仅由蓄力实际生效开启；由真实伤害耗尽格挡触发，回合自然清盾不触发。
+var block_break_next: StringName = &""
 
 ## 当前所处阶段索引（仅 Boss 等 scripted_phases 敌人使用，-1 表示尚未初始化）。
 ## 用于检测阶段切换并触发该阶段的 on_enter（如觉醒自身加炽热）。
@@ -43,7 +45,10 @@ func setup(p_is_player: bool, p_id: StringName, p_name: String, p_hp: int, p_spr
 	block = 0
 	sprite = p_sprite
 	statuses.clear()
-	intent.clear()
+	# 非伤害意图可能引用 EnemyData 的招式；重置单元不能清空配置字典。
+	intent = {}
+	charge_next = &""
+	block_break_next = &""
 
 
 # ---------- 生命 / 格挡 ----------

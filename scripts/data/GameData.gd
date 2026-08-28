@@ -150,6 +150,8 @@ func _validate() -> void:
 
 	for eid in enemies:
 		var e: EnemyData = enemies[eid]
+		for cycle_error in e.cycle_validation_errors():
+			load_errors.append("敌人 %s 循环配置错误：%s" % [eid, cycle_error])
 		for mv in e.moves:
 			if mv is Dictionary and mv.has("status"):
 				var sid := StringName(mv["status"])

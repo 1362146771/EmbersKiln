@@ -180,6 +180,8 @@ func end_player_turn() -> void:
 ## 敌方回合开始：清旧格挡 + 回合开始状态（ashrot 等可能致死 → _post_enemy_death）。
 ## 返回行动后是否仍存活。
 func enemy_pre(e: CombatUnit) -> bool:
+	# 随从已在此前行动，破封窗口到此关闭；自然清盾不得取消尚未被打断的喷火。
+	e.block_break_next = &""
 	e.block = 0
 	_status.process_turn_start_statuses(e)
 	return e.is_alive()

@@ -136,7 +136,7 @@ func _test_act_scaling_and_pools() -> void:
 	check("Act1 HP 缩放=基础", GameData.scaled_enemy_hp(100) == 100, "scaled=%d" % GameData.scaled_enemy_hp(100))
 	check("Act1 伤害缩放=基础", GameData.scaled_enemy_damage(10) == 10, "scaled=%d" % GameData.scaled_enemy_damage(10))
 	_check_pool_isolation(0)
-	check("Act1 Boss=窑主·熾", _act_boss_id(0) == "chi_the_first", "boss=%s" % _act_boss_id(0))
+	check("Act1 Boss=封窑兽·匣母", _act_boss_id(0) == "sagger_matron", "boss=%s" % _act_boss_id(0))
 
 	RunState.advance_act()   # → Act2（×1.15）
 	check("Act2 HP 缩放×1.15", GameData.scaled_enemy_hp(100) == 115, "scaled=%d" % GameData.scaled_enemy_hp(100))
@@ -148,7 +148,7 @@ func _test_act_scaling_and_pools() -> void:
 	check("Act3 HP 缩放×1.30", GameData.scaled_enemy_hp(100) == 130, "scaled=%d" % GameData.scaled_enemy_hp(100))
 	check("Act3 伤害缩放×1.30", GameData.scaled_enemy_damage(10) == 13, "scaled=%d" % GameData.scaled_enemy_damage(10))
 	_check_pool_isolation(2)
-	check("Act3 Boss=窑主·熾(复用)", _act_boss_id(2) == "chi_the_first", "boss=%s" % _act_boss_id(2))
+	check("Act3 Boss=窑主·熾", _act_boss_id(2) == "chi_the_first", "boss=%s" % _act_boss_id(2))
 
 
 ## 校验指定幕地图内所有 combat/elite 节点的敌人都落在该幕 enemy_pool 内。

@@ -20,6 +20,13 @@ func index_of_ally(a: CombatUnit) -> int:
 ## 若上一回合处于蓄力（charge_next 非空），则跳过随机、直接强制打出释放招式。
 func roll_enemy_intent(e: CombatUnit) -> void:
 	var ed: EnemyData = e.data
+	if ed != null and ed.ai == &"scripted_cycle":
+		var nx: StringName = ed.first_move if e.intent.is_empty() else StringName(e.intent.get("next", ""))
+		# 当前意图可能已被破封分支替换，必须从替换后的 next 继续，不能随机选招。
+		e.charge_next = &""
+		e.intent = scale_intent_damage(ed.find_move(nx))
+		SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
+		return
 	if e.charge_next != &"":
 		var forced: Dictionary = {}
 		if ed != null:
@@ -51,6 +58,23 @@ func roll_enemy_intent(e: CombatUnit) -> void:
 		StringName(e.intent.get("intent", "unknown")),
 		int(e.intent.get("value", 0))
 	)
+
+
+## 只从 DamageResolver 的真实扣盾路径调用；死亡与自然清盾不换意图。
+func interrupt_on_block_break(e: CombatUnit, block_before: int) -> void:
+	if not e.is_alive() or block_before <= 0 or e.block > 0 or e.block_break_next == &"":
+		return
+	var ed := e.data as EnemyData
+	if ed == null:
+		return
+	var replacement := ed.find_move(e.block_break_next)
+	if replacement.is_empty():
+		return
+	e.block_break_next = &""
+	e.charge_next = &""
+	e.intent = scale_intent_damage(replacement)
+	ctrl._log("%s 封匣破裂 → %s" % [e.unit_name, replacement.get("name", "泄压")])
+	SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
 
 ## 伤害类意图（attack / aoe_debuff）按难度系数 × 当前幕 act_dmg_mult 缩放（P-D 接线）。
 ## 注意：choose_intent 返回的是 EnemyData.moves 内部字典的引用，必须 duplicate 后再改。
@@ -101,8 +125,10 @@ func execute_enemy_intent(e: CombatUnit) -> void:
 				ctrl._apply_status(ctrl.player, sid, value)
 		"charge":
 			var brace: int = int(mv.get("value", 0))
+			e.block_break_next = &""
 			if brace > 0:
 				e.add_block(brace)
+				e.block_break_next = StringName(mv.get("on_block_break", ""))
 			var nx := StringName(mv.get("next", ""))
 			if nx != &"":
 				e.charge_next = nx

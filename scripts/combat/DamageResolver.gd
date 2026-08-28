@@ -21,7 +21,10 @@ func compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int) -> in
 	return maxi(0, dmg)
 
 func deal_to_unit(unit: CombatUnit, final_dmg: int) -> void:
+	var block_before := unit.block
 	unit.apply_damage(final_dmg)
+	if ctrl.enemies.has(unit):
+		ctrl._intent.interrupt_on_block_break(unit, block_before)
 	SignalBus.damage_dealt.emit(not unit.is_player, ctrl._index_of(unit), final_dmg)
 	if unit.is_player:
 		ctrl._sync_player_hp()

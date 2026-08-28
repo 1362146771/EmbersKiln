@@ -8,6 +8,10 @@ extends Resource
 @export var base_hp: int = 10
 @export var ai: StringName = &"weighted_random"
 @export var sprite: String = ""
+@export var description: String = ""
+@export var combat_hint: String = ""
+## scripted_cycle：首招以及 moves 内的 next / on_block_break 构成数据驱动循环。
+@export var first_move: StringName = &""
 
 ## moves: Array[Dictionary] —— {id, intent, value, chance, times?, status?}
 ## intent ∈ attack / defend / buff / debuff / unknown
@@ -24,6 +28,9 @@ static func from_dict(d: Dictionary) -> EnemyData:
 	e.base_hp = int(d.get("hp", 10))
 	e.ai = StringName(d.get("ai", "weighted_random"))
 	e.sprite = d.get("sprite", "")
+	e.description = d.get("description", "")
+	e.combat_hint = d.get("combat_hint", "")
+	e.first_move = StringName(d.get("first_move", ""))
 	e.moves = d.get("moves", [])
 	e.phases = d.get("phases", [])
 	return e
@@ -60,3 +67,27 @@ func find_move(mid: StringName) -> Dictionary:
 			if StringName(m.get("id", "")) == mid:
 				return m
 	return {}
+
+
+func cycle_validation_errors() -> Array[String]:
+	var errors: Array[String] = []
+	if ai != &"scripted_cycle":
+		return errors
+	if first_move == &"" or find_move(first_move).is_empty():
+		errors.append("首招不存在")
+	var ids: Dictionary = {}
+	for mv in moves:
+		var mid := StringName(mv.get("id", ""))
+		if mid == &"" or ids.has(mid):
+			errors.append("招式 id 为空或重复：%s" % mid)
+		ids[mid] = true
+		var nx := StringName(mv.get("next", ""))
+		if nx == &"" or find_move(nx).is_empty():
+			errors.append("招式 %s 的 next 不存在" % mid)
+		var br := StringName(mv.get("on_block_break", ""))
+		if br != &"":
+			if find_move(br).is_empty():
+				errors.append("招式 %s 的破封分支不存在" % mid)
+			if mv.get("intent", "") != "charge" or int(mv.get("value", 0)) <= 0:
+				errors.append("破封窗口必须由正格挡蓄力招式开启：%s" % mid)
+	return errors

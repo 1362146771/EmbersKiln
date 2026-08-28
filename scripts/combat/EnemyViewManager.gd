@@ -42,7 +42,7 @@ func create_enemy_panel(e: CombatUnit, index: int) -> void:
 	ui.unit_panels[e] = p
 	ui._prev_ehp[e] = e.hp
 	var sel := (index == ui.selected_target)
-	p.build(e, index, sel, ui.controller.enemies.size())
+	p.build(e, index, sel, ui.controller.enemies.size(), ui.controller)
 
 
 func update_enemy_panel(e: CombatUnit, index: int) -> void:
@@ -51,7 +51,7 @@ func update_enemy_panel(e: CombatUnit, index: int) -> void:
 		create_enemy_panel(e, index)
 		return
 	var sel := (index == ui.selected_target)
-	p.build(e, index, sel, ui.controller.enemies.size())
+	p.build(e, index, sel, ui.controller.enemies.size(), ui.controller)
 
 
 # 敌人面板内层内容现由 EnemyPanel.build() 就地更新（见 scenes/combat/EnemyPanel.tscn），不再销毁重建。
@@ -80,6 +80,9 @@ func free_enemy(e: CombatUnit) -> void:
 
 
 func format_intent(e: CombatUnit) -> String:
+	var scripted := EnemyPanel.format_scripted_intent(e, ui.controller)
+	if not scripted.is_empty():
+		return scripted
 	var kind: String = e.intent.get("intent", "未知")
 	if kind == "charge":
 		var nx := StringName(e.intent.get("next", ""))
@@ -117,4 +120,10 @@ func on_ehp(index: int, cur: int, maxv: int) -> void:
 
 
 func on_eintent(index: int, intent: StringName, value: int) -> void:
+	# 破封可能发生在出牌或随从动画期间；不等待全局重绘解锁才更新威胁提示。
+	if index >= 0 and index < ui.controller.enemies.size():
+		var e: CombatUnit = ui.controller.enemies[index]
+		var ed := e.data as EnemyData
+		if e.is_alive() and ed != null and ed.ai == &"scripted_cycle" and ui.unit_panels.has(e):
+			update_enemy_panel(e, index)
 	refresh_enemy()
