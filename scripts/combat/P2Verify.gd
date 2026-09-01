@@ -1,9 +1,10 @@
 extends Node
 ## P2 新机制确定性验证（headless）：
 ##  - 2.4 窑温·共鸣：每攻击牌 +1 窑温，满 5 触发贯穿 5 伤给全体敌人并消耗 5
-##  - 2.5 蓄焰 stoke：攻击伤害 +层数，出手后 -1 层
-##  - 2.5 釉光 glaze：受击减伤 =层数，触发 1 次后 -1 层
-##  - 2.5 焦渴 thirst：空过回合→下回合 -1 能量；打出攻击则不惩罚
+##  - 2.5 活力 stoke：攻击伤害 +层数，出手后 -1 层
+##  - 2.5 缓冲 glaze：受击减伤 =层数，触发 1 次后 -1 层
+##  - 正式载体：鼓风令基础/升级活力 1；不裂基础缓冲 1、升级缓冲 2
+##  - 2.5 衰朽 thirst：空过回合→下回合 -1 能量；打出攻击则不惩罚
 ## 纯逻辑层驱动，不依赖 UI。输出 P2_RESULT:PASS / FAIL。
 
 var controller: CombatController
@@ -21,6 +22,10 @@ func _ready() -> void:
 	GameData.cards[StringName("t_strike")] = CardData.from_dict({
 		"id": "t_strike", "name": "测试劈", "type": "attack", "cost": 1,
 		"target": "enemy", "effects": [{"kind": "damage", "value": 6}]
+	})
+	GameData.cards[StringName("t_double")] = CardData.from_dict({
+		"id": "t_double", "name": "测试二连", "type": "attack", "cost": 1,
+		"target": "enemy", "effects": [{"kind": "damage", "value": 3, "times": 2}]
 	})
 	GameData.enemies[StringName("t_dummy")] = EnemyData.from_dict({
 		"id": "t_dummy", "name": "测试木桩", "tier": "normal", "hp": 200,
@@ -71,7 +76,71 @@ func check(name: String, cond: bool, detail: String = "") -> void:
 		results.append("[FAIL] " + name + "  " + detail)
 
 
+func effect_value(effects: Array, kind: String, status: String = "") -> int:
+	for eff in effects:
+		if not (eff is Dictionary) or String(eff.get("kind", "")) != kind:
+			continue
+		if status != "" and String(eff.get("status", "")) != status:
+			continue
+		return int(eff.get("value", 0))
+	return -1
+
+
 func run() -> void:
+	# ---- 状态显示名：统一采用《杀戮尖塔 2》通用术语，内部 id 不迁移 ----
+	var expected_status_names := {
+		&"heat": "力量",
+		&"temper": "敏捷",
+		&"crazed": "易伤",
+		&"damp": "虚弱",
+		&"ashrot": "燃烧",
+		&"anneal": "再生",
+		&"stoke": "活力",
+		&"glaze": "缓冲",
+		&"thirst": "衰朽",
+		&"command": "领袖气质",
+	}
+	for status_id in expected_status_names:
+		var status := GameData.get_status(status_id)
+		check("状态显示名 %s" % status_id,
+			status != null and status.name == expected_status_names[status_id],
+			"actual=%s" % (status.name if status != null else "missing"))
+
+	# ---- 正式卡牌载体数据 ----
+	var war_cry := GameData.get_card(&"war_cry")
+	var unbreakable := GameData.get_card(&"unbreakable")
+	check("鼓风令：基础抽 2 且活力 1",
+		war_cry != null
+		and effect_value(war_cry.effects, "draw") == 2
+		and effect_value(war_cry.effects, "apply_status", "stoke") == 1)
+	check("鼓风令+：升级抽 3 且保留活力 1",
+		war_cry != null
+		and effect_value(war_cry.upgrade_effects, "draw") == 3
+		and effect_value(war_cry.upgrade_effects, "apply_status", "stoke") == 1)
+	check("不裂：基础格挡 20 且缓冲 1",
+		unbreakable != null
+		and effect_value(unbreakable.effects, "block") == 20
+		and effect_value(unbreakable.effects, "apply_status", "glaze") == 1)
+	check("不裂+：升级格挡 26 且缓冲 2",
+		unbreakable != null
+		and effect_value(unbreakable.upgrade_effects, "block") == 26
+		and effect_value(unbreakable.upgrade_effects, "apply_status", "glaze") == 2)
+
+	start("t_dummy", ["war_cry", "war_cry", "war_cry", "war_cry", "war_cry"])
+	controller.play_card(0, -1)
+	check("鼓风令：实际出牌获得活力 1",
+		controller.player.get_status(&"stoke") == 1,
+		"stoke=%d" % controller.player.get_status(&"stoke"))
+
+	start("t_dummy", ["unbreakable", "unbreakable", "unbreakable", "unbreakable", "unbreakable"])
+	controller.play_card(0, -1)
+	check("不裂：实际出牌获得格挡 20 与缓冲 1，并进入消耗堆",
+		controller.player.block == 20
+		and controller.player.get_status(&"glaze") == 1
+		and controller.exhaust_pile.size() == 1,
+		"block=%d glaze=%d exhaust=%d" % [controller.player.block,
+			controller.player.get_status(&"glaze"), controller.exhaust_pile.size()])
+
 	# ---- 2.4 窑温·共鸣 ----
 	start("t_dummy", ["t_strike", "t_strike", "t_strike", "t_strike", "t_strike",
 		"t_strike", "t_strike", "t_strike", "t_strike", "t_strike"])
@@ -87,19 +156,30 @@ func run() -> void:
 		controller.kiln_heat == 0 and controller.enemies[0].hp == hp0 - 35,
 		"kiln=%d hp=%d" % [controller.kiln_heat, controller.enemies[0].hp])
 
-	# ---- 2.5 蓄焰 stoke ----
+	# ---- 2.5 活力 stoke ----
 	start("t_dummy", ["t_strike", "t_strike", "t_strike", "t_strike", "t_strike"])
 	controller.player.add_status(&"stoke", 3)
 	var shp0: int = controller.enemies[0].hp   # 200
 	play_attacks(1)
-	check("蓄焰：攻击伤害 +层数（6+3=9）",
+	check("活力：攻击伤害 +层数（6+3=9）",
 		controller.enemies[0].hp == shp0 - 9,
 		"hp=%d" % controller.enemies[0].hp)
-	check("蓄焰：出手后 -1 层（3→2）",
+	check("活力：出手后 -1 层（3→2）",
 		controller.player.get_status(&"stoke") == 2,
 		"stoke=%d" % controller.player.get_status(&"stoke"))
 
-	# ---- 2.5 釉光 glaze ----
+	start("t_dummy", ["t_double", "t_double", "t_double", "t_double", "t_double"])
+	controller.player.add_status(&"stoke", 2)
+	var multi_hp0: int = controller.enemies[0].hp
+	play_attacks(1)
+	check("活力：每个伤害实例均加层数（(3+2)×2=10）",
+		controller.enemies[0].hp == multi_hp0 - 10,
+		"hp=%d" % controller.enemies[0].hp)
+	check("活力：多段攻击整张结算后只减 1 层（2→1）",
+		controller.player.get_status(&"stoke") == 1,
+		"stoke=%d" % controller.player.get_status(&"stoke"))
+
+	# ---- 2.5 缓冲 glaze ----
 	start("t_dummy", ["t_strike", "t_strike", "t_strike", "t_strike", "t_strike"])
 	controller.player.hp = 300
 	controller.player.max_hp = 300
@@ -108,14 +188,14 @@ func run() -> void:
 	var ghp0: int = controller.player.hp   # 300
 	controller.enemies[0].intent = {"intent": "attack", "value": 10}
 	controller._execute_enemy_intent(controller.enemies[0])
-	check("釉光：受击减伤 =层数（10-2=8）",
+	check("缓冲：受击减伤 =层数（10-2=8）",
 		controller.player.hp == ghp0 - 8,
 		"hp=%d" % controller.player.hp)
-	check("釉光：触发 1 次后 -1 层（2→1）",
+	check("缓冲：触发 1 次后 -1 层（2→1）",
 		controller.player.get_status(&"glaze") == 1,
 		"glaze=%d" % controller.player.get_status(&"glaze"))
 
-	# ---- 2.5 焦渴 thirst ----
+	# ---- 2.5 衰朽 thirst ----
 	# 空过回合 → 下回合 -1 能量
 	start("t_dummy", ["t_strike", "t_strike", "t_strike", "t_strike", "t_strike"])
 	controller.player.add_status(&"thirst", 2)
@@ -124,10 +204,10 @@ func run() -> void:
 	controller._attack_played_this_turn = false
 	controller.end_player_turn()
 	controller.enemy_phase_done()   # 推进敌人阶段→下一玩家回合（BattleDirector 异步驱动）
-	check("焦渴：空过回合 → 下回合能量 -1",
+	check("衰朽：空过回合 → 下回合能量 -1",
 		controller.energy == controller.max_energy - 1,
 		"energy=%d max=%d" % [controller.energy, controller.max_energy])
-	check("焦渴：回合衰减 -1（2→1）",
+	check("衰朽：回合衰减 -1（2→1）",
 		controller.player.get_status(&"thirst") == 1,
 		"thirst=%d" % controller.player.get_status(&"thirst"))
 
@@ -139,7 +219,7 @@ func run() -> void:
 	play_attacks(1)
 	controller.end_player_turn()
 	controller.enemy_phase_done()
-	check("焦渴：打出攻击则不惩罚（下一回合能量 = max）",
+	check("衰朽：打出攻击则不惩罚（下一回合能量 = max）",
 		controller.energy == controller.max_energy,
 		"energy=%d max=%d" % [controller.energy, controller.max_energy])
 

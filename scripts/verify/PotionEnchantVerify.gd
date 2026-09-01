@@ -57,20 +57,20 @@ func _ready() -> void:
 		printerr("[FAIL] 灰烬膏 治疗未+12：%d" % ctrl.player.hp); return
 	print("[PASS] 药水灰烬膏 治疗 +12（40→%d）" % ctrl.player.hp)
 
-	# §1.5 互斥：持续型新顶旧（stoke → temper）
+	# §1.5 互斥：持续型新顶旧（活力 stoke → 敏捷 temper）
 	RunState.potions.clear()
 	ctrl.player.block = 0
-	RunState.add_potion(&"stoke_brew")   # 自身 stoke 3
+	RunState.add_potion(&"stoke_brew")   # 自身活力 stoke 3
 	ctrl.use_potion(0, -1)
 	if ctrl.player.get_status(&"stoke") != 3:
-		printerr("[FAIL] 蓄焰酒 stoke 未+3：%d" % ctrl.player.get_status(&"stoke")); return
-	RunState.add_potion(&"temper_paste") # 自身 temper 2，应先清 stoke
+		printerr("[FAIL] 活力药水 stoke 未+3：%d" % ctrl.player.get_status(&"stoke")); return
+	RunState.add_potion(&"temper_paste") # 自身敏捷 temper 2，应先清 stoke
 	ctrl.use_potion(0, -1)
 	if ctrl.player.get_status(&"stoke") != 0:
 		printerr("[FAIL] §1.5 互斥失败：stoke 残留 %d" % ctrl.player.get_status(&"stoke")); return
 	if ctrl.player.get_status(&"temper") != 2:
-		printerr("[FAIL] 塑形膏 temper 未+2：%d" % ctrl.player.get_status(&"temper")); return
-	print("[PASS] §1.5 互斥 蓄焰→塑形 顶替成功（stoke 0 / temper 2）")
+		printerr("[FAIL] 敏捷药水 temper 未+2：%d" % ctrl.player.get_status(&"temper")); return
+	print("[PASS] §1.5 互斥 活力→敏捷 顶替成功（stoke 0 / temper 2）")
 
 	# 牌组附魔持久化（RunState 存取）
 	RunState.start_new_run()

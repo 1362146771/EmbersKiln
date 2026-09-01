@@ -36,7 +36,7 @@
           "value": 2
         }
       ],
-      "description": "恢复 14 点生命，并获得 2 层回火（回合开始回血后递减）。",
+      "description": "恢复 14 点生命，并获得 2 层再生（回合开始回血后递减）。",
       "icon": "ICO_Potion_WarmthVial"
     },
     {
@@ -150,12 +150,12 @@
           "value": 2
         }
       ],
-      "description": "对所有敌人施加 2 层受潮（攻击 -25%）。",
+      "description": "对所有敌人施加 2 层虚弱（攻击 -25%）。",
       "icon": "ICO_Potion_MudBolt"
     },
     {
       "id": "craze_dust",
-      "name": "釉裂粉",
+      "name": "易伤药粉",
       "rarity": "common",
       "target": "enemy",
       "combat_only": true,
@@ -168,12 +168,12 @@
           "value": 2
         }
       ],
-      "description": "对目标敌人施加 2 层釉裂（受伤 +50%）。",
+      "description": "对目标敌人施加 2 层易伤（受伤 +50%）。",
       "icon": "ICO_Potion_CrazeDust"
     },
     {
       "id": "ashrot_vial",
-      "name": "灰蚀瓶",
+      "name": "燃烧药水",
       "rarity": "uncommon",
       "target": "all_enemies",
       "combat_only": true,
@@ -186,12 +186,12 @@
           "value": 2
         }
       ],
-      "description": "对所有敌人施加 2 层灰蚀（回合开始掉血后递减）。",
+      "description": "对所有敌人施加 2 层燃烧（回合开始掉血后递减）。",
       "icon": "ICO_Potion_AshrotVial"
     },
     {
       "id": "stoke_brew",
-      "name": "蓄焰酒",
+      "name": "活力药水",
       "rarity": "uncommon",
       "target": "self",
       "combat_only": true,
@@ -204,12 +204,12 @@
           "value": 3
         }
       ],
-      "description": "获得 3 层蓄焰（你的下一张攻击牌伤害 +3，出手后 -1 层）。",
+      "description": "获得 3 层活力（你的下一张攻击牌伤害 +3，出手后 -1 层）。",
       "icon": "ICO_Potion_StokeBrew"
     },
     {
       "id": "temper_paste",
-      "name": "塑形膏",
+      "name": "敏捷药水",
       "rarity": "uncommon",
       "target": "self",
       "combat_only": true,
@@ -220,7 +220,7 @@
           "value": 2
         }
       ],
-      "description": "获得 2 层塑形（此后获得格挡时额外 +2）。",
+      "description": "获得 2 层敏捷（此后获得格挡时额外 +2）。",
       "icon": "ICO_Potion_TemperPaste"
     }
   ]

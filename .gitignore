@@ -31,6 +31,12 @@ Thumbs.db
 .promptx/
 .workbuddy/
 
+# Local Godot AI editor tooling (not game source)
+/addons/godot_ai/
+/godot-ai-LICENSE.txt
+# Keep project.godot tracked; exclude local plugin settings when staging it.
+project.godot~*.TMP
+
 # Project AI Studio docs & agent rules (not game source)
 AGENTS.md
 AI_Studio/

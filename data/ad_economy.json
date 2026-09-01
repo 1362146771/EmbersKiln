@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "placements": {
+    "death_revive": {
+      "enabled": true,
+      "max_per_run": 1,
+      "checkpoint_mode": "combat_start"
+    },
+    "pre_run_buff": {
+      "enabled": true,
+      "duration_floors": 10,
+      "choice_count": 1,
+      "buff_ids": ["kiln_guard"]
+    },
+    "shop_refresh": {
+      "enabled": true,
+      "max_per_shop": 1
+    },
+    "run_end_currency": {
+      "enabled": true,
+      "bonus_multiplier": 0.5,
+      "bonus_cap": 30,
+      "rounding": "floor"
+    },
+    "workshop_speedup": {
+      "enabled": true,
+      "seconds_reduced": 3600,
+      "max_per_project": 2,
+      "max_per_day": 6
+    },
+    "deck_capacity_expand": {
+      "enabled": true,
+      "slots_per_view": 3,
+      "max_per_run": 2
+    }
+  }
+}

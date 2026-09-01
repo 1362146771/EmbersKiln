@@ -6,14 +6,36 @@ extends Node
 signal data_loaded()
 signal data_load_failed(errors: Array)
 
+# ---------- 永久档案 ----------
+signal profile_loaded(created_new: bool)
+signal profile_changed()
+signal fireseed_changed(amount: int)
+signal construction_started(project_id: StringName)
+signal construction_ready(project_id: StringName)
+signal construction_claimed(project_id: StringName)
+
+# ---------- 激励广告 ----------
+signal ad_availability_changed(placement_id: StringName, available: bool)
+signal ad_playback_started(request_id: String, placement_id: StringName)
+signal ad_playback_finished(request_id: String, placement_id: StringName, result: StringName)
+signal ad_reward_resolved(transaction_id: String, placement_id: StringName, result: StringName)
+signal shop_inventory_changed(shop_id: String)
+signal card_acquisition_blocked(acquisition: Dictionary)
+signal card_acquisition_resolved(acquisition: Dictionary, result: StringName)
+signal pre_run_buff_activated(buff_id: StringName, remaining_floors: int)
+signal combat_death_pending()
+signal combat_revive_ready()
+
 # ---------- 局内流程 ----------
 signal run_started()
+signal run_loaded()
 signal run_ended(victory: bool)
 signal map_generated(map: Array)
 # ---------- 多幕（P-A） ----------
 signal act_changed(act_index: int)        # 进入新幕（含开局 act=0）
 signal run_won()                           # 击败最后一幕 Boss（可选；也可复用 run_ended(true)）
 signal floor_entered(floor_index: int, node_type: StringName)
+signal floor_resolved(floor_index: int, node_type: StringName)
 
 # ---------- 战斗流程 ----------
 signal combat_started(enemy_ids: Array)

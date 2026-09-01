@@ -29,9 +29,16 @@ func _solid_bg(color: Color) -> TextureRect:
 ## P2 场景化：作为独立场景加载时（生产路径），setup 不会被外部调用，奖励数据来自 RunState；
 ## 作为 verify overlay 时 setup 已注入 data，此处保留即用。
 func _ready() -> void:
+	if not SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
+		SignalBus.card_acquisition_resolved.connect(_on_card_acquisition_resolved)
 	if data.is_empty():
 		data = RunState.pending_reward_data
 	_build_main()
+
+
+func _exit_tree() -> void:
+	if SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
+		SignalBus.card_acquisition_resolved.disconnect(_on_card_acquisition_resolved)
 
 
 ## 注入奖励数据并绑定完成回调；必须在 add_child 之前调用。
@@ -203,9 +210,22 @@ func _on_choose_card(i: int) -> void:
 	if i < 0 or i >= cards.size():
 		return
 	var cid: StringName = StringName(cards[i].get("id", ""))
-	RunState.add_card(cid, false)
-	_log_reward("已获得卡牌：%s" % cards[i].get("name", ""))
-	_finish()
+	var result := CardAcquireService.acquire_free_card(cid, false, &"reward", {"card_name": cards[i].get("name", "")})
+	if result == CardAcquireService.RESULT_ACQUIRED:
+		_log_reward("已获得卡牌：%s" % cards[i].get("name", ""))
+		_finish()
+	elif result == CardAcquireService.RESULT_FULL:
+		_log_reward("牌库已满，等待扩容或放弃这张卡。")
+
+
+func _on_card_acquisition_resolved(acquisition: Dictionary, result: StringName) -> void:
+	if String(acquisition.get("source_id", "")) != "reward":
+		return
+	if result == CardAcquireService.RESULT_ACQUIRED:
+		_log_reward("扩容后已获得卡牌：%s" % acquisition.get("context", {}).get("card_name", acquisition.get("card_id", "")))
+		_finish()
+	elif result == CardAcquireService.RESULT_FAILED:
+		_log_reward("容量已增加，但本次卡牌未领取。")
 
 
 func _on_upgrade_pressed() -> void:

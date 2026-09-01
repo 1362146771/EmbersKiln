@@ -56,7 +56,7 @@ func run() -> void:
 	controller.start_combat(["claylump"])
 
 	check("围炉小灶: 开局格挡=5", controller.player.block == 5, "block=%d" % controller.player.block)
-	check("风箱手套: 开局炽热=1", controller.player.get_status(&"heat") == 1, "heat=%d" % controller.player.get_status(&"heat"))
+	check("风箱手套: 开局力量=1", controller.player.get_status(&"heat") == 1, "heat=%d" % controller.player.get_status(&"heat"))
 	check("守窑围裙: 手牌=6(5+1)", controller.hand.size() == 6, "hand=%d" % controller.hand.size())
 	check("抽风口: 首回合能量=4(3+1)", controller.energy == 4, "energy=%d" % controller.energy)
 	check("余温炭: 显式获得后在场", RunState.has_relic(&"emberheart"))
@@ -69,7 +69,7 @@ func run() -> void:
 		var base: int = _base_damage(ai)
 		var heat: int = controller.player.get_status(&"heat")
 		controller.play_card(ai, 0)
-		check("劈薪斧: 首攻 +4 伤害（含炽热加成）", controller.enemies[0].hp == ehp_before - (base + heat + 4),
+		check("劈薪斧: 首攻 +4 伤害（含力量加成）", controller.enemies[0].hp == ehp_before - (base + heat + 4),
 			"enemy %d -> %d (base=%d heat=%d)" % [ehp_before, controller.enemies[0].hp, base, heat])
 		check("汲热钳: 攻击后回血 +2", controller.player.hp == 52, "hp=%d" % controller.player.hp)
 	else:

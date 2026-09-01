@@ -46,7 +46,7 @@ func roll_enemy_intent(e: CombatUnit) -> void:
 		e.intent = {}
 		return
 	var ratio: float = float(e.hp) / float(e.max_hp) if e.max_hp > 0 else 1.0
-	# 阶段切换检测（scripted_phases）：进入新阶段时触发 on_enter（如觉醒自身加炽热）
+	# 阶段切换检测（scripted_phases）：进入新阶段时触发 on_enter（如觉醒自身加力量）
 	if ed.ai == &"scripted_phases" and not ed.phases.is_empty():
 		var pidx := EnemyAI.phase_index_for(ed, ratio)
 		if pidx > e.phase_index:
@@ -88,7 +88,7 @@ func scale_intent_damage(intent: Dictionary) -> Dictionary:
 	out["value"] = GameData.scaled_enemy_damage(int(intent.get("value", 0)))
 	return out
 
-## 阶段切换时触发该阶段的 on_enter（自增益类，如觉醒自身加 3 炽热）。
+## 阶段切换时触发该阶段的 on_enter（自增益类，如觉醒自身加 3 力量）。
 func apply_phase_on_enter(e: CombatUnit, phase: Dictionary) -> void:
 	for buff in phase.get("on_enter", []):
 		if not (buff is Dictionary):
@@ -188,7 +188,7 @@ func summon_phase() -> void:
 		if a.lifetime <= 0:
 			post_ally_death(a)
 
-## 随从按意图行动（attack/defend/buff/debuff）。指挥(command) 给攻击/格挡加成。
+## 随从按意图行动（attack/defend/buff/debuff）。领袖气质(command) 给攻击/格挡加成。
 func execute_minion_intent(a: CombatUnit) -> void:
 	var mv: Dictionary = a.intent
 	if mv.is_empty():
@@ -275,7 +275,7 @@ func ally_pre(a: CombatUnit) -> bool:
 	SignalBus.ally_action_start.emit(index_of_ally(a))
 	return true
 
-## 友方攻击 outgoing（含指挥加成、炽热/防潮/釉裂等，不含格挡）。
+## 友方攻击 outgoing（含领袖气质加成、力量/虚弱/易伤等，不含格挡）。
 func ally_outgoing(a: CombatUnit, target: CombatUnit, base: int) -> int:
 	var dmg := ctrl._dmg.compute_outgoing(a, target, base)
 	var cmd: int = ctrl.player.get_status(&"command") if ctrl.player.has_status(&"command") else 0

@@ -16,6 +16,8 @@ const FILES := {
 	"potions": "potions.json",
 	"enchants": "enchants.json",
 	"minions": "minions.json",
+	"meta_progression": "meta_progression.json",
+	"ad_economy": "ad_economy.json",
 }
 
 var cards: Dictionary = {}      # StringName -> CardData
@@ -31,6 +33,11 @@ var act_configs: Array = []      # Array[Dictionary] —— 多幕配置（map.j
 var balance: Dictionary = {}
 var events: Array = []          # Array[Dictionary] —— 事件表（标题/描述/选项/后果）
 var formations: Array = []      # Array[Dictionary] —— 多敌编成表（见 map.json）
+var meta_progression: Dictionary = {}
+var meta_facilities: Dictionary = {} # StringName -> Dictionary
+var meta_projects: Dictionary = {}   # StringName -> Dictionary
+var meta_pre_run_buffs: Dictionary = {} # StringName -> Dictionary
+var ad_economy: Dictionary = {}
 
 var is_loaded: bool = false
 var load_errors: Array[String] = []
@@ -52,6 +59,11 @@ func load_all() -> bool:
 	effect_kinds.clear()
 	events.clear()
 	formations.clear()
+	meta_progression.clear()
+	meta_facilities.clear()
+	meta_projects.clear()
+	meta_pre_run_buffs.clear()
+	ad_economy.clear()
 
 	var raw := {}
 	for key in FILES:
@@ -98,11 +110,30 @@ func load_all() -> bool:
 	map_config = act_configs[0]
 	balance = raw["balance"]
 	formations = map_raw.get("formations", [])
+	meta_progression = raw["meta_progression"]
+	ad_economy = raw["ad_economy"]
+	for facility in meta_progression.get("facilities", []):
+		if facility is Dictionary:
+			var facility_id := StringName(String(facility.get("id", "")))
+			if facility_id != &"":
+				meta_facilities[facility_id] = facility
+	for project in meta_progression.get("projects", []):
+		if project is Dictionary:
+			var project_id := StringName(String(project.get("id", "")))
+			if project_id != &"":
+				meta_projects[project_id] = project
+	for buff in meta_progression.get("pre_run_buffs", []):
+		if buff is Dictionary:
+			var buff_id := StringName(String(buff.get("id", "")))
+			if buff_id != &"":
+				meta_pre_run_buffs[buff_id] = buff
 
 	for ev in raw["events"].get("events", []):
 		events.append(ev)
 
 	_validate()
+	_validate_meta_progression()
+	_validate_ad_economy()
 
 	if load_errors.is_empty():
 		is_loaded = true
@@ -242,6 +273,258 @@ func _validate() -> void:
 					load_errors.append("附魔 %s 引用了不存在的状态 %s" % [eid, sid])
 
 
+## 局外成长允许 Pending 数值以 null 留在配置中；null 项目不会开放建造。
+func _validate_meta_progression() -> void:
+	if int(meta_progression.get("version", -1)) != 1:
+		load_errors.append("meta_progression.json 版本无效")
+	if String(meta_progression.get("currency_id", "")) != "fireseed":
+		load_errors.append("局外货币必须为 fireseed")
+	if not meta_progression.get("facilities", null) is Array:
+		load_errors.append("局外设施表格式无效")
+		return
+	if not meta_progression.get("projects", null) is Array:
+		load_errors.append("局外项目表格式无效")
+		return
+	if not meta_progression.get("pre_run_buffs", null) is Array:
+		load_errors.append("局前 Buff 表格式无效")
+		return
+
+	var facility_ids: Dictionary = {}
+	for facility in meta_progression.get("facilities", []):
+		if not facility is Dictionary:
+			load_errors.append("局外设施含非法条目")
+			continue
+		var facility_id := String(facility.get("id", "")).strip_edges()
+		if facility_id.is_empty() or facility_ids.has(facility_id):
+			load_errors.append("局外设施 id 缺失或重复：%s" % facility_id)
+			continue
+		facility_ids[facility_id] = true
+
+	var workshop: Variant = meta_progression.get("workshop", {})
+	if not workshop is Dictionary:
+		load_errors.append("工坊配置格式无效")
+	else:
+		_validate_nullable_nonnegative_number(workshop.get("queue_capacity", null), "workshop.queue_capacity", false)
+	_validate_nullable_nonnegative_number(meta_progression.get("base_run_deck_capacity", null), "base_run_deck_capacity", false)
+	var run_end_rewards: Variant = meta_progression.get("run_end_rewards", {})
+	if not run_end_rewards is Dictionary:
+		load_errors.append("局终火种配置格式无效")
+	else:
+		for field in ["floor_index_offset", "per_floor", "per_defeated_enemy", "victory_bonus", "base_cap"]:
+			_validate_nullable_nonnegative_number(run_end_rewards.get(field, null), "run_end_rewards.%s" % field)
+
+	var bonus_tiers: Variant = meta_progression.get("run_start_bonus_tiers", [])
+	if not bonus_tiers is Array:
+		load_errors.append("run_start_bonus_tiers 格式无效")
+	else:
+		var seen_bonus_tiers: Dictionary = {}
+		for tier in bonus_tiers:
+			if not tier is Dictionary:
+				load_errors.append("新局加成档位含非法条目")
+				continue
+			var tier_facility := String(tier.get("facility_id", "")).strip_edges()
+			var required_level: Variant = tier.get("required_level", null)
+			if not facility_ids.has(tier_facility):
+				load_errors.append("新局加成档位引用未知设施：%s" % tier_facility)
+			if required_level == null or not (required_level is int or required_level is float) or int(required_level) <= 0:
+				load_errors.append("新局加成档位等级无效：%s" % tier_facility)
+				continue
+			var tier_key := "%s:%d" % [tier_facility, int(required_level)]
+			if seen_bonus_tiers.has(tier_key):
+				load_errors.append("新局加成档位重复：%s" % tier_key)
+			seen_bonus_tiers[tier_key] = true
+			for field in ["max_hp_bonus", "starting_gold_bonus"]:
+				_validate_nullable_nonnegative_number(tier.get(field, null), "%s.%s" % [tier_key, field])
+
+	var initial_unlocks: Variant = meta_progression.get("initial_unlocks", {})
+	if not initial_unlocks is Dictionary:
+		load_errors.append("initial_unlocks 格式无效")
+	else:
+		var initial_indexes := {
+			"card_ids": cards,
+			"relic_ids": relics,
+			"potion_ids": potions,
+			"enchant_ids": enchants,
+		}
+		for field in initial_indexes:
+			var values: Variant = initial_unlocks.get(field, [])
+			if not values is Array:
+				load_errors.append("initial_unlocks.%s 格式无效" % field)
+				continue
+			var seen_ids: Dictionary = {}
+			for value in values:
+				var content_id := StringName(String(value))
+				if not initial_indexes[field].has(content_id):
+					load_errors.append("initial_unlocks.%s 引用未知内容 %s" % [field, value])
+				if seen_ids.has(String(content_id)):
+					load_errors.append("initial_unlocks.%s 含重复内容 %s" % [field, value])
+				seen_ids[String(content_id)] = true
+
+	var project_ids: Dictionary = {}
+	for project in meta_progression.get("projects", []):
+		if not project is Dictionary:
+			load_errors.append("工坊项目含非法条目")
+			continue
+		var project_id := String(project.get("id", "")).strip_edges()
+		if project_id.is_empty() or project_ids.has(project_id):
+			load_errors.append("工坊项目 id 缺失或重复：%s" % project_id)
+			continue
+		project_ids[project_id] = true
+		var facility_id := String(project.get("facility_id", "")).strip_edges()
+		if not facility_ids.has(facility_id):
+			load_errors.append("工坊项目 %s 引用了不存在的设施 %s" % [project_id, facility_id])
+		_validate_nullable_nonnegative_number(project.get("fireseed_cost", null), "%s.fireseed_cost" % project_id)
+		_validate_nullable_nonnegative_number(project.get("duration_seconds", null), "%s.duration_seconds" % project_id)
+		if project.has("grants") and not project["grants"] is Dictionary:
+			load_errors.append("工坊项目 %s grants 格式无效" % project_id)
+		elif project.has("grants"):
+			_validate_meta_project_grants(project_id, project["grants"], facility_ids)
+
+	for project in meta_progression.get("projects", []):
+		if not project is Dictionary:
+			continue
+		var project_id := String(project.get("id", ""))
+		for prerequisite in project.get("prerequisite_project_ids", []):
+			if not project_ids.has(String(prerequisite)):
+				load_errors.append("工坊项目 %s 前置不存在：%s" % [project_id, prerequisite])
+
+	var buff_ids: Dictionary = {}
+	for buff in meta_progression.get("pre_run_buffs", []):
+		if not buff is Dictionary:
+			load_errors.append("局前 Buff 含非法条目")
+			continue
+		var buff_id := String(buff.get("id", "")).strip_edges()
+		if buff_id.is_empty() or buff_ids.has(buff_id):
+			load_errors.append("局前 Buff id 缺失或重复：%s" % buff_id)
+			continue
+		buff_ids[buff_id] = true
+		if String(buff.get("name", "")).strip_edges().is_empty():
+			load_errors.append("局前 Buff %s 缺少名称" % buff_id)
+		var effects: Variant = buff.get("effects", null)
+		if not effects is Array or effects.is_empty():
+			load_errors.append("局前 Buff %s effects 为空或格式无效" % buff_id)
+			continue
+		for effect in effects:
+			if not effect is Dictionary or String(effect.get("kind", "")) != "combat_start_block":
+				load_errors.append("局前 Buff %s 含未支持的效果模板" % buff_id)
+				continue
+			_validate_nullable_nonnegative_number(effect.get("value", null), "%s.effects.value" % buff_id)
+
+
+func _validate_nullable_nonnegative_number(value: Variant, field: String, require_positive: bool = true) -> void:
+	if value == null:
+		return
+	if not (value is int or value is float):
+		load_errors.append("局外数值字段类型无效：%s" % field)
+		return
+	if (require_positive and float(value) < 0.0) or (not require_positive and float(value) <= 0.0):
+		load_errors.append("局外数值字段范围无效：%s" % field)
+
+
+func _validate_meta_project_grants(project_id: String, grants: Dictionary, facility_ids: Dictionary) -> void:
+	var facility_grants: Variant = grants.get("facility_levels", {})
+	if not facility_grants is Dictionary:
+		load_errors.append("工坊项目 %s facility_levels 格式无效" % project_id)
+	else:
+		for facility_id in facility_grants:
+			var level: Variant = facility_grants[facility_id]
+			if not facility_ids.has(String(facility_id)):
+				load_errors.append("工坊项目 %s 奖励引用未知设施 %s" % [project_id, facility_id])
+			if not (level is int or level is float) or int(level) < 0:
+				load_errors.append("工坊项目 %s 设施等级奖励无效" % project_id)
+
+	var content_indexes := {
+		"unlocked_card_ids": cards,
+		"unlocked_relic_ids": relics,
+		"unlocked_potion_ids": potions,
+		"unlocked_enchant_ids": enchants,
+	}
+	for field in content_indexes:
+		var values: Variant = grants.get(field, [])
+		if not values is Array:
+			load_errors.append("工坊项目 %s 的 %s 格式无效" % [project_id, field])
+			continue
+		for value in values:
+			if not content_indexes[field].has(StringName(String(value))):
+				load_errors.append("工坊项目 %s 的 %s 引用未知内容 %s" % [project_id, field, value])
+
+	for field in ["unlocked_pre_run_buff_ids", "unlocked_loadout_ids"]:
+		var values: Variant = grants.get(field, [])
+		if not values is Array:
+			load_errors.append("工坊项目 %s 的 %s 格式无效" % [project_id, field])
+			continue
+		for value in values:
+			if String(value).strip_edges().is_empty():
+				load_errors.append("工坊项目 %s 的 %s 含空 id" % [project_id, field])
+
+	var stage: Variant = grants.get("town_visual_stage", null)
+	if stage != null and (not (stage is int or stage is float) or int(stage) < 0):
+		load_errors.append("工坊项目 %s 镇貌阶段奖励无效" % project_id)
+	_validate_nullable_nonnegative_number(grants.get("base_run_deck_capacity", null), "%s.grants.base_run_deck_capacity" % project_id, false)
+
+
+func _validate_ad_economy() -> void:
+	if int(ad_economy.get("version", -1)) != 1:
+		load_errors.append("ad_economy.json 版本无效")
+	var placements: Variant = ad_economy.get("placements", null)
+	if not placements is Dictionary:
+		load_errors.append("广告位配置格式无效")
+		return
+	var required_ids := [
+		"death_revive",
+		"pre_run_buff",
+		"shop_refresh",
+		"run_end_currency",
+		"workshop_speedup",
+		"deck_capacity_expand",
+	]
+	for placement_id in required_ids:
+		if not placements.has(placement_id) or not placements[placement_id] is Dictionary:
+			load_errors.append("缺少广告位配置：%s" % placement_id)
+			continue
+		var config: Dictionary = placements[placement_id]
+		if not config.get("enabled", null) is bool:
+			load_errors.append("广告位 %s enabled 类型无效" % placement_id)
+	if placements.has("death_revive"):
+		_validate_confirmed_ad_number(placements["death_revive"].get("max_per_run", null), "death_revive.max_per_run", false)
+	if placements.has("pre_run_buff"):
+		_validate_confirmed_ad_number(placements["pre_run_buff"].get("duration_floors", null), "pre_run_buff.duration_floors", false)
+		_validate_nullable_nonnegative_number(placements["pre_run_buff"].get("choice_count", null), "pre_run_buff.choice_count")
+		var configured_buff_ids: Variant = placements["pre_run_buff"].get("buff_ids", [])
+		if not configured_buff_ids is Array:
+			load_errors.append("pre_run_buff.buff_ids 格式无效")
+		else:
+			for buff_id in configured_buff_ids:
+				if not meta_pre_run_buffs.has(StringName(String(buff_id))):
+					load_errors.append("pre_run_buff 引用了不存在的 Buff：%s" % buff_id)
+	if placements.has("shop_refresh"):
+		_validate_confirmed_ad_number(placements["shop_refresh"].get("max_per_shop", null), "shop_refresh.max_per_shop", false)
+	if placements.has("run_end_currency"):
+		_validate_positive_number(placements["run_end_currency"].get("bonus_multiplier", null), "run_end_currency.bonus_multiplier")
+		_validate_confirmed_ad_number(placements["run_end_currency"].get("bonus_cap", null), "run_end_currency.bonus_cap", false)
+		if not String(placements["run_end_currency"].get("rounding", "")) in ["floor", "round", "ceil"]:
+			load_errors.append("run_end_currency.rounding 无效")
+	if placements.has("workshop_speedup"):
+		for field in ["seconds_reduced", "max_per_project", "max_per_day"]:
+			_validate_confirmed_ad_number(placements["workshop_speedup"].get(field, null), "workshop_speedup.%s" % field, false)
+	if placements.has("deck_capacity_expand"):
+		for field in ["slots_per_view", "max_per_run"]:
+			_validate_confirmed_ad_number(placements["deck_capacity_expand"].get(field, null), "deck_capacity_expand.%s" % field, false)
+
+
+func _validate_confirmed_ad_number(value: Variant, field: String, allow_zero: bool) -> void:
+	if not (value is int or value is float):
+		load_errors.append("已确认广告数值缺失或类型无效：%s" % field)
+		return
+	if (allow_zero and int(value) < 0) or (not allow_zero and int(value) <= 0):
+		load_errors.append("已确认广告数值范围无效：%s" % field)
+
+
+func _validate_positive_number(value: Variant, field: String) -> void:
+	if not (value is int or value is float) or float(value) <= 0.0:
+		load_errors.append("已确认数值缺失或范围无效：%s" % field)
+
+
 # ---------- 查询接口 ----------
 func get_card(id: StringName) -> CardData:
 	return cards.get(id)
@@ -269,6 +552,85 @@ func get_potion(id: StringName) -> PotionData:
 
 func get_enchant(id: StringName) -> EnchantData:
 	return enchants.get(id)
+
+
+func get_meta_facility(id: StringName) -> Dictionary:
+	return meta_facilities.get(id, {})
+
+
+func get_meta_project(id: StringName) -> Dictionary:
+	return meta_projects.get(id, {})
+
+
+func get_pre_run_buff(id: StringName) -> Dictionary:
+	return meta_pre_run_buffs.get(id, {})
+
+
+func meta_facility_list() -> Array:
+	return meta_progression.get("facilities", [])
+
+
+func meta_project_list() -> Array:
+	return meta_progression.get("projects", [])
+
+
+func pre_run_buff_list() -> Array:
+	return meta_progression.get("pre_run_buffs", [])
+
+
+func ad_placement_config(id: StringName) -> Dictionary:
+	return ad_economy.get("placements", {}).get(String(id), {})
+
+
+func is_card_unlocked(id: StringName) -> bool:
+	return _is_meta_content_unlocked("card_ids", id, ProfileState.unlocked_card_ids)
+
+
+func is_relic_unlocked(id: StringName) -> bool:
+	return _is_meta_content_unlocked("relic_ids", id, ProfileState.unlocked_relic_ids)
+
+
+func is_potion_unlocked(id: StringName) -> bool:
+	return _is_meta_content_unlocked("potion_ids", id, ProfileState.unlocked_potion_ids)
+
+
+func is_enchant_unlocked(id: StringName) -> bool:
+	return _is_meta_content_unlocked("enchant_ids", id, ProfileState.unlocked_enchant_ids)
+
+
+func profile_run_start_bonuses() -> Dictionary:
+	var resolved := {"max_hp_bonus": 0, "starting_gold_bonus": 0}
+	var best_levels: Dictionary = {}
+	var best_tiers: Dictionary = {}
+	for raw_tier in meta_progression.get("run_start_bonus_tiers", []):
+		if not raw_tier is Dictionary:
+			continue
+		var facility_id := String(raw_tier.get("facility_id", ""))
+		var required_level := int(raw_tier.get("required_level", 0))
+		var profile_level := int(ProfileState.facility_levels.get(facility_id, 0))
+		if required_level <= 0 or profile_level < required_level or required_level <= int(best_levels.get(facility_id, 0)):
+			continue
+		best_levels[facility_id] = required_level
+		best_tiers[facility_id] = raw_tier
+	for tier in best_tiers.values():
+		resolved["max_hp_bonus"] += int(tier.get("max_hp_bonus", 0))
+		resolved["starting_gold_bonus"] += int(tier.get("starting_gold_bonus", 0))
+	return resolved
+
+
+func _is_meta_content_unlocked(config_field: String, id: StringName, profile_unlocks: Array[StringName]) -> bool:
+	if id == &"":
+		return false
+	var initial_unlocks: Variant = meta_progression.get("initial_unlocks", null)
+	# 旧配置没有解锁表时保持原有“全部开放”行为，避免测试或旧内容表被意外清空。
+	if not initial_unlocks is Dictionary or not initial_unlocks.has(config_field):
+		return true
+	if profile_unlocks.has(id):
+		return true
+	for raw_id in initial_unlocks.get(config_field, []):
+		if StringName(String(raw_id)) == id:
+			return true
+	return false
 
 
 # ---------- 图标 ----------

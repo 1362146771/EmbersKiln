@@ -22,6 +22,8 @@ var _remove_browser: CanvasLayer
 var _remove_sources: Array = []
 var _pending_effects: Dictionary = {}
 var _status: Label
+var _pending_card_name := ""
+var _pending_card_parts: Array[String] = []
 
 
 ## 用实色纹理贴图替代 ColorRect（避免渲染器 alpha 合成问题）
@@ -38,7 +40,14 @@ func _solid_bg(color: Color) -> TextureRect:
 
 
 func _ready() -> void:
+	if not SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
+		SignalBus.card_acquisition_resolved.connect(_on_card_acquisition_resolved)
 	_build_main()
+
+
+func _exit_tree() -> void:
+	if SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
+		SignalBus.card_acquisition_resolved.disconnect(_on_card_acquisition_resolved)
 
 
 func setup(done: Callable) -> void:
@@ -179,6 +188,25 @@ func _confirm_remove(i: int, snapshot: Dictionary) -> void:
 
 
 func _apply_effects(effects: Dictionary, parts: Array[String] = []) -> void:
+	if effects.get("add_card", false):
+		var cd: Dictionary = RewardBuilder.roll_single_card()
+		var remaining := effects.duplicate(true)
+		remaining.erase("add_card")
+		if not cd.is_empty():
+			var result := CardAcquireService.acquire_free_card(
+				StringName(String(cd.get("id", ""))),
+				false,
+				&"event",
+				{"card_name": cd.get("name", "")}
+			)
+			if result == CardAcquireService.RESULT_FULL:
+				_pending_effects = remaining
+				_pending_card_name = String(cd.get("name", ""))
+				_pending_card_parts = parts.duplicate()
+				return
+			if result == CardAcquireService.RESULT_ACQUIRED:
+				parts.append("获得卡牌 %s" % cd.get("name", ""))
+		effects = remaining
 	if effects.has("gold"):
 		var g: int = int(effects["gold"])
 		RunState.add_gold(g)
@@ -192,11 +220,6 @@ func _apply_effects(effects: Dictionary, parts: Array[String] = []) -> void:
 		RunState.hp = maxi(1, RunState.hp - d)
 		SignalBus.player_hp_changed.emit(RunState.hp, RunState.max_hp)
 		parts.append("失去 %d 生命" % d)
-	if effects.get("add_card", false):
-		var cd: Dictionary = RewardBuilder.roll_single_card()
-		if not cd.is_empty():
-			RunState.add_card(StringName(cd.get("id", "")), false)
-			parts.append("获得卡牌 %s" % cd.get("name", ""))
 	if effects.get("add_relic", false):
 		var rid: StringName = RewardBuilder.roll_shop_relic()
 		if rid != &"":
@@ -226,6 +249,26 @@ func _apply_effects(effects: Dictionary, parts: Array[String] = []) -> void:
 	var msg: String = "（什么也没发生）" if parts.is_empty() else " · ".join(parts)
 	_log(msg)
 	_show_result(msg)
+
+
+func _on_card_acquisition_resolved(acquisition: Dictionary, result: StringName) -> void:
+	if String(acquisition.get("source_id", "")) != "event":
+		return
+	if result == CardAcquireService.RESULT_ACQUIRED:
+		var parts := _pending_card_parts.duplicate()
+		parts.append("获得卡牌 %s" % _pending_card_name)
+		var effects := _pending_effects.duplicate(true)
+		_pending_effects.clear()
+		_pending_card_parts.clear()
+		_pending_card_name = ""
+		_apply_effects(effects, parts)
+	else:
+		_pending_effects.clear()
+		_pending_card_parts.clear()
+		_pending_card_name = ""
+		_resolved = false
+		_choosing = false
+		_refresh_choices()
 
 
 func _show_result(msg: String) -> void:

@@ -31,6 +31,27 @@ var victory: bool = false
 ## 本局已击败的敌人 id（用于奖励与统计）
 var defeated: Array[StringName] = []
 
+## 局外商业化相关单局状态；未确认容量以 -1 表示功能未启用，不改变既有玩法。
+var run_id := ""
+var base_run_deck_capacity: int = -1
+var run_ad_deck_capacity_bonus: int = 0
+var deck_capacity_ad_uses: int = 0
+var pending_card_acquisition: Dictionary = {}
+var shop_states: Dictionary = {}
+var ad_reward_transaction_ids: Array[String] = []
+var run_end_base_fireseed: int = 0
+var run_end_ad_bonus_fireseed: int = 0
+var run_end_base_settled := false
+var pre_run_buff_offer_ids: Array[StringName] = []
+var pre_run_buff_id: StringName = &""
+var pre_run_buff_remaining_floors: int = 0
+var pre_run_buff_claimed := false
+var pre_run_preparation_resolved := false
+var resolved_floor_keys: Array[String] = []
+var combat_checkpoint: Dictionary = {}
+var combat_death_pending := false
+var revive_used_count: int = 0
+
 ## 瞬时字段（不进 to_save_dict，安全）：战斗场景化（P1）的跨场景传参。
 ## combat（overlay 模式已废弃，战斗改为独立场景切换）：
 var pending_combat_enemy_ids: Array = []   # 进入战斗前由 MapUI 写入，CombatUI 读取
@@ -62,13 +83,33 @@ func start_new_run() -> bool:
 	is_active = false
 
 	var pc: Dictionary = GameData.player_config()
-	max_hp = int(pc.get("max_hp", 80))
+	var progression_bonuses := GameData.profile_run_start_bonuses()
+	max_hp = int(pc.get("max_hp", 80)) + int(progression_bonuses.get("max_hp_bonus", 0))
 	hp = max_hp
-	gold = 0
+	gold = int(progression_bonuses.get("starting_gold_bonus", 0))
 	current_floor = 0
 	current_node_type = &""
 	victory = false
 	defeated.clear()
+	run_id = _new_run_id()
+	base_run_deck_capacity = -1
+	run_ad_deck_capacity_bonus = 0
+	deck_capacity_ad_uses = 0
+	pending_card_acquisition.clear()
+	shop_states.clear()
+	ad_reward_transaction_ids.clear()
+	run_end_base_fireseed = 0
+	run_end_ad_bonus_fireseed = 0
+	run_end_base_settled = false
+	pre_run_buff_offer_ids.clear()
+	pre_run_buff_id = &""
+	pre_run_buff_remaining_floors = 0
+	pre_run_buff_claimed = false
+	pre_run_preparation_resolved = false
+	resolved_floor_keys.clear()
+	combat_checkpoint.clear()
+	combat_death_pending = false
+	revive_used_count = 0
 	# 重置战斗/子屏场景化瞬时字段，避免上一局残留污染新局
 	pending_combat_enemy_ids.clear()
 	last_combat_victory = false
@@ -81,6 +122,10 @@ func start_new_run() -> bool:
 	potions.clear()
 	for cid in GameData.balance.get("starting_deck", []):
 		deck.append({"id": StringName(cid), "upgraded": false, "enchants": []})
+	base_run_deck_capacity = _resolved_profile_deck_capacity()
+	if base_run_deck_capacity >= 0 and base_run_deck_capacity < deck.size():
+		push_error("[RunState] 新局基础牌库容量 %d 低于起始牌组 %d" % [base_run_deck_capacity, deck.size()])
+		return false
 
 	# 新局不携带遗物；仅保留后续获得与读档恢复机制。
 	relic_ids.clear()
@@ -175,9 +220,183 @@ func spend_gold(amount: int) -> bool:
 
 
 # ---------- 牌组 ----------
-func add_card(card_id: StringName, upgraded: bool = false) -> void:
+func add_card(card_id: StringName, upgraded: bool = false) -> bool:
+	if card_id == &"" or not can_add_permanent_card():
+		return false
 	deck.append({"id": card_id, "upgraded": upgraded, "enchants": []})
 	SignalBus.deck_changed.emit()
+	return true
+
+
+func current_deck_capacity() -> int:
+	if base_run_deck_capacity < 0:
+		return -1
+	return base_run_deck_capacity + run_ad_deck_capacity_bonus
+
+
+func has_deck_capacity_limit() -> bool:
+	return current_deck_capacity() >= 0
+
+
+func can_add_permanent_card() -> bool:
+	return not has_deck_capacity_limit() or deck.size() < current_deck_capacity()
+
+
+func shop_session_id() -> String:
+	return "%s:act%d:floor%d" % [run_id, current_act, current_floor]
+
+
+func has_run_ad_transaction(transaction_id: String) -> bool:
+	return ad_reward_transaction_ids.has(transaction_id.strip_edges())
+
+
+func record_run_ad_transaction(transaction_id: String) -> bool:
+	var clean_id := transaction_id.strip_edges()
+	if clean_id.is_empty() or ad_reward_transaction_ids.has(clean_id):
+		return false
+	ad_reward_transaction_ids.append(clean_id)
+	return true
+
+
+func active_pre_run_buff() -> Dictionary:
+	if pre_run_buff_id == &"" or pre_run_buff_remaining_floors <= 0:
+		return {}
+	return GameData.get_pre_run_buff(pre_run_buff_id)
+
+
+func resolve_current_floor() -> bool:
+	if not is_active or current_floor < 0:
+		return false
+	var key := "%d:%d" % [current_act, current_floor]
+	if resolved_floor_keys.has(key):
+		return false
+	resolved_floor_keys.append(key)
+	if pre_run_buff_remaining_floors > 0:
+		pre_run_buff_remaining_floors -= 1
+	SignalBus.floor_resolved.emit(current_floor, current_node_type)
+	return true
+
+
+func create_combat_checkpoint(enemy_ids: Array) -> bool:
+	if not is_active or enemy_ids.is_empty():
+		return false
+	var checkpoint_deck: Array = []
+	for entry in deck:
+		checkpoint_deck.append({
+			"id": String(entry.get("id", "")),
+			"upgraded": bool(entry.get("upgraded", false)),
+			"enchants": entry.get("enchants", []).duplicate(),
+		})
+	var checkpoint_potions: Array = []
+	for potion_id in potions:
+		checkpoint_potions.append(String(potion_id))
+	var checkpoint_relics: Array = []
+	for relic_id in relic_ids:
+		checkpoint_relics.append(String(relic_id))
+	var checkpoint_defeated: Array = []
+	for enemy_id in defeated:
+		checkpoint_defeated.append(String(enemy_id))
+	var checkpoint_enemies: Array = []
+	for enemy_id in enemy_ids:
+		checkpoint_enemies.append(String(enemy_id))
+	combat_checkpoint = {
+		"hp": hp,
+		"gold": gold,
+		"deck": checkpoint_deck,
+		"potions": checkpoint_potions,
+		"relic_ids": checkpoint_relics,
+		"defeated": checkpoint_defeated,
+		"current_act": current_act,
+		"current_floor": current_floor,
+		"current_node_type": String(current_node_type),
+		"enemy_ids": checkpoint_enemies,
+		"combat_seed": randi(),
+		"pre_run_buff_id": String(pre_run_buff_id),
+		"pre_run_buff_remaining_floors": pre_run_buff_remaining_floors,
+		"pre_run_buff_claimed": pre_run_buff_claimed,
+		"base_run_deck_capacity": base_run_deck_capacity,
+		"run_ad_deck_capacity_bonus": run_ad_deck_capacity_bonus,
+		"deck_capacity_ad_uses": deck_capacity_ad_uses,
+	}
+	pending_combat_enemy_ids.assign(enemy_ids)
+	combat_death_pending = false
+	return true
+
+
+func has_combat_checkpoint() -> bool:
+	return not combat_checkpoint.is_empty() and not combat_checkpoint.get("enemy_ids", []).is_empty()
+
+
+func combat_seed() -> int:
+	return int(combat_checkpoint.get("combat_seed", 0))
+
+
+func mark_combat_death_pending() -> bool:
+	if not is_active or not has_combat_checkpoint() or combat_death_pending:
+		return false
+	combat_death_pending = true
+	return true
+
+
+func restore_combat_checkpoint() -> bool:
+	if not has_combat_checkpoint():
+		return false
+	var checkpoint := combat_checkpoint
+	hp = int(checkpoint.get("hp", hp))
+	gold = int(checkpoint.get("gold", gold))
+	deck.clear()
+	for entry in checkpoint.get("deck", []):
+		deck.append({
+			"id": StringName(String(entry.get("id", ""))),
+			"upgraded": bool(entry.get("upgraded", false)),
+			"enchants": entry.get("enchants", []).duplicate(),
+		})
+	potions.clear()
+	for potion_id in checkpoint.get("potions", []):
+		potions.append(StringName(String(potion_id)))
+	relic_ids.clear()
+	for relic_id in checkpoint.get("relic_ids", []):
+		relic_ids.append(StringName(String(relic_id)))
+	defeated.clear()
+	for enemy_id in checkpoint.get("defeated", []):
+		defeated.append(StringName(String(enemy_id)))
+	current_act = int(checkpoint.get("current_act", current_act))
+	current_floor = int(checkpoint.get("current_floor", current_floor))
+	current_node_type = StringName(String(checkpoint.get("current_node_type", current_node_type)))
+	pending_combat_enemy_ids.clear()
+	for enemy_id in checkpoint.get("enemy_ids", []):
+		pending_combat_enemy_ids.append(StringName(String(enemy_id)))
+	pre_run_buff_id = StringName(String(checkpoint.get("pre_run_buff_id", pre_run_buff_id)))
+	pre_run_buff_remaining_floors = maxi(0, int(checkpoint.get("pre_run_buff_remaining_floors", pre_run_buff_remaining_floors)))
+	pre_run_buff_claimed = bool(checkpoint.get("pre_run_buff_claimed", pre_run_buff_claimed))
+	base_run_deck_capacity = int(checkpoint.get("base_run_deck_capacity", base_run_deck_capacity))
+	run_ad_deck_capacity_bonus = maxi(0, int(checkpoint.get("run_ad_deck_capacity_bonus", run_ad_deck_capacity_bonus)))
+	deck_capacity_ad_uses = maxi(0, int(checkpoint.get("deck_capacity_ad_uses", deck_capacity_ad_uses)))
+	combat_death_pending = false
+	pending_post_combat = false
+	last_combat_victory = false
+	SignalBus.player_hp_changed.emit(hp, max_hp)
+	SignalBus.gold_changed.emit(gold)
+	SignalBus.deck_changed.emit()
+	return true
+
+
+func clear_combat_checkpoint() -> void:
+	combat_checkpoint.clear()
+	combat_death_pending = false
+
+
+func _resolved_profile_deck_capacity() -> int:
+	if ProfileState.base_run_deck_capacity >= 0:
+		return ProfileState.base_run_deck_capacity
+	var configured: Variant = GameData.meta_progression.get("base_run_deck_capacity", null)
+	if configured == null or not (configured is int or configured is float):
+		return -1
+	return int(configured)
+
+
+func _new_run_id() -> String:
+	return "run:%d:%d" % [int(Time.get_unix_time_from_system()), Time.get_ticks_usec()]
 
 
 func remove_card_at(index: int) -> bool:
@@ -333,7 +552,8 @@ func is_boss_floor() -> bool:
 
 
 # ---------- 存档（P4 落盘；P-A 升 v2 多幕） ----------
-const SAVE_VERSION := 2
+const SAVE_VERSION := 4
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4]
 
 ## 将运行态序列化为可 JSON 化的 Dictionary。
 ## 所有 StringName 必须转 String，否则 JSON.stringify 会丢失类型。
@@ -392,14 +612,34 @@ func to_save_dict() -> Dictionary:
 		"current_act": current_act,
 		"act_cleared_flags": act_cleared_flags,
 		"act_maps": act_maps_data,
+		"run_id": run_id,
+		"base_run_deck_capacity": base_run_deck_capacity,
+		"run_ad_deck_capacity_bonus": run_ad_deck_capacity_bonus,
+		"deck_capacity_ad_uses": deck_capacity_ad_uses,
+		"pending_card_acquisition": pending_card_acquisition.duplicate(true),
+		"shop_states": shop_states.duplicate(true),
+		"ad_reward_transaction_ids": ad_reward_transaction_ids.duplicate(),
+		"run_end_base_fireseed": run_end_base_fireseed,
+		"run_end_ad_bonus_fireseed": run_end_ad_bonus_fireseed,
+		"run_end_base_settled": run_end_base_settled,
+		"pre_run_buff_offer_ids": _string_name_array_to_strings(pre_run_buff_offer_ids),
+		"pre_run_buff_id": String(pre_run_buff_id),
+		"pre_run_buff_remaining_floors": pre_run_buff_remaining_floors,
+		"pre_run_buff_claimed": pre_run_buff_claimed,
+		"pre_run_preparation_resolved": pre_run_preparation_resolved,
+		"resolved_floor_keys": resolved_floor_keys.duplicate(),
+		"combat_checkpoint": combat_checkpoint.duplicate(true),
+		"combat_death_pending": combat_death_pending,
+		"revive_used_count": revive_used_count,
 	}
 
 
 ## 从存档 Dictionary 还原运行态，重建 MapNode 对象并广播信号。
-## 仅接受 version == SAVE_VERSION（v1 旧单幕存档直接拒绝，由 SaveManager 删除）。
+## 接受 v2/v3 并迁移到 v4；v1 旧单幕存档仍由 SaveManager 删除。
 func from_save_dict(d: Dictionary) -> bool:
-	if int(d.get("version", -1)) != SAVE_VERSION:
-		push_error("[RunState] 存档版本不匹配 (期望 %d，实际 %d)" % [SAVE_VERSION, int(d.get("version", -1))])
+	var source_version := int(d.get("version", -1))
+	if not SUPPORTED_SAVE_VERSIONS.has(source_version):
+		push_error("[RunState] 不支持的存档版本：%d" % source_version)
 		return false
 
 	deck.clear()
@@ -425,6 +665,40 @@ func from_save_dict(d: Dictionary) -> bool:
 	defeated.clear()
 	for x in d.get("defeated", []):
 		defeated.append(StringName(x))
+
+	run_id = String(d.get("run_id", ""))
+	if run_id.is_empty():
+		run_id = _new_run_id()
+	base_run_deck_capacity = int(d.get("base_run_deck_capacity", -1))
+	run_ad_deck_capacity_bonus = maxi(0, int(d.get("run_ad_deck_capacity_bonus", 0)))
+	deck_capacity_ad_uses = maxi(0, int(d.get("deck_capacity_ad_uses", 0)))
+	pending_card_acquisition = d.get("pending_card_acquisition", {}).duplicate(true)
+	shop_states = d.get("shop_states", {}).duplicate(true)
+	ad_reward_transaction_ids.clear()
+	for transaction_id in d.get("ad_reward_transaction_ids", []):
+		var clean_id := String(transaction_id).strip_edges()
+		if not clean_id.is_empty() and not ad_reward_transaction_ids.has(clean_id):
+			ad_reward_transaction_ids.append(clean_id)
+	run_end_base_fireseed = maxi(0, int(d.get("run_end_base_fireseed", 0)))
+	run_end_ad_bonus_fireseed = maxi(0, int(d.get("run_end_ad_bonus_fireseed", 0)))
+	run_end_base_settled = bool(d.get("run_end_base_settled", false))
+	pre_run_buff_offer_ids.clear()
+	for buff_id in d.get("pre_run_buff_offer_ids", []):
+		var clean_buff_id := StringName(String(buff_id))
+		if clean_buff_id != &"" and not pre_run_buff_offer_ids.has(clean_buff_id):
+			pre_run_buff_offer_ids.append(clean_buff_id)
+	pre_run_buff_id = StringName(String(d.get("pre_run_buff_id", "")))
+	pre_run_buff_remaining_floors = maxi(0, int(d.get("pre_run_buff_remaining_floors", 0)))
+	pre_run_buff_claimed = bool(d.get("pre_run_buff_claimed", false))
+	pre_run_preparation_resolved = bool(d.get("pre_run_preparation_resolved", source_version < 4))
+	resolved_floor_keys.clear()
+	for floor_key in d.get("resolved_floor_keys", []):
+		var clean_floor_key := String(floor_key).strip_edges()
+		if not clean_floor_key.is_empty() and not resolved_floor_keys.has(clean_floor_key):
+			resolved_floor_keys.append(clean_floor_key)
+	combat_checkpoint = d.get("combat_checkpoint", {}).duplicate(true) if d.get("combat_checkpoint", {}) is Dictionary else {}
+	combat_death_pending = bool(d.get("combat_death_pending", false)) and not combat_checkpoint.is_empty()
+	revive_used_count = maxi(0, int(d.get("revive_used_count", 0)))
 
 	current_act = int(d.get("current_act", 0))
 	act_cleared_flags.clear()
@@ -458,3 +732,10 @@ func from_save_dict(d: Dictionary) -> bool:
 	SignalBus.deck_changed.emit()
 	SignalBus.map_generated.emit(current_map())
 	return true
+
+
+func _string_name_array_to_strings(values: Array) -> Array:
+	var output: Array = []
+	for value in values:
+		output.append(String(value))
+	return output

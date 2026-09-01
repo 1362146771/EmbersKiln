@@ -2,7 +2,7 @@ class_name CombatUnit
 extends RefCounted
 ## 战斗单位模型（玩家与敌人通用）。仅持有本场战斗的瞬时状态：
 ## 生命、格挡、状态层数、临时意图。不直接读 Autoload，所有数值由调用方注入。
-## 伤害修正（炽热/受潮/釉裂）由 CombatController 在调用 apply_damage 前计算好，
+## 伤害修正（力量/虚弱/易伤）由 CombatController 在调用 apply_damage 前计算好，
 ## 此处只负责「先扣格挡、溢出扣血」的纯逻辑，保持单一职责。
 
 var id: StringName = &""
@@ -28,7 +28,7 @@ var charge_next: StringName = &""
 var block_break_next: StringName = &""
 
 ## 当前所处阶段索引（仅 Boss 等 scripted_phases 敌人使用，-1 表示尚未初始化）。
-## 用于检测阶段切换并触发该阶段的 on_enter（如觉醒自身加炽热）。
+## 用于检测阶段切换并触发该阶段的 on_enter（如觉醒自身加力量）。
 var phase_index: int = -1
 
 ## 随从（召唤物）专用字段。
@@ -65,7 +65,7 @@ func apply_damage(final_amount: int) -> int:
 	return before - hp
 
 
-## 直接扣血（无视格挡，用于灰蚀等 DOT）。返回实际损失。
+## 直接扣血（无视格挡，用于燃烧等 DOT）。返回实际损失。
 func lose_hp_direct(amount: int) -> int:
 	var before := hp
 	hp = maxi(0, hp - maxi(0, amount))

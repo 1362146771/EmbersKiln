@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/verify/AdInfrastructureVerify.gd" id="1_verify"]
+
+[node name="AdInfrastructureVerify" type="Node"]
+script = ExtResource("1_verify")

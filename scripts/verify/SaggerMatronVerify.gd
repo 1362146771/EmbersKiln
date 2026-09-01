@@ -170,7 +170,7 @@ func _test_damage_routes() -> void:
 	check("贯穿窑变不消耗封匣格挡", boss.block == 8 and move_id() == "fire" and intent_events == 0)
 	boss.add_status(&"ashrot", 2)
 	ctrl._status.process_turn_start_statuses(boss)
-	check("灰蚀绕盾不破封", boss.block == 8 and move_id() == "fire" and boss.hp == boss.max_hp - 22)
+	check("燃烧绕盾不破封", boss.block == 8 and move_id() == "fire" and boss.hp == boss.max_hp - 22)
 	seal()
 	var ally := CombatUnit.new()
 	ally.setup(false, &"verify_ally", "随从夹具", 10)

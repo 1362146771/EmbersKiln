@@ -4,7 +4,11 @@ extends Node
 ## 运行时数据全部来自 RunState，本脚本不持有任何玩法数值。
 
 const SAVE_PATH := "user://save.json"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 4
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4]
+
+## 测试可临时改写到隔离路径；生产环境始终使用默认 SAVE_PATH。
+var runtime_save_path := SAVE_PATH
 
 
 func _ready() -> void:
@@ -19,7 +23,7 @@ func _ready() -> void:
 	# 拦截窗口关闭，先存档再退出（见 _notification）
 	get_tree().auto_accept_quit = false
 	_purge_stale_save()
-	print("[SaveManager] 已就绪，存档路径 %s" % SAVE_PATH)
+	print("[SaveManager] 已就绪，存档路径 %s" % runtime_save_path)
 
 
 # ---------- 窗口关闭强存档 ----------
@@ -54,26 +58,29 @@ func _on_act_changed(_act_index: int) -> void:
 func save_game() -> bool:
 	if RunState == null or not RunState.is_active:
 		return false
-	return save_to_file(SAVE_PATH)
+	return save_to_file(runtime_save_path)
 
 
 func load_game() -> bool:
-	var d := load_from_file(SAVE_PATH)
+	var d := load_from_file(runtime_save_path)
 	if d.is_empty():
 		return false
-	if not d.has("version") or int(d["version"]) != SAVE_VERSION:
+	if not d.has("version") or not SUPPORTED_SAVE_VERSIONS.has(int(d["version"])):
 		push_error("[SaveManager] 存档版本不匹配，拒绝加载")
 		return false
 	if RunState == null:
 		return false
 	var ok := RunState.from_save_dict(d)
 	if ok:
+		if int(d.get("version", -1)) != SAVE_VERSION:
+			save_game()
+		SignalBus.run_loaded.emit()
 		print("[SaveManager] 读档成功 — 第 %d 层，HP %d/%d" % [RunState.current_floor, RunState.hp, RunState.max_hp])
 	return ok
 
 
 func has_save() -> bool:
-	return FileAccess.file_exists(SAVE_PATH)
+	return FileAccess.file_exists(runtime_save_path)
 
 
 func delete_save() -> void:
@@ -87,17 +94,17 @@ func delete_save() -> void:
 func _purge_stale_save() -> void:
 	if not has_save():
 		return
-	var d := load_from_file(SAVE_PATH)
-	if not d.is_empty() and int(d.get("version", -1)) != SAVE_VERSION:
+	var d := load_from_file(runtime_save_path)
+	if not d.is_empty() and not SUPPORTED_SAVE_VERSIONS.has(int(d.get("version", -1))):
 		push_warning("[SaveManager] 检测到旧版存档(v%d)，按设计拒绝并删除" % int(d.get("version", -1)))
 		delete_save()
 
 
 func _remove_user_file() -> int:
-	var da := DirAccess.open("user://")
+	var da := DirAccess.open(runtime_save_path.get_base_dir())
 	if da == null:
 		return ERR_CANT_OPEN
-	return da.remove(SAVE_PATH.get_file())
+	return da.remove(runtime_save_path.get_file())
 
 
 # ---------- 测试用：任意路径读写 ----------

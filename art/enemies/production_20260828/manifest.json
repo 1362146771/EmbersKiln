@@ -1,7 +1,7 @@
 {
   "date": "2026-08-28",
   "status": "installed",
-  "visual_qa": "2026-08-28: inspected all 20 on dark and white backgrounds; inspected and cleared enclosed arm/handle/cloth/claw gaps; preserved pottery, ash and flames. Godot 4.7.1: headless 367/0; Compatibility and default Mobile/D3D12 each 391/0, 24 real combat screenshots; player poses 8/0; Sagger production 40/0. See AI_Studio/Reports/DEV_REPORT_ENEMY_PORTRAIT_ROLLOUT_20260828.md. Full playthrough, device testing, GUT and export NOT VERIFIED.",
+  "visual_qa": "2026-08-28: inspected all 20 on dark and white backgrounds; inspected and cleared enclosed arm/handle/cloth/claw gaps; preserved pottery, ash and flames. Godot 4.7.1: headless 367/0; Compatibility and default Mobile/D3D12 each 391/0, 24 real combat screenshots; player poses 8/0; Sagger production 40/0. Full playthrough, device testing, GUT and export NOT VERIFIED.",
   "presentation_changes": {
     "scripts/combat/EnemyPanel.gd": {
       "before": "5b40e2ba68f815f46d4bc67110a9dbd56bec121cce3afb70f246eb8204c52f69",

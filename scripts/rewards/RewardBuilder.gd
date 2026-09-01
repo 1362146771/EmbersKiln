@@ -8,6 +8,8 @@ static func roll_card_choices(count: int) -> Array:
 	for c in GameData.cards.values():
 		if c.rarity == &"starter" or c.rarity == &"special":
 			continue
+		if not GameData.is_card_unlocked(c.id):
+			continue
 		pool.append(c)
 	var weights: Dictionary = GameData.balance.get("card_pool_weights", {})
 	var out: Array = []
@@ -33,6 +35,33 @@ static func roll_card_choices(count: int) -> Array:
 			"type": cd.type,
 			"desc": cd.get_description(false),
 		})
+	return out
+
+
+## 商店刷新用：遵循相同稀有度权重，并排除刷新前仍在售的卡牌。
+static func roll_card_choices_excluding(count: int, excluded_ids: Array) -> Array:
+	var pool: Array = []
+	for c in GameData.cards.values():
+		if c.rarity in [&"starter", &"special"] or excluded_ids.has(c.id) or excluded_ids.has(String(c.id)):
+			continue
+		if not GameData.is_card_unlocked(c.id):
+			continue
+		pool.append(c)
+	var weights: Dictionary = GameData.balance.get("card_pool_weights", {})
+	var out: Array = []
+	while out.size() < count and not pool.is_empty():
+		var cd: CardData = _weighted_card(pool, weights)
+		if cd == null:
+			break
+		out.append({
+			"id": cd.id,
+			"name": cd.name,
+			"rarity": cd.rarity,
+			"cost": cd.cost,
+			"type": cd.type,
+			"desc": cd.get_description(false),
+		})
+		pool.erase(cd)
 	return out
 
 
@@ -73,6 +102,8 @@ static func roll_relic(tier: StringName) -> StringName:
 	for r in GameData.relics.values():
 		if r.rarity == &"starter":
 			continue
+		if not GameData.is_relic_unlocked(r.id):
+			continue
 		if owned.has(r.id):
 			continue
 		candidates.append(r)
@@ -86,6 +117,8 @@ static func roll_single_card() -> Dictionary:
 	var pool: Array = []
 	for c in GameData.cards.values():
 		if c.rarity == &"starter" or c.rarity == &"special":
+			continue
+		if not GameData.is_card_unlocked(c.id):
 			continue
 		pool.append(c)
 	var weights: Dictionary = GameData.balance.get("card_pool_weights", {})
@@ -109,7 +142,24 @@ static func roll_shop_relic() -> StringName:
 	for r in GameData.relics.values():
 		if r.rarity == &"starter":
 			continue
+		if not GameData.is_relic_unlocked(r.id):
+			continue
 		if owned.has(r.id):
+			continue
+		candidates.append(r)
+	if candidates.is_empty():
+		return &""
+	return candidates[randi_range(0, candidates.size() - 1)].id
+
+
+static func roll_shop_relic_excluding(excluded_ids: Array) -> StringName:
+	var candidates: Array = []
+	for r in GameData.relics.values():
+		if r.rarity == &"starter" or RunState.relic_ids.has(r.id):
+			continue
+		if not GameData.is_relic_unlocked(r.id):
+			continue
+		if excluded_ids.has(r.id) or excluded_ids.has(String(r.id)):
 			continue
 		candidates.append(r)
 	if candidates.is_empty():
@@ -131,7 +181,10 @@ static func roll_potion(tier: StringName, force: bool = false) -> StringName:
 	var cap: int = int(GameData.balance.get("potions", {}).get("max_carry", 3))
 	if RunState.potions.size() >= cap:
 		return &""
-	var ids: Array = GameData.potions.keys()
+	var ids: Array = []
+	for potion_id in GameData.potions:
+		if GameData.is_potion_unlocked(potion_id):
+			ids.append(potion_id)
 	if ids.is_empty():
 		return &""
 	return StringName(ids[randi_range(0, ids.size() - 1)])
@@ -143,7 +196,7 @@ static func roll_enchant_for_card(card: CardData) -> StringName:
 		return &""
 	var legal: Array = []
 	for e in GameData.enchants.values():
-		if e.matches_card(card):
+		if GameData.is_enchant_unlocked(e.id) and e.matches_card(card):
 			legal.append(e.id)
 	if legal.is_empty():
 		return &""

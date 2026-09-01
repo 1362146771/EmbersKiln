@@ -36,19 +36,60 @@ var _remove_sources: Array = []
 var _remove_quote := 0
 var _remove_status := ""
 var _finished := false
+var shop_id := ""
+var refresh_count := 0
+var _refresh_status := ""
 
 
 func setup(done: Callable) -> void:
 	on_done = done
-	_generate_stock()
+	_prepare_stock()
 	_build_main()
 
 
 ## P2 场景化：作为独立场景加载时自构建（货架只生成一次，避免重复刷新）。
 func _ready() -> void:
+	if not SignalBus.shop_inventory_changed.is_connected(_on_shop_inventory_changed):
+		SignalBus.shop_inventory_changed.connect(_on_shop_inventory_changed)
+	if not SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
+		SignalBus.card_acquisition_resolved.connect(_on_card_acquisition_resolved)
+	if not SignalBus.ad_reward_resolved.is_connected(_on_ad_reward_resolved):
+		SignalBus.ad_reward_resolved.connect(_on_ad_reward_resolved)
 	if card_stock.is_empty():
-		_generate_stock()
+		_prepare_stock()
 	_build_main()
+
+
+func _exit_tree() -> void:
+	if SignalBus.shop_inventory_changed.is_connected(_on_shop_inventory_changed):
+		SignalBus.shop_inventory_changed.disconnect(_on_shop_inventory_changed)
+	if SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
+		SignalBus.card_acquisition_resolved.disconnect(_on_card_acquisition_resolved)
+	if SignalBus.ad_reward_resolved.is_connected(_on_ad_reward_resolved):
+		SignalBus.ad_reward_resolved.disconnect(_on_ad_reward_resolved)
+
+
+func _prepare_stock() -> void:
+	shop_id = ShopInventorySystem.current_shop_id()
+	if ShopInventorySystem.has_state(shop_id):
+		_apply_stock_state(ShopInventorySystem.get_state(shop_id))
+		return
+	_generate_stock()
+	_persist_stock()
+
+
+func _apply_stock_state(state: Dictionary) -> void:
+	card_stock = state.get("card_stock", []).duplicate(true)
+	relic_stock = state.get("relic_stock", []).duplicate(true)
+	potion_stock = state.get("potion_stock", []).duplicate(true)
+	refresh_count = int(state.get("refresh_count", 0))
+	remove_cost = int(GameData.balance.get("shop", {}).get("remove_card_cost", 0))
+
+
+func _persist_stock() -> void:
+	if shop_id.is_empty():
+		shop_id = ShopInventorySystem.current_shop_id()
+	ShopInventorySystem.capture_state(shop_id, card_stock, relic_stock, potion_stock, refresh_count)
 
 
 func _generate_stock() -> void:
@@ -75,7 +116,10 @@ func _generate_stock() -> void:
 	potion_stock.clear()
 	var p_prices: Array = cfg.get("potion_cost", [35, 55, 75])
 	var p_count: int = int(GameData.balance.get("potions", {}).get("drop", {}).get("shop_stock", 2))
-	var all_p: Array = GameData.potions.keys()
+	var all_p: Array = []
+	for potion_id in GameData.potions:
+		if GameData.is_potion_unlocked(potion_id):
+			all_p.append(potion_id)
 	all_p.shuffle()
 	for k in all_p.slice(0, mini(p_count, all_p.size())):
 		var pid: StringName = StringName(k)
@@ -105,18 +149,24 @@ func _build_main() -> void:
 	panel.add_theme_stylebox_override("panel", CardBrowserScript.style(Color("3a4554")))
 	center.add_child(panel)
 
+	var content_scroll := ScrollContainer.new()
+	content_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	content_scroll.offset_left = 20
+	content_scroll.offset_right = -20
+	content_scroll.offset_top = 16
+	content_scroll.offset_bottom = -16
+	content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	content_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	panel.add_child(content_scroll)
+
 	var v := VBoxContainer.new()
-	v.set_anchors_preset(Control.PRESET_FULL_RECT)
-	v.offset_left = 20
-	v.offset_right = -20
-	v.offset_top = 16
-	v.offset_bottom = -16
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	v.add_theme_constant_override("margin_left", 24)
 	v.add_theme_constant_override("margin_right", 24)
 	v.add_theme_constant_override("margin_top", 22)
 	v.add_theme_constant_override("margin_bottom", 22)
 	v.add_theme_constant_override("separation", 14)
-	panel.add_child(v)
+	content_scroll.add_child(v)
 
 	v.add_child(_label("商 店", 40, TEXT))
 	v.add_child(_label("金币：%d" % RunState.gold, 26, AMBER))
@@ -168,6 +218,26 @@ func _build_main() -> void:
 	enc_btn.disabled = RunState.gold < enc_cost or not RewardBuilder.can_any_card_enchant()
 	enc_btn.pressed.connect(_on_enchant_pressed.bind(enc_cost))
 	v.add_child(enc_btn)
+
+	if AdService.is_placement_enabled(ShopInventorySystem.PLACEMENT):
+		var refresh_btn := Button.new()
+		refresh_btn.name = "ShopRefreshAdButton"
+		refresh_btn.custom_minimum_size = Vector2(560, 64)
+		refresh_btn.add_theme_font_size_override("font_size", 22)
+		if ShopInventorySystem.is_refresh_configured():
+			refresh_btn.text = "观看广告 · 刷新未购买商品（剩余%d次）" % ShopInventorySystem.remaining_refreshes(shop_id)
+		else:
+			refresh_btn.text = "观看广告 · 刷新未购买商品"
+		refresh_btn.disabled = not ShopInventorySystem.can_offer_refresh(shop_id)
+		refresh_btn.tooltip_text = ShopInventorySystem.refresh_block_reason(shop_id) if refresh_btn.disabled else "已购买槽位与服务状态保持不变"
+		refresh_btn.pressed.connect(_on_refresh_pressed)
+		v.add_child(refresh_btn)
+		var refresh_hint := "只替换未购买槽位；已售商品、金币和服务状态保持不变。"
+		if not _refresh_status.is_empty():
+			refresh_hint = _refresh_status + "\n" + refresh_hint
+		elif refresh_btn.disabled:
+			refresh_hint = ShopInventorySystem.refresh_block_reason(shop_id) + "\n" + refresh_hint
+		v.add_child(_label(refresh_hint, 18, TEXT))
 
 	# 离开
 	var leave_btn := Button.new()
@@ -249,12 +319,16 @@ func _on_buy_card(i: int) -> void:
 	var item: Dictionary = card_stock[i]
 	if item["bought"] or RunState.gold < item["price"]:
 		return
-	if not RunState.spend_gold(item["price"]):
-		return
-	RunState.add_card(StringName(item["card"].get("id", "")), false)
-	item["bought"] = true
-	_log("购买卡牌：%s（-%d 金）" % [item["card"].get("name", ""), item["price"]])
-	_build_main()
+	var result := CardAcquireService.acquire_shop_card(
+		shop_id,
+		i,
+		StringName(String(item["card"].get("id", ""))),
+		int(item["price"])
+	)
+	if result == CardAcquireService.RESULT_ACQUIRED:
+		_log("购买卡牌：%s（-%d 金）" % [item["card"].get("name", ""), item["price"]])
+	elif result == CardAcquireService.RESULT_FULL:
+		_log("牌库已满，等待选择是否观看广告扩容；尚未扣费。")
 
 
 func _on_buy_relic(i: int) -> void:
@@ -269,7 +343,9 @@ func _on_buy_relic(i: int) -> void:
 		return
 	RunState.add_relic(StringName(item["id"]))
 	item["bought"] = true
+	_persist_stock()
 	_log("购买遗物：-%d 金" % item["price"])
+	_build_main()
 
 
 func _potion_offer(i: int) -> Control:
@@ -319,8 +395,51 @@ func _on_buy_potion(i: int) -> void:
 		_build_main()
 		return
 	item["bought"] = true
+	_persist_stock()
 	_log("购买药水：-%d 金" % item["price"])
 	_build_main()
+
+
+func _on_refresh_pressed() -> void:
+	var request_id := ShopInventorySystem.request_refresh(shop_id)
+	_refresh_status = "广告播放中……" if not request_id.is_empty() else ShopInventorySystem.refresh_block_reason(shop_id)
+	_build_main()
+
+
+func _on_shop_inventory_changed(changed_shop_id: String) -> void:
+	if changed_shop_id != shop_id or not is_inside_tree():
+		return
+	_apply_stock_state(ShopInventorySystem.get_state(shop_id))
+	_refresh_status = "商品刷新完成。"
+	_build_main()
+
+
+func _on_ad_reward_resolved(_transaction_id: String, placement_id: StringName, result: StringName) -> void:
+	if placement_id != ShopInventorySystem.PLACEMENT or result == &"granted":
+		return
+	match result:
+		AdService.RESULT_SKIPPED, AdService.RESULT_CLOSED:
+			_refresh_status = "广告未完整观看，商品没有变化。"
+		AdService.RESULT_FAILED:
+			_refresh_status = "广告播放失败，商品没有变化。"
+		_:
+			_refresh_status = "刷新奖励待恢复，请稍后重试。"
+	if is_inside_tree():
+		_build_main()
+
+
+func _on_card_acquisition_resolved(acquisition: Dictionary, result: StringName) -> void:
+	if String(acquisition.get("source_id", "")) != "shop":
+		return
+	if result == CardAcquireService.RESULT_ACQUIRED:
+		_log("扩容后购买卡牌成功。")
+	elif result == CardAcquireService.RESULT_ABANDONED:
+		_log("已放弃本次购卡；未扣金币。")
+	else:
+		_log("容量已处理，但商品、价格或金币状态已变化，本次未扣费、未领卡。")
+	if is_inside_tree():
+		_apply_stock_state(ShopInventorySystem.get_state(shop_id))
+		_build_main()
 
 
 func _on_enchant_pressed(cost: int) -> void:

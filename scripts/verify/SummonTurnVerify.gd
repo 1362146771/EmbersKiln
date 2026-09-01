@@ -1,7 +1,7 @@
 extends Node
 ## SummonTurnVerify：验证「玩家结束回合 → 召唤物异步演出（攻击/防御 + VFX）→ 敌人回合」链路。
 ## 覆盖：run_summon_turn 对敌人造成随从攻击伤害、防御随从加格挡、寿命递减、
-##       指挥加成、行动信号、空场无操作、友色光弹 VFX 飞行+撞击回调+自动释放。
+##       领袖气质加成、行动信号、空场无操作、友色光弹 VFX 飞行+撞击回调+自动释放。
 ## 输出 SUMMON_TURN_RESULT:PASS / FAIL。通过 run_and_verify 指定该 scene 运行。
 
 var results: Array[String] = []
@@ -71,14 +71,14 @@ func run() -> void:
 	check("召唤阶段结束后未锁输入", BattleDirector.input_locked == false)
 	check("召唤阶段结束后战斗仍激活", ctrl.combat_active())
 
-	# 指挥加成：玩家加 command 后，攻击随从伤害 +command、防御随从格挡 +command
+	# 领袖气质加成：玩家加 command 后，攻击随从伤害 +command、防御随从格挡 +command
 	ctrl.player.add_status(&"command", 2)
 	var ehp2: int = ctrl.enemies[0].hp
 	await BattleDirector.run_summon_turn(ctrl, null, enemy_getter, ally_getter)
 	var dealt2: int = ehp2 - ctrl.enemies[0].hp
-	check("指挥+2：攻击随从伤害 5+2=7/个", dealt2 == 7 * attackers, "dealt2=%d" % dealt2)
+	check("领袖气质+2：攻击随从伤害 5+2=7/个", dealt2 == 7 * attackers, "dealt2=%d" % dealt2)
 	# 防御随从每回合先清格挡再置为 value+command（ally_pre 清格挡），故 = 5+2 = 7
-	check("指挥+2：釉卫格挡 5+2=7", guard.block == 7, "block=%d" % guard.block)
+	check("领袖气质+2：釉卫格挡 5+2=7", guard.block == 7, "block=%d" % guard.block)
 	check("窑犬寿命 2→1", hound.lifetime == 1, "life=%d" % hound.lifetime)
 
 	# 寿命到期清场：连推到寿命耗尽

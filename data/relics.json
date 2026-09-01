@@ -18,7 +18,7 @@
       "trigger": "combat_start",
       "effect": "gain_strength_self",
       "value": 1,
-      "description": "每场战斗开始时获得 1 点炽热。",
+      "description": "每场战斗开始时获得 1 点力量。",
       "icon": "ICO_Relic_BellowsGlove"
     },
     {

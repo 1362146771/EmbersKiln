@@ -45,7 +45,7 @@ func _ready() -> void:
 		lines.append("    状态 crazed = 「%s」" % st.name)
 		lines.append("    卡牌 bash = 「%s」：%s" % [card.name, card.description])
 	else:
-		lines.append("[color=#D85A30]✗[/color] v2 命名未生效（crazed / bash 缺失）")
+		lines.append("[color=#D85A30]✗[/color] 状态命名未生效（crazed / bash 缺失）")
 
 	# --- 4. RunState 开局 ---
 	if RunState.start_new_run():

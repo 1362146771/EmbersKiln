@@ -20,11 +20,21 @@ config/features=PackedStringArray("4.7", "Mobile")
 TestBridge="*res://test_bridge.gd"
 SignalBus="*res://scripts/core/SignalBus.gd"
 GameData="*res://scripts/data/GameData.gd"
+ProfileState="*res://scripts/core/ProfileState.gd"
+ProfileManager="*res://scripts/core/ProfileManager.gd"
+WorkshopSystem="*res://scripts/meta/WorkshopSystem.gd"
+AdService="*res://scripts/ads/AdService.gd"
+AdRewardCoordinator="*res://scripts/ads/AdRewardCoordinator.gd"
 RunState="*res://scripts/core/RunState.gd"
+RunEndRewardSystem="*res://scripts/meta/RunEndRewardSystem.gd"
 SaveManager="*res://scripts/core/SaveManager.gd"
 PauseManager="*res://scripts/core/PauseManager.gd"
 VFXSystem="*res://scripts/core/VFXSystem.gd"
 BattleDirector="*res://scripts/combat/BattleDirector.gd"
+ShopInventorySystem="*res://scripts/meta/ShopInventorySystem.gd"
+CardAcquireService="*res://scripts/meta/CardAcquireService.gd"
+PreRunBuffSystem="*res://scripts/meta/PreRunBuffSystem.gd"
+CombatReviveSystem="*res://scripts/meta/CombatReviveSystem.gd"
 
 [display]
 

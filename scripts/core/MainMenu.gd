@@ -3,6 +3,8 @@ extends Control
 ## 启动时检测 SaveManager.has_save() 决定「继续游戏」是否可用。
 
 const MAP_PLAY := "res://scenes/map/MapPlay.tscn"
+const TOWN_SCENE := "res://scenes/main/Town.tscn"
+const PRE_RUN_PREPARATION := "res://scenes/main/PreRunPreparation.tscn"
 
 const CREAM := Color(0.984, 0.953, 0.894)
 const ORANGE := Color(0.941, 0.600, 0.482)
@@ -58,6 +60,11 @@ func _build() -> void:
 	b_cont.pressed.connect(_on_continue)
 	col.add_child(b_cont)
 
+	# 永久成长入口
+	var b_town := _big_btn("窑口镇")
+	b_town.pressed.connect(_on_town)
+	col.add_child(b_town)
+
 	# 退出游戏
 	var b_quit := _big_btn("退出游戏")
 	b_quit.pressed.connect(_on_quit)
@@ -77,8 +84,9 @@ func _on_new_game() -> void:
 	# 新游戏：清掉旧存档，避免误续玩上一局
 	if SaveManager.has_save():
 		SaveManager.delete_save()
-	RunState.start_new_run()
-	get_tree().change_scene_to_file(MAP_PLAY)
+	if RunState.start_new_run():
+		PreRunBuffSystem.prepare_offer()
+		get_tree().change_scene_to_file(PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY)
 
 
 func _on_continue() -> void:
@@ -87,8 +95,14 @@ func _on_continue() -> void:
 	if not SaveManager.load_game():
 		# 读档失败则退回到新游戏
 		RunState.start_new_run()
-	get_tree().change_scene_to_file(MAP_PLAY)
+	if not RunState.pre_run_preparation_resolved:
+		PreRunBuffSystem.prepare_offer()
+	get_tree().change_scene_to_file(PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY)
 
 
 func _on_quit() -> void:
 	get_tree().quit()
+
+
+func _on_town() -> void:
+	get_tree().change_scene_to_file(TOWN_SCENE)

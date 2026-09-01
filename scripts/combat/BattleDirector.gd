@@ -133,7 +133,7 @@ func run_enemy_turn(controller, player_panel: Control, enemy_panel_getter: Calla
 
 
 ## 友方（随从）回合异步编排：玩家结束回合后、敌人回合前依次演出每个随从意图。
-## 攻击意图：友色光弹从随从面板飞向敌方面板，撞击点回调 controller.ally_attack_hit 结算（含指挥加成）。
+## 攻击意图：友色光弹从随从面板飞向敌方面板，撞击点回调 controller.ally_attack_hit 结算（含领袖气质加成）。
 ## 非攻击意图（defend/buff/debuff）：随从面板自身爆发，稍候回调 controller.ally_act 结算（复用 play_self_card）。
 ## 演出期间 input_locked=true；随从致死（turn_start 状态/寿命到期）/ 全灭 / 战斗结束则提前收尾。
 ## ally_panel_getter(a:CombatUnit)->Control 取随从面板；enemy_panel_getter(e:CombatUnit)->Control 取敌方面板。

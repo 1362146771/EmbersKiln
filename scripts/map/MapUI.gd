@@ -12,6 +12,8 @@ const TreasureScene := preload("res://scenes/map/TreasureUI.tscn")
 const EventScene := preload("res://scenes/map/EventUI.tscn")
 const AltarScene := preload("res://scenes/map/AltarUI.tscn")
 const RewardScene := preload("res://scenes/rewards/RewardUI.tscn")
+const PreRunPreparationScene := preload("res://scenes/main/PreRunPreparation.tscn")
+const TownScene := preload("res://scenes/main/Town.tscn")
 
 # ART_STYLE 限制色板
 const CREAM := Color(0.984, 0.953, 0.894)
@@ -73,22 +75,36 @@ var top_act: Label
 var top_hp: Label
 var top_gold: Label
 var top_floor: Label
+var top_buff: Label
 
 # 每局选择记录：chosen[floor] = index，未选为 -1
 var chosen: Array[int] = []
 var node_pos: Dictionary = {}
 var _bg: ColorRect  # 全屏背景：P1 起战斗改为独立场景切换，不再需要隐藏/恢复
+var _result_fireseed_label: Label
+var _result_ad_button: Button
 
 
 func _ready() -> void:
 	if not GameData.is_loaded:
 		push_error("[MapUI] GameData 未就绪")
 		return
+	if not SignalBus.ad_reward_resolved.is_connected(_on_ad_reward_resolved):
+		SignalBus.ad_reward_resolved.connect(_on_ad_reward_resolved)
 	_build_static_ui()
+	if not RunState.pre_run_preparation_resolved:
+		PreRunBuffSystem.prepare_offer()
+	if PreRunBuffSystem.needs_preparation():
+		get_tree().call_deferred("change_scene_to_packed", PreRunPreparationScene)
+		return
+	if RunState.has_combat_checkpoint() and not RunState.pending_combat_enemy_ids.is_empty():
+		get_tree().call_deferred("change_scene_to_packed", CombatPlayScene)
+		return
 	# —— 场景化回程分支（P1+P2）：地图每次重入重建，靠 RunState 瞬时标记区分来源 ——
 	# 1) 奖励界面返回：走 _on_reward_done（boss→幕转场/通关，普通→继续面板）
 	if RunState.pending_post_reward:
 		RunState.pending_post_reward = false
+		_resolve_current_floor()
 		start_new_map()
 		_on_reward_done()
 		return
@@ -96,26 +112,40 @@ func _ready() -> void:
 	if RunState.pending_post_combat:
 		RunState.pending_post_combat = false
 		var victory := RunState.last_combat_victory
-		start_new_map()
 		if not victory:
+			# 失败时 RunState 已结束；不得在结算面板出现前调用 start_new_map，
+			# 否则会重置本局 run_id 与火种结算字段，并偷偷预创建下一局。
+			_refresh_topbar()
 			_show_result(false)
 			return
+		start_new_map()
 		_grant_reward()
 		return
 	# 3) 非战斗节点返回：弹「行动完成」面板
 	if RunState.pending_node_resolved:
 		RunState.pending_node_resolved = false
+		_resolve_current_floor()
 		start_new_map()
 		_show_continue_panel("行动完成", "继续前进")
 		return
 	start_new_map()
 
 
+func _exit_tree() -> void:
+	if SignalBus.ad_reward_resolved.is_connected(_on_ad_reward_resolved):
+		SignalBus.ad_reward_resolved.disconnect(_on_ad_reward_resolved)
+
+
 ## 开新的一局地图（或续玩已载入的运行态）
 func start_new_map() -> void:
 	var resumed := RunState.is_active
 	if not resumed:
-		RunState.start_new_run()
+		if not RunState.start_new_run():
+			return
+		PreRunBuffSystem.prepare_offer()
+		if PreRunBuffSystem.needs_preparation():
+			get_tree().call_deferred("change_scene_to_packed", PreRunPreparationScene)
+			return
 	chosen.clear()
 	for f in RunState.current_map().size():
 		chosen.append(-1)
@@ -151,10 +181,12 @@ func _build_static_ui() -> void:
 	top_hp = _label("HP", 26, DARK)
 	top_gold = _label("金币 0", 26, AMBER)
 	top_floor = _label("第 0 层", 26, DARK)
+	top_buff = _label("", 20, GREEN)
 	topbar.add_child(top_act)
 	topbar.add_child(top_hp)
 	topbar.add_child(top_gold)
 	topbar.add_child(top_floor)
+	topbar.add_child(top_buff)
 
 	# 地图画布容器（纵向滚动，承载 StS 式高地图）
 	map_scroller = ScrollContainer.new()
@@ -353,6 +385,8 @@ func _start_combat_node(node) -> void:
 	# 敌人 id 经 RunState 跨场景传递；当前节点类型已写入 RunState.current_node_type，
 	# 战后结算据此判定 tier / 是否 boss。
 	RunState.pending_combat_enemy_ids = node.enemy_ids.duplicate()
+	RunState.create_combat_checkpoint(node.enemy_ids)
+	SaveManager.save_game()
 	get_tree().change_scene_to_packed(CombatPlayScene)
 	print("[MapUI] 进入战斗节点：%s，敌人=%s" % [node.type, node.enemy_ids])
 
@@ -471,18 +505,66 @@ func _show_result(victory: bool) -> void:
 	var sub := _label("抵达第 %d 层" % RunState.current_floor, 28, DARK)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	panel.get_child(0).get_child(0).add_child(sub)
+	if RunState.run_end_base_settled:
+		_result_fireseed_label = _label("基础火种 +%d（已到账）" % RunState.run_end_base_fireseed, 28, AMBER)
+		_result_fireseed_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		panel.get_child(0).get_child(0).add_child(_result_fireseed_label)
+		if RunEndRewardSystem.is_ad_bonus_configured() and RunState.run_end_ad_bonus_fireseed <= 0:
+			_result_ad_button = Button.new()
+			_result_ad_button.text = "观看广告 · 额外获得 %d 火种" % RunEndRewardSystem.preview_ad_bonus()
+			_result_ad_button.custom_minimum_size = Vector2(420, 80)
+			_result_ad_button.add_theme_font_size_override("font_size", 26)
+			_result_ad_button.disabled = not RunEndRewardSystem.can_offer_ad_bonus()
+			_result_ad_button.tooltip_text = "当前无可用广告" if _result_ad_button.disabled else "基础火种已经到账"
+			_result_ad_button.pressed.connect(_on_run_end_ad_pressed)
+			panel.get_child(0).get_child(0).add_child(_result_ad_button)
+	else:
+		var unavailable := _label("火种暂未结算：正式投放数值尚未配置", 23, RED)
+		unavailable.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		panel.get_child(0).get_child(0).add_child(unavailable)
 	var btn := Button.new()
 	btn.text = "再来一局"
 	btn.custom_minimum_size = Vector2(240, 80)
 	btn.add_theme_font_size_override("font_size", 28)
 	btn.pressed.connect(_on_restart.bind(panel))
 	panel.get_child(0).get_child(0).add_child(btn)
+	var town_btn := Button.new()
+	town_btn.name = "ReturnTownButton"
+	town_btn.text = "返回窑口镇"
+	town_btn.custom_minimum_size = Vector2(240, 80)
+	town_btn.add_theme_font_size_override("font_size", 28)
+	town_btn.pressed.connect(_on_return_town.bind(panel))
+	panel.get_child(0).get_child(0).add_child(town_btn)
 	add_child(panel)
 
 
 func _on_restart(panel: Control) -> void:
 	panel.queue_free()
 	start_new_map()
+
+
+func _on_return_town(panel: Control) -> void:
+	panel.queue_free()
+	get_tree().change_scene_to_packed(TownScene)
+
+
+func _on_run_end_ad_pressed() -> void:
+	if _result_ad_button != null:
+		_result_ad_button.disabled = true
+	if RunEndRewardSystem.request_ad_bonus().is_empty() and _result_ad_button != null:
+		_result_ad_button.disabled = not RunEndRewardSystem.can_offer_ad_bonus()
+
+
+func _on_ad_reward_resolved(_transaction_id: String, placement_id: StringName, result: StringName) -> void:
+	if placement_id != RunEndRewardSystem.PLACEMENT:
+		return
+	if result == &"granted":
+		if _result_fireseed_label != null:
+			_result_fireseed_label.text = "基础火种 +%d · 广告额外 +%d（均已到账）" % [RunState.run_end_base_fireseed, RunState.run_end_ad_bonus_fireseed]
+		if _result_ad_button != null:
+			_result_ad_button.hide()
+	elif _result_ad_button != null:
+		_result_ad_button.disabled = not RunEndRewardSystem.can_offer_ad_bonus()
 
 
 func _overlay_panel() -> Control:
@@ -508,3 +590,11 @@ func _refresh_topbar() -> void:
 	top_hp.text = "HP %d / %d" % [RunState.hp, RunState.max_hp]
 	top_gold.text = "金币 %d" % RunState.gold
 	top_floor.text = "第 %d / %d 层" % [RunState.current_floor, RunState.total_floors()]
+	if top_buff != null:
+		var buff := RunState.active_pre_run_buff()
+		top_buff.text = "%s · 剩余%d层" % [buff.get("name", "局前增益"), RunState.pre_run_buff_remaining_floors] if not buff.is_empty() else ""
+
+
+func _resolve_current_floor() -> void:
+	if RunState.resolve_current_floor():
+		SaveManager.save_game()

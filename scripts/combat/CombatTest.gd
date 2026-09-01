@@ -1,7 +1,7 @@
 extends Node2D
 ## 战斗系统冒烟测试：脚本化打一场（玩家 vs 陶泥团 claylump），
 ## 断言核心不变量。真实运行（run_and_verify）后用 stdout 判定 PASS/FAIL。
-## 状态机制（釉裂易伤 / 炽热加成）通过直接注入隔离测试，不依赖随机起手牌。
+## 状态机制（易伤 / 力量）通过直接注入隔离测试，不依赖随机起手牌。
 
 var controller: CombatController
 var results: Array[String] = []
@@ -57,33 +57,33 @@ func run() -> void:
 	else:
 		check("起手含护坯且能量足够(随机，跳过格挡)", true, "本局起手无护坯或能量不足")
 
-	# ===== Phase 2：釉裂易伤（×1.5）隔离测试 =====
+	# ===== Phase 2：易伤（×1.5）隔离测试 =====
 	controller.start_combat(["claylump"])
 	controller._apply_status(controller.enemies[0], &"crazed", 2)
-	check("釉裂注入=2层", controller.enemies[0].get_status(&"crazed") == 2,
+	check("易伤注入=2层", controller.enemies[0].get_status(&"crazed") == 2,
 		"crazed=%d" % controller.enemies[0].get_status(&"crazed"))
 	var s2 := _find_in_hand("strike")
 	if s2 >= 0:
 		var before := controller.enemies[0].hp
 		controller.play_card(s2, 0)
 		var after := controller.enemies[0].hp
-		check("釉裂使伤害×1.5(6→9)", before - after == 9, "delta=%d" % (before - after))
+		check("易伤使伤害×1.5(6→9)", before - after == 9, "delta=%d" % (before - after))
 	else:
-		check("起手含劈薪测试釉裂(随机跳过)", true, "本局起手无劈薪")
+		check("起手含劈薪测试易伤(随机跳过)", true, "本局起手无劈薪")
 
-	# ===== Phase 3：炽热(力量)加成（+层数）隔离测试 =====
+	# ===== Phase 3：力量加成（+层数）隔离测试 =====
 	controller.start_combat(["claylump"])
 	controller._apply_status(controller.player, &"heat", 3)
-	check("炽热注入=3层", controller.player.get_status(&"heat") == 3,
+	check("力量注入=3层", controller.player.get_status(&"heat") == 3,
 		"heat=%d" % controller.player.get_status(&"heat"))
 	var s3 := _find_in_hand("strike")
 	if s3 >= 0:
 		var before := controller.enemies[0].hp
 		controller.play_card(s3, 0)
 		var after := controller.enemies[0].hp
-		check("炽热使伤害+3(6→9)", before - after == 9, "delta=%d" % (before - after))
+		check("力量使伤害+3(6→9)", before - after == 9, "delta=%d" % (before - after))
 	else:
-		check("起手含劈薪测试炽热(随机跳过)", true, "本局起手无劈薪")
+		check("起手含劈薪测试力量(随机跳过)", true, "本局起手无劈薪")
 
 	# ===== Phase 4：结束回合 → 敌人阶段不崩溃 =====
 	controller.start_combat(["claylump"])

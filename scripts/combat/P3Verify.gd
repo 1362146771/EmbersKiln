@@ -46,8 +46,8 @@ func _test_card_pool() -> void:
 	# 每系至少补到 1 张高稀有度终端卡
 	check("aggro 含 kiln_burst（窑温联动）", GameData.get_card(&"kiln_burst") != null)
 	check("defense 含 kiln_aegis（每回合格挡）", GameData.get_card(&"kiln_aegis") != null)
-	check("control 含 mass_craze（群体釉裂）", GameData.get_card(&"mass_craze") != null)
-	check("burn 含 scorch_field（灰蚀 AOE）", GameData.get_card(&"scorch_field") != null)
+	check("control 含 mass_craze（群体易伤）", GameData.get_card(&"mass_craze") != null)
+	check("burn 含 scorch_field（燃烧 AOE）", GameData.get_card(&"scorch_field") != null)
 
 	# gain_kiln_heat effect 真实生效：累计窑温并触发窑变（贯穿伤害）
 	_run_kiln_heat_effect()
@@ -89,7 +89,7 @@ func _test_boss_phase3() -> void:
 	boss.charge_next = &""
 	cc._roll_enemy_intent(boss)
 
-	check("进入觉醒阶段(on_enter 自身+3炽热)", boss.has_status(&"heat") and boss.get_status(&"heat") >= 3,
+	check("进入觉醒阶段(on_enter 自身+3力量)", boss.has_status(&"heat") and boss.get_status(&"heat") >= 3,
 		"heat=%d" % boss.get_status(&"heat"))
 	check("觉醒阶段意图=aoe_debuff", String(boss.intent.get("intent", "")) == "aoe_debuff",
 		"intent=%s" % str(boss.intent.get("intent", "")))
@@ -97,11 +97,11 @@ func _test_boss_phase3() -> void:
 	var p_hp_before: int = boss.hp   # not used; track player
 	var player_hp_before: int = cc.player.hp
 	cc._execute_enemy_intent(boss)
-	var expected := 6 + boss.get_status(&"heat")   # AOE6 + 自身炽热加成
-	check("觉醒 AOE 命中玩家（含炽热加成=%d）" % expected,
+	var expected := 6 + boss.get_status(&"heat")   # AOE6 + 自身力量加成
+	check("觉醒 AOE 命中玩家（含力量加成=%d）" % expected,
 		cc.player.hp == player_hp_before - expected,
 		"player %d -> %d" % [player_hp_before, cc.player.hp])
-	check("觉醒施加玩家 2 层釉裂", cc.player.has_status(&"crazed") and cc.player.get_status(&"crazed") >= 2,
+	check("觉醒施加玩家 2 层易伤", cc.player.has_status(&"crazed") and cc.player.get_status(&"crazed") >= 2,
 		"crazed=%d" % cc.player.get_status(&"crazed"))
 
 	cc.queue_free()

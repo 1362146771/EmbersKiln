@@ -1,6 +1,6 @@
 extends Node
 ## 随从 / 召唤系统自检测试（由 Godot MCP run_and_verify 运行）。
-## 覆盖：数据加载 / 召唤卡 / SummonPhase 行动 / 寿命到期 / AoE 清场 / 满场拒绝 / 指挥加成。
+## 覆盖：数据加载 / 召唤卡 / SummonPhase 行动 / 寿命到期 / AoE 清场 / 满场拒绝 / 领袖气质加成。
 ## 输出 [PASS]/[FAIL] 供 harness 识别。
 
 var _rejected := false
@@ -132,15 +132,15 @@ func _test_command_bonus() -> void:
 	var ctrl := CombatController.new()
 	add_child(ctrl)
 	ctrl.start_combat(["claylump"])
-	ctrl.player.add_status(&"command", 2)   # 指挥 +2
+	ctrl.player.add_status(&"command", 2)   # 领袖气质 +2
 	ctrl._summon_minion(&"emberhound", 1)
 	var ehp_before: int = ctrl.enemies[0].hp
 	ctrl._summon_phase()
 	var dealt: int = ehp_before - ctrl.enemies[0].hp
-	if dealt != 7:   # 5 + 指挥2
-		printerr("[FAIL] 指挥加成应使攻击 5→7，实际 %d" % dealt); return
+	if dealt != 7:   # 5 + 领袖气质2
+		printerr("[FAIL] 领袖气质加成应使攻击 5→7，实际 %d" % dealt); return
 	ctrl.queue_free()
-	print("[PASS] 指挥加成：窑犬攻击 5+2=7")
+	print("[PASS] 领袖气质加成：窑犬攻击 5+2=7")
 
 
 func _on_rejected(_cap: int) -> void:

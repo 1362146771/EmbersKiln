@@ -1,6 +1,6 @@
 class_name StatusData
 extends Resource
-## 状态（Buff / Debuff）定义。v2 命名：炽热/塑形/釉裂/受潮/灰蚀/回火。
+## 状态（Buff / Debuff）定义。显示名统一采用《杀戮尖塔 2》通用术语；内部 id 保持存档兼容。
 
 @export var id: StringName = &""
 @export var name: String = ""

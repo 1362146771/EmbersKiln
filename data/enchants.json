@@ -69,7 +69,7 @@
       "id": "heat_trace",
       "name": "炽痕",
       "rarity": "uncommon",
-      "description": "打出攻击牌后，自身获得 1 层炽热。",
+      "description": "打出攻击牌后，自身获得 1 层力量。",
       "restriction": {
         "card_type": [
           "attack"
@@ -88,9 +88,9 @@
     },
     {
       "id": "ember_craze",
-      "name": "釉裂",
+      "name": "易伤",
       "rarity": "uncommon",
-      "description": "打出攻击牌时，对目标敌人施加 1 层釉裂。",
+      "description": "打出攻击牌时，对目标敌人施加 1 层易伤。",
       "restriction": {
         "card_type": [
           "attack"
@@ -110,9 +110,9 @@
     },
     {
       "id": "anneal_glow",
-      "name": "回火",
+      "name": "再生",
       "rarity": "common",
-      "description": "打出防御牌时，自身获得 1 层回火。",
+      "description": "打出防御牌时，自身获得 1 层再生。",
       "restriction": {
         "card_type": [
           "skill",
@@ -148,9 +148,9 @@
     },
     {
       "id": "ash_bite",
-      "name": "灰蚀",
+      "name": "燃烧",
       "rarity": "rare",
-      "description": "攻击牌伤害 +3，但打出后自身获得 2 层灰蚀。",
+      "description": "攻击牌伤害 +3，但打出后自身获得 2 层燃烧。",
       "restriction": {
         "card_type": [
           "attack"
@@ -171,9 +171,9 @@
     },
     {
       "id": "temper_bind",
-      "name": "塑形",
+      "name": "敏捷",
       "rarity": "uncommon",
-      "description": "打出获得格挡的牌时，自身获得 1 层塑形。",
+      "description": "打出获得格挡的牌时，自身获得 1 层敏捷。",
       "restriction": {
         "card_type": [
           "skill",

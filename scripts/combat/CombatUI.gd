@@ -89,6 +89,7 @@ const PLAYER_POSE_TEX := {
 }
 const PLAYER_POSE_HOLD := 0.7   # attack / hit 姿态保持秒数
 var _player_dead := false       # true 后立绘锁定 death，不再回 idle
+var _revive_prompt: CanvasLayer
 
 # 随从 / 召唤 UI 主题与 §6.1 遮挡/亮度层级
 const CYAN := Color(0.40, 0.80, 0.95)            # 友方意图（区分敌人红/橙）
@@ -630,6 +631,9 @@ func _connect_signals() -> void:
 	SignalBus.card_played.connect(_on_card_played)
 	SignalBus.card_discarded.connect(_on_card_discarded)
 	SignalBus.card_drawn.connect(_on_card_drawn)
+	SignalBus.combat_death_pending.connect(_on_combat_death_pending)
+	SignalBus.combat_revive_ready.connect(_on_combat_revive_ready)
+	SignalBus.ad_reward_resolved.connect(_on_ad_reward_resolved)
 	# 随从 / 召唤（友方单位）
 	SignalBus.ally_hp_changed.connect(_on_ally_hp)
 	SignalBus.ally_block_changed.connect(_on_ally_block)
@@ -672,6 +676,12 @@ func _exit_tree() -> void:
 		SignalBus.card_discarded.disconnect(_on_card_discarded)
 	if SignalBus.card_drawn.is_connected(_on_card_drawn):
 		SignalBus.card_drawn.disconnect(_on_card_drawn)
+	if SignalBus.combat_death_pending.is_connected(_on_combat_death_pending):
+		SignalBus.combat_death_pending.disconnect(_on_combat_death_pending)
+	if SignalBus.combat_revive_ready.is_connected(_on_combat_revive_ready):
+		SignalBus.combat_revive_ready.disconnect(_on_combat_revive_ready)
+	if SignalBus.ad_reward_resolved.is_connected(_on_ad_reward_resolved):
+		SignalBus.ad_reward_resolved.disconnect(_on_ad_reward_resolved)
 	if SignalBus.ally_hp_changed.is_connected(_on_ally_hp):
 		SignalBus.ally_hp_changed.disconnect(_on_ally_hp)
 	if SignalBus.ally_block_changed.is_connected(_on_ally_block):
@@ -834,6 +844,88 @@ func _on_combat_end(victory: bool) -> void:
 	RunState.pending_post_combat = true
 	await get_tree().create_timer(VFXSystem.DEATH_DUR + 0.35).timeout
 	get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
+
+
+func _on_combat_death_pending() -> void:
+	combat_over = true
+	_close_card_browser()
+	_set_player_pose(&"death")
+	_show_revive_prompt()
+
+
+func _show_revive_prompt() -> void:
+	if is_instance_valid(_revive_prompt):
+		_revive_prompt.queue_free()
+	_revive_prompt = CanvasLayer.new()
+	_revive_prompt.layer = 220
+	add_child(_revive_prompt)
+	var cover := ColorRect.new()
+	cover.color = Color(0.04, 0.03, 0.03, 0.92)
+	cover.set_anchors_preset(Control.PRESET_FULL_RECT)
+	cover.mouse_filter = Control.MOUSE_FILTER_STOP
+	_revive_prompt.add_child(cover)
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_revive_prompt.add_child(center)
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(620, 560)
+	center.add_child(panel)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 24)
+	panel.add_child(column)
+	var title := _label("余火将熄", 48, RED)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(title)
+	var detail := _label("可观看广告，回到本场战斗开始时重新挑战。\n牌组、药水、金币和随机序列都会回滚。", 25, CREAM)
+	detail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	column.add_child(detail)
+	var revive := Button.new()
+	revive.name = "ReviveAdButton"
+	revive.text = "观看广告 · 重新挑战本场战斗"
+	revive.custom_minimum_size = Vector2(540, 82)
+	revive.add_theme_font_size_override("font_size", 24)
+	revive.disabled = not CombatReviveSystem.can_offer_revive()
+	revive.tooltip_text = "当前无可用广告" if revive.disabled else "本局唯一一次复燃"
+	revive.pressed.connect(_on_revive_ad_pressed)
+	column.add_child(revive)
+	var finish := Button.new()
+	finish.name = "EndRunButton"
+	finish.text = "结束本局"
+	finish.custom_minimum_size = Vector2(540, 76)
+	finish.add_theme_font_size_override("font_size", 24)
+	finish.pressed.connect(_on_decline_revive)
+	column.add_child(finish)
+
+
+func _on_revive_ad_pressed() -> void:
+	var button := _revive_prompt.find_child("ReviveAdButton", true, false) as Button if is_instance_valid(_revive_prompt) else null
+	if button != null:
+		button.disabled = true
+	if CombatReviveSystem.request_revive().is_empty() and button != null:
+		button.disabled = not CombatReviveSystem.can_offer_revive()
+
+
+func _on_decline_revive() -> void:
+	if is_instance_valid(_revive_prompt):
+		_revive_prompt.queue_free()
+	_revive_prompt = null
+	controller.finalize_player_death()
+
+
+func _on_combat_revive_ready() -> void:
+	if is_instance_valid(_revive_prompt):
+		_revive_prompt.queue_free()
+	_revive_prompt = null
+	get_tree().call_deferred("change_scene_to_packed", load("res://scenes/combat/CombatPlay.tscn") as PackedScene)
+
+
+func _on_ad_reward_resolved(_transaction_id: String, placement_id: StringName, result: StringName) -> void:
+	if placement_id != CombatReviveSystem.PLACEMENT or result == &"granted":
+		return
+	var button := _revive_prompt.find_child("ReviveAdButton", true, false) as Button if is_instance_valid(_revive_prompt) else null
+	if button != null:
+		button.disabled = not CombatReviveSystem.can_offer_revive()
 
 
 ## ---------- VFX 回调（依据 VFX_DESIGN.md，由 SignalBus 事件驱动）----------

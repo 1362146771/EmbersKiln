@@ -3,7 +3,7 @@
   "statuses": [
     {
       "id": "heat",
-      "name": "炽热",
+      "name": "力量",
       "type": "buff",
       "stacks": true,
       "decay": false,
@@ -13,7 +13,7 @@
     },
     {
       "id": "temper",
-      "name": "塑形",
+      "name": "敏捷",
       "type": "buff",
       "stacks": true,
       "decay": false,
@@ -23,7 +23,7 @@
     },
     {
       "id": "crazed",
-      "name": "釉裂",
+      "name": "易伤",
       "type": "debuff",
       "stacks": true,
       "decay": true,
@@ -34,7 +34,7 @@
     },
     {
       "id": "damp",
-      "name": "受潮",
+      "name": "虚弱",
       "type": "debuff",
       "stacks": true,
       "decay": true,
@@ -45,7 +45,7 @@
     },
     {
       "id": "ashrot",
-      "name": "灰蚀",
+      "name": "燃烧",
       "type": "debuff",
       "stacks": true,
       "decay": true,
@@ -57,7 +57,7 @@
     },
     {
       "id": "anneal",
-      "name": "回火",
+      "name": "再生",
       "type": "buff",
       "stacks": true,
       "decay": true,
@@ -69,17 +69,17 @@
     },
     {
       "id": "stoke",
-      "name": "蓄焰",
+      "name": "活力",
       "type": "buff",
       "stacks": true,
       "decay": false,
       "applies_to": "player",
-      "effect": "你的下一张攻击牌伤害 +层数；出手后 -1 层（不按回合衰减）。",
+      "effect": "攻击牌的每个伤害实例额外造成等于层数的伤害；整张攻击牌结算后 -1 层（不按回合衰减）。",
       "icon": "ICO_Status_Stoke"
     },
     {
       "id": "glaze",
-      "name": "釉光",
+      "name": "缓冲",
       "type": "buff",
       "stacks": true,
       "decay": false,
@@ -89,7 +89,7 @@
     },
     {
       "id": "thirst",
-      "name": "焦渴",
+      "name": "衰朽",
       "type": "debuff",
       "stacks": true,
       "decay": true,
@@ -100,7 +100,7 @@
     },
     {
       "id": "command",
-      "name": "指挥",
+      "name": "领袖气质",
       "type": "buff",
       "stacks": true,
       "decay": false,

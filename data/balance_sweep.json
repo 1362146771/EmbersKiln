@@ -1,7 +1,7 @@
 {
   "meta": {
     "purpose": "战斗平衡 sweep：多种 build 对打整张敌人表（含新精英 slagbeast、3 敌编成 E、Boss 三阶段），检测离群（打不死/秒杀/过肉/过易）。",
-    "design_record": "AI_Studio/Design/NUMERIC_LEDGER.md#balance_sweep",
+    "design_record": "AI_Studio/Design/Balance/NUMERIC_LEDGER.md#balance_sweep",
     "note": "本文件所有数值均为「实现方提议、2026-08-17 经用户'编写 harness'指令确认」的平衡探针参数，非玩法最终平衡值；调整需回写本文件并同步台账。"
   },
   "sim": {

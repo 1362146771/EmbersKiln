@@ -38,7 +38,7 @@ func _ready() -> void:
 		_print_report()
 		return
 
-	run()
+	await run()
 	_print_report()
 
 
@@ -53,10 +53,10 @@ func check(name: String, cond: bool, detail: String = "") -> void:
 
 func run() -> void:
 	# ---------- 数据层不变量 ----------
-	check("卡牌数据=43（P3 卡池深化后）", GameData.cards.size() == 43, "cards=%d" % GameData.cards.size())
+	check("卡牌数据=48", GameData.cards.size() == 48, "cards=%d" % GameData.cards.size())
 	check("敌人数据=21（新增首幕Boss匣母）", GameData.enemies.size() == 21, "enemies=%d" % GameData.enemies.size())
-	check("遗物数据=10", GameData.relics.size() == 10, "relics=%d" % GameData.relics.size())
-	check("状态数据=9（含 P2 蓄焰/釉光/焦渴）", GameData.statuses.size() == 9, "statuses=%d" % GameData.statuses.size())
+	check("遗物数据=11", GameData.relics.size() == 11, "relics=%d" % GameData.relics.size())
+	check("状态数据=10（含活力/缓冲/衰朽/领袖气质）", GameData.statuses.size() == 10, "statuses=%d" % GameData.statuses.size())
 	check("层数=floor_count", RunState.total_floors() == int(GameData.act_configs[0].get("floor_count", 15)), "floors=%d" % RunState.total_floors())
 
 	# 全幕总层数（用于「通关时到达终幕 Boss 层」断言）
@@ -66,6 +66,8 @@ func run() -> void:
 	_total_all_floors = total_all
 
 	# ---------- 整局自动打通 ----------
+	var original_profile := ProfileState.to_save_dict()
+	_prepare_fully_progressed_test_profile()
 	var cc := CombatController.new()
 	add_child(cc)
 
@@ -73,7 +75,7 @@ func run() -> void:
 	for attempt in range(MAX_ATTEMPTS):
 		_attempts_used = attempt + 1
 		RunState.start_new_run()
-		if _run_floors(cc):
+		if await _run_floors(cc):
 			won = true
 			break
 		# 失败（阵亡或卡死）：下一轮重新开局重试
@@ -88,7 +90,33 @@ func run() -> void:
 	check("奖励生效：遗物≥2(精英/Boss)", _relic_count >= 2, "relics=%d" % _relic_count)
 
 	cc.queue_free()
+	ProfileState.from_save_dict(original_profile, false, false)
 	SaveManager.delete_save()   # 清理可能残留的自动存档
+
+
+## 整局闭环使用完整成长档案：新手档案的通关率属于平衡验证，不应阻断流程集成测试。
+## 所有数值与解锁范围都从正式数据派生，测试本身不另写玩法数值。
+func _prepare_fully_progressed_test_profile() -> void:
+	ProfileState.reset_to_defaults(false)
+	ProfileState.unlocked_card_ids.assign(GameData.cards.keys())
+	ProfileState.unlocked_relic_ids.assign(GameData.relics.keys())
+	ProfileState.unlocked_potion_ids.assign(GameData.potions.keys())
+	ProfileState.unlocked_enchant_ids.assign(GameData.enchants.keys())
+	ProfileState.unlocked_pre_run_buff_ids.assign(GameData.meta_pre_run_buffs.keys())
+
+	var max_capacity := int(GameData.meta_progression.get("base_run_deck_capacity", -1))
+	for project in GameData.meta_project_list():
+		max_capacity = maxi(max_capacity, int(project.get("grants", {}).get("base_run_deck_capacity", -1)))
+	ProfileState.base_run_deck_capacity = max_capacity
+
+	for tier in GameData.meta_progression.get("run_start_bonus_tiers", []):
+		var facility_id := String(tier.get("facility_id", ""))
+		if facility_id.is_empty():
+			continue
+		ProfileState.facility_levels[facility_id] = maxi(
+			int(ProfileState.facility_levels.get(facility_id, 0)),
+			int(tier.get("required_level", 0))
+		)
 
 
 ## 自动推进所有幕所有层；返回是否成功打通到最后一幕 Boss 且玩家存活。
@@ -106,7 +134,7 @@ func _run_floors(cc: CombatController) -> bool:
 
 			if node.is_combat_like():
 				cc.start_combat(node.enemy_ids)
-				if not _auto_battle(cc):
+				if not await _auto_battle(cc):
 					_final_hp = RunState.hp
 					_deck_size = RunState.deck.size()
 					_relic_count = RunState.relic_ids.size()
@@ -138,6 +166,7 @@ func _run_floors(cc: CombatController) -> bool:
 ## 自动战斗：返回玩家是否存活且战斗结束（敌人清空）。
 func _auto_battle(cc: CombatController) -> bool:
 	var guard := 0
+	var get_panel := func(_unit): return null
 	while cc.phase != CombatController.Phase.ENDED and guard < MAX_COMBAT_TURNS:
 		guard += 1
 		var safety := 0
@@ -154,6 +183,8 @@ func _auto_battle(cc: CombatController) -> bool:
 		if cc.phase == CombatController.Phase.ENDED:
 			break
 		cc.end_player_turn()
+		await BattleDirector.run_summon_turn(cc, null, get_panel, get_panel)
+		await BattleDirector.run_enemy_turn(cc, null, get_panel)
 	return cc.phase == CombatController.Phase.ENDED and cc.player.is_alive()
 
 

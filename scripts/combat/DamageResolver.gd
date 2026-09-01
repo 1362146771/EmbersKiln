@@ -9,7 +9,7 @@ var ctrl: CombatController
 func attach(controller: CombatController) -> void:
 	ctrl = controller
 
-## 计算从 attacker 对 target 的最终伤害：含炽热加成、防潮削弱、釉裂易伤。
+## 计算从 attacker 对 target 的最终伤害：含力量加成、虚弱削弱、易伤增伤。
 func compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int) -> int:
 	var dmg := base
 	if attacker.has_status(&"heat"):
@@ -35,7 +35,7 @@ func deal_to_unit(unit: CombatUnit, final_dmg: int) -> void:
 
 func deal_to_player(final_dmg: int) -> void:
 	var dmg := maxi(0, final_dmg)
-	# 釉光（glaze）：受到攻击时减伤等于层数，触发 1 次后 -1 层
+	# 缓冲（glaze）：受到攻击时减伤等于层数，触发 1 次后 -1 层
 	if ctrl.player.has_status(&"glaze"):
 		dmg = maxi(0, dmg - ctrl.player.get_status(&"glaze"))
 		ctrl._apply_status(ctrl.player, &"glaze", -1)
@@ -66,7 +66,7 @@ func enemy_attack_hit(e: CombatUnit, dmg: int) -> void:
 	deal_to_player(dmg)
 	ctrl._tick_sherd_vest(e)   # 遗物：受击反伤（陶片背心）
 
-## AOE 伤害 + 对玩家施加 debuff（如釉裂）；友方随从同步受击（Q2）。
+## AOE 伤害 + 对玩家施加 debuff（如易伤）；友方随从同步受击（Q2）。
 func enemy_aoe_hit(e: CombatUnit, dmg: int, mv: Dictionary) -> void:
 	deal_to_player(dmg)
 	ctrl._tick_sherd_vest(e)

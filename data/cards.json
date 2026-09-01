@@ -21,7 +21,7 @@
   "cards": [
     {
       "id": "strike",
-      "name": "劈薪",
+      "name": "劈砍",
       "type": "attack",
       "cost": 1,
       "rarity": "starter",
@@ -31,12 +31,6 @@
         {
           "kind": "damage",
           "value": 6
-        },
-        {
-          "kind": "apply_status",
-          "status": "stoke",
-          "target": "self",
-          "value": 1
         }
       ],
       "upgrade": {
@@ -59,7 +53,7 @@
     },
     {
       "id": "defend",
-      "name": "护坯",
+      "name": "格挡",
       "type": "skill",
       "cost": 1,
       "rarity": "starter",
@@ -69,12 +63,6 @@
         {
           "kind": "block",
           "value": 5
-        },
-        {
-          "kind": "apply_status",
-          "status": "glaze",
-          "target": "self",
-          "value": 1
         }
       ],
       "upgrade": {
@@ -133,8 +121,8 @@
         "control",
         "aggro"
       ],
-      "description": "造成 8 点伤害，施加 2 层釉裂。",
-      "upgrade_description": "造成 10 点伤害，施加 3 层釉裂。",
+      "description": "造成 8 点伤害，施加 2 层易伤。",
+      "upgrade_description": "造成 10 点伤害，施加 3 层易伤。",
       "art": "CARD_Bash"
     },
     {
@@ -168,7 +156,7 @@
     },
     {
       "id": "double_strike",
-      "name": "双斧",
+      "name": "连击",
       "type": "attack",
       "cost": 1,
       "rarity": "common",
@@ -330,8 +318,8 @@
         "burn",
         "control"
       ],
-      "description": "造成 5 点伤害，施加 2 层灰蚀。",
-      "upgrade_description": "造成 7 点伤害，施加 3 层灰蚀。",
+      "description": "造成 5 点伤害，施加 2 层燃烧。",
+      "upgrade_description": "造成 7 点伤害，施加 3 层燃烧。",
       "art": "CARD_BurningFist"
     },
     {
@@ -446,8 +434,8 @@
       "build": [
         "aggro"
       ],
-      "description": "获得 2 点炽热。",
-      "upgrade_description": "获得 3 点炽热。",
+      "description": "获得 2 点力量。",
+      "upgrade_description": "获得 3 点力量。",
       "art": "CARD_BattleStance"
     },
     {
@@ -516,8 +504,8 @@
       "build": [
         "control"
       ],
-      "description": "对所有敌人施加 2 层受潮。",
-      "upgrade_description": "对所有敌人施加 3 层受潮。",
+      "description": "对所有敌人施加 2 层虚弱。",
+      "upgrade_description": "对所有敌人施加 3 层虚弱。",
       "art": "CARD_Taunt"
     },
     {
@@ -561,6 +549,12 @@
         {
           "kind": "draw",
           "value": 2
+        },
+        {
+          "kind": "apply_status",
+          "status": "stoke",
+          "target": "self",
+          "value": 1
         }
       ],
       "upgrade": {
@@ -568,6 +562,12 @@
           {
             "kind": "draw",
             "value": 3
+          },
+          {
+            "kind": "apply_status",
+            "status": "stoke",
+            "target": "self",
+            "value": 1
           }
         ]
       },
@@ -575,8 +575,8 @@
         "aggro",
         "control"
       ],
-      "description": "抽 2 张牌。",
-      "upgrade_description": "抽 3 张牌。",
+      "description": "抽 2 张牌，获得 1 层活力。",
+      "upgrade_description": "抽 3 张牌，获得 1 层活力。",
       "art": "CARD_WarCry"
     },
     {
@@ -604,8 +604,8 @@
       "build": [
         "aggro"
       ],
-      "description": "获得 3 点炽热（持续）。",
-      "upgrade_description": "获得 4 点炽热（持续）。",
+      "description": "获得 3 点力量（持续）。",
+      "upgrade_description": "获得 4 点力量（持续）。",
       "art": "CARD_Rage"
     },
     {
@@ -662,8 +662,8 @@
       "build": [
         "aggro"
       ],
-      "description": "每次打出攻击牌获得 1 点炽热（持续）。",
-      "upgrade_description": "每次打出攻击牌获得 2 点炽热（持续）。",
+      "description": "每次打出攻击牌获得 1 点力量（持续）。",
+      "upgrade_description": "每次打出攻击牌获得 2 点力量（持续）。",
       "art": "CARD_Bloodlust"
     },
     {
@@ -697,7 +697,7 @@
     },
     {
       "id": "earthquake",
-      "name": "震窑",
+      "name": "地震",
       "type": "attack",
       "cost": 2,
       "rarity": "uncommon",
@@ -733,13 +733,13 @@
         "control",
         "aggro"
       ],
-      "description": "对所有敌人造成 10 点伤害并施加 2 层釉裂。",
-      "upgrade_description": "造成 13 点伤害并施加 3 层釉裂。",
+      "description": "对所有敌人造成 10 点伤害并施加 2 层易伤。",
+      "upgrade_description": "造成 13 点伤害并施加 3 层易伤。",
       "art": "CARD_Earthquake"
     },
     {
       "id": "execute",
-      "name": "收火",
+      "name": "处决",
       "type": "attack",
       "cost": 2,
       "rarity": "uncommon",
@@ -778,6 +778,12 @@
         {
           "kind": "block",
           "value": 20
+        },
+        {
+          "kind": "apply_status",
+          "status": "glaze",
+          "target": "self",
+          "value": 1
         }
       ],
       "upgrade": {
@@ -785,14 +791,20 @@
           {
             "kind": "block",
             "value": 26
+          },
+          {
+            "kind": "apply_status",
+            "status": "glaze",
+            "target": "self",
+            "value": 2
           }
         ]
       },
       "build": [
         "defense"
       ],
-      "description": "获得 20 点格挡。消耗。",
-      "upgrade_description": "获得 26 点格挡。消耗。",
+      "description": "获得 20 点格挡与 1 层缓冲。消耗。",
+      "upgrade_description": "获得 26 点格挡与 2 层缓冲。消耗。",
       "art": "CARD_Unbreakable"
     },
     {
@@ -939,8 +951,8 @@
         "burn",
         "control"
       ],
-      "description": "造成 4 点伤害，施加 3 层灰蚀。",
-      "upgrade_description": "造成 6 点伤害，施加 4 层灰蚀。",
+      "description": "造成 4 点伤害，施加 3 层燃烧。",
+      "upgrade_description": "造成 6 点伤害，施加 4 层燃烧。",
       "art": "CARD_AshBlade"
     },
     {
@@ -1014,8 +1026,8 @@
         "aggro",
         "defense"
       ],
-      "description": "获得 2 点炽热与 2 点塑形（持续）。",
-      "upgrade_description": "获得 3 点炽热与 3 点塑形（持续）。",
+      "description": "获得 2 点力量与 2 点敏捷（持续）。",
+      "upgrade_description": "获得 3 点力量与 3 点敏捷（持续）。",
       "art": "CARD_Warlord"
     },
     {
@@ -1075,8 +1087,8 @@
       "build": [
         "aggro"
       ],
-      "description": "每回合开始获得 2 点炽热（持续）。",
-      "upgrade_description": "每回合开始获得 3 点炽热（持续）。",
+      "description": "每回合开始获得 2 点力量（持续）。",
+      "upgrade_description": "每回合开始获得 3 点力量（持续）。",
       "art": "CARD_MoltenForm"
     },
     {
@@ -1133,8 +1145,8 @@
       "build": [
         "aggro"
       ],
-      "description": "每回合开始获得 1 点炽热（持续）。",
-      "upgrade_description": "每回合开始获得 2 点炽热（持续）。",
+      "description": "每回合开始获得 1 点力量（持续）。",
+      "upgrade_description": "每回合开始获得 2 点力量（持续）。",
       "art": "CARD_Berserk"
     },
     {
@@ -1343,8 +1355,8 @@
       "build": [
         "control"
       ],
-      "description": "对所有敌人施加 2 层釉裂。",
-      "upgrade_description": "对所有敌人施加 3 层釉裂。",
+      "description": "对所有敌人施加 2 层易伤。",
+      "upgrade_description": "对所有敌人施加 3 层易伤。",
       "art": "CARD_MassCraze"
     },
     {
@@ -1384,8 +1396,8 @@
       "build": [
         "control"
       ],
-      "description": "每回合结束对所有敌人造成 5 点伤害，并立即对所有敌人施加 1 层受潮。",
-      "upgrade_description": "每回合结束对所有敌人造成 7 点伤害，并立即对所有敌人施加 2 层受潮。",
+      "description": "每回合结束对所有敌人造成 5 点伤害，并立即对所有敌人施加 1 层虚弱。",
+      "upgrade_description": "每回合结束对所有敌人造成 7 点伤害，并立即对所有敌人施加 2 层虚弱。",
       "art": "CARD_AshDomain"
     },
     {
@@ -1425,8 +1437,8 @@
       "build": [
         "burn"
       ],
-      "description": "造成 4 点伤害，施加 3 层灰蚀。",
-      "upgrade_description": "造成 6 点伤害，施加 4 层灰蚀。",
+      "description": "造成 4 点伤害，施加 3 层燃烧。",
+      "upgrade_description": "造成 6 点伤害，施加 4 层燃烧。",
       "art": "CARD_EmberBurst"
     },
     {
@@ -1466,8 +1478,8 @@
       "build": [
         "burn"
       ],
-      "description": "对所有敌人造成 8 点伤害，施加 3 层灰蚀。",
-      "upgrade_description": "对所有敌人造成 11 点伤害，施加 4 层灰蚀。",
+      "description": "对所有敌人造成 8 点伤害，施加 3 层燃烧。",
+      "upgrade_description": "对所有敌人造成 11 点伤害，施加 4 层燃烧。",
       "art": "CARD_ScorchField"
     },
     {
@@ -1572,8 +1584,8 @@
       "build": [
         "summoner"
       ],
-      "description": "获得 指挥 2（你的随从攻击 / 格挡 +2）。",
-      "upgrade_description": "获得 指挥 3。",
+      "description": "获得 2 层领袖气质（你的随从攻击 / 格挡 +2）。",
+      "upgrade_description": "获得 3 层领袖气质。",
       "art": "CARD_CommandHorn"
     },
     {

@@ -39,7 +39,7 @@ var powers: Dictionary = {}    # StringName -> int（仅玩家持有）
 ## 窑温·共鸣：本场累计的窑温值（0 起，出 attack 牌 +1，满阈值触发窑变）
 var kiln_heat: int = 0
 
-## 焦渴（thirst）判定辅助：本回合是否打出过攻击牌；下回合是否扣能量
+## 衰朽（thirst）判定辅助：本回合是否打出过攻击牌；下回合是否扣能量
 var _attack_played_this_turn: bool = false
 var _thirst_penalty_next: bool = false
 
@@ -82,6 +82,8 @@ func start_combat(enemy_ids: Array) -> void:
 		return
 	if not RunState.is_active:
 		RunState.start_new_run()
+	if RunState.has_combat_checkpoint():
+		seed(RunState.combat_seed())
 
 	# 玩家单元
 	player = CombatUnit.new()
@@ -128,6 +130,14 @@ func start_combat(enemy_ids: Array) -> void:
 		_intent.roll_enemy_intent(e)
 
 	SignalBus.combat_started.emit(enemy_ids)
+	if RunState.combat_death_pending:
+		player.hp = 0
+		phase = Phase.ENDED
+		_combat_active = false
+		_sync_player_hp()
+		SignalBus.unit_died.emit(true, -1)
+		SignalBus.combat_death_pending.emit()
+		return
 	_start_player_turn()
 
 
@@ -138,7 +148,7 @@ func _start_player_turn() -> void:
 	phase = Phase.PLAYER
 	energy = max_energy
 
-	# 焦渴（thirst）：上回合空过 → 本回合能量 -1
+	# 衰朽（thirst）：上回合空过 → 本回合能量 -1
 	if _thirst_penalty_next:
 		energy = maxi(0, energy - 1)
 		_thirst_penalty_next = false
@@ -153,6 +163,7 @@ func _start_player_turn() -> void:
 	if turn == 1:
 		_apply_relics_combat_start()  # 战斗开始遗物仅首回合触发，且必须在 block 清零之后
 		_apply_relics_first_turn()  # 遗物：第一回合额外能量
+		PreRunBuffSystem.apply_combat_start(self)
 
 	# 抽牌
 	var draw_n: int = int(GameData.player_config().get("draw_per_turn", 5))
@@ -167,7 +178,7 @@ func end_player_turn() -> void:
 		return
 	# 玩家格挡不清空 —— 保留到敌人阶段，先扛过敌人攻击，再在下个玩家回合开始清零。
 	_status.apply_player_end_turn_powers()
-	# 焦渴（thirst）：回合结束未打出攻击牌 → 下回合 -1 能量（读 thirst 先于衰减）
+	# 衰朽（thirst）：回合结束未打出攻击牌 → 下回合 -1 能量（读 thirst 先于衰减）
 	if player.has_status(&"thirst") and not _attack_played_this_turn:
 		_thirst_penalty_next = true
 	_status.decay_statuses_at_turn_end(player)
@@ -177,7 +188,7 @@ func end_player_turn() -> void:
 	SignalBus.turn_ended.emit(true)
 
 
-## 敌方回合开始：清旧格挡 + 回合开始状态（ashrot 等可能致死 → _post_enemy_death）。
+## 敌方回合开始：清旧格挡 + 回合开始状态（燃烧 ashrot 等可能致死 → _post_enemy_death）。
 ## 返回行动后是否仍存活。
 func enemy_pre(e: CombatUnit) -> bool:
 	# 随从已在此前行动，破封窗口到此关闭；自然清盾不得取消尚未被打断的喷火。
@@ -193,7 +204,7 @@ func enemy_post(e: CombatUnit) -> void:
 	_intent.roll_enemy_intent(e)
 
 
-## 计算敌人 outgoing（含炽热加成等，不含格挡——格挡在 apply_damage 内结算）。
+## 计算敌人 outgoing（含力量加成等，不含格挡——格挡在 apply_damage 内结算）。
 func enemy_outgoing(e: CombatUnit, base: int) -> int:
 	return _dmg.compute_outgoing(e, player, base)
 
@@ -203,7 +214,7 @@ func enemy_attack_hit(e: CombatUnit, dmg: int) -> void:
 	_dmg.enemy_attack_hit(e, dmg)
 
 
-## AOE 伤害 + 对玩家施加 debuff（如釉裂）；友方随从同步受击。
+## AOE 伤害 + 对玩家施加 debuff（如易伤）；友方随从同步受击。
 func enemy_aoe_hit(e: CombatUnit, dmg: int, mv: Dictionary) -> void:
 	_dmg.enemy_aoe_hit(e, dmg, mv)
 
@@ -275,7 +286,7 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 		effects = _apply_first_attack_bonus(effects)
 	_resolve_effects(effects, player, primary)
 
-	# Power：每次打出攻击牌获得炽热
+	# Power：每次打出攻击牌获得力量
 	if cd.type == &"attack":
 		if powers.has(POWER_ON_ATTACK_STRENGTH):
 			_status.apply_status(player, &"heat", int(powers[POWER_ON_ATTACK_STRENGTH]))
@@ -285,7 +296,7 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 		kiln_heat += 1
 		SignalBus.kiln_heat_changed.emit(kiln_heat, _kiln_threshold())
 		_dmg.check_kiln_resonance()
-		# 蓄焰（stoke）：攻击牌出手后 -1 层
+		# 活力（stoke）：攻击牌出手后 -1 层
 		if player.has_status(&"stoke"):
 			_status.apply_status(player, &"stoke", -1)
 
@@ -346,11 +357,11 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 				if source.is_player:
 					_sync_player_hp()
 			"gain_strength":
-				# 设计命名 strength -> 状态「炽热 heat」
+				# strength 效果映射至状态「力量」（内部 id heat）
 				if potion_apply: _apply_potion_status(source, &"heat", value)
 				else: _status.apply_status(source, &"heat", value)
 			"gain_dexterity":
-				# 设计命名 dexterity -> 状态「塑形 temper」
+				# dexterity 效果映射至状态「敏捷」（内部 id temper）
 				if potion_apply: _apply_potion_status(source, &"temper", value)
 				else: _status.apply_status(source, &"temper", value)
 			"apply_status":
@@ -506,6 +517,12 @@ func _apply_status(unit: CombatUnit, status_id: StringName, amount: int) -> void
 	_status.apply_status(unit, status_id, amount)
 
 
+## 局前 Buff 的战斗开始格挡入口；具体数值只来自 Buff 配置。
+func grant_pre_run_combat_start_block(amount: int) -> void:
+	if amount > 0 and player != null and player.is_alive():
+		_dmg.add_block(player, amount)
+
+
 ## 敌人按意图行动（转发到 IntentRoller）。被 P2Verify 直接调用。
 func _execute_enemy_intent(e: CombatUnit) -> void:
 	_intent.execute_enemy_intent(e)
@@ -608,6 +625,7 @@ func _check_combat_end() -> void:
 		_combat_active = false
 		phase = Phase.ENDED
 		_apply_relics_after_combat()  # 遗物：战后（余温炭回血）
+		RunState.clear_combat_checkpoint()
 		SignalBus.combat_ended.emit(true)
 		_log("战斗胜利！")
 
@@ -618,6 +636,19 @@ func _on_player_death() -> void:
 	_combat_active = false
 	phase = Phase.ENDED
 	_sync_player_hp()
+	SignalBus.unit_died.emit(true, -1)
+	if CombatReviveSystem.begin_death_decision():
+		_log("玩家阵亡，等待复燃选择。")
+		return
+	finalize_player_death()
+
+
+func finalize_player_death() -> void:
+	if not RunState.is_active:
+		return
+	_combat_active = false
+	phase = Phase.ENDED
+	RunState.clear_combat_checkpoint()
 	SignalBus.combat_ended.emit(false)
 	RunState.end_run(false)
 	_log("玩家阵亡，战斗失败。")

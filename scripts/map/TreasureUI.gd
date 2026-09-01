@@ -19,6 +19,8 @@ var _result_icon: TextureRect
 var _result_name: Label
 var _result_description: Label
 var _continue_button: Button
+var _pending_card: Dictionary = {}
+var _pending_card_mode := ""
 
 func _solid_bg(color: Color) -> TextureRect:
 	var img := Image.create(4, 4, false, Image.FORMAT_RGBA8)
@@ -39,7 +41,14 @@ func setup(done: Callable) -> void:
 
 ## P2 场景化：作为独立场景加载时自构建。
 func _ready() -> void:
+	if not SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
+		SignalBus.card_acquisition_resolved.connect(_on_card_acquisition_resolved)
 	_build_main()
+
+
+func _exit_tree() -> void:
+	if SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
+		SignalBus.card_acquisition_resolved.disconnect(_on_card_acquisition_resolved)
 
 
 func _build_main() -> void:
@@ -136,17 +145,26 @@ func _show_result(title: String, reward_name: String, description: String, icon:
 func _on_take_card() -> void:
 	if not _begin_claim():
 		return
-	_grant_card()
-	_finish()
+	var card := _grant_card("take")
+	if not card.get("_pending", false):
+		_finish()
 
 
 ## 共用发卡逻辑：遗物池空时仍走当前领取，不再次进入带锁的按钮回调。
-func _grant_card() -> Dictionary:
+func _grant_card(mode: String = "fallback") -> Dictionary:
 	var cd: Dictionary = RewardBuilder.roll_single_card()
 	if cd.is_empty():
 		_log("卡牌池为空")
 		return {}
-	RunState.add_card(StringName(cd.get("id", "")), false)
+	var source_id := &"treasure" if mode == "take" else &"treasure_fallback"
+	var result := CardAcquireService.acquire_free_card(StringName(cd.get("id", "")), false, source_id, {"card_name": cd.get("name", "")})
+	if result == CardAcquireService.RESULT_FULL:
+		_pending_card = cd.duplicate(true)
+		_pending_card_mode = mode
+		cd["_pending"] = true
+		return cd
+	if result != CardAcquireService.RESULT_ACQUIRED:
+		return {}
 	_log("宝箱获得卡牌：%s" % cd.get("name", ""))
 	return cd
 
@@ -158,6 +176,8 @@ func _on_take_relic() -> void:
 	if rid == &"":
 		_log("遗物已全部拥有，改发卡牌")
 		var card := _grant_card()
+		if card.get("_pending", false):
+			return
 		if card.is_empty():
 			_show_result("宝箱已打开", "暂无可领取的奖励", "遗物已全部拥有，卡牌池为空。")
 		else:
@@ -196,6 +216,28 @@ func _begin_claim() -> bool:
 func _disable_choices() -> void:
 	for button in _choice_buttons:
 		button.disabled = true
+
+
+func _enable_choices() -> void:
+	for button in _choice_buttons:
+		button.disabled = false
+
+
+func _on_card_acquisition_resolved(acquisition: Dictionary, result: StringName) -> void:
+	var source_id := String(acquisition.get("source_id", ""))
+	if source_id not in ["treasure", "treasure_fallback"]:
+		return
+	if result == CardAcquireService.RESULT_ACQUIRED:
+		_log("扩容后获得卡牌：%s" % _pending_card.get("name", acquisition.get("card_id", "")))
+		if _pending_card_mode == "fallback":
+			_show_result("获得卡牌", String(_pending_card.get("name", "")), "遗物已全部拥有，改为获得卡牌。\n\n" + String(_pending_card.get("desc", "")))
+		else:
+			_finish()
+	else:
+		_claimed = false
+		_enable_choices()
+	_pending_card.clear()
+	_pending_card_mode = ""
 
 
 func _finish() -> void:
