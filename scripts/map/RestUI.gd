@@ -33,6 +33,21 @@ func _ready() -> void:
 
 
 func _build_main() -> void:
+	var heal_pct: float = float(GameData.balance.get("rest", {}).get("heal_percent", 0.3))
+	var heal_amt: int = int(RunState.max_hp * heal_pct)
+	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
+	if scene_panel != null:
+		var rest_button: Button = scene_panel.get_node("Content/RestButton")
+		rest_button.text = "休息（恢复 %d 生命）" % heal_amt
+		if not rest_button.pressed.is_connected(_on_rest.bind(heal_amt)):
+			rest_button.pressed.connect(_on_rest.bind(heal_amt))
+		var forge_button: Button = scene_panel.get_node("Content/ForgeButton")
+		if not forge_button.pressed.is_connected(_on_forge):
+			forge_button.pressed.connect(_on_forge)
+		var leave_button: Button = scene_panel.get_node("Content/LeaveButton")
+		if not leave_button.pressed.is_connected(_finish):
+			leave_button.pressed.connect(_finish)
+		return
 	for c in get_children():
 		c.queue_free()
 
@@ -58,8 +73,6 @@ func _build_main() -> void:
 
 	v.add_child(_label("休 息 点", 40, DARK))
 
-	var heal_pct: float = float(GameData.balance.get("rest", {}).get("heal_percent", 0.3))
-	var heal_amt: int = int(RunState.max_hp * heal_pct)
 	v.add_child(_label("炉火尚温，稍作休整。", 24, DARK))
 
 	var rest_btn := Button.new()

@@ -19,6 +19,7 @@ func _ready() -> void:
 	original_meta_projects = GameData.meta_projects.duplicate(true)
 
 	_test_production_config()
+	_test_town_next_project_visibility()
 	_install_verify_config()
 	_test_atomic_start_and_queue_rules()
 	_test_natural_and_offline_completion()
@@ -45,6 +46,34 @@ func _test_production_config() -> void:
 	check("正式工坊队列容量为 2", WorkshopSystem.queue_capacity() == 2)
 	check("正式工坊项目已配置 21 项", GameData.meta_project_list().size() == 21)
 	check("六类窑口镇设施已登记", GameData.meta_facility_list().size() == 6)
+
+
+func _test_town_next_project_visibility() -> void:
+	var town_ui: Variant = load("res://scripts/meta/TownUI.gd").new()
+	var projects: Array = [
+		{"id": "hearth_1", "facility_id": "hearth"},
+		{"id": "hearth_2", "facility_id": "hearth"},
+		{"id": "hearth_3", "facility_id": "hearth"},
+		{"id": "hearth_4", "facility_id": "hearth"},
+		{"id": "mold_1", "facility_id": "card_mold_workshop"},
+		{"id": "mold_2", "facility_id": "card_mold_workshop"},
+	]
+	ProfileState.completed_project_ids.clear()
+	ProfileState.completed_project_ids.append_array([&"hearth_1", &"hearth_2"])
+	var visible: Array = town_ui._next_projects_by_facility(projects)
+	check(
+		"窑口镇每个设施只显示下一项",
+		visible.size() == 2
+			and String(visible[0].get("id", "")) == "hearth_3"
+			and String(visible[1].get("id", "")) == "mold_1"
+	)
+	ProfileState.completed_project_ids.append(&"hearth_3")
+	visible = town_ui._next_projects_by_facility(projects)
+	check(
+		"完成研究后实时选择同设施后续项",
+		visible.size() == 2 and String(visible[0].get("id", "")) == "hearth_4"
+	)
+	town_ui.free()
 
 
 func _install_verify_config() -> void:

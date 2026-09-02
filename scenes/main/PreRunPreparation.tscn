@@ -10,3 +10,70 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ui")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.984, 0.953, 0.894, 1)
+
+[node name="PageMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 48
+
+[node name="PageColumn" type="VBoxContainer" parent="PageMargin"]
+layout_mode = 2
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="PageMargin/PageColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.941, 0.6, 0.482, 1)
+theme_override_font_sizes/font_size = 42
+text = "风箱台 · 临行添薪"
+
+[node name="Hint" type="Label" parent="PageMargin/PageColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
+theme_override_font_sizes/font_size = 24
+text = "选择一项已解锁增益。观看广告后，它将在本局前若干层生效。"
+autowrap_mode = 2
+
+[node name="BuffOptions" type="VBoxContainer" parent="PageMargin/PageColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 22
+
+[node name="EditorPreviewOption" type="Button" parent="PageMargin/PageColumn/BuffOptions"]
+custom_minimum_size = Vector2(620, 150)
+layout_mode = 2
+theme_override_font_sizes/font_size = 23
+text = "增益名称\n增益说明\n观看广告 · 激活"
+autowrap_mode = 2
+
+[node name="SkipButton" type="Button" parent="PageMargin/PageColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 78)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "跳过，直接出发"
+
+[node name="Note" type="Label" parent="PageMargin/PageColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.39, 0.35, 1)
+theme_override_font_sizes/font_size = 21
+text = "不看广告不会影响正常开局或基础奖励。"
+horizontal_alignment = 1

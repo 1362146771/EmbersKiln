@@ -133,6 +133,66 @@ func _build_main() -> void:
 	removing = false
 	_remove_browser = null
 	_remove_sources.clear()
+	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
+	if scene_panel != null:
+		scene_panel.add_theme_stylebox_override("panel", CardBrowserScript.style(Color("3a4554")))
+		var content: VBoxContainer = scene_panel.get_node("ContentScroll/Content")
+		var gold_label: Label = content.get_node("Gold")
+		gold_label.text = "金币：%d" % RunState.gold
+		var remove_button: Button = content.get_node("Removal/RemoveCardButton")
+		remove_button.text = "永久移除卡牌 · %d 金" % remove_cost
+		remove_button.disabled = RunState.gold < remove_cost or not RunState.can_remove_card()
+		var remove_hint := "选牌后确认 · 仅移除本局牌组中的该卡"
+		if not RunState.can_remove_card():
+			remove_hint = "牌组至少保留 %d 张卡" % int(GameData.balance["card_removal"]["minimum_remaining"])
+		elif RunState.gold < remove_cost:
+			remove_hint = "金币不足 · 需要 %d 金，当前 %d 金" % [remove_cost, RunState.gold]
+		if _remove_status != "":
+			remove_hint = _remove_status + "\n" + remove_hint
+		content.get_node("Removal/Hint").text = remove_hint
+		if not remove_button.pressed.is_connected(_on_remove_pressed):
+			remove_button.pressed.connect(_on_remove_pressed)
+		var card_row: HBoxContainer = content.get_node("CardScroll/CardRow")
+		for child in card_row.get_children():
+			child.queue_free()
+		for i in card_stock.size():
+			card_row.add_child(_card_offer(i))
+		var relic_list: VBoxContainer = content.get_node("RelicOffers")
+		for child in relic_list.get_children():
+			child.queue_free()
+		for i in relic_stock.size():
+			relic_list.add_child(_relic_offer(i))
+		var potion_list: VBoxContainer = content.get_node("PotionOffers")
+		for child in potion_list.get_children():
+			child.queue_free()
+		for i in potion_stock.size():
+			potion_list.add_child(_potion_offer(i))
+		var enchant_cost: int = int(GameData.balance.get("shop", {}).get("enchant_cost", 75))
+		var enchant_button: Button = content.get_node("EnchantButton")
+		enchant_button.text = "附魔服务（%d 金）" % enchant_cost
+		enchant_button.disabled = RunState.gold < enchant_cost or not RewardBuilder.can_any_card_enchant()
+		var enchant_callable := _on_enchant_pressed.bind(enchant_cost)
+		if not enchant_button.pressed.is_connected(enchant_callable):
+			enchant_button.pressed.connect(enchant_callable)
+		var refresh_box: VBoxContainer = content.get_node("Refresh")
+		refresh_box.visible = AdService.is_placement_enabled(ShopInventorySystem.PLACEMENT)
+		if refresh_box.visible:
+			var refresh_button: Button = refresh_box.get_node("ShopRefreshAdButton")
+			refresh_button.text = "观看广告 · 刷新未购买商品（剩余%d次）" % ShopInventorySystem.remaining_refreshes(shop_id) if ShopInventorySystem.is_refresh_configured() else "观看广告 · 刷新未购买商品"
+			refresh_button.disabled = not ShopInventorySystem.can_offer_refresh(shop_id)
+			refresh_button.tooltip_text = ShopInventorySystem.refresh_block_reason(shop_id) if refresh_button.disabled else "已购买槽位与服务状态保持不变"
+			if not refresh_button.pressed.is_connected(_on_refresh_pressed):
+				refresh_button.pressed.connect(_on_refresh_pressed)
+			var refresh_hint := "只替换未购买槽位；已售商品、金币和服务状态保持不变。"
+			if not _refresh_status.is_empty():
+				refresh_hint = _refresh_status + "\n" + refresh_hint
+			elif refresh_button.disabled:
+				refresh_hint = ShopInventorySystem.refresh_block_reason(shop_id) + "\n" + refresh_hint
+			refresh_box.get_node("Hint").text = refresh_hint
+		var leave_button: Button = content.get_node("LeaveButton")
+		if not leave_button.pressed.is_connected(_finish):
+			leave_button.pressed.connect(_finish)
+		return
 	for c in get_children():
 		remove_child(c)
 		c.queue_free()

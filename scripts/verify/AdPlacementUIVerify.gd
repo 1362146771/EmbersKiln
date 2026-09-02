@@ -56,8 +56,12 @@ func _ready() -> void:
 	var now := int(Time.get_unix_time_from_system())
 	check("验证工坊项目可开始建造", WorkshopSystem.start_project(TEST_PROJECT_ID, now))
 	var before := WorkshopSystem.remaining_seconds(TEST_PROJECT_ID, now)
-	var town: Variant = (load("res://scenes/main/Town.tscn") as PackedScene).instantiate()
+	var town: Variant = (load("res://scenes/town/Town.tscn") as PackedScene).instantiate()
 	add_child(town)
+	await get_tree().process_frame
+	var hearth_button := town.find_child("Hearth", true, false) as TextureButton
+	check("窑口镇主界面显示可点击设施图", hearth_button != null)
+	hearth_button.pressed.emit()
 	await get_tree().process_frame
 	var speedup_button := town.find_child("WorkshopSpeedupAdButton_%s" % String(TEST_PROJECT_ID), true, false) as Button
 	check("工坊建造中显示可点击广告加速", speedup_button != null and not speedup_button.disabled and speedup_button.text.contains("减少"))

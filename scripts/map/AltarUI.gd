@@ -40,6 +40,43 @@ func _ready() -> void:
 
 
 func _build() -> void:
+	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
+	if scene_panel != null:
+		choices = []
+		var choice_list: VBoxContainer = scene_panel.get_node("Content/CardScroll/Choices")
+		for child in choice_list.get_children():
+			child.queue_free()
+		for i in RunState.deck.size():
+			var entry: Dictionary = RunState.deck[i]
+			if not entry.get("enchants", []).is_empty():
+				continue
+			var card_data: CardData = GameData.get_card(StringName(entry["id"]))
+			if card_data == null:
+				continue
+			var enchant_id: StringName = RewardBuilder.roll_enchant_for_card(card_data)
+			if enchant_id == &"":
+				continue
+			var enchant_data = GameData.get_enchant(enchant_id)
+			var enchant_name: String = enchant_data.name if enchant_data != null else String(enchant_id)
+			var enchant_effect: String = enchant_data.description if enchant_data != null else ""
+			var choice := {"index": i, "eid": enchant_id, "card": card_data.name, "enchant": enchant_name, "effect": enchant_effect}
+			choices.append(choice)
+			var choice_button := Button.new()
+			choice_button.custom_minimum_size = Vector2(600, 150)
+			choice_button.add_theme_color_override("font_color", DARK)
+			choice_button.text = "%s\n附魔：%s\n%s" % [choice["card"], choice["enchant"], choice["effect"]]
+			choice_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			choice_button.add_theme_font_size_override("font_size", 20)
+			if enchant_data != null and enchant_data.icon != "":
+				choice_button.icon = GameData.icon_texture(enchant_data.icon)
+				choice_button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+			choice_button.pressed.connect(_on_pick.bind(choice))
+			choice_list.add_child(choice_button)
+		scene_panel.get_node("Content/EmptyHint").visible = choices.is_empty()
+		var skip_button: Button = scene_panel.get_node("Content/SkipButton")
+		if not skip_button.pressed.is_connected(_finish):
+			skip_button.pressed.connect(_finish)
+		return
 	for c in get_children():
 		c.queue_free()
 

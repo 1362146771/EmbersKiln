@@ -72,6 +72,33 @@ func _pick_event() -> Dictionary:
 func _build_main() -> void:
 	if _resolved:
 		return
+	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
+	if scene_panel != null:
+		_choice_buttons.clear()
+		if _event.is_empty():
+			_event = _pick_event()
+		var scene_event: Dictionary = _event
+		var title: Label = scene_panel.get_node("Content/Title")
+		var description: Label = scene_panel.get_node("Content/Description")
+		var options: VBoxContainer = scene_panel.get_node("Content/Options")
+		title.text = scene_event["title"]
+		description.text = scene_event["desc"]
+		for child in options.get_children():
+			child.queue_free()
+		for opt in scene_event["options"]:
+			var scene_button := Button.new()
+			scene_button.text = opt["label"]
+			scene_button.custom_minimum_size = Vector2(600, 72)
+			scene_button.add_theme_font_size_override("font_size", 22)
+			scene_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			scene_button.pressed.connect(_on_choose.bind(opt["effects"]))
+			scene_button.set_meta("remove_card", opt["effects"].get("remove_card", false))
+			_choice_buttons.append(scene_button)
+			options.add_child(scene_button)
+		_status = scene_panel.get_node("Content/Status")
+		_status.text = ""
+		_refresh_choices()
+		return
 	for c in get_children():
 		remove_child(c)
 		c.queue_free()

@@ -10,3 +10,155 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.1, 0.09, 1)
+
+[node name="Center" type="CenterContainer" parent="Dim"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPanel" type="Panel" parent="Dim/Center"]
+custom_minimum_size = Vector2(680, 1160)
+layout_mode = 2
+
+[node name="ContentScroll" type="ScrollContainer" parent="Dim/Center/MainPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="Content" type="VBoxContainer" parent="Dim/Center/MainPanel/ContentScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 22
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_font_sizes/font_size = 40
+text = "商 店"
+
+[node name="Gold" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.937, 0.624, 0.153, 1)
+theme_override_font_sizes/font_size = 26
+text = "金币：0"
+
+[node name="Removal" type="VBoxContainer" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="RemoveCardButton" type="Button" parent="Dim/Center/MainPanel/ContentScroll/Content/Removal"]
+custom_minimum_size = Vector2(560, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "永久移除卡牌"
+
+[node name="Hint" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content/Removal"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_font_sizes/font_size = 20
+text = "选牌后确认 · 仅移除本局牌组中的该卡"
+autowrap_mode = 2
+
+[node name="CardTitle" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_font_sizes/font_size = 24
+text = "卡牌"
+
+[node name="CardScroll" type="ScrollContainer" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+custom_minimum_size = Vector2(0, 270)
+layout_mode = 2
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+
+[node name="CardRow" type="HBoxContainer" parent="Dim/Center/MainPanel/ContentScroll/Content/CardScroll"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="EditorPreviewCard" type="Button" parent="Dim/Center/MainPanel/ContentScroll/Content/CardScroll/CardRow"]
+custom_minimum_size = Vector2(180, 250)
+layout_mode = 2
+text = "卡牌商品\n价格"
+
+[node name="RelicTitle" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_font_sizes/font_size = 24
+text = "遗物"
+
+[node name="RelicOffers" type="VBoxContainer" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="EditorPreviewRelic" type="Button" parent="Dim/Center/MainPanel/ContentScroll/Content/RelicOffers"]
+custom_minimum_size = Vector2(560, 64)
+layout_mode = 2
+text = "遗物商品"
+
+[node name="PotionTitle" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_font_sizes/font_size = 24
+text = "药水"
+
+[node name="PotionOffers" type="VBoxContainer" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="EditorPreviewPotion" type="Button" parent="Dim/Center/MainPanel/ContentScroll/Content/PotionOffers"]
+custom_minimum_size = Vector2(560, 64)
+layout_mode = 2
+text = "药水商品"
+
+[node name="EnchantButton" type="Button" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+custom_minimum_size = Vector2(560, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "附魔服务"
+
+[node name="Refresh" type="VBoxContainer" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ShopRefreshAdButton" type="Button" parent="Dim/Center/MainPanel/ContentScroll/Content/Refresh"]
+custom_minimum_size = Vector2(560, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "观看广告 · 刷新未购买商品"
+
+[node name="Hint" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content/Refresh"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_font_sizes/font_size = 18
+text = "只替换未购买槽位；已售商品、金币和服务状态保持不变。"
+autowrap_mode = 2
+
+[node name="LeaveButton" type="Button" parent="Dim/Center/MainPanel/ContentScroll/Content"]
+custom_minimum_size = Vector2(560, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "离开商店"

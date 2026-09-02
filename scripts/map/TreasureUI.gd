@@ -55,6 +55,26 @@ func _build_main() -> void:
 	# setup() 与 _ready() 兼容同一实例，避免重复构建/留下待释放的旧按钮。
 	if not _choice_buttons.is_empty():
 		return
+	var scene_panel: Panel = get_node_or_null("Dim/Center/ChoicePanel")
+	if scene_panel != null:
+		_choice_panel = scene_panel
+		var card_button: Button = scene_panel.get_node("Content/CardButton")
+		var relic_button: Button = scene_panel.get_node("Content/RelicButton")
+		var potion_button: Button = scene_panel.get_node("Content/PotionButton")
+		card_button.pressed.connect(_on_take_card)
+		relic_button.pressed.connect(_on_take_relic)
+		potion_button.pressed.connect(_on_take_potion)
+		_choice_buttons.assign([card_button, relic_button, potion_button])
+		_result_panel = get_node("Dim/Center/ResultPanel")
+		_result_panel.add_theme_stylebox_override("panel", CardBrowserScript.style(CardBrowserScript.SLATE))
+		_result_title = _result_panel.get_node("Content/Title")
+		_result_icon = _result_panel.get_node("Content/Icon")
+		_result_name = _result_panel.get_node("Content/Name")
+		_result_description = _result_panel.get_node("Content/Description")
+		_continue_button = _result_panel.get_node("Content/ContinueButton")
+		_continue_button.pressed.connect(_finish)
+		_result_panel.hide()
+		return
 	for c in get_children():
 		c.queue_free()
 

@@ -3,81 +3,21 @@ extends Control
 ## 启动时检测 SaveManager.has_save() 决定「继续游戏」是否可用。
 
 const MAP_PLAY := "res://scenes/map/MapPlay.tscn"
-const TOWN_SCENE := "res://scenes/main/Town.tscn"
+const TOWN_SCENE := "res://scenes/town/Town.tscn"
 const PRE_RUN_PREPARATION := "res://scenes/main/PreRunPreparation.tscn"
 
-const CREAM := Color(0.984, 0.953, 0.894)
-const ORANGE := Color(0.941, 0.600, 0.482)
-const DARK := Color(0.25, 0.20, 0.18)
-const AMBER := Color(0.937, 0.624, 0.153)
+@onready var continue_button: Button = %ContinueButton
 
 
 func _ready() -> void:
 	if PauseManager != null:
 		PauseManager.hide_pause_button()
-	_build()
-
-
-func _build() -> void:
-	var bg := ColorRect.new()
-	bg.color = CREAM
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", 28)
-	center.add_child(col)
-
-	# 标题
-	var title := Label.new()
-	title.text = "炽  窑"
-	title.add_theme_font_size_override("font_size", 64)
-	title.add_theme_color_override("font_color", ORANGE)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	col.add_child(title)
-
-	var sub := Label.new()
-	sub.text = "陶原 · 爬塔"
-	sub.add_theme_font_size_override("font_size", 30)
-	sub.add_theme_color_override("font_color", DARK)
-	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	col.add_child(sub)
-
-	# 新游戏
-	var b_new := _big_btn("新游戏")
-	b_new.pressed.connect(_on_new_game)
-	col.add_child(b_new)
-
-	# 继续游戏（有存档才可用）
-	var b_cont := _big_btn("继续游戏")
-	b_cont.disabled = not SaveManager.has_save()
-	if b_cont.disabled:
-		b_cont.tooltip_text = "暂无存档"
-	b_cont.pressed.connect(_on_continue)
-	col.add_child(b_cont)
-
-	# 永久成长入口
-	var b_town := _big_btn("窑口镇")
-	b_town.pressed.connect(_on_town)
-	col.add_child(b_town)
-
-	# 退出游戏
-	var b_quit := _big_btn("退出游戏")
-	b_quit.pressed.connect(_on_quit)
-	col.add_child(b_quit)
-
-
-func _big_btn(text: String) -> Button:
-	var b := Button.new()
-	b.text = text
-	b.custom_minimum_size = Vector2(360, 96)
-	b.add_theme_font_size_override("font_size", 34)
-	b.add_theme_color_override("font_color", DARK)
-	return b
+	continue_button.disabled = not SaveManager.has_save()
+	continue_button.tooltip_text = "暂无存档" if continue_button.disabled else ""
+	%NewGameButton.pressed.connect(_on_new_game)
+	continue_button.pressed.connect(_on_continue)
+	%TownButton.pressed.connect(_on_town)
+	%QuitButton.pressed.connect(_on_quit)
 
 
 func _on_new_game() -> void:

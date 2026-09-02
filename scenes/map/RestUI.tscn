@@ -10,3 +10,67 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.1, 0.09, 1)
+
+[node name="Center" type="CenterContainer" parent="Dim"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPanel" type="Panel" parent="Dim/Center"]
+custom_minimum_size = Vector2(680, 1000)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="Dim/Center/MainPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="Dim/Center/MainPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
+theme_override_font_sizes/font_size = 40
+text = "休 息 点"
+
+[node name="Description" type="Label" parent="Dim/Center/MainPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
+theme_override_font_sizes/font_size = 24
+text = "炉火尚温，稍作休整。"
+
+[node name="RestButton" type="Button" parent="Dim/Center/MainPanel/Content"]
+custom_minimum_size = Vector2(560, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "休息（恢复生命）"
+
+[node name="ForgeButton" type="Button" parent="Dim/Center/MainPanel/Content"]
+custom_minimum_size = Vector2(560, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "锻造（升级一张卡）"
+
+[node name="LeaveButton" type="Button" parent="Dim/Center/MainPanel/Content"]
+custom_minimum_size = Vector2(560, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "离开"

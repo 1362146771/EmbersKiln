@@ -10,3 +10,98 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.1, 0.09, 1)
+
+[node name="Center" type="CenterContainer" parent="Dim"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPanel" type="Panel" parent="Dim/Center"]
+custom_minimum_size = Vector2(680, 1100)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="Dim/Center/MainPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Dim/Center/MainPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
+theme_override_font_sizes/font_size = 40
+text = "战  利  品"
+
+[node name="Summary" type="VBoxContainer" parent="Dim/Center/MainPanel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="EditorPreviewGold" type="Label" parent="Dim/Center/MainPanel/Content/Summary"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.937, 0.624, 0.153, 1)
+theme_override_font_sizes/font_size = 26
+text = "金币 +0（共 0）"
+
+[node name="Prompt" type="Label" parent="Dim/Center/MainPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
+theme_override_font_sizes/font_size = 24
+text = "选择一张卡牌加入牌组："
+
+[node name="CardScroll" type="ScrollContainer" parent="Dim/Center/MainPanel/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+
+[node name="Cards" type="HBoxContainer" parent="Dim/Center/MainPanel/Content/CardScroll"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="EditorPreviewCard" type="Button" parent="Dim/Center/MainPanel/Content/CardScroll/Cards"]
+custom_minimum_size = Vector2(180, 240)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "卡牌名称\n[1 能 · 普通]\n卡牌效果"
+
+[node name="Actions" type="VBoxContainer" parent="Dim/Center/MainPanel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="UpgradeButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "升级一张已有卡牌"
+
+[node name="SkipButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "跳过"
+
+[node name="EnchantButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "为一张卡牌附魔"

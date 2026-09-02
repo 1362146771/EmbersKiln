@@ -48,6 +48,50 @@ func setup(reward_data: Dictionary, done: Callable) -> void:
 
 
 func _build_main() -> void:
+	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
+	if scene_panel != null:
+		var summary: VBoxContainer = scene_panel.get_node("Content/Summary")
+		for child in summary.get_children():
+			child.queue_free()
+		var gold_value := int(data.get("gold", 0))
+		summary.add_child(_label("金币 +%d（共 %d）" % [gold_value, RunState.gold], 26, AMBER))
+		var scene_relic_id: StringName = data.get("relic_id", &"")
+		if scene_relic_id != &"":
+			var scene_relic: RelicData = GameData.get_relic(scene_relic_id)
+			summary.add_child(_label("获得遗物：%s" % (scene_relic.name if scene_relic != null else String(scene_relic_id)), 26, PURPLE))
+		var scene_potion_id: StringName = data.get("potion_id", &"")
+		if scene_potion_id != &"":
+			var scene_potion: PotionData = GameData.get_potion(scene_potion_id)
+			var potion_row := HBoxContainer.new()
+			potion_row.alignment = BoxContainer.ALIGNMENT_CENTER
+			potion_row.add_theme_constant_override("separation", 8)
+			if scene_potion != null and scene_potion.icon != "":
+				potion_row.add_child(GameData.icon_rect(scene_potion.icon, 44))
+			potion_row.add_child(_label("获得药水：%s" % (scene_potion.name if scene_potion != null else String(scene_potion_id)), 26, ORANGE))
+			summary.add_child(potion_row)
+		var cards_row: HBoxContainer = scene_panel.get_node("Content/CardScroll/Cards")
+		for child in cards_row.get_children():
+			child.queue_free()
+		var scene_cards: Array = data.get("cards", [])
+		for i in scene_cards.size():
+			var scene_card: Dictionary = scene_cards[i]
+			var card_button := Button.new()
+			card_button.custom_minimum_size = Vector2(180, 240)
+			card_button.add_theme_color_override("font_color", DARK)
+			card_button.text = "%s\n[%d 能 · %s]\n%s" % [scene_card.get("name", ""), int(scene_card.get("cost", 0)), _rarity_cn(StringName(scene_card.get("rarity", "common"))), scene_card.get("desc", "")]
+			card_button.add_theme_font_size_override("font_size", 20)
+			card_button.pressed.connect(_on_choose_card.bind(i))
+			cards_row.add_child(card_button)
+		var upgrade_button: Button = scene_panel.get_node("Content/Actions/UpgradeButton")
+		var skip_button: Button = scene_panel.get_node("Content/Actions/SkipButton")
+		var enchant_button: Button = scene_panel.get_node("Content/Actions/EnchantButton")
+		upgrade_button.pressed.connect(_on_upgrade_pressed)
+		skip_button.pressed.connect(_on_skip)
+		var reward_tier: StringName = StringName(data.get("tier", "combat"))
+		enchant_button.visible = (reward_tier == &"elite" or reward_tier == &"boss") and RewardBuilder.can_any_card_enchant()
+		if enchant_button.visible:
+			enchant_button.pressed.connect(_on_enchant_pressed)
+		return
 	for c in get_children():
 		c.queue_free()
 

@@ -13,7 +13,7 @@ const EventScene := preload("res://scenes/map/EventUI.tscn")
 const AltarScene := preload("res://scenes/map/AltarUI.tscn")
 const RewardScene := preload("res://scenes/rewards/RewardUI.tscn")
 const PreRunPreparationScene := preload("res://scenes/main/PreRunPreparation.tscn")
-const TownScene := preload("res://scenes/main/Town.tscn")
+const TownScene := preload("res://scenes/town/Town.tscn")
 
 # ART_STYLE 限制色板
 const CREAM := Color(0.984, 0.953, 0.894)
@@ -67,20 +67,20 @@ const FLOOR_GAP := 120.0
 const COL_GAP := 110.0
 const NODE_SIZE := 76
 
-var map_area: Control
-var map_scroller: ScrollContainer
+@onready var map_area: Control = get_node_or_null("MapScroller/MapArea")
+@onready var map_scroller: ScrollContainer = get_node_or_null("MapScroller")
 var _map_view_revision := 0
-var topbar: HBoxContainer
-var top_act: Label
-var top_hp: Label
-var top_gold: Label
-var top_floor: Label
-var top_buff: Label
+@onready var topbar: HBoxContainer = get_node_or_null("Topbar")
+@onready var top_act: Label = get_node_or_null("Topbar/Act")
+@onready var top_hp: Label = get_node_or_null("Topbar/HP")
+@onready var top_gold: Label = get_node_or_null("Topbar/Gold")
+@onready var top_floor: Label = get_node_or_null("Topbar/Floor")
+@onready var top_buff: Label = get_node_or_null("Topbar/Buff")
 
 # 每局选择记录：chosen[floor] = index，未选为 -1
 var chosen: Array[int] = []
 var node_pos: Dictionary = {}
-var _bg: ColorRect  # 全屏背景：P1 起战斗改为独立场景切换，不再需要隐藏/恢复
+@onready var _bg: ColorRect = get_node_or_null("Background")  # 全屏背景：P1 起战斗改为独立场景切换，不再需要隐藏/恢复
 var _result_fireseed_label: Label
 var _result_ad_button: Button
 
@@ -166,6 +166,13 @@ func start_new_map() -> void:
 # 静态 UI
 # =====================================================================
 func _build_static_ui() -> void:
+	# 正式场景已烘焙静态布局；.new() 验证路径继续使用代码后备。
+	if map_area != null:
+		if not map_area.gui_input.is_connected(_on_map_gui_input):
+			map_area.gui_input.connect(_on_map_gui_input)
+		if not map_area.draw.is_connected(_on_map_draw):
+			map_area.draw.connect(_on_map_draw)
+		return
 	_bg = ColorRect.new()
 	_bg.color = CREAM
 	_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
