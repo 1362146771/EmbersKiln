@@ -2,7 +2,7 @@ extends Node
 ## Production portrait regression. Uses isolated APPDATA; -- --visual saves
 ## real CombatPlay viewport captures (not composited mockups).
 
-const MANIFEST := "res://art/enemies/production_20260828/manifest.json"
+const MANIFEST := "res://art/enemies/manifest.json"
 const OUTPUT := "res://Temp/enemy-art-verify/"
 var passed := 0
 var failed := 0
@@ -25,7 +25,7 @@ func _ready() -> void:
 	var ids: Array = []
 	for record in records:
 		var path := "res://" + String(record.production)
-		check(record.key + " production file hash", FileAccess.get_sha256(path) == record.output_sha256)
+		check(record.key + " production file hash", FileAccess.get_sha256(path) == record.sha256)
 		var found: EnemyData = null
 		for id in GameData.enemies:
 			var ed := GameData.get_enemy(id)
@@ -84,8 +84,7 @@ func combat(ids: Array, tag: String) -> void:
 		check(tag + " sprite visible", sprite.is_visible_in_tree() and sprite.size.x > 0 and sprite.size.y > 0)
 		check(tag + " portrait fits viewport", ui.get_viewport_rect().encloses(sprite.get_global_rect()))
 		check(tag + " panel fits viewport", ui.get_viewport_rect().encloses(panel.get_global_rect()))
-	# Main character deliberately remains the existing complete pose set.
-	check(tag + " original player idle", ui.player_sprite.texture == load("res://art/player/SPR_Player_Tannaro_Idle.png"))
+	check(tag + " current player portrait", ui.player_sprite.texture == load("res://art/player/SPR_Player_Tannaro.png"))
 	if visual:
 		await RenderingServer.frame_post_draw
 		check(tag + " viewport screenshot", get_viewport().get_texture().get_image().save_png(OUTPUT + tag + ".png") == OK)

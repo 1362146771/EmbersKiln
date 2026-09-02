@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dt71kgv0w2sla"
-path="res://.godot/imported/BG_Combat_GlazeHalls.png-f172970527271efe1a1e587ee6da616c.ctex"
+uid="uid://c6w2h2dfdkycm"
+path="res://.godot/imported/REF_style_darkest_cel.png-a31be5c1202fc6ff452d79e0990bd74e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/backgrounds/BG_Combat_GlazeHalls.png"
-dest_files=["res://.godot/imported/BG_Combat_GlazeHalls.png-f172970527271efe1a1e587ee6da616c.ctex"]
+source_file="res://art/references/REF_style_darkest_cel.png"
+dest_files=["res://.godot/imported/REF_style_darkest_cel.png-a31be5c1202fc6ff452d79e0990bd74e.ctex"]
 
 [params]
 

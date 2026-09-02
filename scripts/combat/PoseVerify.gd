@@ -1,15 +1,12 @@
 extends Node
-## PoseVerify：验证玩家立绘姿态切换（v3.2 窑面全套实装）
-##  - 开局立绘 = Idle 纹理
-##  - 攻击牌（SignalBus.card_played, type=attack）→ attack 姿态，到时自动回 idle
-##  - 玩家受击（SignalBus.damage_dealt 目标 -1）→ hit 姿态
-##  - 玩家死亡（SignalBus.unit_died true）→ death 姿态常驻，后续切姿/回合开始均被锁
+## PoseVerify：验证玩家动作状态切换。当前四种状态共用同一张正式立绘，
+## 状态计时和死亡锁定逻辑继续保留，方便以后直接补入独立动作图。
 ## 输出 POSE_RESULT:PASS / FAIL
 
-const IDLE_TEX := preload("res://art/player/SPR_Player_Tannaro_Idle.png")
-const ATTACK_TEX := preload("res://art/player/SPR_Player_Tannaro_Attack.png")
-const HIT_TEX := preload("res://art/player/SPR_Player_Tannaro_Hit.png")
-const DEATH_TEX := preload("res://art/player/SPR_Player_Tannaro_Death.png")
+const IDLE_TEX := preload("res://art/player/SPR_Player_Tannaro.png")
+const ATTACK_TEX := preload("res://art/player/SPR_Player_Tannaro.png")
+const HIT_TEX := preload("res://art/player/SPR_Player_Tannaro.png")
+const DEATH_TEX := preload("res://art/player/SPR_Player_Tannaro.png")
 
 var results: Array[String] = []
 var pass_count := 0
@@ -43,40 +40,40 @@ func run() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 
-	# 1) 开局立绘为 Idle
-	check("开局立绘 = Idle", cui.player_sprite != null and cui.player_sprite.texture == IDLE_TEX,
+	# 1) 开局加载共用正式立绘
+	check("开局加载共用正式立绘", cui.player_sprite != null and cui.player_sprite.texture == IDLE_TEX,
 		"tex=%s" % (cui.player_sprite.texture.resource_path if cui.player_sprite != null and cui.player_sprite.texture != null else "null"))
 
-	# 2) 攻击牌 → attack 姿态，到时回 idle
+	# 2) 攻击状态保持共用立绘，计时结束后仍可正常使用
 	var atk_id := _find_attack_card()
 	check("牌组数据中存在攻击牌", atk_id != &"", "atk_id=%s" % atk_id)
 	SignalBus.card_played.emit(atk_id, 0)
 	await get_tree().process_frame
-	check("出攻击牌后立绘 = Attack", cui.player_sprite.texture == ATTACK_TEX,
+	check("攻击状态使用共用立绘", cui.player_sprite.texture == ATTACK_TEX and not cui._player_dead,
 		"tex=%s" % cui.player_sprite.texture.resource_path)
 	await get_tree().create_timer(0.9).timeout
-	check("Attack 姿态到时自动回 Idle", cui.player_sprite.texture == IDLE_TEX,
+	check("攻击状态计时结束仍使用共用立绘", cui.player_sprite.texture == IDLE_TEX and not cui._player_dead,
 		"tex=%s" % cui.player_sprite.texture.resource_path)
 
-	# 3) 玩家受击 → hit 姿态
+	# 3) 受击状态使用共用立绘
 	SignalBus.damage_dealt.emit(false, -1, 5)
 	await get_tree().process_frame
-	check("玩家受击后立绘 = Hit", cui.player_sprite.texture == HIT_TEX,
+	check("受击状态使用共用立绘", cui.player_sprite.texture == HIT_TEX and not cui._player_dead,
 		"tex=%s" % cui.player_sprite.texture.resource_path)
 	await get_tree().create_timer(0.9).timeout
 
-	# 4) 玩家死亡 → death 常驻且锁定
+	# 4) 玩家死亡后仍锁定状态，立绘继续共用
 	SignalBus.unit_died.emit(true, -1)
 	await get_tree().process_frame
-	check("玩家死亡后立绘 = Death", cui.player_sprite.texture == DEATH_TEX,
+	check("死亡状态使用共用立绘并锁定", cui.player_sprite.texture == DEATH_TEX and cui._player_dead,
 		"tex=%s" % cui.player_sprite.texture.resource_path)
 	cui._set_player_pose(&"attack", 0.1)
 	await get_tree().process_frame
-	check("死亡锁定：切 attack 被忽略", cui.player_sprite.texture == DEATH_TEX,
+	check("死亡锁定：切 attack 被忽略", cui.player_sprite.texture == DEATH_TEX and cui._player_dead,
 		"tex=%s" % cui.player_sprite.texture.resource_path)
 	cui._on_turn_started(true)
 	await get_tree().process_frame
-	check("死亡锁定：回合开始不回 idle", cui.player_sprite.texture == DEATH_TEX,
+	check("死亡锁定：回合开始不解锁", cui.player_sprite.texture == DEATH_TEX and cui._player_dead,
 		"tex=%s" % cui.player_sprite.texture.resource_path)
 
 	cui.queue_free()

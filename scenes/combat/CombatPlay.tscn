@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://doua82ixjjqsc"]
 
 [ext_resource type="Script" uid="uid://hbsk1gllvr77" path="res://scripts/combat/CombatUI.gd" id="1_cui"]
-[ext_resource type="Texture2D" uid="uid://cnkp8bd6h412r" path="res://art/player/SPR_Player_Tannaro_Idle.png" id="2_3pd5i"]
+[ext_resource type="Texture2D" path="res://art/player/SPR_Player_Tannaro.png" id="2_3pd5i"]
 [ext_resource type="PackedScene" path="res://scenes/combat/RelicBar.tscn" id="3_relics"]
 [ext_resource type="PackedScene" path="res://scenes/combat/DiscardPile.tscn" id="4_discard"]
 [ext_resource type="PackedScene" path="res://scenes/combat/DrawPile.tscn" id="5_draw"]

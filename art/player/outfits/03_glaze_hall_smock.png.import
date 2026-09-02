@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dt71kgv0w2sla"
-path="res://.godot/imported/BG_Combat_GlazeHalls.png-f172970527271efe1a1e587ee6da616c.ctex"
+uid="uid://hnx52w8yspwr"
+path="res://.godot/imported/03_glaze_hall_smock.png-600375fa411553e40c5d1333aff5fbe2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/backgrounds/BG_Combat_GlazeHalls.png"
-dest_files=["res://.godot/imported/BG_Combat_GlazeHalls.png-f172970527271efe1a1e587ee6da616c.ctex"]
+source_file="res://art/player/outfits/03_glaze_hall_smock.png"
+dest_files=["res://.godot/imported/03_glaze_hall_smock.png-600375fa411553e40c5d1333aff5fbe2.ctex"]
 
 [params]
 

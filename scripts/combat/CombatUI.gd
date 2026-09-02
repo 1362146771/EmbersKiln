@@ -80,12 +80,12 @@ const DARK := Color(0.18, 0.15, 0.13)
 const HILITE := Color(1.0, 0.92, 0.65)
 const PANEL_BG := Color(0.22, 0.19, 0.17, 0.92)
 
-# 玩家立绘姿态（v3.2 窑面全套，ART_PROMPT_PLAYER.md）：attack/hit 短暂展示后回 idle，death 常驻。
+# 玩家动作状态暂时共用同一张正式立绘；状态切换和死亡锁定逻辑保留，便于以后补充独立动作图。
 const PLAYER_POSE_TEX := {
-	&"idle": preload("res://art/player/SPR_Player_Tannaro_Idle.png"),
-	&"attack": preload("res://art/player/SPR_Player_Tannaro_Attack.png"),
-	&"hit": preload("res://art/player/SPR_Player_Tannaro_Hit.png"),
-	&"death": preload("res://art/player/SPR_Player_Tannaro_Death.png"),
+	&"idle": preload("res://art/player/SPR_Player_Tannaro.png"),
+	&"attack": preload("res://art/player/SPR_Player_Tannaro.png"),
+	&"hit": preload("res://art/player/SPR_Player_Tannaro.png"),
+	&"death": preload("res://art/player/SPR_Player_Tannaro.png"),
 }
 const PLAYER_POSE_HOLD := 0.7   # attack / hit 姿态保持秒数
 var _player_dead := false       # true 后立绘锁定 death，不再回 idle

@@ -87,7 +87,7 @@ func start_combat(enemy_ids: Array) -> void:
 
 	# 玩家单元
 	player = CombatUnit.new()
-	player.setup(true, &"player", "炭之郎", RunState.max_hp, "res://art/player/SPR_Player_Tannaro_Idle.png")
+	player.setup(true, &"player", "炭之郎", RunState.max_hp, "res://art/player/SPR_Player_Tannaro.png")
 	player.hp = RunState.hp
 
 	# 敌人单元（难度系数在构造时施加）

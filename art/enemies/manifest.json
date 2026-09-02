@@ -1,0 +1,326 @@
+{
+  "schema_version": 1,
+  "status": "current",
+  "count": 20,
+  "images": [
+    {
+      "key": "EmberEater",
+      "name": "烬噬",
+      "production": "art/enemies/SPR_Enemy_EmberEater.png",
+      "sha256": "4ed120f71c64d4b0f81d8dc7c12bd171b1982795f22e8d062b9079b12a5ff34f",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          900,
+          195
+        ],
+        [
+          411,
+          240
+        ],
+        [
+          910,
+          665
+        ],
+        [
+          853,
+          945
+        ]
+      ]
+    },
+    {
+      "key": "KilnheartEmber",
+      "name": "窑心·烬",
+      "production": "art/enemies/SPR_Enemy_KilnheartEmber.png",
+      "sha256": "46e89c6355662fa177e41480e35444d0110f7c2ddda04d7e05b7bcf7b315c08e",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          910,
+          650
+        ]
+      ]
+    },
+    {
+      "key": "Embermoth",
+      "name": "火蛾",
+      "production": "art/enemies/SPR_Enemy_Embermoth.png",
+      "sha256": "73599fcd70fa1a8497324e3eac376550888596d0e7f93e5af6d3a7d4d33decb9",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          445,
+          810
+        ]
+      ]
+    },
+    {
+      "key": "Glazemaw",
+      "name": "釉裂兽",
+      "production": "art/enemies/SPR_Enemy_Glazemaw.png",
+      "sha256": "16eef4ce72096d9e5ffc88f4f1335026ff7925f89ea9167110337e1e9c60df84",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "Claylump",
+      "name": "陶泥团",
+      "production": "art/enemies/SPR_Enemy_Claylump.png",
+      "sha256": "93b928c07f3812ad6535294b94d305415394d17d50f57fd006dbc3f69ccf0ef5",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "Sootling",
+      "name": "煤灰仔",
+      "production": "art/enemies/SPR_Enemy_Sootling.png",
+      "sha256": "6ddc040d9851af04c7995131473abf3683c5c52ac66a9e3f37b4f691d42de853",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "Potsherd",
+      "name": "陶片兵",
+      "production": "art/enemies/SPR_Enemy_Potsherd.png",
+      "sha256": "7acb0bd85cfb3b629a044c0f8690315e2c4548aa4acb561f39f5c5d731df987b",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "Glazetick",
+      "name": "釉蛭",
+      "production": "art/enemies/SPR_Enemy_Glazetick.png",
+      "sha256": "3fada79a6f27adcef3f013ed3eba52f2328d88e0b2e2db00a6b6b36431d84813",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "Kilnstatue",
+      "name": "窑龛像",
+      "production": "art/enemies/SPR_Enemy_Kilnstatue.png",
+      "sha256": "78b5aa37da3e88110e4561c2cba094703a3dc398e481b8c7a5ca5ed93ff6da81",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "Ashcantor",
+      "name": "灰颂者",
+      "production": "art/enemies/SPR_Enemy_Ashcantor.png",
+      "sha256": "774553ce8093df3a203b66fa2a6f70384858b1c9fb9a6b99ae6f97eebbdd86e5",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          1025,
+          961
+        ],
+        [
+          177,
+          1041
+        ]
+      ]
+    },
+    {
+      "key": "Kilnward",
+      "name": "陶偶将",
+      "production": "art/enemies/SPR_Enemy_Kilnward.png",
+      "sha256": "5b4076bbb9c0910f5577c741de1e51fe2db77fcd4b7873c7ac7d36fdd105db7b",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          790,
+          610
+        ]
+      ]
+    },
+    {
+      "key": "Slagbeast",
+      "name": "熔渣兽",
+      "production": "art/enemies/SPR_Enemy_Slagbeast.png",
+      "sha256": "3df708b9f7f3d3bb90ff4f76afe7a0e7940a1f7581f385ff6262181acbe62ffe",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          844,
+          675
+        ]
+      ]
+    },
+    {
+      "key": "Kilnwarden",
+      "name": "炽窑卫",
+      "production": "art/enemies/SPR_Enemy_Kilnwarden.png",
+      "sha256": "8857f803e9d13c5710bd6a1bd34e323d1edf242c088babaea3c4de248c1bcd59",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          800,
+          530
+        ],
+        [
+          380,
+          850
+        ]
+      ]
+    },
+    {
+      "key": "Cindermoth",
+      "name": "烬蝶",
+      "production": "art/enemies/SPR_Enemy_Cindermoth.png",
+      "sha256": "59f286b7f5177d018b666025b3579136a1a04cfc43a320efc39e968dba7727e2",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "Meltgolem",
+      "name": "熔心傀儡",
+      "production": "art/enemies/SPR_Enemy_Meltgolem.png",
+      "sha256": "de2be5a2e0dcbf92f550239c8686737d2c8c27852e89d45d3fb748742b87ec3b",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          856,
+          600
+        ],
+        [
+          840,
+          780
+        ]
+      ]
+    },
+    {
+      "key": "KilnCaptain",
+      "name": "窑卫长",
+      "production": "art/enemies/SPR_Enemy_KilnCaptain.png",
+      "sha256": "14af0f9b448df93470eef2a84a080958414ffc189a9c8bce94d556e5b034f808",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          700,
+          515
+        ]
+      ]
+    },
+    {
+      "key": "Cinderfiend",
+      "name": "烬魈",
+      "production": "art/enemies/SPR_Enemy_Cinderfiend.png",
+      "sha256": "44bf7ded3e4891a735cac93d16800e60c86086cb57f856e64ebde260ec9a2151",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          877,
+          530
+        ],
+        [
+          941,
+          840
+        ],
+        [
+          984,
+          895
+        ]
+      ]
+    },
+    {
+      "key": "Magmawhelp",
+      "name": "岩浆幼兽",
+      "production": "art/enemies/SPR_Enemy_Magmawhelp.png",
+      "sha256": "a6a9d03755686468d30b7a02a3f67f73a70d943e81085334bb474343a6e0ecf3",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "Coalseer",
+      "name": "煤烟先知",
+      "production": "art/enemies/SPR_Enemy_Coalseer.png",
+      "sha256": "85d9b206c624b4e9936f2b97e66b42e9263c5d46c53681cfcfa883af9e6794e3",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
+    },
+    {
+      "key": "ChiTheFirst",
+      "name": "窑主·熾",
+      "production": "art/enemies/SPR_Enemy_ChiTheFirst.png",
+      "sha256": "ac674964ee76098db08ac3aa66faf5777e089758a7729bfcf1ab97f77a6cdb77",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": [
+        [
+          870,
+          650
+        ],
+        [
+          390,
+          560
+        ],
+        [
+          925,
+          1020
+        ],
+        [
+          1103,
+          1055
+        ]
+      ]
+    }
+  ]
+}
