@@ -31,6 +31,7 @@ SaveManager="*res://scripts/core/SaveManager.gd"
 PauseManager="*res://scripts/core/PauseManager.gd"
 VFXSystem="*res://scripts/core/VFXSystem.gd"
 BattleDirector="*res://scripts/combat/BattleDirector.gd"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 ShopInventorySystem="*res://scripts/meta/ShopInventorySystem.gd"
 CardAcquireService="*res://scripts/meta/CardAcquireService.gd"
 PreRunBuffSystem="*res://scripts/meta/PreRunBuffSystem.gd"
@@ -44,7 +45,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/godot_mcp/plugin.cfg")
 
 [physics]
 
