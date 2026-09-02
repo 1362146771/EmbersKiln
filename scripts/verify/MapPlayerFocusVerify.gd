@@ -197,4 +197,4 @@ func verify_combat_return() -> void:
 
 func capture(title: String) -> void:
 	await RenderingServer.frame_post_draw
-	check("capture " + title, get_viewport().get_texture().get_image().save_png("res://logs/map_player_focus_" + title + ".png") == OK)
+	check("capture " + title, get_viewport().get_texture().get_image().save_png("res://Temp/map_player_focus_" + title + ".png") == OK)

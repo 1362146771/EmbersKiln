@@ -188,7 +188,7 @@ func verify_click(choice: int) -> void:
 			await tree.process_frame
 		check("pointer relic click stays on result", ui.is_inside_tree() and ui._result_panel.visible)
 		await RenderingServer.frame_post_draw
-		check("relic result screenshot", get_viewport().get_texture().get_image().save_png("res://logs/treasure_relic_result.png") == OK)
+		check("relic result screenshot", get_viewport().get_texture().get_image().save_png("res://Temp/treasure_relic_result.png") == OK)
 		check("result and continue fit viewport", get_viewport().get_visible_rect().encloses(ui._result_panel.get_global_rect()))
 		at = ui._continue_button.get_global_rect().get_center()
 		motion = InputEventMouseMotion.new()

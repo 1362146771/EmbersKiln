@@ -97,8 +97,8 @@ func verify_shop() -> void:
 	check("shop charges once", RunState.gold == gold - ui.remove_cost and event_counts == [1, 1])
 	check("inventory listeners see committed deck and gold", states.all(func(s): return s == [RunState.deck.size(), RunState.gold]))
 	check("shop displays success feedback", ui._remove_status.contains("已永久移除"))
-	check("isolated save succeeds", SaveManager.save_to_file("res://logs/card_removal_test_save.json"))
-	var saved := SaveManager.load_from_file("res://logs/card_removal_test_save.json")
+	check("isolated save succeeds", SaveManager.save_to_file("res://Temp/card_removal_test_save.json"))
+	var saved := SaveManager.load_from_file("res://Temp/card_removal_test_save.json")
 	var expected := RunState.deck.duplicate(true)
 	RunState.deck.clear()
 	check("removed card stays removed after reload", RunState.from_save_dict(saved) and RunState.deck == expected)
@@ -321,7 +321,7 @@ func click(control: Control) -> void:
 func capture(title: String) -> void:
 	await frames()
 	await RenderingServer.frame_post_draw
-	check("capture " + title, get_viewport().get_texture().get_image().save_png("res://logs/card_browser_" + title + ".png") == OK)
+	check("capture " + title, get_viewport().get_texture().get_image().save_png("res://Temp/card_browser_" + title + ".png") == OK)
 
 
 func verify_pointer() -> void:

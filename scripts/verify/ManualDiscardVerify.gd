@@ -1,6 +1,6 @@
 extends Node
 ## 运行：Godot --headless --path . scenes/verify/ManualDiscardVerify.tscn
-## 图形验证：去掉 --headless，追加 -- --visual；截图存 logs/manual_discard_*.png。
+## 图形验证：去掉 --headless，追加 -- --visual；截图存 Temp/manual_discard_*.png。
 ## 测试 fixture 数字仅用于断言，不是玩法配置。不写玩家存档。
 
 var passed := 0
@@ -440,4 +440,4 @@ func interaction_state() -> Dictionary:
 func capture(label: String) -> void:
 	await frames()
 	await RenderingServer.frame_post_draw
-	check("screenshot " + label, get_viewport().get_texture().get_image().save_png("res://logs/manual_discard_" + label + ".png") == OK)
+	check("screenshot " + label, get_viewport().get_texture().get_image().save_png("res://Temp/manual_discard_" + label + ".png") == OK)
