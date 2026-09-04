@@ -36,7 +36,7 @@ func check(name: String, cond: bool, detail: String = "") -> void:
 # 4.1 卡池深化
 # =====================================================================
 func _test_card_pool() -> void:
-	check("卡池=48（P3 新增 8 张 + 后续扩展）", GameData.cards.size() == 48, "cards=%d" % GameData.cards.size())
+	check("卡池=62（含 12 张机制扩充牌及巨像/残酷）", GameData.cards.size() == 62, "cards=%d" % GameData.cards.size())
 
 	var new_ids := ["kiln_burst", "ember_tide", "kiln_aegis", "shatter_guard",
 		"mass_craze", "ash_domain", "ember_burst", "scorch_field"]

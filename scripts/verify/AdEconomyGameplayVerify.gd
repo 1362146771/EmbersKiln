@@ -192,7 +192,7 @@ func _test_run_save_migration() -> void:
 	check("v2 单局存档可迁移", RunState.from_save_dict(legacy))
 	check("v2 迁移不追溯启用牌库上限", RunState.base_run_deck_capacity == -1 and not RunState.run_id.is_empty())
 	check("v2 迁移不追溯弹出局前准备", RunState.pre_run_preparation_resolved and not RunState.combat_death_pending)
-	check("迁移后写出 v4 单局存档", int(RunState.to_save_dict().get("version", -1)) == 4)
+	check("迁移后写出 v5 单局存档", int(RunState.to_save_dict().get("version", -1)) == 5)
 
 
 func _card_item(card_id: StringName, price: int, bought: bool) -> Dictionary:

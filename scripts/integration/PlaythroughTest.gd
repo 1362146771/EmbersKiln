@@ -53,7 +53,7 @@ func check(name: String, cond: bool, detail: String = "") -> void:
 
 func run() -> void:
 	# ---------- 数据层不变量 ----------
-	check("卡牌数据=48", GameData.cards.size() == 48, "cards=%d" % GameData.cards.size())
+	check("卡牌数据=62", GameData.cards.size() == 62, "cards=%d" % GameData.cards.size())
 	check("敌人数据=21（新增首幕Boss匣母）", GameData.enemies.size() == 21, "enemies=%d" % GameData.enemies.size())
 	check("遗物数据=11", GameData.relics.size() == 11, "relics=%d" % GameData.relics.size())
 	check("状态数据=10（含活力/缓冲/衰朽/领袖气质）", GameData.statuses.size() == 10, "statuses=%d" % GameData.statuses.size())
@@ -247,7 +247,9 @@ func _incoming_damage(cc: CombatController) -> int:
 func _grant_combat_rewards(ntype: StringName) -> void:
 	RunState.add_gold(RewardBuilder.roll_gold(ntype))
 	var choices: Array = RewardBuilder.roll_card_choices(
-		int(GameData.balance.get("rewards", {}).get("card_choice_count", 3)))
+		int(GameData.balance.get("rewards", {}).get("card_choice_count", 3)),
+		ntype
+	)
 	if not choices.is_empty():
 		# P-D 起难度实装：bot 优先拿攻击牌提升击杀效率，无攻击牌则拿第一张
 		var pick: Dictionary = choices[0]
@@ -256,7 +258,7 @@ func _grant_combat_rewards(ntype: StringName) -> void:
 			if cd != null and cd.type == &"attack":
 				pick = c
 				break
-		RunState.add_card(pick["id"], false)
+		RunState.add_card(pick["id"], bool(pick.get("upgraded", false)))
 	if ntype == &"elite" or ntype == &"boss":
 		var rid := RewardBuilder.roll_relic(ntype)
 		if rid != &"":
