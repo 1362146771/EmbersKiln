@@ -28,6 +28,7 @@ var minions: Dictionary = {}      # StringName -> MinionData
 var potions: Dictionary = {}     # StringName -> PotionData
 var enchants: Dictionary = {}    # StringName -> EnchantData
 var effect_kinds: Array = []     # cards.json 顶层 effect_kinds（用于交叉校验）
+var card_taxonomy: Dictionary = {} # cards.json 顶层 taxonomy（类型/稀有度/机制中文名）
 var map_config: Dictionary = {}
 var act_configs: Array = []      # Array[Dictionary] —— 多幕配置（map.json 的 acts 数组）
 var balance: Dictionary = {}
@@ -57,6 +58,7 @@ func load_all() -> bool:
 	potions.clear()
 	enchants.clear()
 	effect_kinds.clear()
+	card_taxonomy.clear()
 	events.clear()
 	formations.clear()
 	meta_progression.clear()
@@ -96,6 +98,7 @@ func load_all() -> bool:
 		minions[m.id] = m
 
 	effect_kinds = raw["cards"].get("effect_kinds", [])
+	card_taxonomy = raw["cards"].get("taxonomy", {})
 	for d in raw["potions"].get("potions", []):
 		var p := PotionData.from_dict(d)
 		potions[p.id] = p
@@ -167,9 +170,25 @@ func _read_json(path: String) -> Variant:
 
 ## 交叉引用校验：卡牌/敌人引用的 status 必须存在；起始牌组必须有效。
 func _validate() -> void:
+	var valid_types: Dictionary = card_taxonomy.get("types", {})
+	var valid_rarities: Dictionary = card_taxonomy.get("rarities", {})
+	var valid_mechanics: Dictionary = card_taxonomy.get("mechanics", {})
+	if valid_types.is_empty() or valid_rarities.is_empty() or valid_mechanics.is_empty():
+		load_errors.append("cards.json 缺少完整 taxonomy（types / rarities / mechanics）")
 	for cid in cards:
 		var c: CardData = cards[cid]
+		if not valid_types.has(String(c.type)):
+			load_errors.append("卡牌 %s 含未知类型 %s" % [cid, c.type])
+		if not valid_rarities.has(String(c.rarity)):
+			load_errors.append("卡牌 %s 含未知稀有度 %s" % [cid, c.rarity])
+		if c.mechanics.is_empty():
+			load_errors.append("卡牌 %s 缺少 mechanics 分类" % cid)
+		for mechanic in c.mechanics:
+			if not valid_mechanics.has(String(mechanic)):
+				load_errors.append("卡牌 %s 含未知机制标签 %s" % [cid, mechanic])
 		for eff in c.effects + c.upgrade_effects:
+			if eff is Dictionary and not effect_kinds.has(String(eff.get("kind", ""))):
+				load_errors.append("卡牌 %s 含未知 effect_kind：%s" % [cid, eff.get("kind", "")])
 			if eff is Dictionary and eff.has("status"):
 				var sid := StringName(eff["status"])
 				if not statuses.has(sid):
@@ -192,6 +211,7 @@ func _validate() -> void:
 	for cid in balance.get("starting_deck", []):
 		if not cards.has(StringName(cid)):
 			load_errors.append("起始牌组引用了不存在的卡牌 %s" % cid)
+	_validate_card_reward_config()
 
 	# 编成表校验：引用的敌人必须存在，且不超过单场上限
 	var max_en := int(balance.get("enemy_scaling", {}).get("max_enemies_per_combat", 2))
@@ -233,10 +253,25 @@ func _validate() -> void:
 	# 事件表校验
 	if events.is_empty():
 		load_errors.append("事件表为空（events.json 缺失或格式错误）")
+	var event_ids: Dictionary = {}
 	for ev in events:
 		if not (ev is Dictionary) or ev.get("title", "") == "":
 			load_errors.append("事件缺少 title：%s" % str(ev))
 			continue
+		var event_id := StringName(String(ev.get("id", "")))
+		if event_id == &"":
+			load_errors.append("事件 %s 缺少 id" % ev.get("title", ""))
+		elif event_ids.has(event_id):
+			load_errors.append("事件 id 重复：%s" % event_id)
+		else:
+			event_ids[event_id] = true
+		var event_acts = ev.get("acts", [])
+		if not (event_acts is Array) or event_acts.is_empty():
+			load_errors.append("事件 %s 缺少 acts" % ev.get("title", ""))
+		else:
+			for act_no in event_acts:
+				if int(act_no) < 1 or int(act_no) > act_configs.size():
+					load_errors.append("事件 %s 含无效幕号：%s" % [ev.get("title", ""), act_no])
 		var opts = ev.get("options", [])
 		if not (opts is Array) or opts.size() < 2:
 			load_errors.append("事件 %s 选项不足 2 个" % ev.get("title", ""))
@@ -271,6 +306,66 @@ func _validate() -> void:
 				var sid := StringName(ex["status"])
 				if not statuses.has(sid):
 					load_errors.append("附魔 %s 引用了不存在的状态 %s" % [eid, sid])
+
+
+func _validate_card_reward_config() -> void:
+	var reward_cfg: Variant = balance.get("card_rewards", null)
+	if not reward_cfg is Dictionary:
+		load_errors.append("balance.card_rewards 缺失或格式无效")
+		return
+	var scale := int(reward_cfg.get("probability_scale", 0))
+	if scale <= 0:
+		load_errors.append("card_rewards.probability_scale 必须大于 0")
+		return
+	var sources: Variant = reward_cfg.get("sources", null)
+	if not sources is Dictionary:
+		load_errors.append("card_rewards.sources 缺失或格式无效")
+		return
+	for source_id in ["combat", "elite", "boss", "shop", "misc"]:
+		var source_cfg: Variant = sources.get(source_id, null)
+		if not source_cfg is Dictionary:
+			load_errors.append("card_rewards.sources.%s 缺失或格式无效" % source_id)
+			continue
+		var rarity_percent: Variant = source_cfg.get("rarity_percent", null)
+		if not rarity_percent is Dictionary:
+			load_errors.append("卡牌来源 %s 缺少 rarity_percent" % source_id)
+			continue
+		var total := 0
+		for rarity_id in ["common", "uncommon", "rare"]:
+			var value := int(rarity_percent.get(rarity_id, -1))
+			if value < 0:
+				load_errors.append("卡牌来源 %s 的 %s 概率无效" % [source_id, rarity_id])
+			total += maxi(value, 0)
+		if total != scale:
+			load_errors.append("卡牌来源 %s 稀有度概率总和 %d，应为 %d" % [source_id, total, scale])
+		for flag in ["uses_rare_pity", "updates_rare_pity", "random_upgrade"]:
+			if not source_cfg.has(flag) or not source_cfg[flag] is bool:
+				load_errors.append("卡牌来源 %s 缺少布尔字段 %s" % [source_id, flag])
+		var forced := String(source_cfg.get("forced_rarity", ""))
+		if not forced.is_empty() and not forced in ["common", "uncommon", "rare"]:
+			load_errors.append("卡牌来源 %s 的 forced_rarity 无效：%s" % [source_id, forced])
+
+	var pity: Variant = reward_cfg.get("rare_pity", null)
+	if not pity is Dictionary:
+		load_errors.append("card_rewards.rare_pity 缺失或格式无效")
+	else:
+		for field in ["initial_offset", "common_increment", "rare_reset_offset", "max_offset"]:
+			if not pity.has(field) or not pity[field] is float and not pity[field] is int:
+				load_errors.append("card_rewards.rare_pity.%s 缺失或不是数字" % field)
+		if int(pity.get("common_increment", 0)) <= 0:
+			load_errors.append("rare_pity.common_increment 必须大于 0")
+		if int(pity.get("initial_offset", 0)) > int(pity.get("max_offset", 0)):
+			load_errors.append("rare_pity.initial_offset 不得大于 max_offset")
+		if int(pity.get("rare_reset_offset", 0)) > int(pity.get("max_offset", 0)):
+			load_errors.append("rare_pity.rare_reset_offset 不得大于 max_offset")
+
+	var upgrade_chances: Variant = reward_cfg.get("upgrade_chance_by_act", null)
+	if not upgrade_chances is Array or upgrade_chances.size() < act_configs.size():
+		load_errors.append("card_rewards.upgrade_chance_by_act 必须覆盖全部幕")
+	else:
+		for chance in upgrade_chances:
+			if not chance is float and not chance is int or float(chance) < 0.0 or float(chance) > 1.0:
+				load_errors.append("card_rewards.upgrade_chance_by_act 含无效概率：%s" % chance)
 
 
 ## 局外成长允许 Pending 数值以 null 留在配置中；null 项目不会开放建造。
@@ -586,6 +681,11 @@ func is_card_unlocked(id: StringName) -> bool:
 	return _is_meta_content_unlocked("card_ids", id, ProfileState.unlocked_card_ids)
 
 
+func card_taxonomy_name(group: StringName, id: StringName) -> String:
+	var entries: Dictionary = card_taxonomy.get(String(group), {})
+	return String(entries.get(String(id), String(id)))
+
+
 func is_relic_unlocked(id: StringName) -> bool:
 	return _is_meta_content_unlocked("relic_ids", id, ProfileState.unlocked_relic_ids)
 
@@ -630,6 +730,15 @@ func _is_meta_content_unlocked(config_field: String, id: StringName, profile_unl
 	for raw_id in initial_unlocks.get(config_field, []):
 		if StringName(String(raw_id)) == id:
 			return true
+	# 数据版本更新后，已完成项目可能新增奖励内容；按当前项目 grants 动态回填资格，
+	# 避免老存档因项目不可重复领取而永久错过新卡/遗物/药水/附魔。
+	var grant_field := "unlocked_" + config_field
+	for completed_id in ProfileState.completed_project_ids:
+		var project: Dictionary = meta_projects.get(completed_id, {})
+		var grants: Dictionary = project.get("grants", {})
+		for raw_id in grants.get(grant_field, []):
+			if StringName(String(raw_id)) == id:
+				return true
 	return false
 
 
@@ -677,10 +786,24 @@ func get_event(index: int) -> Dictionary:
 	return {}
 
 
-func random_event() -> Dictionary:
-	if events.is_empty():
+func events_for_act(act_number: int) -> Array:
+	var pool: Array = []
+	for event_data in events:
+		var event_acts = event_data.get("acts", [])
+		if event_acts is Array:
+			for configured_act in event_acts:
+				if int(configured_act) == act_number:
+					pool.append(event_data)
+					break
+	return pool
+
+
+func random_event(act_number: int = -1) -> Dictionary:
+	var resolved_act := act_number if act_number > 0 else RunState.current_act + 1
+	var pool := events_for_act(resolved_act)
+	if pool.is_empty():
 		return {}
-	return events[randi_range(0, events.size() - 1)]
+	return pool[randi_range(0, pool.size() - 1)]
 
 
 func get_cards_by_rarity(rarity: StringName) -> Array[CardData]:

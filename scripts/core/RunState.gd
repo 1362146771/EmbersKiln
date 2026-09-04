@@ -18,6 +18,8 @@ var _removing_card := false
 var current_floor: int = 0
 var current_node_type: StringName = &""
 var is_active: bool = false
+## 卡牌奖励隐藏稀有补偿；新局初值、增长、重置和上限均来自 balance.card_rewards。
+var card_rare_offset: int = 0
 
 ## 多幕地图容器：Array[act] -> Array[floor] -> Array[MapNode]
 var act_maps: Array = []
@@ -89,6 +91,7 @@ func start_new_run() -> bool:
 	gold = int(progression_bonuses.get("starting_gold_bonus", 0))
 	current_floor = 0
 	current_node_type = &""
+	card_rare_offset = int(GameData.balance.get("card_rewards", {}).get("rare_pity", {}).get("initial_offset", 0))
 	victory = false
 	defeated.clear()
 	run_id = _new_run_id()
@@ -552,8 +555,8 @@ func is_boss_floor() -> bool:
 
 
 # ---------- 存档（P4 落盘；P-A 升 v2 多幕） ----------
-const SAVE_VERSION := 4
-const SUPPORTED_SAVE_VERSIONS := [2, 3, 4]
+const SAVE_VERSION := 5
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5]
 
 ## 将运行态序列化为可 JSON 化的 Dictionary。
 ## 所有 StringName 必须转 String，否则 JSON.stringify 会丢失类型。
@@ -606,6 +609,7 @@ func to_save_dict() -> Dictionary:
 		"gold": gold,
 		"current_floor": current_floor,
 		"current_node_type": String(current_node_type),
+		"card_rare_offset": card_rare_offset,
 		"defeated": defeated_data,
 		"victory": victory,
 		"is_active": is_active,
@@ -635,7 +639,7 @@ func to_save_dict() -> Dictionary:
 
 
 ## 从存档 Dictionary 还原运行态，重建 MapNode 对象并广播信号。
-## 接受 v2/v3 并迁移到 v4；v1 旧单幕存档仍由 SaveManager 删除。
+## 接受 v2/v3/v4 并迁移到 v5；v1 旧单幕存档仍由 SaveManager 删除。
 func from_save_dict(d: Dictionary) -> bool:
 	var source_version := int(d.get("version", -1))
 	if not SUPPORTED_SAVE_VERSIONS.has(source_version):
@@ -659,6 +663,16 @@ func from_save_dict(d: Dictionary) -> bool:
 	gold = int(d.get("gold", 0))
 	current_floor = int(d.get("current_floor", 0))
 	current_node_type = StringName(d.get("current_node_type", ""))
+	var pity: Dictionary = GameData.balance.get("card_rewards", {}).get("rare_pity", {})
+	var minimum_offset := mini(
+		int(pity.get("initial_offset", 0)),
+		int(pity.get("rare_reset_offset", 0))
+	)
+	card_rare_offset = clampi(
+		int(d.get("card_rare_offset", pity.get("initial_offset", 0))),
+		minimum_offset,
+		int(pity.get("max_offset", 0))
+	)
 	victory = bool(d.get("victory", false))
 	is_active = bool(d.get("is_active", true))
 

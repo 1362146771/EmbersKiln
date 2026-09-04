@@ -1,6 +1,6 @@
 extends Control
 ## T3-UI：地图可视化 + 节点进入体验。
-## 读取 RunState.current_map() 绘制 10 层地图（f0 在底、Boss 在顶），节点按类型着色，
+## 读取 RunState.current_map() 绘制当前幕地图（f0 在底、Boss 在顶），节点按类型着色，
 ## 连线显示可达路径；仅当前前沿节点可点。战斗类节点复用 CombatUI 叠加层进入战斗，
 ## 胜利后返回地图刷新可达；非战斗节点给简单效果后继续。
 ## 美术为占位级（代码内建控件），后续由美术设计师细化。
@@ -50,9 +50,9 @@ const TYPE_COLOR := {
 	&"altar": Color(0.45, 0.72, 0.85),
 }
 const TYPE_SHORT := {
-	&"combat": "战",
-	&"elite": "精",
-	&"boss": "王",
+	&"combat": "怪物",
+	&"elite": "精英怪",
+	&"boss": "首领",
 	&"event": "事",
 	&"shop": "商",
 	&"rest": "休",
@@ -291,21 +291,17 @@ func _add_node_button(node, f: int, i: int, x: float, y: float) -> void:
 	var col: Color = TYPE_COLOR.get(node.type, ORANGE)
 	b.add_theme_color_override("font_color", Color.WHITE)
 	b.add_theme_color_override("font_pressed_color", Color.WHITE)
-	var ename := "?"
 	var enemy_hint := ""
 	var label_txt: String = TYPE_SHORT.get(node.type, "?")
-	if node.type == &"combat" or node.type == &"elite" or node.type == &"boss":
+	if node.type == &"boss":
 		if node.enemy_ids.size() > 0:
 			var ed: EnemyData = GameData.get_enemy(StringName(node.enemy_ids[0]))
 			if ed != null:
-				ename = ed.name
-				if node.type == &"boss":
-					enemy_hint = ed.combat_hint
-		# 地图节点只显示类型文字，怪物立绘留给战斗界面；敌名见 tooltip
-		label_txt = "%s\n%s" % [TYPE_SHORT.get(node.type, "?"), ename]
+				enemy_hint = ed.combat_hint
 	b.text = label_txt
 	b.add_theme_font_size_override("font_size", 20)
-	b.tooltip_text = "第 %d 层 · %s · %s" % [f, String(node.type), ename]
+	# 地图只揭示节点类型；具体敌人身份留到进入战斗后显示。
+	b.tooltip_text = "第 %d 层 · %s" % [f, label_txt]
 	if not enemy_hint.is_empty():
 		b.tooltip_text += "\n" + enemy_hint
 		# 手机端不能依赖悬停：Boss节点下直接显示数据中的机制提示。
@@ -429,7 +425,10 @@ func _grant_reward() -> void:
 	var relic_id: StringName = RewardBuilder.roll_relic(tier)
 	if relic_id != &"":
 		RunState.add_relic(relic_id)
-	var cards := RewardBuilder.roll_card_choices(int(GameData.balance.get("rewards", {}).get("card_choice_count", 3)))
+	var cards := RewardBuilder.roll_card_choices(
+		int(GameData.balance.get("rewards", {}).get("card_choice_count", 3)),
+		tier
+	)
 	var potion_id: StringName = RewardBuilder.roll_potion(tier)
 	if potion_id != &"":
 		RunState.add_potion(potion_id)

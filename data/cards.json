@@ -1,5 +1,40 @@
 {
   "version": 1,
+  "taxonomy": {
+    "types": {
+      "attack": "攻击",
+      "skill": "技能",
+      "power": "能力",
+      "status": "状态牌",
+      "curse": "诅咒牌"
+    },
+    "rarities": {
+      "starter": "初始",
+      "common": "普通",
+      "uncommon": "精良",
+      "rare": "稀有",
+      "special": "特殊"
+    },
+    "mechanics": {
+      "damage": "伤害",
+      "multi_hit": "多段",
+      "aoe": "群体",
+      "block": "格挡",
+      "draw": "抽牌",
+      "energy": "能量",
+      "heal": "治疗",
+      "buff": "增益",
+      "debuff": "减益",
+      "ashrot": "燃烧",
+      "kiln_heat": "窑温",
+      "summon": "召唤",
+      "command": "领袖气质",
+      "exhaust": "消耗",
+      "scaling": "成长伤害",
+      "status_payoff": "状态收益",
+      "power_engine": "能力引擎"
+    }
+  },
   "effect_kinds": [
     "damage",
     "aoe_damage",
@@ -16,7 +51,14 @@
     "power_end_turn_aoe",
     "power_on_attack_strength",
     "gain_kiln_heat",
-    "summon"
+    "summon",
+    "scaled_damage",
+    "clear_status",
+    "multiply_status",
+    "power_on_summon_command",
+    "power_retain_block",
+    "vulnerable_enemy_damage_multiplier",
+    "power_vulnerable_bonus_damage"
   ],
   "cards": [
     {
@@ -47,6 +89,7 @@
         "control",
         "burn"
       ],
+      "mechanics": ["damage"],
       "description": "造成 6 点伤害。",
       "upgrade_description": "造成 9 点伤害。",
       "art": "CARD_Strike"
@@ -79,6 +122,7 @@
         "control",
         "burn"
       ],
+      "mechanics": ["block"],
       "description": "获得 5 点格挡。",
       "upgrade_description": "获得 8 点格挡。",
       "art": "CARD_Defend"
@@ -121,6 +165,7 @@
         "control",
         "aggro"
       ],
+      "mechanics": ["damage", "debuff"],
       "description": "造成 8 点伤害，施加 2 层易伤。",
       "upgrade_description": "造成 10 点伤害，施加 3 层易伤。",
       "art": "CARD_Bash"
@@ -150,6 +195,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage"],
       "description": "造成 14 点伤害。",
       "upgrade_description": "造成 18 点伤害。",
       "art": "CARD_HeavySlash"
@@ -181,6 +227,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage", "multi_hit"],
       "description": "造成 2 次 4 点伤害。",
       "upgrade_description": "造成 2 次 5 点伤害。",
       "art": "CARD_DoubleStrike"
@@ -210,6 +257,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage", "aoe"],
       "description": "对所有敌人造成 8 点伤害。",
       "upgrade_description": "对所有敌人造成 11 点伤害。",
       "art": "CARD_Cleave"
@@ -247,6 +295,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage", "draw"],
       "description": "造成 7 点伤害，抽 1 张牌。",
       "upgrade_description": "造成 10 点伤害，抽 1 张牌。",
       "art": "CARD_Thrust"
@@ -276,6 +325,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage"],
       "description": "造成 3 点伤害。（不消耗能量）",
       "upgrade_description": "造成 5 点伤害。",
       "art": "CARD_Charge"
@@ -318,6 +368,7 @@
         "burn",
         "control"
       ],
+      "mechanics": ["damage", "debuff", "ashrot"],
       "description": "造成 5 点伤害，施加 2 层燃烧。",
       "upgrade_description": "造成 7 点伤害，施加 3 层燃烧。",
       "art": "CARD_BurningFist"
@@ -347,6 +398,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage", "exhaust"],
       "description": "造成 5 点伤害。消耗。",
       "upgrade_description": "造成 8 点伤害。消耗。",
       "art": "CARD_ThrowRock"
@@ -376,6 +428,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["block"],
       "description": "获得 12 点格挡。",
       "upgrade_description": "获得 16 点格挡。",
       "art": "CARD_IronWall"
@@ -405,6 +458,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["block"],
       "description": "获得 8 点格挡。",
       "upgrade_description": "获得 11 点格挡。",
       "art": "CARD_Parry"
@@ -434,6 +488,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["buff"],
       "description": "获得 2 点力量。",
       "upgrade_description": "获得 3 点力量。",
       "art": "CARD_BattleStance"
@@ -471,6 +526,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["block", "draw"],
       "description": "获得 4 点格挡，抽 1 张牌。",
       "upgrade_description": "获得 6 点格挡，抽 1 张牌。",
       "art": "CARD_QuickStep"
@@ -504,6 +560,7 @@
       "build": [
         "control"
       ],
+      "mechanics": ["debuff"],
       "description": "对所有敌人施加 2 层虚弱。",
       "upgrade_description": "对所有敌人施加 3 层虚弱。",
       "art": "CARD_Taunt"
@@ -533,6 +590,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["heal"],
       "description": "恢复 6 点生命。",
       "upgrade_description": "恢复 9 点生命。",
       "art": "CARD_Bandage"
@@ -575,6 +633,7 @@
         "aggro",
         "control"
       ],
+      "mechanics": ["draw", "buff"],
       "description": "抽 2 张牌，获得 1 层活力。",
       "upgrade_description": "抽 3 张牌，获得 1 层活力。",
       "art": "CARD_WarCry"
@@ -604,6 +663,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["buff", "power_engine"],
       "description": "获得 3 点力量（持续）。",
       "upgrade_description": "获得 4 点力量（持续）。",
       "art": "CARD_Rage"
@@ -633,6 +693,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["power_engine", "block"],
       "description": "每回合开始获得 3 点格挡（持续）。",
       "upgrade_description": "每回合开始获得 4 点格挡（持续）。",
       "art": "CARD_Harden"
@@ -662,6 +723,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["power_engine", "buff"],
       "description": "每次打出攻击牌获得 1 点力量（持续）。",
       "upgrade_description": "每次打出攻击牌获得 2 点力量（持续）。",
       "art": "CARD_Bloodlust"
@@ -691,6 +753,7 @@
       "build": [
         "burn"
       ],
+      "mechanics": ["power_engine", "damage", "aoe"],
       "description": "每回合结束对所有敌人造成 3 点伤害（持续）。",
       "upgrade_description": "每回合结束对所有敌人造成 4 点伤害（持续）。",
       "art": "CARD_BurningSoul"
@@ -733,6 +796,7 @@
         "control",
         "aggro"
       ],
+      "mechanics": ["damage", "aoe", "debuff"],
       "description": "对所有敌人造成 10 点伤害并施加 2 层易伤。",
       "upgrade_description": "造成 13 点伤害并施加 3 层易伤。",
       "art": "CARD_Earthquake"
@@ -762,6 +826,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage"],
       "description": "造成 18 点伤害。",
       "upgrade_description": "造成 23 点伤害。",
       "art": "CARD_Execute"
@@ -803,6 +868,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["block", "buff", "exhaust"],
       "description": "获得 20 点格挡与 1 层缓冲。消耗。",
       "upgrade_description": "获得 26 点格挡与 2 层缓冲。消耗。",
       "art": "CARD_Unbreakable"
@@ -840,6 +906,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["block", "draw"],
       "description": "获得 6 点格挡，抽 1 张牌。",
       "upgrade_description": "获得 9 点格挡，抽 1 张牌。",
       "art": "CARD_TwinGuard"
@@ -878,6 +945,7 @@
         "aggro",
         "control"
       ],
+      "mechanics": ["energy", "draw"],
       "description": "获得 1 点能量，抽 1 张牌。",
       "upgrade_description": "获得 1 点能量，抽 2 张牌。",
       "art": "CARD_Empowering"
@@ -909,6 +977,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage", "aoe", "multi_hit"],
       "description": "对所有敌人造成 2 次 6 点伤害。",
       "upgrade_description": "对所有敌人造成 2 次 8 点伤害。",
       "art": "CARD_Whirlwind"
@@ -951,6 +1020,7 @@
         "burn",
         "control"
       ],
+      "mechanics": ["damage", "debuff", "ashrot"],
       "description": "造成 4 点伤害，施加 3 层燃烧。",
       "upgrade_description": "造成 6 点伤害，施加 4 层燃烧。",
       "art": "CARD_AshBlade"
@@ -988,6 +1058,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["heal", "block"],
       "description": "恢复 4 点生命并获得 4 点格挡。",
       "upgrade_description": "恢复 6 点生命并获得 6 点格挡。",
       "art": "CARD_SecondWind"
@@ -1026,6 +1097,7 @@
         "aggro",
         "defense"
       ],
+      "mechanics": ["buff", "power_engine"],
       "description": "获得 2 点力量与 2 点敏捷（持续）。",
       "upgrade_description": "获得 3 点力量与 3 点敏捷（持续）。",
       "art": "CARD_Warlord"
@@ -1058,6 +1130,7 @@
         "burn",
         "aggro"
       ],
+      "mechanics": ["damage", "aoe", "multi_hit"],
       "description": "对所有敌人造成 2 次 7 点伤害。",
       "upgrade_description": "对所有敌人造成 2 次 9 点伤害。",
       "art": "CARD_Firestorm"
@@ -1087,6 +1160,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["power_engine", "buff"],
       "description": "每回合开始获得 2 点力量（持续）。",
       "upgrade_description": "每回合开始获得 3 点力量（持续）。",
       "art": "CARD_MoltenForm"
@@ -1116,6 +1190,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["block", "exhaust"],
       "description": "获得 30 点格挡。消耗。",
       "upgrade_description": "获得 40 点格挡。消耗。",
       "art": "CARD_LastStand"
@@ -1145,6 +1220,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["power_engine", "buff"],
       "description": "每回合开始获得 1 点力量（持续）。",
       "upgrade_description": "每回合开始获得 2 点力量（持续）。",
       "art": "CARD_Berserk"
@@ -1174,6 +1250,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage"],
       "description": "造成 30 点伤害。",
       "upgrade_description": "造成 38 点伤害。",
       "art": "CARD_TitanStrike"
@@ -1211,6 +1288,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage", "kiln_heat"],
       "description": "造成 16 点伤害，积累 2 点窑温。",
       "upgrade_description": "造成 21 点伤害，积累 3 点窑温。",
       "art": "CARD_KilnBurst"
@@ -1256,6 +1334,7 @@
       "build": [
         "aggro"
       ],
+      "mechanics": ["damage", "kiln_heat", "draw"],
       "description": "造成 5 点伤害，积累 1 点窑温，抽 1 张牌。",
       "upgrade_description": "造成 8 点伤害，积累 1 点窑温，抽 1 张牌。",
       "art": "CARD_EmberTide"
@@ -1285,6 +1364,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["power_engine", "block"],
       "description": "每回合开始获得 4 点格挡（持续）。",
       "upgrade_description": "每回合开始获得 6 点格挡（持续）。",
       "art": "CARD_KilnAegis"
@@ -1322,6 +1402,7 @@
       "build": [
         "defense"
       ],
+      "mechanics": ["damage", "block"],
       "description": "造成 10 点伤害并获得 8 点格挡。",
       "upgrade_description": "造成 13 点伤害并获得 11 点格挡。",
       "art": "CARD_ShatterGuard"
@@ -1355,6 +1436,7 @@
       "build": [
         "control"
       ],
+      "mechanics": ["debuff"],
       "description": "对所有敌人施加 2 层易伤。",
       "upgrade_description": "对所有敌人施加 3 层易伤。",
       "art": "CARD_MassCraze"
@@ -1396,6 +1478,7 @@
       "build": [
         "control"
       ],
+      "mechanics": ["power_engine", "damage", "aoe", "debuff"],
       "description": "每回合结束对所有敌人造成 5 点伤害，并立即对所有敌人施加 1 层虚弱。",
       "upgrade_description": "每回合结束对所有敌人造成 7 点伤害，并立即对所有敌人施加 2 层虚弱。",
       "art": "CARD_AshDomain"
@@ -1437,6 +1520,7 @@
       "build": [
         "burn"
       ],
+      "mechanics": ["damage", "debuff", "ashrot"],
       "description": "造成 4 点伤害，施加 3 层燃烧。",
       "upgrade_description": "造成 6 点伤害，施加 4 层燃烧。",
       "art": "CARD_EmberBurst"
@@ -1478,6 +1562,7 @@
       "build": [
         "burn"
       ],
+      "mechanics": ["damage", "aoe", "debuff", "ashrot"],
       "description": "对所有敌人造成 8 点伤害，施加 3 层燃烧。",
       "upgrade_description": "对所有敌人造成 11 点伤害，施加 4 层燃烧。",
       "art": "CARD_ScorchField"
@@ -1509,6 +1594,7 @@
       "build": [
         "summoner"
       ],
+      "mechanics": ["summon"],
       "description": "召唤 窑犬（10 HP，攻击 5，存活 3 回合）。",
       "upgrade_description": "召唤 2 只 窑犬。",
       "art": "CARD_SummonHound"
@@ -1531,6 +1617,7 @@
       "build": [
         "summoner"
       ],
+      "mechanics": ["summon"],
       "description": "召唤 2 只 窑犬。",
       "art": "CARD_HoundPack"
     },
@@ -1552,6 +1639,7 @@
       "build": [
         "summoner"
       ],
+      "mechanics": ["summon"],
       "description": "召唤 釉卫（14 HP，起始格挡 5，防御，存活 3 回合）。",
       "art": "CARD_GlazeWard"
     },
@@ -1584,6 +1672,7 @@
       "build": [
         "summoner"
       ],
+      "mechanics": ["buff", "command"],
       "description": "获得 2 层领袖气质（你的随从攻击 / 格挡 +2）。",
       "upgrade_description": "获得 3 层领袖气质。",
       "art": "CARD_CommandHorn"
@@ -1606,8 +1695,332 @@
       "build": [
         "summoner"
       ],
+      "mechanics": ["summon"],
       "description": "召唤 火灵（6 HP，攻击 4，存活 2 回合）。",
       "art": "CARD_SparkCall"
+    },
+    {
+      "id": "spark_screen",
+      "name": "火灵掩护",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "none",
+      "exhaust": false,
+      "effects": [
+        {"kind": "block", "value": 5},
+        {"kind": "summon", "minion_id": "spark", "count": 1}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "block", "value": 8},
+          {"kind": "summon", "minion_id": "spark", "count": 1}
+        ]
+      },
+      "build": ["summoner", "defense"],
+      "mechanics": ["block", "summon"],
+      "description": "获得 5 点格挡，召唤 1 个火灵。",
+      "upgrade_description": "获得 8 点格挡，召唤 1 个火灵。",
+      "art": "CARD_SparkScreen"
+    },
+    {
+      "id": "pack_assault",
+      "name": "群窑扑袭",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "common",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {"kind": "scaled_damage", "source": "ally_count", "base": 5, "per": 2}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "scaled_damage", "source": "ally_count", "base": 7, "per": 2}
+        ]
+      },
+      "build": ["summoner", "aggro"],
+      "mechanics": ["damage", "scaling"],
+      "description": "造成 5 点伤害；每有 1 个友方随从，额外造成 2 点。",
+      "upgrade_description": "造成 7 点伤害；每有 1 个友方随从，额外造成 2 点。",
+      "art": "CARD_PackAssault"
+    },
+    {
+      "id": "paired_kiln_call",
+      "name": "犬卫并炉",
+      "type": "skill",
+      "cost": 2,
+      "rarity": "uncommon",
+      "target": "none",
+      "exhaust": false,
+      "effects": [
+        {"kind": "summon", "minion_id": "emberhound", "count": 1},
+        {"kind": "summon", "minion_id": "glazeward", "count": 1}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "summon", "minion_id": "emberhound", "count": 1},
+          {"kind": "summon", "minion_id": "glazeward", "count": 1},
+          {"kind": "apply_status", "status": "command", "target": "self", "value": 1}
+        ]
+      },
+      "build": ["summoner"],
+      "mechanics": ["summon", "command"],
+      "description": "召唤 1 只窑犬与 1 个釉卫。",
+      "upgrade_description": "召唤 1 只窑犬与 1 个釉卫，并获得 1 层领袖气质。",
+      "art": "CARD_PairedKilnCall"
+    },
+    {
+      "id": "kiln_chorus",
+      "name": "群窑共鸣",
+      "type": "power",
+      "cost": 1,
+      "rarity": "rare",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {"kind": "power_on_summon_command", "value": 1}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "power_on_summon_command", "value": 2}
+        ]
+      },
+      "build": ["summoner"],
+      "mechanics": ["summon", "command", "power_engine"],
+      "description": "本场每次成功召唤随从后，获得 1 层领袖气质。",
+      "upgrade_description": "本场每次成功召唤随从后，获得 2 层领袖气质。",
+      "art": "CARD_KilnChorus"
+    },
+    {
+      "id": "ash_scatter",
+      "name": "撒灰",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "all_enemies",
+      "exhaust": false,
+      "effects": [
+        {"kind": "apply_status", "status": "ashrot", "target": "all_enemies", "value": 2}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "apply_status", "status": "ashrot", "target": "all_enemies", "value": 3}
+        ]
+      },
+      "build": ["burn", "control"],
+      "mechanics": ["aoe", "debuff", "ashrot"],
+      "description": "对所有敌人施加 2 层燃烧。",
+      "upgrade_description": "对所有敌人施加 3 层燃烧。",
+      "art": "CARD_AshScatter"
+    },
+    {
+      "id": "ash_rupture",
+      "name": "灰烬决口",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {"kind": "scaled_damage", "source": "target_status", "status": "ashrot", "base": 6, "per": 2},
+        {"kind": "clear_status", "status": "ashrot", "target": "enemy"}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "scaled_damage", "source": "target_status", "status": "ashrot", "base": 8, "per": 3},
+          {"kind": "clear_status", "status": "ashrot", "target": "enemy"}
+        ]
+      },
+      "build": ["burn", "aggro"],
+      "mechanics": ["damage", "ashrot", "scaling", "status_payoff"],
+      "description": "造成 6 点伤害，每层目标燃烧额外造成 2 点；随后移除其全部燃烧。",
+      "upgrade_description": "造成 8 点伤害，每层目标燃烧额外造成 3 点；随后移除其全部燃烧。",
+      "art": "CARD_AshRupture"
+    },
+    {
+      "id": "sealed_furnace",
+      "name": "封炉",
+      "type": "skill",
+      "cost": 2,
+      "rarity": "rare",
+      "target": "enemy",
+      "exhaust": true,
+      "effects": [
+        {"kind": "multiply_status", "status": "ashrot", "target": "enemy", "multiplier": 2}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "multiply_status", "status": "ashrot", "target": "enemy", "multiplier": 3}
+        ]
+      },
+      "build": ["burn", "control"],
+      "mechanics": ["debuff", "ashrot", "exhaust", "status_payoff"],
+      "description": "使目标现有燃烧层数变为 2 倍。消耗。",
+      "upgrade_description": "使目标现有燃烧层数变为 3 倍。消耗。",
+      "art": "CARD_SealedFurnace"
+    },
+    {
+      "id": "thermal_shock",
+      "name": "冷热骤变",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "common",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {"kind": "apply_status", "status": "crazed", "target": "enemy", "value": 1},
+        {"kind": "apply_status", "status": "damp", "target": "enemy", "value": 2}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "apply_status", "status": "crazed", "target": "enemy", "value": 2},
+          {"kind": "apply_status", "status": "damp", "target": "enemy", "value": 3}
+        ]
+      },
+      "build": ["control"],
+      "mechanics": ["debuff"],
+      "description": "对一个敌人施加 1 层易伤与 2 层虚弱。",
+      "upgrade_description": "对一个敌人施加 2 层易伤与 3 层虚弱。",
+      "art": "CARD_ThermalShock"
+    },
+    {
+      "id": "crack_chaser",
+      "name": "追裂",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {"kind": "scaled_damage", "source": "target_status", "status": "crazed", "base": 6, "per": 1},
+        {"kind": "draw", "value": 1}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "scaled_damage", "source": "target_status", "status": "crazed", "base": 8, "per": 1},
+          {"kind": "draw", "value": 1}
+        ]
+      },
+      "build": ["control", "aggro"],
+      "mechanics": ["damage", "draw", "scaling", "status_payoff"],
+      "description": "造成 6 点伤害；目标每有 1 层易伤，额外造成 1 点；抽 1 张牌。",
+      "upgrade_description": "造成 8 点伤害；目标每有 1 层易伤，额外造成 1 点；抽 1 张牌。",
+      "art": "CARD_CrackChaser"
+    },
+    {
+      "id": "shield_ram",
+      "name": "借盾撞",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {"kind": "scaled_damage", "source": "player_block", "base": 0, "per": 1}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "scaled_damage", "source": "player_block", "base": 0, "per": 1},
+          {"kind": "draw", "value": 1}
+        ]
+      },
+      "build": ["defense", "aggro"],
+      "mechanics": ["damage", "block", "scaling"],
+      "description": "造成等于当前格挡的伤害。",
+      "upgrade_description": "造成等于当前格挡的伤害，抽 1 张牌。",
+      "art": "CARD_ShieldRam"
+    },
+    {
+      "id": "fixed_glaze",
+      "name": "固釉不坠",
+      "type": "power",
+      "cost": 2,
+      "rarity": "rare",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {"kind": "power_retain_block"}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "power_retain_block"},
+          {"kind": "power_start_turn_block", "value": 3}
+        ]
+      },
+      "build": ["defense"],
+      "mechanics": ["block", "power_engine"],
+      "description": "回合开始时不再失去格挡。",
+      "upgrade_description": "回合开始时不再失去格挡，并获得 3 点格挡。",
+      "art": "CARD_FixedGlaze"
+    },
+    {
+      "id": "slag_echo",
+      "name": "炉渣回响",
+      "type": "attack",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "enemy",
+      "exhaust": false,
+      "effects": [
+        {"kind": "scaled_damage", "source": "exhaust_pile_count", "base": 6, "per": 2}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "scaled_damage", "source": "exhaust_pile_count", "base": 8, "per": 3}
+        ]
+      },
+      "build": ["aggro", "control"],
+      "mechanics": ["damage", "exhaust", "scaling"],
+      "description": "造成 6 点伤害；消耗堆每有 1 张牌，额外造成 2 点。",
+      "upgrade_description": "造成 8 点伤害；消耗堆每有 1 张牌，额外造成 3 点。",
+      "art": "CARD_SlagEcho"
+    },
+    {
+      "id": "colossus",
+      "name": "巨像",
+      "type": "skill",
+      "cost": 1,
+      "rarity": "uncommon",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {"kind": "block", "value": 4},
+        {"kind": "vulnerable_enemy_damage_multiplier", "value": 0.5}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "block", "value": 7},
+          {"kind": "vulnerable_enemy_damage_multiplier", "value": 0.5}
+        ]
+      },
+      "build": ["defense", "control"],
+      "mechanics": ["block", "buff", "status_payoff"],
+      "description": "获得 4 点格挡。本回合内，来自带有易伤的敌人的攻击伤害降低 50%。",
+      "upgrade_description": "获得 7 点格挡。本回合内，来自带有易伤的敌人的攻击伤害降低 50%。",
+      "art": "CARD_Colossus"
+    },
+    {
+      "id": "cruelty",
+      "name": "残酷",
+      "type": "power",
+      "cost": 1,
+      "rarity": "rare",
+      "target": "self",
+      "exhaust": false,
+      "effects": [
+        {"kind": "power_vulnerable_bonus_damage", "value": 0.25}
+      ],
+      "upgrade": {
+        "effects": [
+          {"kind": "power_vulnerable_bonus_damage", "value": 0.5}
+        ]
+      },
+      "build": ["control", "aggro"],
+      "mechanics": ["damage", "scaling", "status_payoff", "power_engine"],
+      "description": "易伤敌人受到的伤害额外提高 25%。",
+      "upgrade_description": "易伤敌人受到的伤害额外提高 50%。",
+      "art": "CARD_Cruelty"
     }
   ]
 }

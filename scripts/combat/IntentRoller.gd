@@ -162,6 +162,7 @@ func summon_minion(mid: StringName, count: int) -> void:
 		a.data = md
 		a.move_cursor = 0
 		ctrl.allies.append(a)
+		ctrl._on_minion_summoned()
 		roll_minion_intent(a)
 		SignalBus.ally_hp_changed.emit(index_of_ally(a), a.hp, a.max_hp)
 		SignalBus.ally_block_changed.emit(index_of_ally(a), a.block)

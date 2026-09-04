@@ -100,7 +100,7 @@ func _generate_stock() -> void:
 	var relic_prices: Array = cfg.get("relic_cost", [120, 200])
 	remove_cost = int(cfg["remove_card_cost"])
 
-	var choices: Array = RewardBuilder.roll_card_choices(4)
+	var choices: Array = RewardBuilder.roll_card_choices(4, &"shop")
 	for c in choices:
 		var idx: int = _rarity_index(StringName(c.get("rarity", "common")))
 		idx = mini(idx, card_prices.size() - 1)

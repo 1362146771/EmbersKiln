@@ -19,6 +19,9 @@ const POWER_START_TURN_BLOCK := &"power_start_turn_block"
 const POWER_START_TURN_STRENGTH := &"power_start_turn_strength"
 const POWER_END_TURN_AOE := &"power_end_turn_aoe"
 const POWER_ON_ATTACK_STRENGTH := &"power_on_attack_strength"
+const POWER_ON_SUMMON_COMMAND := &"power_on_summon_command"
+const POWER_RETAIN_BLOCK := &"power_retain_block"
+const POWER_VULNERABLE_BONUS_DAMAGE := &"power_vulnerable_bonus_damage"
 
 var player: CombatUnit
 var enemies: Array[CombatUnit] = []
@@ -34,7 +37,9 @@ var max_energy: int = 0
 var turn: int = 0
 var phase: int = Phase.NONE
 
-var powers: Dictionary = {}    # StringName -> int（仅玩家持有）
+var powers: Dictionary = {}    # StringName -> int/bool（仅玩家持有）
+## 巨像：本回合内，来自易伤敌人的攻击伤害倍率；数值由卡牌 JSON 写入。
+var _vulnerable_enemy_damage_multiplier: float = 1.0
 
 ## 窑温·共鸣：本场累计的窑温值（0 起，出 attack 牌 +1，满阈值触发窑变）
 var kiln_heat: int = 0
@@ -117,6 +122,7 @@ func start_combat(enemy_ids: Array) -> void:
 	max_energy = int(pc.get("energy_per_turn", 3))
 
 	powers.clear()
+	_vulnerable_enemy_damage_multiplier = 1.0
 	turn = 0
 	_first_attack_done = false
 	kiln_heat = 0
@@ -147,6 +153,8 @@ func _start_player_turn() -> void:
 	turn += 1
 	phase = Phase.PLAYER
 	energy = max_energy
+	# 巨像持续覆盖紧随玩家回合之后的敌方阶段，在下个玩家回合开始时失效。
+	_vulnerable_enemy_damage_multiplier = 1.0
 
 	# 衰朽（thirst）：上回合空过 → 本回合能量 -1
 	if _thirst_penalty_next:
@@ -156,8 +164,10 @@ func _start_player_turn() -> void:
 
 	_attack_played_this_turn = false
 
-	# 回合开始：清理旧格挡 → 状态触发 → 玩家 Power
-	player.block = 0
+	# 回合开始：默认清理旧格挡；固釉不坠只阻止这一自然清盾。
+	if not powers.has(POWER_RETAIN_BLOCK):
+		player.block = 0
+		SignalBus.player_block_changed.emit(player.block)
 	_status.process_turn_start_statuses(player)
 	_status.apply_player_start_turn_powers()
 	if turn == 1:
@@ -302,7 +312,8 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 
 	# 卡牌离手
 	hand.remove_at(hand_index)
-	if cd.exhaust:
+	# 能力牌建立本场持续效果后离开抽弃循环；同名副本仍可分别打出。
+	if cd.exhaust or cd.type == &"power":
 		exhaust_pile.append(card)
 	else:
 		discard_pile.append(card)
@@ -345,6 +356,16 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 							dmg += source.get_status(&"stoke")
 						_dmg.deal_to_unit(e, dmg)
 						_tick_heat_siphon(source)
+			"scaled_damage":
+				if primary != null and primary.is_alive():
+					var base: int = int(eff.get("base", 0))
+					var per: int = int(eff.get("per", 0))
+					var scaled: int = base + _scaled_damage_count(String(eff.get("source", "")), primary, eff) * per
+					var dmg := _dmg.compute_outgoing(source, primary, scaled)
+					if source.is_player and source.has_status(&"stoke"):
+						dmg += source.get_status(&"stoke")
+					_dmg.deal_to_unit(primary, dmg)
+					_tick_heat_siphon(source)
 			"block":
 				_dmg.add_block(source, value)
 			"draw":
@@ -377,10 +398,32 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 					if tgt != null:
 						if potion_apply: _apply_potion_status(tgt, sid, value)
 						else: _status.apply_status(tgt, sid, value)
+			"clear_status":
+				var clear_target: CombatUnit = _resolve_status_target(eff.get("target", "enemy"), primary)
+				var clear_id := StringName(eff.get("status", ""))
+				if clear_target != null and clear_id != &"":
+					var clear_current: int = clear_target.get_status(clear_id)
+					if clear_current > 0:
+						_status.apply_status(clear_target, clear_id, -clear_current)
+			"multiply_status":
+				var multiply_target: CombatUnit = _resolve_status_target(eff.get("target", "enemy"), primary)
+				var multiply_id := StringName(eff.get("status", ""))
+				var multiplier: int = int(eff.get("multiplier", 0))
+				if multiply_target != null and multiply_id != &"" and multiplier > 1:
+					var multiply_current: int = multiply_target.get_status(multiply_id)
+					if multiply_current > 0:
+						_status.apply_status(multiply_target, multiply_id, multiply_current * (multiplier - 1))
 			"exhaust":
 				pass  # 消耗由 play_card 处理
-			"power_start_turn_block", "power_start_turn_strength", "power_end_turn_aoe", "power_on_attack_strength":
+			"power_start_turn_block", "power_start_turn_strength", "power_end_turn_aoe", "power_on_attack_strength", "power_on_summon_command":
 				_register_power(StringName(kind), value)
+			"power_retain_block":
+				powers[POWER_RETAIN_BLOCK] = true
+			"vulnerable_enemy_damage_multiplier":
+				_vulnerable_enemy_damage_multiplier = minf(
+					_vulnerable_enemy_damage_multiplier, float(eff.get("value", 1.0)))
+			"power_vulnerable_bonus_damage":
+				_register_float_power(POWER_VULNERABLE_BONUS_DAMAGE, float(eff.get("value", 0.0)))
 			"gain_kiln_heat":
 				# 窑温联动：直接积累窑温，可能立即触发窑变
 				kiln_heat += value
@@ -404,8 +447,41 @@ func _resolve_status_target(target: Variant, primary: CombatUnit) -> CombatUnit:
 			return primary
 
 
+func _scaled_damage_count(source_name: String, primary: CombatUnit, eff: Dictionary) -> int:
+	match source_name:
+		"ally_count":
+			return allies.size()
+		"target_status":
+			return primary.get_status(StringName(eff.get("status", ""))) if primary != null else 0
+		"player_block":
+			return player.block if player != null else 0
+		"exhaust_pile_count":
+			return exhaust_pile.size()
+		_:
+			push_warning("[CombatController] 未识别的 scaled_damage source: %s" % source_name)
+			return 0
+
+
 func _register_power(kind: StringName, value: int) -> void:
 	powers[kind] = int(powers.get(kind, 0)) + value
+
+
+func _register_float_power(kind: StringName, value: float) -> void:
+	powers[kind] = float(powers.get(kind, 0.0)) + value
+
+
+## 残酷：只为玩家阵营（玩家与随从）提供易伤承伤倍率的额外加成。
+func vulnerable_bonus_damage_for(attacker: CombatUnit) -> float:
+	if attacker == player or allies.has(attacker):
+		return float(powers.get(POWER_VULNERABLE_BONUS_DAMAGE, 0.0))
+	return 0.0
+
+
+## 巨像：只降低带有易伤的敌人对玩家造成的攻击伤害。
+func incoming_attack_multiplier_for(attacker: CombatUnit, target: CombatUnit) -> float:
+	if target == player and enemies.has(attacker) and attacker.has_status(&"crazed"):
+		return _vulnerable_enemy_damage_multiplier
+	return 1.0
 
 
 # =====================================================================
@@ -437,6 +513,8 @@ func _apply_enchant_mods(effects: Array, cd: CardData, enchants: Array) -> Array
 				var k: String = eff.get("kind", "")
 				if k == "damage" and db != 0:
 					eff["value"] = int(eff.get("value", 0)) + db
+				elif k == "scaled_damage" and db != 0:
+					eff["base"] = int(eff.get("base", 0)) + db
 				elif k == "aoe_damage" and ab != 0:
 					eff["value"] = int(eff.get("value", 0)) + ab
 				elif k == "block" and bb != 0:
@@ -536,6 +614,12 @@ func _roll_enemy_intent(e: CombatUnit) -> void:
 ## 召唤随从（转发到 IntentRoller）。被 SummonVerify / SummonTurnVerify 直接调用。
 func _summon_minion(mid: StringName, count: int) -> void:
 	_intent.summon_minion(mid, count)
+
+
+## 成功召唤进入场上后触发群窑共鸣；被上限拒绝的召唤不会调用此钩子。
+func _on_minion_summoned() -> void:
+	if powers.has(POWER_ON_SUMMON_COMMAND):
+		_status.apply_status(player, &"command", int(powers[POWER_ON_SUMMON_COMMAND]))
 
 
 ## 随从阶段（转发到 IntentRoller）。被 SummonVerify / SummonTurnVerify 直接调用。

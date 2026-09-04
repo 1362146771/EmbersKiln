@@ -8,8 +8,6 @@ const INK := Color("1b1612")
 const SLATE := Color("3a4554")
 const PAPER := Color("f2e8d5")
 const HIGHLIGHT := Color("e0c1ac")
-const CardTypes := {"attack": "攻击", "skill": "技能", "power": "能力", "status": "状态", "curse": "诅咒"}
-const Rarities := {"starter": "初始", "common": "普通", "uncommon": "精良", "rare": "稀有", "special": "特殊"}
 
 var entries: Array = []
 var selectable := false
@@ -240,7 +238,14 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 		title.add_theme_color_override("font_color", Color("d9a441"))
 	column.add_child(title)
 	if cd != null:
-		column.add_child(label("%d 能量 · %s · %s" % [cd.cost, CardTypes.get(String(cd.type), cd.type), Rarities.get(String(cd.rarity), cd.rarity)], 18 if _single_card else 20))
+		column.add_child(label("%d 能量 · %s · %s" % [cd.cost,
+			GameData.card_taxonomy_name(&"types", cd.type),
+			GameData.card_taxonomy_name(&"rarities", cd.rarity)], 18 if _single_card else 20))
+		if not cd.mechanics.is_empty():
+			var mechanic_names: Array[String] = []
+			for mechanic in cd.mechanics:
+				mechanic_names.append(GameData.card_taxonomy_name(&"mechanics", mechanic))
+			column.add_child(label("机制 · %s" % " / ".join(mechanic_names), 16 if _single_card else 18))
 		var texture := GameData.icon_texture(cd.art)
 		if texture != null and not _single_card:
 			var art := TextureRect.new()
@@ -253,6 +258,8 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 		column.add_child(label(cd.get_description(entry.get("upgraded", false)), 20 if _single_card else 22))
 		if cd.exhaust:
 			column.add_child(label("消耗：打出后本场不再抽到", 20))
+		elif cd.type == &"power":
+			column.add_child(label("能力：生效后移出本场抽弃循环", 20))
 	else:
 		column.add_child(label("卡牌资料暂不可用", 22))
 	for id in entry.get("enchants", []):

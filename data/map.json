@@ -23,6 +23,7 @@
       "act_dmg_mult": 1.0,
       "columns": 6,
       "num_paths": 6,
+      "single_start_node": true,
       "mid_treasure_floor": 7,
       "enemy_pool": {
         "normal": ["claylump", "sootling", "embermoth", "potsherd", "glazetick", "kilnstatue", "ashcantor"],
@@ -54,6 +55,7 @@
       "act_dmg_mult": 1.15,
       "columns": 6,
       "num_paths": 6,
+      "single_start_node": true,
       "mid_treasure_floor": 7,
       "enemy_pool": {
         "normal": ["kilnwarden", "cindermoth", "meltgolem", "embermoth", "ashcantor"],
@@ -85,6 +87,7 @@
       "act_dmg_mult": 1.30,
       "columns": 6,
       "num_paths": 6,
+      "single_start_node": true,
       "mid_treasure_floor": 7,
       "enemy_pool": {
         "normal": ["cinderfiend", "magmawhelp", "coalseer", "kilnstatue", "glazetick"],

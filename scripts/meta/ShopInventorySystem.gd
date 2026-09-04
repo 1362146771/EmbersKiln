@@ -192,7 +192,7 @@ func _refreshed_state(state: Dictionary) -> Dictionary:
 		if not bool(card_stock[index].get("bought", false)):
 			open_card_indices.append(index)
 			excluded_cards.append(StringName(String(card_stock[index].get("card", {}).get("id", ""))))
-	var new_cards := RewardBuilder.roll_card_choices_excluding(open_card_indices.size(), excluded_cards)
+	var new_cards := RewardBuilder.roll_card_choices_excluding(open_card_indices.size(), excluded_cards, &"shop")
 	for offset in mini(open_card_indices.size(), new_cards.size()):
 		var index := open_card_indices[offset]
 		card_stock[index] = {

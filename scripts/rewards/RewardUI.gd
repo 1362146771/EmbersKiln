@@ -78,7 +78,8 @@ func _build_main() -> void:
 			var card_button := Button.new()
 			card_button.custom_minimum_size = Vector2(180, 240)
 			card_button.add_theme_color_override("font_color", DARK)
-			card_button.text = "%s\n[%d 能 · %s]\n%s" % [scene_card.get("name", ""), int(scene_card.get("cost", 0)), _rarity_cn(StringName(scene_card.get("rarity", "common"))), scene_card.get("desc", "")]
+			var scene_name := String(scene_card.get("name", "")) + ("+" if bool(scene_card.get("upgraded", false)) else "")
+			card_button.text = "%s\n[%d 能 · %s]\n%s" % [scene_name, int(scene_card.get("cost", 0)), _rarity_cn(StringName(scene_card.get("rarity", "common"))), scene_card.get("desc", "")]
 			card_button.add_theme_font_size_override("font_size", 20)
 			card_button.pressed.connect(_on_choose_card.bind(i))
 			cards_row.add_child(card_button)
@@ -157,7 +158,8 @@ func _build_main() -> void:
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(180, 240)
 		b.add_theme_color_override("font_color", DARK)
-		var t := "%s\n[%d 能 · %s]\n%s" % [cd.get("name", ""), int(cd.get("cost", 0)), _rarity_cn(StringName(cd.get("rarity", "common"))), cd.get("desc", "")]
+		var display_name := String(cd.get("name", "")) + ("+" if bool(cd.get("upgraded", false)) else "")
+		var t := "%s\n[%d 能 · %s]\n%s" % [display_name, int(cd.get("cost", 0)), _rarity_cn(StringName(cd.get("rarity", "common"))), cd.get("desc", "")]
 		b.text = t
 		b.add_theme_font_size_override("font_size", 20)
 		b.pressed.connect(_on_choose_card.bind(i))
@@ -254,7 +256,8 @@ func _on_choose_card(i: int) -> void:
 	if i < 0 or i >= cards.size():
 		return
 	var cid: StringName = StringName(cards[i].get("id", ""))
-	var result := CardAcquireService.acquire_free_card(cid, false, &"reward", {"card_name": cards[i].get("name", "")})
+	var upgraded := bool(cards[i].get("upgraded", false))
+	var result := CardAcquireService.acquire_free_card(cid, upgraded, &"reward", {"card_name": cards[i].get("name", "")})
 	if result == CardAcquireService.RESULT_ACQUIRED:
 		_log_reward("已获得卡牌：%s" % cards[i].get("name", ""))
 		_finish()

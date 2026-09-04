@@ -2,83 +2,162 @@ class_name RewardBuilder
 extends RefCounted
 ## 战后奖励生成。所有数值取自 GameData.balance / 卡池 / 遗物表，禁止写死。
 
-## 按稀有度权重抽取 count 张可选卡牌（排除 starter / special）。
-static func roll_card_choices(count: int) -> Array:
-	var pool: Array = []
-	for c in GameData.cards.values():
-		if c.rarity == &"starter" or c.rarity == &"special":
-			continue
-		if not GameData.is_card_unlocked(c.id):
-			continue
-		pool.append(c)
-	var weights: Dictionary = GameData.balance.get("card_pool_weights", {})
-	var out: Array = []
-	var guard := 0
-	while out.size() < count and guard < count * 20:
-		guard += 1
-		var cd := _weighted_card(pool, weights)
-		if cd == null:
-			break
-		# 允许重复出现（玩家可选到同名卡），去重仅防同一次三选一重复
-		var dup := false
-		for existing in out:
-			if existing["id"] == cd.id:
-				dup = true
-				break
-		if dup:
-			continue
-		out.append({
-			"id": cd.id,
-			"name": cd.name,
-			"rarity": cd.rarity,
-			"cost": cd.cost,
-			"type": cd.type,
-			"desc": cd.get_description(false),
-		})
-	return out
+const CARD_RARITIES: Array[StringName] = [&"rare", &"uncommon", &"common"]
 
 
-## 商店刷新用：遵循相同稀有度权重，并排除刷新前仍在售的卡牌。
-static func roll_card_choices_excluding(count: int, excluded_ids: Array) -> Array:
-	var pool: Array = []
-	for c in GameData.cards.values():
-		if c.rarity in [&"starter", &"special"] or excluded_ids.has(c.id) or excluded_ids.has(String(c.id)):
-			continue
-		if not GameData.is_card_unlocked(c.id):
-			continue
-		pool.append(c)
-	var weights: Dictionary = GameData.balance.get("card_pool_weights", {})
+## 战斗卡牌奖励。source 对应 balance.card_rewards.sources：combat / elite / boss。
+## 先抽稀有度，再在该稀有度池内等概率抽牌；同一组奖励不重复。
+static func roll_card_choices(count: int, source: StringName = &"combat") -> Array:
+	return _roll_card_choices(count, source, [])
+
+
+## 商店刷新用：读取当前稀有补偿但不推进，并排除刷新前仍在售的卡牌。
+static func roll_card_choices_excluding(
+	count: int,
+	excluded_ids: Array,
+	source: StringName = &"shop"
+) -> Array:
+	return _roll_card_choices(count, source, excluded_ids)
+
+
+static func _roll_card_choices(count: int, source: StringName, excluded_ids: Array) -> Array:
+	var pool := _eligible_card_pool(excluded_ids)
 	var out: Array = []
 	while out.size() < count and not pool.is_empty():
-		var cd: CardData = _weighted_card(pool, weights)
-		if cd == null:
+		var rarity := _roll_available_rarity(source, pool)
+		if rarity == &"":
 			break
-		out.append({
-			"id": cd.id,
-			"name": cd.name,
-			"rarity": cd.rarity,
-			"cost": cd.cost,
-			"type": cd.type,
-			"desc": cd.get_description(false),
-		})
+		var candidates := _cards_of_rarity(pool, rarity)
+		if candidates.is_empty():
+			break
+		var cd: CardData = candidates[randi_range(0, candidates.size() - 1)]
+		var upgraded := _roll_random_upgrade(source, cd)
+		out.append(_card_reward_dict(cd, upgraded))
 		pool.erase(cd)
+		apply_rarity_result(rarity, source)
 	return out
 
 
-static func _weighted_card(pool: Array, weights: Dictionary) -> CardData:
-	if pool.is_empty():
-		return null
-	var total := 0.0
-	for c in pool:
-		total += float(weights.get(String(c.rarity), 0.0))
-	if total <= 0.0:
-		return pool[randi_range(0, pool.size() - 1)]
-	var r := randf() * total
-	for c in pool:
-		r -= float(weights.get(String(c.rarity), 0.0))
-		if r <= 0.0:
-			return c
-	return pool[pool.size() - 1]
+static func _eligible_card_pool(excluded_ids: Array = []) -> Array:
+	var pool: Array = []
+	for c in GameData.cards.values():
+		if c.rarity in [&"starter", &"special"]:
+			continue
+		if excluded_ids.has(c.id) or excluded_ids.has(String(c.id)):
+			continue
+		if GameData.is_card_unlocked(c.id):
+			pool.append(c)
+	return pool
+
+
+static func _cards_of_rarity(pool: Array, rarity: StringName) -> Array:
+	var candidates: Array = []
+	for card in pool:
+		if card.rarity == rarity:
+			candidates.append(card)
+	return candidates
+
+
+## 返回当前 source 在给定稀有补偿下的实际百分比。
+## 负补偿会先压低稀有，越过 0 的部分继续压低精良；正补偿从普通转移给稀有。
+static func rarity_probabilities(source: StringName, offset_override: Variant = null) -> Dictionary:
+	var reward_cfg: Dictionary = GameData.balance.get("card_rewards", {})
+	var scale := int(reward_cfg.get("probability_scale", 0))
+	var source_cfg := _source_config(source)
+	var forced := StringName(String(source_cfg.get("forced_rarity", "")))
+	if forced != &"":
+		var forced_result := {&"common": 0, &"uncommon": 0, &"rare": 0}
+		forced_result[forced] = scale
+		return forced_result
+
+	var base: Dictionary = source_cfg.get("rarity_percent", {})
+	var offset := 0
+	if bool(source_cfg.get("uses_rare_pity", false)):
+		offset = RunState.card_rare_offset if offset_override == null else int(offset_override)
+	var rare_cutoff := clampi(int(base.get("rare", 0)) + offset, 0, scale)
+	var uncommon_cutoff := clampi(
+		int(base.get("rare", 0)) + int(base.get("uncommon", 0)) + offset,
+		0,
+		scale
+	)
+	return {
+		&"rare": rare_cutoff,
+		&"uncommon": uncommon_cutoff - rare_cutoff,
+		&"common": scale - uncommon_cutoff,
+	}
+
+
+static func _roll_available_rarity(source: StringName, pool: Array) -> StringName:
+	var probabilities := rarity_probabilities(source)
+	var available_weights: Dictionary = {}
+	var total := 0
+	for rarity in CARD_RARITIES:
+		if not _cards_of_rarity(pool, rarity).is_empty():
+			var weight := int(probabilities.get(rarity, 0))
+			available_weights[rarity] = weight
+			total += weight
+	if total > 0:
+		var roll := randi_range(0, total - 1)
+		for rarity in CARD_RARITIES:
+			roll -= int(available_weights.get(rarity, 0))
+			if roll < 0:
+				return rarity
+
+	# 局外锁定可能让强制稀有来源暂时没有对应卡；仅在这种情况下退到现有稀有度。
+	var available: Array[StringName] = []
+	for rarity in CARD_RARITIES:
+		if not _cards_of_rarity(pool, rarity).is_empty():
+			available.append(rarity)
+	return available[randi_range(0, available.size() - 1)] if not available.is_empty() else &""
+
+
+## 只有会推进补偿的来源才修改 RunState；商店只读取当前值。
+static func apply_rarity_result(rarity: StringName, source: StringName) -> void:
+	var source_cfg := _source_config(source)
+	if not bool(source_cfg.get("updates_rare_pity", false)):
+		return
+	var pity: Dictionary = GameData.balance.get("card_rewards", {}).get("rare_pity", {})
+	if rarity == &"common":
+		RunState.card_rare_offset = mini(
+			RunState.card_rare_offset + int(pity.get("common_increment", 0)),
+			int(pity.get("max_offset", 0))
+		)
+	elif rarity == &"rare":
+		RunState.card_rare_offset = int(pity.get("rare_reset_offset", 0))
+
+
+static func random_upgrade_chance(source: StringName, rarity: StringName, act_index: int) -> float:
+	var source_cfg := _source_config(source)
+	if not bool(source_cfg.get("random_upgrade", false)) or rarity == &"rare":
+		return 0.0
+	var chances: Array = GameData.balance.get("card_rewards", {}).get("upgrade_chance_by_act", [])
+	if chances.is_empty():
+		return 0.0
+	return float(chances[clampi(act_index, 0, chances.size() - 1)])
+
+
+static func _roll_random_upgrade(source: StringName, card: CardData) -> bool:
+	if card == null or not card.has_upgrade():
+		return false
+	var chance := random_upgrade_chance(source, card.rarity, RunState.current_act)
+	return chance > 0.0 and randf() < chance
+
+
+static func _card_reward_dict(card: CardData, upgraded: bool) -> Dictionary:
+	return {
+		"id": card.id,
+		"name": card.name,
+		"rarity": card.rarity,
+		"cost": card.cost,
+		"type": card.type,
+		"desc": card.get_description(upgraded),
+		"upgraded": upgraded,
+	}
+
+
+static func _source_config(source: StringName) -> Dictionary:
+	var sources: Dictionary = GameData.balance.get("card_rewards", {}).get("sources", {})
+	return sources.get(String(source), sources.get("misc", {}))
 
 
 ## 金币：按 tier 取区间随机值。外部用 RunState.add_gold 发放（已含炭票袋加成）。
@@ -112,27 +191,10 @@ static func roll_relic(tier: StringName) -> StringName:
 	return candidates[randi_range(0, candidates.size() - 1)].id
 
 
-## 单张随机卡（商店/宝箱用），返回 dict（含 id/name/rarity/cost/type/desc）。
-static func roll_single_card() -> Dictionary:
-	var pool: Array = []
-	for c in GameData.cards.values():
-		if c.rarity == &"starter" or c.rarity == &"special":
-			continue
-		if not GameData.is_card_unlocked(c.id):
-			continue
-		pool.append(c)
-	var weights: Dictionary = GameData.balance.get("card_pool_weights", {})
-	var cd: CardData = _weighted_card(pool, weights)
-	if cd == null:
-		return {}
-	return {
-		"id": cd.id,
-		"name": cd.name,
-		"rarity": cd.rarity,
-		"cost": cd.cost,
-		"type": cd.type,
-		"desc": cd.get_description(false),
-	}
+## 宝箱替代奖励 / 事件单卡沿用原 60/32/8，但同样先抽稀有度再抽具体卡；不读写补偿。
+static func roll_single_card(source: StringName = &"misc") -> Dictionary:
+	var choices := _roll_card_choices(1, source, [])
+	return choices[0] if not choices.is_empty() else {}
 
 
 ## 随机一个未拥有的非 starter 遗物（商店/宝箱/事件用）。

@@ -1,10 +1,11 @@
 {
-  "version": 1,
+  "version": 2,
   "events": [
     {
       "id": "ember_remnant",
       "title": "窑火余烬",
-      "desc": "你遇见一簇不灭的窑火余烬，暖意渗人，却也灼手。",
+      "desc": "一簇不灭的窑火余烬伏在墙角，暖意渗人，也有些灼手。",
+      "acts": [1, 2, 3],
       "options": [
         {"label": "收集灰烬（获得 30 金）", "effects": {"gold": 30}},
         {"label": "烤暖身体（恢复 14 生命）", "effects": {"heal": 14}},
@@ -13,19 +14,10 @@
       ]
     },
     {
-      "id": "lost_potter",
-      "title": "迷途陶人",
-      "desc": "一名陶人被灰壳困住，向你伸出求救的手。",
-      "options": [
-        {"label": "击碎外壳救他（失去 8 生命，获赠遗物）", "effects": {"lose_hp": 8, "add_relic": true}},
-        {"label": "取走他的炭块（获得 20 金）", "effects": {"gold": 20}},
-        {"label": "绕道而行", "effects": {}}
-      ]
-    },
-    {
       "id": "kiln_scroll",
       "title": "封窑秘卷",
-      "desc": "一卷前人留下的窑谱，墨迹犹温。",
+      "desc": "一卷窑谱卡在砖缝里，纸边焦黑，墨迹却仍带着温度。",
+      "acts": [1, 2, 3],
       "options": [
         {"label": "研习窑谱（获得一张随机卡牌）", "effects": {"add_card": true}},
         {"label": "焚卷取暖（恢复 10 生命）", "effects": {"heal": 10}},
@@ -33,9 +25,32 @@
       ]
     },
     {
+      "id": "silent_clay_bell",
+      "title": "失响陶铃",
+      "desc": "一只裂口陶铃悬在岔道，风吹过时没有响声，只有药香。",
+      "acts": [1, 2, 3],
+      "options": [
+        {"label": "取下药囊（获得一瓶药水）", "effects": {"add_potion": true}},
+        {"label": "拆走铃舌（获得 20 金）", "effects": {"gold": 20}},
+        {"label": "原样挂好", "effects": {}}
+      ]
+    },
+    {
+      "id": "lost_potter",
+      "title": "迷途陶人",
+      "desc": "一名陶人被灰壳困住，向你伸出尚未完全冷却的手。",
+      "acts": [1],
+      "options": [
+        {"label": "击碎外壳（失去 8 生命，获赠遗物）", "effects": {"lose_hp": 8, "add_relic": true}},
+        {"label": "取走炭块（获得 20 金）", "effects": {"gold": 20}},
+        {"label": "绕道而行", "effects": {}}
+      ]
+    },
+    {
       "id": "dead_kiln",
       "title": "废窑异响",
       "desc": "废窑深处传来窸窣异响，似有活物在灰堆中蠕动。",
+      "acts": [1],
       "options": [
         {"label": "翻找灰堆（获得 25 金，失去 5 生命）", "effects": {"gold": 25, "lose_hp": 5}},
         {"label": "投喂炭块（获得一张随机卡牌）", "effects": {"add_card": true}},
@@ -45,11 +60,111 @@
     {
       "id": "keeper_remains",
       "title": "守窑人遗骸",
-      "desc": "一具焦黑的守窑人遗骸倚着窑门，手中仍紧攥半截炭杖。",
+      "desc": "焦黑的守窑人倚着窑门，手中仍紧攥半截炭杖。",
+      "acts": [1],
       "options": [
         {"label": "取走炭杖（获赠遗物）", "effects": {"add_relic": true}},
         {"label": "合十致意（恢复 12 生命）", "effects": {"heal": 12}},
-        {"label": "搜刮遗物（获得 15 金）", "effects": {"gold": 15}}
+        {"label": "搜寻炭票（获得 15 金）", "effects": {"gold": 15}}
+      ]
+    },
+    {
+      "id": "cracked_glaze_shelf",
+      "title": "裂釉货架",
+      "desc": "倒塌的货架压着几只釉罐，罐底还留着一点余温。",
+      "acts": [1],
+      "options": [
+        {"label": "辨认釉方（获得一张随机卡牌）", "effects": {"add_card": true}},
+        {"label": "靠近取暖（恢复 10 生命）", "effects": {"heal": 10}},
+        {"label": "不碰裂罐", "effects": {}}
+      ]
+    },
+    {
+      "id": "warm_glaze_pool",
+      "title": "温釉池",
+      "desc": "青灰釉浆缓慢打旋，池边留着旧守窑人试火的刻痕。",
+      "acts": [2],
+      "options": [
+        {"label": "伸手调釉（失去 5 生命，为卡牌附魔）", "effects": {"lose_hp": 5, "add_enchant": true}},
+        {"label": "舀取清液（获得一瓶药水）", "effects": {"add_potion": true}},
+        {"label": "绕池而过", "effects": {}}
+      ]
+    },
+    {
+      "id": "spent_bellows",
+      "title": "熄火风箱",
+      "desc": "一架旧风箱仍在自行起落，每一次吐息都带出温热炭灰。",
+      "acts": [2],
+      "options": [
+        {"label": "接住炭灰（获得 25 金，失去 5 生命）", "effects": {"gold": 25, "lose_hp": 5}},
+        {"label": "顺着暖风休息（恢复 14 生命）", "effects": {"heal": 14}},
+        {"label": "停住风箱", "effects": {}}
+      ]
+    },
+    {
+      "id": "old_keeper_outpost",
+      "title": "旧哨窑",
+      "desc": "半陶化的守窑人仍守着空哨窑，反复检查你的工具。",
+      "acts": [2],
+      "options": [
+        {"label": "接受检验（失去 8 生命，获赠遗物）", "effects": {"lose_hp": 8, "add_relic": true}},
+        {"label": "交换手艺（获得一张随机卡牌）", "effects": {"add_card": true}},
+        {"label": "行礼离开", "effects": {}}
+      ]
+    },
+    {
+      "id": "drifting_medicine_basket",
+      "title": "漂流药篓",
+      "desc": "一只药篓沿釉沟漂来，提绳上系着窑野商队的旧结。",
+      "acts": [2],
+      "options": [
+        {"label": "收下药瓶（获得一瓶药水）", "effects": {"add_potion": true}},
+        {"label": "拆下炭票（获得 20 金）", "effects": {"gold": 20}},
+        {"label": "推回釉沟", "effects": {}}
+      ]
+    },
+    {
+      "id": "grayfire_mirror",
+      "title": "灰火镜面",
+      "desc": "灰火把墙面烧得如镜，你的倒影正慢慢变成一尊陶偶。",
+      "acts": [3],
+      "options": [
+        {"label": "刮去旧影（永久移除一张卡牌）", "effects": {"remove_card": true}},
+        {"label": "临摹火纹（为一张卡牌附魔）", "effects": {"add_enchant": true}},
+        {"label": "遮住镜面", "effects": {}}
+      ]
+    },
+    {
+      "id": "doll_supper",
+      "title": "陶偶长桌",
+      "desc": "一桌陶偶维持着用餐姿势，唯一温热的汤碗留给了你。",
+      "acts": [3],
+      "options": [
+        {"label": "喝下温汤（恢复 10 生命）", "effects": {"heal": 10}},
+        {"label": "取走小瓶（获得一瓶药水）", "effects": {"add_potion": true}},
+        {"label": "替他们添碗", "effects": {}}
+      ]
+    },
+    {
+      "id": "last_stoker",
+      "title": "末班添薪人",
+      "desc": "添薪人只剩双臂还能活动，仍把最后一件工具递向你。",
+      "acts": [3],
+      "options": [
+        {"label": "接过工具（失去 8 生命，获赠遗物）", "effects": {"lose_hp": 8, "add_relic": true}},
+        {"label": "替他收炭（获得 30 金）", "effects": {"gold": 30}},
+        {"label": "握住他的手", "effects": {}}
+      ]
+    },
+    {
+      "id": "sealed_coal_mark",
+      "title": "封门炭印",
+      "desc": "窑门上的炭印尚未熄灭，门后传来一下又一下的敲击。",
+      "acts": [3],
+      "options": [
+        {"label": "读懂炭印（获得一张随机卡牌）", "effects": {"add_card": true}},
+        {"label": "撬下炭印（获得 25 金，失去 5 生命）", "effects": {"gold": 25, "lose_hp": 5}},
+        {"label": "加固窑门", "effects": {}}
       ]
     }
   ]

@@ -1,6 +1,6 @@
 class_name MapGenerator
 extends RefCounted
-## 模仿《杀戮尖塔》的地图生成：稀疏网格 DAG + 多起点路径编织上升。
+## 模仿《杀戮尖塔》的地图生成：稀疏网格 DAG + 路径编织上升。
 ## 铁律：列数/路径数/类型权重/固定层/门控全部来自 config（map.json 的 act 配置），不写死任何数值或名称。
 
 const NODE_TYPES := [&"combat", &"elite", &"event", &"shop", &"rest", &"treasure", &"altar"]
@@ -16,8 +16,9 @@ static func generate(config: Dictionary) -> Array:
 	var preboss_rest: int = height - 2
 	var mid_treasure: int = int(config.get("mid_treasure_floor", height / 2))
 	var center: int = int(width / 2)
+	var single_start_node: bool = bool(config.get("single_start_node", false))
 
-	# 1) 多起点（互异列）
+	# 1) 先用互异列生成路径，让第二层及以上保持足够的路线分布。
 	var starts: Array = _pick_starts(width, num_paths)
 
 	# 2) 逐路径生成列序列（带防交叉 + 顶部向中心收敛）。
@@ -25,6 +26,10 @@ static func generate(config: Dictionary) -> Array:
 	var paths: Array = []
 	for p in num_paths:
 		paths.append(_gen_path(int(starts[p]), width, height, center, paths))
+	# 每幕可配置为单一起点：所有路径共用首层中央节点，第二层起再分叉。
+	if single_start_node:
+		for path in paths:
+			path[0] = center
 
 	# 3) 落格：grid[r][col] = MapNode | null
 	var grid: Array = []
@@ -71,6 +76,12 @@ static func generate(config: Dictionary) -> Array:
 			var to_idx: int = int(col_to_idx[r + 1][c2])
 			if not from_node.links.has(to_idx):
 				from_node.links.append(to_idx)
+	# 单一起点必须能选择第二层的任意节点，不依赖随机路径去重结果。
+	if single_start_node and height > 1 and not floors[0].is_empty():
+		var start_node: MapNode = floors[0][0]
+		start_node.links.clear()
+		for i in floors[1].size():
+			start_node.links.append(i)
 
 	# 6) 分配敌人编成（战斗/精英/Boss）
 	for r in height:

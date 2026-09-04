@@ -13,6 +13,7 @@ extends Resource
 @export var upgrade_description: String = ""
 @export var art: String = ""
 @export var build_tags: Array[StringName] = []
+@export var mechanics: Array[StringName] = []
 
 ## effects / upgrade_effects 保持 Dictionary 数组：结构由 JSON 定义，
 ## CombatController 按 kind 分派。新增效果类型只需改 JSON + 分派表，不改此类。
@@ -34,6 +35,8 @@ static func from_dict(d: Dictionary) -> CardData:
 	c.art = d.get("art", "")
 	for t in d.get("build", []):
 		c.build_tags.append(StringName(t))
+	for mechanic in d.get("mechanics", []):
+		c.mechanics.append(StringName(mechanic))
 	c.effects = d.get("effects", [])
 	var up: Dictionary = d.get("upgrade", {})
 	c.upgrade_effects = up.get("effects", [])

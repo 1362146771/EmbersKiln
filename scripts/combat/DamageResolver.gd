@@ -17,7 +17,10 @@ func compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int) -> in
 	if attacker.has_status(&"damp"):
 		dmg = int(floor(dmg * 0.75))
 	if target.has_status(&"crazed"):
-		dmg = int(floor(dmg * 1.5))
+		# 残酷的额外百分比加在易伤原有倍率上；加成值来自卡牌 JSON。
+		dmg = int(floor(dmg * (1.5 + ctrl.vulnerable_bonus_damage_for(attacker))))
+	# 巨像只处理攻击伤害路径，不影响直接失血与状态伤害。
+	dmg = int(floor(dmg * ctrl.incoming_attack_multiplier_for(attacker, target)))
 	return maxi(0, dmg)
 
 func deal_to_unit(unit: CombatUnit, final_dmg: int) -> void:
