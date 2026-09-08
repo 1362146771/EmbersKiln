@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://db062oq67b4vg"]
+
+[sub_resource type="Shader" id="Shader_2080w"]
+code = "shader_type canvas_item;
+void fragment() {
+    vec2 step_uv = TEXTURE_PIXEL_SIZE * 1.5;
+    vec4 col = vec4(0.0);
+    for (int x = -2; x <= 2; x++) {
+        for (int y = -2; y <= 2; y++) {
+            col += texture(TEXTURE, UV + vec2(float(x), float(y)) * step_uv) * 0.04;
+        }
+    }
+    COLOR = vec4(col.rgb * vec3(0.26, 0.29, 0.34), 1.0);
+}"
+
+[resource]
+shader = SubResource("Shader_2080w")
