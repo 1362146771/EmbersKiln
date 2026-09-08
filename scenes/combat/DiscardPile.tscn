@@ -22,7 +22,7 @@ content_margin_bottom = 8.0
 custom_minimum_size = Vector2(104, 168)
 size_flags_vertical = 0
 mouse_filter = 1
-tooltip_text = "玩家回合可任意弃牌。拖到此处松手，不耗能，不补牌。"
+tooltip_text = "点击查看弃牌堆。玩家回合也可将手牌拖到此处弃置，不耗能、不补牌。"
 theme_override_styles/panel = SubResource("PileStyle")
 
 [node name="Content" type="VBoxContainer" parent="."]

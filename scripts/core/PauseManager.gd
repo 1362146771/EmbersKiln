@@ -4,10 +4,12 @@ extends Node
 ## 全游戏只有一个玩法场景 MapPlay（战斗为其叠加层），故用全局 autoload 覆盖最省事。
 
 const MAIN_MENU := "res://scenes/main/MainMenu.tscn"
+const CARD_COMPENDIUM := preload("res://scenes/ui/CardCompendium.tscn")
 
 var _layer: CanvasLayer
 var _btn: Button
 var _overlay: Control = null
+var _compendium: CardCompendium = null
 var _open := false
 
 
@@ -19,11 +21,16 @@ func _ready() -> void:
 	add_child(_layer)   # 挂在 autoload 节点下，避免 root 忙碌期 add_child 失败
 
 	_btn = Button.new()
-	_btn.text = "❚❚"
-	_btn.custom_minimum_size = Vector2(80, 80)
-	_btn.add_theme_font_size_override("font_size", 30)
+	_btn.text = ""
+	_btn.icon = preload("res://art/ui/formal/btn_battle_stop.png")
+	_btn.expand_icon = true
+	_btn.tooltip_text = "暂停"
+	for state in ["normal", "hover", "pressed", "focus"]:
+		_btn.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+	_btn.custom_minimum_size = Vector2(58, 58)
+	_btn.add_theme_font_size_override("font_size", 26)
 	_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_btn.position = Vector2(-96, 16)
+	_btn.position = Vector2(-82, 18)
 	_btn.visible = false
 	_btn.pressed.connect(_open_pause)
 	_layer.add_child(_btn)
@@ -40,6 +47,7 @@ func hide_pause_button() -> void:
 		_btn.visible = false
 	if _open:
 		_close_pause()
+	_close_compendium()
 
 
 # ---------- 暂停菜单 ----------
@@ -61,33 +69,30 @@ func _close_pause() -> void:
 
 
 func _build_overlay() -> Control:
-	var cover := ColorRect.new()
-	cover.color = Color(0.12, 0.10, 0.09, 0.82)
-	cover.set_anchors_preset(Control.PRESET_FULL_RECT)
-	cover.mouse_filter = Control.MOUSE_FILTER_STOP
-	cover.process_mode = Node.PROCESS_MODE_ALWAYS
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	center.process_mode = Node.PROCESS_MODE_ALWAYS
-	cover.add_child(center)
-	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", 24)
-	col.process_mode = Node.PROCESS_MODE_ALWAYS
-	center.add_child(col)
-	col.add_child(_menu_btn("继续游戏", _close_pause))
-	col.add_child(_menu_btn("保存并返回主菜单", _on_save_to_menu))
-	col.add_child(_menu_btn("保存并退出游戏", _on_save_and_quit))
+	var cover := (load("res://scenes/ui/PauseMenu.tscn") as PackedScene).instantiate() as Control
+	cover.find_child("ResumeButton", true, false).pressed.connect(_close_pause)
+	cover.find_child("CompendiumButton", true, false).pressed.connect(_open_compendium)
+	cover.find_child("MainMenuButton", true, false).pressed.connect(_on_save_to_menu)
+	cover.find_child("QuitButton", true, false).pressed.connect(_on_save_and_quit)
 	return cover
 
 
-func _menu_btn(text: String, cb: Callable) -> Button:
-	var b := Button.new()
-	b.text = text
-	b.custom_minimum_size = Vector2(360, 88)
-	b.add_theme_font_size_override("font_size", 30)
-	b.process_mode = Node.PROCESS_MODE_ALWAYS
-	b.pressed.connect(cb)
-	return b
+func _open_compendium() -> void:
+	if is_instance_valid(_compendium):
+		return
+	_compendium = CARD_COMPENDIUM.instantiate() as CardCompendium
+	_compendium.closed.connect(_on_compendium_closed)
+	add_child(_compendium)
+
+
+func _on_compendium_closed() -> void:
+	_compendium = null
+
+
+func _close_compendium() -> void:
+	if is_instance_valid(_compendium):
+		_compendium.close()
+	_compendium = null
 
 
 func _on_save_to_menu() -> void:

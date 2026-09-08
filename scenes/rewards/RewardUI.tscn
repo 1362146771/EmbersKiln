@@ -1,6 +1,293 @@
 [gd_scene format=3 uid="uid://b9r3wardx2k4"]
 
-[ext_resource type="Script" uid="uid://cvofw3qfrqyta" path="res://scripts/rewards/RewardUI.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/rewards/RewardUI.gd" id="1"]
+[ext_resource type="Theme" path="res://themes/formal/btn_zhanLiPin_normal.tres" id="1_17e8e"]
+[ext_resource type="Script" path="res://scripts/ui/FormalMapBackdrop.gd" id="3_wqvi7"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bgIMG_stage.png" id="4_aamtm"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_main_zhanLiPin.png" id="5_m7m6i"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_zhanLiPin_card.png" id="6_35clp"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/btn_event_normal.png" id="7_klejc"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_shop_btn.png" id="8_3k3ip"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_blood.png" id="9_3phuj"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_gold(需ai改.png" id="10_15ts6"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stair.png" id="11_xn26o"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_iudw0"]
+content_margin_left = 32.0
+content_margin_top = 32.0
+content_margin_right = 32.0
+content_margin_bottom = 32.0
+texture = ExtResource("5_m7m6i")
+texture_margin_left = 32.0
+texture_margin_top = 32.0
+texture_margin_right = 32.0
+texture_margin_bottom = 32.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_j81r2"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jbaka"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_etx8r"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mtt7k"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_k5sfn"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_g6u8a"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_27d7d"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cil16"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gda75"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6qnqh"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gl2mt"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_kdr3e"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fa2sa"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pjy4n"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7lo7n"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2lsjh"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("6_35clp")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_karrr"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("7_klejc")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+modulate_color = Color(0.4, 0.40784314, 0.4392157, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dqxoe"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("7_klejc")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gg3uw"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("7_klejc")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_i868d"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("7_klejc")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jl3hn"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("7_klejc")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+modulate_color = Color(0.47058824, 0.50980395, 0.5529412, 1)
+
+[sub_resource type="Theme" id="Theme_y8y7u"]
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_disabled_color = Color(0.5764706, 0.58431375, 0.60784316, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_outline_color = Color(0.03529412, 0.043137256, 0.05490196, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/constants/outline_size = 5
+Button/font_sizes/font_size = 24
+Button/styles/disabled = SubResource("StyleBoxTexture_karrr")
+Button/styles/focus = SubResource("StyleBoxTexture_dqxoe")
+Button/styles/hover = SubResource("StyleBoxTexture_gg3uw")
+Button/styles/normal = SubResource("StyleBoxTexture_i868d")
+Button/styles/pressed = SubResource("StyleBoxTexture_jl3hn")
+Label/colors/font_color = Color(1, 1, 1, 1)
+Label/colors/font_outline_color = Color(0.03529412, 0.043137256, 0.05490196, 1)
+Label/constants/outline_size = 5
+Label/font_sizes/font_size = 24
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tr1a8"]
+content_margin_left = 18.0
+content_margin_top = 18.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
+texture = ExtResource("8_3k3ip")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
 
 [node name="RewardUI" type="Control" unique_id=1320572753]
 layout_mode = 3
@@ -9,18 +296,42 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_17e8e")
 script = ExtResource("1")
 
-[node name="Dim" type="ColorRect" parent="."]
+[node name="FormalMapBackdrop" type="Control" parent="." unique_id=447545586]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("3_wqvi7")
+
+[node name="Background" type="TextureRect" parent="FormalMapBackdrop" unique_id=1860401148]
+show_behind_parent = true
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("4_aamtm")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="FormalDim" type="ColorRect" parent="." unique_id=651347141]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.52)
+
+[node name="Dim" type="ColorRect" parent="." unique_id=545052050]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.12, 0.1, 0.09, 1)
+color = Color(1, 1, 1, 0)
 
-[node name="Center" type="CenterContainer" parent="Dim"]
+[node name="Center" type="CenterContainer" parent="Dim" unique_id=1866292194]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -28,80 +339,281 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MainPanel" type="Panel" parent="Dim/Center"]
-custom_minimum_size = Vector2(680, 1100)
+[node name="MainPanel" type="Panel" parent="Dim/Center" unique_id=1592834760]
+custom_minimum_size = Vector2(523, 760)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_iudw0")
 
-[node name="Content" type="VBoxContainer" parent="Dim/Center/MainPanel"]
+[node name="Content" type="VBoxContainer" parent="Dim/Center/MainPanel" unique_id=82848971]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 42.0
+offset_top = 28.0
+offset_right = -42.0
+offset_bottom = -30.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
 theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="Dim/Center/MainPanel/Content"]
+[node name="Title" type="Label" parent="Dim/Center/MainPanel/Content" unique_id=1322540761]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
 theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "战  利  品"
+horizontal_alignment = 1
 
-[node name="Summary" type="VBoxContainer" parent="Dim/Center/MainPanel/Content"]
+[node name="Summary" type="VBoxContainer" parent="Dim/Center/MainPanel/Content" unique_id=1822853029]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="EditorPreviewGold" type="Label" parent="Dim/Center/MainPanel/Content/Summary"]
+[node name="EditorPreviewGold" type="Label" parent="Dim/Center/MainPanel/Content/Summary" unique_id=1856897316]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.937, 0.624, 0.153, 1)
 theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.937, 0.624, 0.153, 1)
 text = "金币 +0（共 0）"
 
-[node name="Prompt" type="Label" parent="Dim/Center/MainPanel/Content"]
+[node name="Prompt" type="Label" parent="Dim/Center/MainPanel/Content" unique_id=1288695355]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 21
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "选择一张卡牌加入牌组："
 
-[node name="CardScroll" type="ScrollContainer" parent="Dim/Center/MainPanel/Content"]
+[node name="CardScroll" type="ScrollContainer" parent="Dim/Center/MainPanel/Content" unique_id=2051541406]
+custom_minimum_size = Vector2(0, 290)
 layout_mode = 2
 size_flags_vertical = 3
-horizontal_scroll_mode = 1
+theme_override_styles/panel = SubResource("StyleBoxTexture_j81r2")
 vertical_scroll_mode = 0
 
-[node name="Cards" type="HBoxContainer" parent="Dim/Center/MainPanel/Content/CardScroll"]
+[node name="Cards" type="HBoxContainer" parent="Dim/Center/MainPanel/Content/CardScroll" unique_id=1521276796]
 layout_mode = 2
 theme_override_constants/separation = 14
 alignment = 1
 
-[node name="EditorPreviewCard" type="Button" parent="Dim/Center/MainPanel/Content/CardScroll/Cards"]
-custom_minimum_size = Vector2(180, 240)
+[node name="EditorPreviewCard1" type="Button" parent="Dim/Center/MainPanel/Content/CardScroll/Cards" unique_id=1567417003]
+custom_minimum_size = Vector2(180, 280)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "卡牌名称\n[1 能 · 普通]\n卡牌效果"
+tooltip_text = "卡牌
+运行时显示本次奖励的卡牌效果。"
+theme_override_styles/normal = SubResource("StyleBoxTexture_jbaka")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_etx8r")
+theme_override_styles/hover = SubResource("StyleBoxTexture_mtt7k")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_k5sfn")
+theme_override_styles/focus = SubResource("StyleBoxTexture_g6u8a")
 
-[node name="Actions" type="VBoxContainer" parent="Dim/Center/MainPanel/Content"]
+[node name="VBoxContainer1" type="VBoxContainer" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard1" unique_id=2102277258]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+mouse_filter = 2
+theme_override_constants/separation = 5
+
+[node name="Label1" type="Label" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard1/VBoxContainer1" unique_id=262754229]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0  卡牌"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ScrollContainer1" type="ScrollContainer" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard1/VBoxContainer1" unique_id=1140901349]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+horizontal_scroll_mode = 0
+
+[node name="Label2" type="Label" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard1/VBoxContainer1/ScrollContainer1" unique_id=650698312]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "技能 · 普通
+运行时显示本次奖励的卡牌效果。"
+autowrap_mode = 3
+
+[node name="EditorPreviewCard2" type="Button" parent="Dim/Center/MainPanel/Content/CardScroll/Cards" unique_id=1442659728]
+custom_minimum_size = Vector2(180, 280)
+layout_mode = 2
+tooltip_text = "卡牌
+运行时显示本次奖励的卡牌效果。"
+theme_override_styles/normal = SubResource("StyleBoxTexture_27d7d")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cil16")
+theme_override_styles/hover = SubResource("StyleBoxTexture_gda75")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_6qnqh")
+theme_override_styles/focus = SubResource("StyleBoxTexture_gl2mt")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard2" unique_id=617220913]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+mouse_filter = 2
+theme_override_constants/separation = 5
+
+[node name="Label3" type="Label" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard2/VBoxContainer2" unique_id=1842916728]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0  卡牌"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ScrollContainer2" type="ScrollContainer" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard2/VBoxContainer2" unique_id=1413830688]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+horizontal_scroll_mode = 0
+
+[node name="Label4" type="Label" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard2/VBoxContainer2/ScrollContainer2" unique_id=932143146]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "技能 · 普通
+运行时显示本次奖励的卡牌效果。"
+autowrap_mode = 3
+
+[node name="EditorPreviewCard3" type="Button" parent="Dim/Center/MainPanel/Content/CardScroll/Cards" unique_id=983114211]
+custom_minimum_size = Vector2(180, 280)
+layout_mode = 2
+tooltip_text = "卡牌
+运行时显示本次奖励的卡牌效果。"
+theme_override_styles/normal = SubResource("StyleBoxTexture_kdr3e")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_fa2sa")
+theme_override_styles/hover = SubResource("StyleBoxTexture_pjy4n")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_7lo7n")
+theme_override_styles/focus = SubResource("StyleBoxTexture_2lsjh")
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard3" unique_id=1495466300]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+mouse_filter = 2
+theme_override_constants/separation = 5
+
+[node name="Label5" type="Label" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard3/VBoxContainer3" unique_id=2010595030]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0  卡牌"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ScrollContainer3" type="ScrollContainer" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard3/VBoxContainer3" unique_id=1219627843]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+horizontal_scroll_mode = 0
+
+[node name="Label6" type="Label" parent="Dim/Center/MainPanel/Content/CardScroll/Cards/EditorPreviewCard3/VBoxContainer3/ScrollContainer3" unique_id=848794803]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "技能 · 普通
+运行时显示本次奖励的卡牌效果。"
+autowrap_mode = 3
+
+[node name="Actions" type="VBoxContainer" parent="Dim/Center/MainPanel/Content" unique_id=1024706263]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="UpgradeButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions"]
-custom_minimum_size = Vector2(300, 64)
+[node name="UpgradeButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions" unique_id=548159618]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "升级一张已有卡牌"
 
-[node name="SkipButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions"]
-custom_minimum_size = Vector2(300, 64)
+[node name="SkipButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions" unique_id=198406209]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "跳过"
+text = "离开"
 
-[node name="EnchantButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions"]
-custom_minimum_size = Vector2(300, 64)
+[node name="EnchantButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions" unique_id=1672620289]
+visible = false
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "为一张卡牌附魔"
+
+[node name="FormalHeader" type="Panel" parent="." unique_id=302707012]
+layout_mode = 0
+anchor_right = 1.0
+offset_bottom = 102.0
+mouse_filter = 2
+theme = SubResource("Theme_y8y7u")
+theme_override_styles/panel = SubResource("StyleBoxTexture_tr1a8")
+
+[node name="Title" type="Label" parent="FormalHeader" unique_id=956859817]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 8.0
+offset_right = 590.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 28
+text = "第 1 幕 · 陶原初探"
+horizontal_alignment = 1
+
+[node name="Stats" type="HBoxContainer" parent="FormalHeader" unique_id=1607303533]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 52.0
+offset_right = 30.0
+offset_bottom = 52.0
+theme_override_constants/separation = 24
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="FormalHeader/Stats" unique_id=808906090]
+layout_mode = 2
+
+[node name="TextureRect1" type="TextureRect" parent="FormalHeader/Stats/HBoxContainer2" unique_id=1692272145]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("9_3phuj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label8" type="Label" parent="FormalHeader/Stats/HBoxContainer2" unique_id=1411227104]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.41960785, 0.4392157, 1)
+text = "0/0"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="FormalHeader/Stats" unique_id=1323456390]
+layout_mode = 2
+
+[node name="TextureRect2" type="TextureRect" parent="FormalHeader/Stats/HBoxContainer3" unique_id=1274538681]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("10_15ts6")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label9" type="Label" parent="FormalHeader/Stats/HBoxContainer3" unique_id=1632958691]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92941177, 0.8, 0.40392157, 1)
+text = "0"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="FormalHeader/Stats" unique_id=1896070270]
+layout_mode = 2
+
+[node name="TextureRect3" type="TextureRect" parent="FormalHeader/Stats/HBoxContainer4" unique_id=496896063]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("11_xn26o")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label10" type="Label" parent="FormalHeader/Stats/HBoxContainer4" unique_id=805798350]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72156864, 0.84313726, 0.8117647, 1)
+text = "第 0 层"

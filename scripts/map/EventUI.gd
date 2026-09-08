@@ -70,14 +70,21 @@ func _pick_event() -> Dictionary:
 
 
 func _build_main() -> void:
+	theme = FormalUI.theme()
 	if _resolved:
 		return
 	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
 	if scene_panel != null:
+		$Dim.color = Color.TRANSPARENT
+		FormalUI.map_backdrop(self)
+		scene_panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_main_event.png"))
+		scene_panel.get_node("Content/Title").horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		scene_panel.get_node("Content/Description").custom_minimum_size.y = 92
 		_choice_buttons.clear()
 		if _event.is_empty():
 			_event = _pick_event()
 		var scene_event: Dictionary = _event
+		scene_panel.custom_minimum_size.y = maxf(615, 240 + scene_event["options"].size() * 121)
 		var title: Label = scene_panel.get_node("Content/Title")
 		var description: Label = scene_panel.get_node("Content/Description")
 		var options: VBoxContainer = scene_panel.get_node("Content/Options")
@@ -88,7 +95,7 @@ func _build_main() -> void:
 		for opt in scene_event["options"]:
 			var scene_button := Button.new()
 			scene_button.text = opt["label"]
-			scene_button.custom_minimum_size = Vector2(600, 72)
+			scene_button.custom_minimum_size = Vector2(0, 103)
 			scene_button.add_theme_font_size_override("font_size", 22)
 			scene_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			scene_button.pressed.connect(_on_choose.bind(opt["effects"]))
@@ -104,22 +111,21 @@ func _build_main() -> void:
 		c.queue_free()
 	_choice_buttons.clear()
 
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
+	FormalUI.map_backdrop(self)
 
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 
 	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1040)
-	panel.add_theme_stylebox_override("panel", CardBrowserScript.style(Color("3a4554")))
+	panel.custom_minimum_size = Vector2(523, 615)
+	panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_main_event.png"))
 	center.add_child(panel)
 
 	var v := VBoxContainer.new()
 	v.set_anchors_preset(Control.PRESET_FULL_RECT)
-	v.offset_left = 20
-	v.offset_right = -20
+	v.offset_left = 46
+	v.offset_right = -46
 	v.offset_top = 16
 	v.offset_bottom = -16
 	v.add_theme_constant_override("margin_left", 24)
@@ -140,7 +146,7 @@ func _build_main() -> void:
 	for opt in ev["options"]:
 		var b := Button.new()
 		b.text = opt["label"]
-		b.custom_minimum_size = Vector2(600, 72)
+		b.custom_minimum_size = Vector2(0, 103)
 		b.add_theme_font_size_override("font_size", 22)
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		b.pressed.connect(_on_choose.bind(opt["effects"]))
@@ -303,16 +309,15 @@ func _show_result(msg: String) -> void:
 		remove_child(c)
 		c.queue_free()
 
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
+	FormalUI.map_backdrop(self)
 
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 
 	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 700)
-	panel.add_theme_stylebox_override("panel", CardBrowserScript.style(Color("3a4554")))
+	panel.custom_minimum_size = Vector2(523, 615)
+	panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_main_event.png"))
 	center.add_child(panel)
 
 	var v := VBoxContainer.new()
@@ -322,8 +327,8 @@ func _show_result(msg: String) -> void:
 	v.add_theme_constant_override("margin_top", 24)
 	v.add_theme_constant_override("margin_bottom", 24)
 	v.add_theme_constant_override("separation", 24)
-	v.offset_left = 20
-	v.offset_right = -20
+	v.offset_left = 46
+	v.offset_right = -46
 	v.offset_top = 20
 	v.offset_bottom = -20
 	panel.add_child(v)

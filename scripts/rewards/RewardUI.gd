@@ -7,7 +7,7 @@ const ORANGE := Color(0.941, 0.600, 0.482)
 const GREEN := Color(0.365, 0.792, 0.647)
 const RED := Color(0.847, 0.353, 0.188)
 const PURPLE := Color(0.498, 0.467, 0.867)
-const DARK := Color(0.25, 0.20, 0.18)
+const DARK := Color.WHITE
 const AMBER := Color(0.937, 0.624, 0.153)
 const BG_DARK := Color(0.12, 0.10, 0.09)
 
@@ -34,6 +34,12 @@ func _ready() -> void:
 	if data.is_empty():
 		data = RunState.pending_reward_data
 	_build_main()
+	if FormalUI.combat_reward_pending:
+		FormalUI.combat_reward_pending = false
+		var overview := preload("res://scenes/ui/BattleRewardOverview.tscn").instantiate()
+		add_child(overview)
+		overview.setup(data, FormalUI.combat_reward_backdrop)
+		FormalUI.combat_reward_backdrop = null
 
 
 func _exit_tree() -> void:
@@ -48,8 +54,20 @@ func setup(reward_data: Dictionary, done: Callable) -> void:
 
 
 func _build_main() -> void:
+	theme = FormalUI.theme("btn_zhanLiPin_normal.png")
+	if not has_node("Dim/Center/MainPanel"):
+		FormalUI.restore_layout(self, "res://scenes/rewards/RewardUI.tscn")
 	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
 	if scene_panel != null:
+		$Dim.color = Color.TRANSPARENT
+		FormalUI.map_backdrop(self)
+		scene_panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_main_zhanLiPin.png"))
+		scene_panel.get_node("Content/Title").horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		scene_panel.get_node("Content/Prompt").add_theme_font_size_override("font_size", 21)
+		var card_area: ScrollContainer = scene_panel.get_node("Content/CardScroll")
+		card_area.custom_minimum_size.y = 290
+		FormalUI.reward_arrow(scene_panel, card_area)
+		card_area.add_theme_stylebox_override("panel", FormalUI.stone("bd_zhanLiPin_card.png", 4))
 		var summary: VBoxContainer = scene_panel.get_node("Content/Summary")
 		for child in summary.get_children():
 			child.queue_free()
@@ -76,136 +94,50 @@ func _build_main() -> void:
 		for i in scene_cards.size():
 			var scene_card: Dictionary = scene_cards[i]
 			var card_button := Button.new()
-			card_button.custom_minimum_size = Vector2(180, 240)
+			card_button.custom_minimum_size = Vector2(180, 280)
 			card_button.add_theme_color_override("font_color", DARK)
 			var scene_name := String(scene_card.get("name", "")) + ("+" if bool(scene_card.get("upgraded", false)) else "")
 			card_button.text = "%s\n[%d 能 · %s]\n%s" % [scene_name, int(scene_card.get("cost", 0)), _rarity_cn(StringName(scene_card.get("rarity", "common"))), scene_card.get("desc", "")]
 			card_button.add_theme_font_size_override("font_size", 20)
 			card_button.pressed.connect(_on_choose_card.bind(i))
 			cards_row.add_child(card_button)
+			FormalUI.card_face(card_button, scene_card)
 		var upgrade_button: Button = scene_panel.get_node("Content/Actions/UpgradeButton")
 		var skip_button: Button = scene_panel.get_node("Content/Actions/SkipButton")
 		var enchant_button: Button = scene_panel.get_node("Content/Actions/EnchantButton")
-		upgrade_button.pressed.connect(_on_upgrade_pressed)
-		skip_button.pressed.connect(_on_skip)
+		if not upgrade_button.pressed.is_connected(_on_upgrade_pressed):
+			upgrade_button.pressed.connect(_on_upgrade_pressed)
+		skip_button.text = "离开"
+		if not skip_button.pressed.is_connected(_on_skip):
+			skip_button.pressed.connect(_on_skip)
 		var reward_tier: StringName = StringName(data.get("tier", "combat"))
 		enchant_button.visible = (reward_tier == &"elite" or reward_tier == &"boss") and RewardBuilder.can_any_card_enchant()
-		if enchant_button.visible:
+		if enchant_button.visible and not enchant_button.pressed.is_connected(_on_enchant_pressed):
 			enchant_button.pressed.connect(_on_enchant_pressed)
 		return
-	for c in get_children():
-		c.queue_free()
-
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1100)
-	center.add_child(panel)
-
-	var v := VBoxContainer.new()
-	v.set_anchors_preset(Control.PRESET_FULL_RECT)
-	v.add_theme_constant_override("margin_left", 24)
-	v.add_theme_constant_override("margin_right", 24)
-	v.add_theme_constant_override("margin_top", 24)
-	v.add_theme_constant_override("margin_bottom", 24)
-	v.add_theme_constant_override("separation", 16)
-	panel.add_child(v)
-
-	v.add_child(_label("战  利  品", 40, DARK))
-
-	var gold := int(data.get("gold", 0))
-	v.add_child(_label("金币 +%d（共 %d）" % [gold, RunState.gold], 26, AMBER))
-
-	var relic_id: StringName = data.get("relic_id", &"")
-	if relic_id != &"":
-		var rd: RelicData = GameData.get_relic(relic_id)
-		var rname := rd.name if rd != null else String(relic_id)
-		v.add_child(_label("获得遗物：%s" % rname, 26, PURPLE))
-	var potion_id: StringName = data.get("potion_id", &"")
-	if potion_id != &"":
-		var pd: PotionData = GameData.get_potion(potion_id)
-		var pname := pd.name if pd != null else String(potion_id)
-		var phb := HBoxContainer.new()
-		phb.alignment = BoxContainer.ALIGNMENT_CENTER
-		phb.add_theme_constant_override("separation", 8)
-		if pd != null and pd.icon != "":
-			phb.add_child(GameData.icon_rect(pd.icon, 44))
-		phb.add_child(_label("获得药水：%s" % pname, 26, ORANGE))
-		v.add_child(phb)
-
-	v.add_child(_label("选择一张卡牌加入牌组：", 24, DARK))
-
-	# 卡牌三选一（横向滚动）
-	var card_scroll := ScrollContainer.new()
-	card_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	card_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	card_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	v.add_child(card_scroll)
-
-	var cards_row := HBoxContainer.new()
-	cards_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	cards_row.add_theme_constant_override("separation", 14)
-	card_scroll.add_child(cards_row)
-
-	var cards: Array = data.get("cards", [])
-	for i in cards.size():
-		var cd: Dictionary = cards[i]
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(180, 240)
-		b.add_theme_color_override("font_color", DARK)
-		var display_name := String(cd.get("name", "")) + ("+" if bool(cd.get("upgraded", false)) else "")
-		var t := "%s\n[%d 能 · %s]\n%s" % [display_name, int(cd.get("cost", 0)), _rarity_cn(StringName(cd.get("rarity", "common"))), cd.get("desc", "")]
-		b.text = t
-		b.add_theme_font_size_override("font_size", 20)
-		b.pressed.connect(_on_choose_card.bind(i))
-		cards_row.add_child(b)
-
-	# 操作按钮
-	var upgrade_btn := Button.new()
-	upgrade_btn.text = "升级一张已有卡牌"
-	upgrade_btn.custom_minimum_size = Vector2(300, 64)
-	upgrade_btn.add_theme_font_size_override("font_size", 22)
-	upgrade_btn.pressed.connect(_on_upgrade_pressed)
-	v.add_child(upgrade_btn)
-
-	var skip_btn := Button.new()
-	skip_btn.text = "跳过"
-	skip_btn.custom_minimum_size = Vector2(300, 64)
-	skip_btn.add_theme_font_size_override("font_size", 22)
-	skip_btn.pressed.connect(_on_skip)
-	v.add_child(skip_btn)
-	var rwtier: StringName = StringName(data.get("tier", "combat"))
-	if (rwtier == &"elite" or rwtier == &"boss") and RewardBuilder.can_any_card_enchant():
-		var enc_btn := Button.new()
-		enc_btn.text = "为一张卡牌附魔"
-		enc_btn.custom_minimum_size = Vector2(300, 64)
-		enc_btn.add_theme_font_size_override("font_size", 22)
-		enc_btn.pressed.connect(_on_enchant_pressed)
-		v.add_child(enc_btn)
-
 
 func _build_upgrade() -> void:
 	for c in get_children():
+		remove_child(c)
 		c.queue_free()
 
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
+	FormalUI.map_backdrop(self)
 
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 
 	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1100)
+	panel.custom_minimum_size = Vector2(620, 1000)
+	panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_main_zhanLiPin.png"))
 	center.add_child(panel)
 
 	var v := VBoxContainer.new()
 	v.set_anchors_preset(Control.PRESET_FULL_RECT)
+	v.offset_left = 32
+	v.offset_right = -32
+	v.offset_top = 32
+	v.offset_bottom = -32
 	v.add_theme_constant_override("margin_left", 24)
 	v.add_theme_constant_override("margin_right", 24)
 	v.add_theme_constant_override("margin_top", 24)
@@ -214,7 +146,7 @@ func _build_upgrade() -> void:
 	panel.add_child(v)
 
 	v.add_child(_label("升级一张卡牌", 34, DARK))
-	v.add_child(_label("选择要强化的卡牌（已升级的不可再选）", 20, DARK))
+	v.add_child(_label("选择要强化的卡牌（灼热攻击可重复升级）", 20, DARK))
 
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -229,13 +161,14 @@ func _build_upgrade() -> void:
 	for i in RunState.deck.size():
 		var entry: Dictionary = RunState.deck[i]
 		var cd: CardData = GameData.get_card(StringName(entry["id"]))
-		if cd == null or entry["upgraded"]:
+		var level := int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0))
+		if cd == null or level > 0 and not cd.repeatable_upgrade:
 			continue
 		upgradable = true
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(600, 64)
+		b.custom_minimum_size = Vector2(0, 80)
 		b.add_theme_color_override("font_color", DARK)
-		b.text = "%s → %s" % [cd.name, cd.get_description(true)]
+		b.text = "%s%s → %s" % [cd.name, "+" + str(level) if level > 1 else "+" if level == 1 else "", cd.get_description(level + 1)]
 		b.add_theme_font_size_override("font_size", 20)
 		b.pressed.connect(_on_upgrade_card.bind(i))
 		col.add_child(b)
@@ -326,9 +259,9 @@ func _on_enchant_pressed() -> void:
 ## 附魔套用后展示效果面板，玩家点「完成」再结算（避免看不到附魔效果）。
 func _show_enchant_result(cd: CardData, ed: Variant) -> void:
 	for c in get_children():
+		remove_child(c)
 		c.queue_free()
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
+	FormalUI.map_backdrop(self)
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
@@ -337,6 +270,10 @@ func _show_enchant_result(cd: CardData, ed: Variant) -> void:
 	center.add_child(panel)
 	var v := VBoxContainer.new()
 	v.set_anchors_preset(Control.PRESET_FULL_RECT)
+	v.offset_left = 32
+	v.offset_right = -32
+	v.offset_top = 32
+	v.offset_bottom = -32
 	v.add_theme_constant_override("margin_left", 28)
 	v.add_theme_constant_override("margin_right", 28)
 	v.add_theme_constant_override("margin_top", 28)
@@ -364,17 +301,22 @@ func _show_enchant_result(cd: CardData, ed: Variant) -> void:
 
 func _build_enchant() -> void:
 	for c in get_children():
+		remove_child(c)
 		c.queue_free()
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
+	FormalUI.map_backdrop(self)
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1100)
+	panel.custom_minimum_size = Vector2(620, 1000)
+	panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_main_zhanLiPin.png"))
 	center.add_child(panel)
 	var v := VBoxContainer.new()
 	v.set_anchors_preset(Control.PRESET_FULL_RECT)
+	v.offset_left = 32
+	v.offset_right = -32
+	v.offset_top = 32
+	v.offset_bottom = -32
 	v.add_theme_constant_override("margin_left", 24)
 	v.add_theme_constant_override("margin_right", 24)
 	v.add_theme_constant_override("margin_top", 24)
@@ -404,7 +346,7 @@ func _build_enchant() -> void:
 		var ename: String = ed.name if ed != null else String(eid)
 		var desc: String = ed.description if (ed != null and ed.description != "") else "（无效果描述）"
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(600, 150)
+		b.custom_minimum_size = Vector2(0, 150)
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		b.add_theme_color_override("font_color", DARK)
 		b.text = "%s\n附魔：%s\n效果：%s" % [cd.name, ename, desc]

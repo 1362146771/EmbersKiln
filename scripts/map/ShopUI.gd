@@ -130,16 +130,32 @@ func _generate_stock() -> void:
 
 
 func _build_main() -> void:
+	theme = FormalUI.theme("btn_shop_normal_long.png")
 	removing = false
 	_remove_browser = null
 	_remove_sources.clear()
+	if not has_node("Dim/Center/MainPanel"):
+		FormalUI.restore_layout(self, "res://scenes/map/ShopUI.tscn")
 	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
 	if scene_panel != null:
-		scene_panel.add_theme_stylebox_override("panel", CardBrowserScript.style(Color("3a4554")))
+		scene_panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+		if not has_node("FormalShopBackground"):
+			$Dim.color = Color.TRANSPARENT
+			FormalUI.background(self, FormalUI.ROOT + "bgIMG_shop.png").name = "FormalShopBackground"
+			var footer_bg := FormalUI.picture(FormalUI.ROOT + "bd_shop_btn.png")
+			scene_panel.add_child(footer_bg)
+			scene_panel.move_child(footer_bg, 0)
+			footer_bg.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+			footer_bg.offset_top = -350
+		var old_header := get_node_or_null("FormalHeader")
+		if old_header != null:
+			remove_child(old_header)
+			old_header.queue_free()
+		FormalUI.header(self, "商店")
 		var content: VBoxContainer = scene_panel.get_node("ContentScroll/Content")
 		var gold_label: Label = content.get_node("Gold")
 		gold_label.text = "金币：%d" % RunState.gold
-		var remove_button: Button = content.get_node("Removal/RemoveCardButton")
+		var remove_button: Button = scene_panel.get_node("Footer/Removal/RemoveCardButton")
 		remove_button.text = "永久移除卡牌 · %d 金" % remove_cost
 		remove_button.disabled = RunState.gold < remove_cost or not RunState.can_remove_card()
 		var remove_hint := "选牌后确认 · 仅移除本局牌组中的该卡"
@@ -149,10 +165,11 @@ func _build_main() -> void:
 			remove_hint = "金币不足 · 需要 %d 金，当前 %d 金" % [remove_cost, RunState.gold]
 		if _remove_status != "":
 			remove_hint = _remove_status + "\n" + remove_hint
-		content.get_node("Removal/Hint").text = remove_hint
+		scene_panel.get_node("Footer/Removal/Hint").text = remove_hint
+		remove_button.tooltip_text = remove_hint
 		if not remove_button.pressed.is_connected(_on_remove_pressed):
 			remove_button.pressed.connect(_on_remove_pressed)
-		var card_row: HBoxContainer = content.get_node("CardScroll/CardRow")
+		var card_row: GridContainer = content.get_node("CardScroll/CardRow")
 		for child in card_row.get_children():
 			child.queue_free()
 		for i in card_stock.size():
@@ -168,13 +185,13 @@ func _build_main() -> void:
 		for i in potion_stock.size():
 			potion_list.add_child(_potion_offer(i))
 		var enchant_cost: int = int(GameData.balance.get("shop", {}).get("enchant_cost", 75))
-		var enchant_button: Button = content.get_node("EnchantButton")
+		var enchant_button: Button = scene_panel.get_node("Footer/EnchantButton")
 		enchant_button.text = "附魔服务（%d 金）" % enchant_cost
 		enchant_button.disabled = RunState.gold < enchant_cost or not RewardBuilder.can_any_card_enchant()
 		var enchant_callable := _on_enchant_pressed.bind(enchant_cost)
 		if not enchant_button.pressed.is_connected(enchant_callable):
 			enchant_button.pressed.connect(enchant_callable)
-		var refresh_box: VBoxContainer = content.get_node("Refresh")
+		var refresh_box: VBoxContainer = scene_panel.get_node("Footer/Refresh")
 		refresh_box.visible = AdService.is_placement_enabled(ShopInventorySystem.PLACEMENT)
 		if refresh_box.visible:
 			var refresh_button: Button = refresh_box.get_node("ShopRefreshAdButton")
@@ -189,142 +206,31 @@ func _build_main() -> void:
 			elif refresh_button.disabled:
 				refresh_hint = ShopInventorySystem.refresh_block_reason(shop_id) + "\n" + refresh_hint
 			refresh_box.get_node("Hint").text = refresh_hint
-		var leave_button: Button = content.get_node("LeaveButton")
+			var feedback: Label = refresh_box.get_node("Hint")
+			feedback.text = _refresh_status
+			feedback.visible = not _refresh_status.is_empty()
+			feedback.autowrap_mode = TextServer.AUTOWRAP_OFF
+			feedback.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			feedback.tooltip_text = refresh_hint
+		var leave_button: Button = scene_panel.get_node("Footer/LeaveButton")
 		if not leave_button.pressed.is_connected(_finish):
 			leave_button.pressed.connect(_finish)
+		for heading in ["CardTitle", "RelicTitle", "PotionTitle"]:
+			var label: Label = content.get_node(heading)
+			label.add_theme_stylebox_override("normal", FormalUI.stone("bd_shop_title.png", 10))
+			label.custom_minimum_size = Vector2(128, 49)
+			label.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		return
-	for c in get_children():
-		remove_child(c)
-		c.queue_free()
-
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1160)
-	panel.add_theme_stylebox_override("panel", CardBrowserScript.style(Color("3a4554")))
-	center.add_child(panel)
-
-	var content_scroll := ScrollContainer.new()
-	content_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
-	content_scroll.offset_left = 20
-	content_scroll.offset_right = -20
-	content_scroll.offset_top = 16
-	content_scroll.offset_bottom = -16
-	content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	content_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	panel.add_child(content_scroll)
-
-	var v := VBoxContainer.new()
-	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	v.add_theme_constant_override("margin_left", 24)
-	v.add_theme_constant_override("margin_right", 24)
-	v.add_theme_constant_override("margin_top", 22)
-	v.add_theme_constant_override("margin_bottom", 22)
-	v.add_theme_constant_override("separation", 14)
-	content_scroll.add_child(v)
-
-	v.add_child(_label("商 店", 40, TEXT))
-	v.add_child(_label("金币：%d" % RunState.gold, 26, AMBER))
-
-	# 将永久移除放在金币下方，避免服务入口被货架挤出屏幕。
-	var removal := VBoxContainer.new()
-	removal.add_theme_constant_override("separation", 6)
-	var rm_btn := CardBrowserScript.button("永久移除卡牌 · %d 金" % remove_cost, _on_remove_pressed)
-	rm_btn.name = "RemoveCardButton"
-	rm_btn.disabled = RunState.gold < remove_cost or not RunState.can_remove_card()
-	removal.add_child(rm_btn)
-	var hint := "选牌后确认 · 仅移除本局牌组中的该卡"
-	if not RunState.can_remove_card():
-		hint = "牌组至少保留 %d 张卡" % int(GameData.balance["card_removal"]["minimum_remaining"])
-	elif RunState.gold < remove_cost:
-		hint = "金币不足 · 需要 %d 金，当前 %d 金" % [remove_cost, RunState.gold]
-	if _remove_status != "":
-		hint = _remove_status + "\n" + hint
-	removal.add_child(_label(hint, 20, TEXT))
-	v.add_child(removal)
-
-	# 卡牌货架
-	v.add_child(_label("卡牌", 24, TEXT))
-	var card_scroll := ScrollContainer.new()
-	card_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	card_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	card_scroll.custom_minimum_size = Vector2(0, 270)
-	v.add_child(card_scroll)
-	var card_row := HBoxContainer.new()
-	card_row.add_theme_constant_override("separation", 14)
-	card_scroll.add_child(card_row)
-	for i in card_stock.size():
-		card_row.add_child(_card_offer(i))
-
-	# 遗物货架
-	v.add_child(_label("遗物", 24, TEXT))
-	for i in relic_stock.size():
-		v.add_child(_relic_offer(i))
-	# 药水货架
-	v.add_child(_label("药水", 24, TEXT))
-	for i in potion_stock.size():
-		v.add_child(_potion_offer(i))
-	# 附魔服务
-	var enc_cost: int = int(GameData.balance.get("shop", {}).get("enchant_cost", 75))
-	var enc_btn := Button.new()
-	enc_btn.text = "附魔服务（%d 金）" % enc_cost
-	enc_btn.custom_minimum_size = Vector2(560, 64)
-	enc_btn.add_theme_font_size_override("font_size", 22)
-	enc_btn.disabled = RunState.gold < enc_cost or not RewardBuilder.can_any_card_enchant()
-	enc_btn.pressed.connect(_on_enchant_pressed.bind(enc_cost))
-	v.add_child(enc_btn)
-
-	if AdService.is_placement_enabled(ShopInventorySystem.PLACEMENT):
-		var refresh_btn := Button.new()
-		refresh_btn.name = "ShopRefreshAdButton"
-		refresh_btn.custom_minimum_size = Vector2(560, 64)
-		refresh_btn.add_theme_font_size_override("font_size", 22)
-		if ShopInventorySystem.is_refresh_configured():
-			refresh_btn.text = "观看广告 · 刷新未购买商品（剩余%d次）" % ShopInventorySystem.remaining_refreshes(shop_id)
-		else:
-			refresh_btn.text = "观看广告 · 刷新未购买商品"
-		refresh_btn.disabled = not ShopInventorySystem.can_offer_refresh(shop_id)
-		refresh_btn.tooltip_text = ShopInventorySystem.refresh_block_reason(shop_id) if refresh_btn.disabled else "已购买槽位与服务状态保持不变"
-		refresh_btn.pressed.connect(_on_refresh_pressed)
-		v.add_child(refresh_btn)
-		var refresh_hint := "只替换未购买槽位；已售商品、金币和服务状态保持不变。"
-		if not _refresh_status.is_empty():
-			refresh_hint = _refresh_status + "\n" + refresh_hint
-		elif refresh_btn.disabled:
-			refresh_hint = ShopInventorySystem.refresh_block_reason(shop_id) + "\n" + refresh_hint
-		v.add_child(_label(refresh_hint, 18, TEXT))
-
-	# 离开
-	var leave_btn := Button.new()
-	leave_btn.text = "离开商店"
-	leave_btn.custom_minimum_size = Vector2(560, 64)
-	leave_btn.add_theme_font_size_override("font_size", 22)
-	leave_btn.pressed.connect(_finish)
-	v.add_child(leave_btn)
-
 
 func _card_offer(i: int) -> Control:
 	var item: Dictionary = card_stock[i]
 	var box := VBoxContainer.new()
-	box.custom_minimum_size = Vector2(180, 250)
+	box.custom_minimum_size = Vector2(158, 360)
 	box.add_theme_constant_override("separation", 8)
-
-	var info := Label.new()
-	info.text = "%s\n[%d 能 · %s]\n%s" % [
-		item["card"].get("name", ""),
-		int(item["card"].get("cost", 0)),
-		_rarity_cn(StringName(item["card"].get("rarity", "common"))),
-		item["card"].get("desc", ""),
-	]
-	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	info.add_theme_font_size_override("font_size", 20)
-	info.add_theme_color_override("font_color", TEXT)
-	box.add_child(info)
+	var face := Panel.new()
+	face.custom_minimum_size = Vector2(158, 295)
+	box.add_child(face)
+	FormalUI.card_face(face, item["card"])
 
 	var buy := Button.new()
 	if item["bought"]:
@@ -333,7 +239,7 @@ func _card_offer(i: int) -> Control:
 	else:
 		buy.text = "%d 金" % item["price"]
 		buy.disabled = RunState.gold < item["price"]
-	buy.custom_minimum_size = Vector2(170, 50)
+	buy.custom_minimum_size = Vector2(158, 50)
 	buy.add_theme_font_size_override("font_size", 20)
 	buy.pressed.connect(_on_buy_card.bind(i))
 	box.add_child(buy)
@@ -346,7 +252,7 @@ func _relic_offer(i: int) -> Control:
 	var name_txt: String = r.name if r != null else String(item["id"])
 	var desc_txt: String = r.description if r != null else ""
 	var box := HBoxContainer.new()
-	box.custom_minimum_size = Vector2(600, 70)
+	box.custom_minimum_size = Vector2(0, 92)
 	box.add_theme_constant_override("separation", 16)
 
 	var info := Label.new()
@@ -356,6 +262,10 @@ func _relic_offer(i: int) -> Control:
 	info.add_theme_font_size_override("font_size", 20)
 	info.add_theme_color_override("font_color", PURPLE)
 	box.add_child(info)
+	if r != null and not r.icon.is_empty():
+		var icon := GameData.icon_rect(r.icon, 72)
+		box.add_child(icon)
+		box.move_child(icon, 0)
 
 	var buy := Button.new()
 	if item["bought"]:
@@ -414,7 +324,7 @@ func _potion_offer(i: int) -> Control:
 	var name_txt: String = p.name if p != null else String(item["id"])
 	var desc_txt: String = p.description if p != null else ""
 	var box := HBoxContainer.new()
-	box.custom_minimum_size = Vector2(600, 70)
+	box.custom_minimum_size = Vector2(0, 92)
 	box.add_theme_constant_override("separation", 16)
 	if p != null and p.icon != "":
 		box.add_child(GameData.icon_rect(p.icon, 56))
@@ -512,17 +422,22 @@ func _on_enchant_pressed(cost: int) -> void:
 
 func _build_enchant(cost: int) -> void:
 	for c in get_children():
+		remove_child(c)
 		c.queue_free()
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
+	FormalUI.background(self, FormalUI.ROOT + "bgIMG_shop.png")
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1080)
+	panel.custom_minimum_size = Vector2(620, 1080)
+	panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_main_event.png"))
 	center.add_child(panel)
 	var v := VBoxContainer.new()
 	v.set_anchors_preset(Control.PRESET_FULL_RECT)
+	v.offset_left = 32
+	v.offset_right = -32
+	v.offset_top = 32
+	v.offset_bottom = -32
 	v.add_theme_constant_override("margin_left", 24)
 	v.add_theme_constant_override("margin_right", 24)
 	v.add_theme_constant_override("margin_top", 22)
@@ -551,7 +466,7 @@ func _build_enchant(cost: int) -> void:
 		var ed = GameData.get_enchant(eid)
 		var ename: String = ed.name if ed != null else String(eid)
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(600, 56)
+		b.custom_minimum_size = Vector2(0, 72)
 		b.add_theme_color_override("font_color", TEXT)
 		b.text = "%s -> %s" % [cd.name, ename]
 		b.add_theme_font_size_override("font_size", 20)

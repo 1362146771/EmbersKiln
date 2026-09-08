@@ -34,7 +34,6 @@ func build(a: CombatUnit, index: int) -> void:
 		var tex := md.sprite_texture()
 		if tex != null:
 			_sprite.texture = tex
-	_sprite.custom_minimum_size = Vector2(144, 144)
 	_name_l.text = a.unit_name
 	_hp_bar.max_value = a.max_hp
 	_hp_bar.value = a.hp

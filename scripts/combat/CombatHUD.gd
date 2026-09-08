@@ -22,12 +22,13 @@ func refresh_resources() -> void:
 			var ptex = load(ui.controller.player.sprite)
 			if ptex != null:
 				ui.player_sprite.texture = ptex
-	ui.player_hp.text = "玩家 炭  HP %d / %d" % [ui.controller.player.hp, ui.controller.player.max_hp]
+	ui.player_hp.text = "HP %d / %d" % [ui.controller.player.hp, ui.controller.player.max_hp]
 	if ui.player_hp_bar != null:
 		ui.player_hp_bar.max_value = ui.controller.player.max_hp
 		ui.player_hp_bar.value = ui.controller.player.hp
 	ui.player_block.text = "格挡 %d" % ui.controller.player.block
 	ui.player_energy.text = "能量 %d / %d" % [ui.controller.energy, ui.controller.max_energy]
+	_refresh_energy_bar(ui.controller.energy, ui.controller.max_energy)
 	ui.player_kiln.text = "窑温 %d / %d" % [ui.controller.kiln_heat, ui.controller._kiln_threshold()]
 	ui.player_status.text = ui._status_text(ui.controller.player)
 
@@ -43,9 +44,9 @@ func refresh_potions() -> void:
 			slot.text = "空"
 			slot.disabled = true
 			slot.tooltip_text = ""
-			slot.add_theme_stylebox_override("normal", ui._disabled_card_style())
+			slot.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 			if ic != null:
-				ic.texture = null
+				ic.texture = FormalUI.texture("icon_battle_yaoShui_empty.png")
 			continue
 		var pid: StringName = inv[i]
 		var pd: PotionData = GameData.get_potion(pid)
@@ -53,22 +54,16 @@ func refresh_potions() -> void:
 			slot.text = "?"
 			slot.disabled = true
 			slot.tooltip_text = ""
-			slot.add_theme_stylebox_override("normal", ui._disabled_card_style())
+			slot.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 			if ic != null:
-				ic.texture = null
+				ic.texture = FormalUI.texture("icon_battle_yaoShui_empty.png")
 			continue
 		slot.text = pd.name
 		slot.disabled = ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER
 		slot.tooltip_text = pd.description
 		if ic != null:
 			ic.texture = GameData.icon_texture(pd.icon)
-		var col := ui.CREAM
-		match pd.rarity:
-			&"common": col = ui.CREAM
-			&"uncommon": col = ui.GREEN
-			&"rare": col = ui.PURPLE
-			_: col = ui.CREAM
-		slot.add_theme_stylebox_override("normal", ui._card_style(col))
+		slot.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 
 
 ## .new() 路径：创建 3 个药水槽（VBox: Icon + SlotButton），挂到 potion_bar。
@@ -117,13 +112,34 @@ func connect_potion_slots() -> void:
 		var slot: Button = ui.potion_slots[i]
 		if slot != null and not slot.pressed.is_connected(ui._targeting.on_potion_pressed.bind(i)):
 			slot.pressed.connect(ui._targeting.on_potion_pressed.bind(i))
+		if i < ui.potion_icons.size():
+			var icon: TextureRect = ui.potion_icons[i]
+			icon.mouse_filter = Control.MOUSE_FILTER_STOP
+			icon.focus_mode = Control.FOCUS_ALL
+			icon.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			if not icon.gui_input.is_connected(_on_potion_icon_input.bind(i)):
+				icon.gui_input.connect(_on_potion_icon_input.bind(i))
+
+
+func _on_potion_icon_input(event: InputEvent, index: int) -> void:
+	var clicked: bool = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed
+	var touched: bool = event is InputEventScreenTouch and event.pressed
+	if not (clicked or touched or event.is_action_pressed("ui_accept")):
+		return
+	if ui._drag_active or ui._casting or ui.card_browser_open() or index >= RunState.potions.size():
+		return
+	var potion := GameData.get_potion(RunState.potions[index])
+	if potion == null:
+		return
+	ui.get_node("PotionDetails").present(potion, ui.potion_icons[index].get_global_rect())
+	ui.potion_icons[index].accept_event()
 
 
 # =====================================================================
 # 玩家资源 SignalBus 回调（薄转发目标）
 # =====================================================================
 func on_php(cur: int, maxv: int) -> void:
-	ui.player_hp.text = "玩家 炭  HP %d / %d" % [cur, maxv]
+	ui.player_hp.text = "HP %d / %d" % [cur, maxv]
 	if ui.player_hp_bar != null:
 		ui.player_hp_bar.max_value = maxv
 		ui.player_hp_bar.value = cur
@@ -139,6 +155,7 @@ func on_pblock(cur: int) -> void:
 
 func on_energy(cur: int, maxv: int) -> void:
 	ui.player_energy.text = "能量 %d / %d" % [cur, maxv]
+	_refresh_energy_bar(cur, maxv)
 	ui._hand.refresh_hand()
 
 
@@ -174,7 +191,8 @@ func create_ally_panel(a: CombatUnit, index: int) -> void:
 	p.build(a, index)
 	reposition_allies()
 	# §6.1 登场高亮：放大 + 全亮，随后回落到暗态（被玩家立绘遮挡）
-	p.scale = Vector2(1.15, 1.15)
+	p.pivot_offset = Vector2(ui.ALLY_CHIP_W, ui.ALLY_CHIP_H)
+	p.scale = Vector2(1.08, 1.08)
 	var tw := ui.create_tween()
 	tw.tween_property(p, "scale", Vector2(1.0, 1.0), 0.4).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(p, "modulate:a", ui.ALLY_DARK_ALPHA, 0.4).set_ease(Tween.EASE_OUT)
@@ -280,3 +298,10 @@ func on_ally_died(index: int) -> void:
 		return
 	VFXSystem.spawn_death(p, func(): if is_instance_valid(p): p.queue_free())
 	reposition_allies()
+
+
+func _refresh_energy_bar(current: int, maximum: int) -> void:
+	var bar := ui.get_node_or_null("EnergyBar") as ProgressBar
+	if bar != null:
+		bar.max_value = maxi(1, maximum)
+		bar.value = current

@@ -59,14 +59,14 @@ func update_enemy_panel(e: CombatUnit, index: int) -> void:
 
 func enemy_size() -> Vector2:
 	var n := ui.controller.enemies.size()
-	var pw := 480 if n <= 1 else (330 if n == 2 else 230)
+	var pw := 720 if n <= 1 else (350 if n == 2 else 230)
 	if n >= 3:
 		# Fit all portrait slots inside the existing 10px side safe margins.
 		var available_width := ui.get_viewport_rect().size.x - 20.0
 		var separation := ui.enemy_area.get_theme_constant("separation")
 		pw = mini(pw, int(floor((available_width - separation * (n - 1)) / n)))
 	# 单敌区为顶部遗物栏让出空间，避免手牌下移到玩家立绘脸部。
-	var ph := 460 if n <= 1 else (380 if n == 2 else 340)
+	var ph := 640
 	return Vector2(pw, ph)
 
 

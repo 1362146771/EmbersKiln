@@ -88,15 +88,16 @@ func verify_rules() -> void:
 	ctrl.player.hp = player_hp
 	ctrl.discard_pile.clear()
 	ctrl.draw_pile.clear()
-	var retained := card(&"strike", true)
-	retained.enchants = [GameData.enchants.keys()[0]]
-	ctrl.hand = [retained]
+	var cycled := card(&"strike", true)
+	cycled.enchants = [GameData.enchants.keys()[0]]
+	ctrl.hand = [cycled]
 	ctrl.discard_card(0)
 	ctrl._draw_cards(1)
-	check("discard reshuffles back with metadata intact", ctrl.discard_pile.is_empty() and ctrl.draw_pile.is_empty() and ctrl.hand == [retained])
+	check("discard reshuffles back with metadata intact", ctrl.discard_pile.is_empty() and ctrl.draw_pile.is_empty() and ctrl.hand == [cycled])
 	ctrl.end_player_turn()
+	check("end turn moves the unplayed card out of hand", ctrl.phase == CombatController.Phase.ENEMY and ctrl.hand.is_empty() and ctrl.discard_pile == [cycled])
 	ctrl.enemy_phase_done()
-	check("next turn can discard again, retained hand unaffected", ctrl.phase == CombatController.Phase.PLAYER and ctrl.hand == [retained] and ctrl.discard_card(0))
+	check("next turn can draw and manually discard the cycled card again", ctrl.phase == CombatController.Phase.PLAYER and ctrl.hand == [cycled] and ctrl.discard_card(0))
 	SignalBus.card_discarded.disconnect(on_discard)
 	SignalBus.card_played.disconnect(on_play)
 	SignalBus.card_drawn.disconnect(on_draw)
@@ -291,7 +292,9 @@ func verify_card_interactions() -> void:
 		await frames(1)
 		var view: CardView = ui.hand_container.get_child(0)
 		var before := interaction_state()
-		check("compact card " + String(id), view.get_node("Body").text == "%s+\n[%d能]" % [cd.name, cd.cost] and not view.get_node("EnchantIcon").visible)
+		var resolved_cost := ui.controller.card_cost(entry, cd)
+		var cost_text := "X" if resolved_cost < 0 else str(resolved_cost)
+		check("compact card " + String(id), view.get_node("Body").text == "%s+\n[%s能]" % [cd.name, cost_text] and not view.get_node("EnchantIcon").visible)
 		view.tapped.emit(view)
 		var browser = ui._card_browser
 		check("read-only details " + String(id), ui.card_browser_open() and browser.entries == [entry] and not browser.selectable and browser._cards.columns == 1 and interaction_state() == before)

@@ -1,13 +1,15 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/CardView.gd" id="1_cv"]
 
-[sub_resource type="StyleBoxFlat" id="SB_card"]
-bg_color = Color(0.941, 0.6, 0.482, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_common_rewardFrame.png" id="formal_frame"]
+
+[sub_resource type="StyleBoxTexture" id="SB_card"]
+texture = ExtResource("formal_frame")
+texture_margin_left = 7.0
+texture_margin_top = 7.0
+texture_margin_right = 7.0
+texture_margin_bottom = 7.0
 
 [node name="CardView" type="Panel"]
 layout_mode = 3
@@ -18,6 +20,20 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("SB_card")
 script = ExtResource("1_cv")
+
+[node name="Art" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -68.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Body" type="Label" parent="."]
 layout_mode = 1
@@ -35,7 +51,7 @@ autowrap_mode = 2
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.18, 0.15, 0.13, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 
 [node name="EnchantIcon" type="TextureRect" parent="."]
 layout_mode = 2

@@ -106,6 +106,17 @@ func verify_scene(mode: String) -> void:
 	# 结果页停留期间，重复领取仍应安全。
 	for button in buttons:
 		button.pressed.emit()
+	if choice == 2 and expected[2] == 1:
+		await tree.process_frame
+		var potion: PotionData = GameData.get_potion(RunState.potions.back())
+		check("potion waits on result with granted name and icon", ui.is_inside_tree() and not ui._finished and ui._result_panel.visible and ui._result_name.text == potion.name and ui._result_icon.texture == GameData.icon_texture(potion.icon))
+		check("potion effect initially waits for icon click", ui._result_description.text == "点击药水图标查看效果")
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = true
+		ui._result_icon.gui_input.emit(click)
+		check("potion icon reveals exact effect without consuming potion", ui._result_description.text == potion.description and RunState.potions.size() == before[2] + 1)
+		ui._continue_button.pressed.emit()
 	if choice == 1:
 		await tree.process_frame
 		check(mode + " waits on result until explicit continue", ui.is_inside_tree() and ui._result_panel.visible and not ui._choice_panel.visible and not ui._finished and not RunState.pending_node_resolved)
@@ -183,12 +194,23 @@ func verify_click(choice: int) -> void:
 		get_viewport().push_input(event, true)
 		if down:
 			await tree.process_frame
-	if choice == 1:
+	if choice in [1, 2]:
 		for i in 5:
 			await tree.process_frame
-		check("pointer relic click stays on result", ui.is_inside_tree() and ui._result_panel.visible)
+		check("pointer reward click stays on result", ui.is_inside_tree() and ui._result_panel.visible)
+		if choice == 2:
+			at = ui._result_icon.get_global_rect().get_center()
+			for down in [true, false]:
+				var icon_click := InputEventMouseButton.new()
+				icon_click.position = at
+				icon_click.button_index = MOUSE_BUTTON_LEFT
+				icon_click.pressed = down
+				get_viewport().push_input(icon_click, true)
+				await tree.process_frame
+			var potion: PotionData = GameData.get_potion(RunState.potions.back())
+			check("real pointer reveals potion effect", ui._result_description.text == potion.description)
 		await RenderingServer.frame_post_draw
-		check("relic result screenshot", get_viewport().get_texture().get_image().save_png("res://Temp/treasure_relic_result.png") == OK)
+		check("reward result screenshot", get_viewport().get_texture().get_image().save_png("res://Temp/treasure_result_%d.png" % choice) == OK)
 		check("result and continue fit viewport", get_viewport().get_visible_rect().encloses(ui._result_panel.get_global_rect()))
 		at = ui._continue_button.get_global_rect().get_center()
 		motion = InputEventMouseMotion.new()

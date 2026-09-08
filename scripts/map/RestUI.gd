@@ -137,7 +137,7 @@ func _build_forge() -> void:
 	panel.add_child(v)
 
 	v.add_child(_label("锻造台", 34, DARK))
-	v.add_child(_label("选择要强化的卡牌（已升级的不可再选）", 20, DARK))
+	v.add_child(_label("选择要强化的卡牌（灼热攻击可重复升级）", 20, DARK))
 
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -152,13 +152,14 @@ func _build_forge() -> void:
 	for i in RunState.deck.size():
 		var entry: Dictionary = RunState.deck[i]
 		var cd: CardData = GameData.get_card(StringName(entry["id"]))
-		if cd == null or entry["upgraded"]:
+		var level := int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0))
+		if cd == null or level > 0 and not cd.repeatable_upgrade:
 			continue
 		upgradable = true
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(600, 64)
 		b.add_theme_color_override("font_color", DARK)
-		b.text = "%s → %s" % [cd.name, cd.get_description(true)]
+		b.text = "%s%s → %s" % [cd.name, "+" + str(level) if level > 1 else "+" if level == 1 else "", cd.get_description(level + 1)]
 		b.add_theme_font_size_override("font_size", 20)
 		b.pressed.connect(_on_upgrade_card.bind(i))
 		col.add_child(b)

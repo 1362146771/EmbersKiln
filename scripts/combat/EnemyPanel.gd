@@ -25,23 +25,19 @@ var _index: int = -1
 ## 填充动态内容。enemy_count 用于决定立绘尺寸（1 个大、2 个中、3+ 个小）。
 func build(e: CombatUnit, index: int, selected: bool, enemy_count: int, controller: CombatController = null) -> void:
 	_index = index
-	# 单敌面板已收紧高度以容纳顶部遗物栏；图片仍保持原始比例。
-	var ic_sz := 280 if enemy_count <= 1 else (300 if enemy_count == 2 else 260)
-	if enemy_count >= 3:
-		# The old 260px texture minimum overflowed the narrower three-enemy slots.
-		ic_sz = mini(ic_sz, int(custom_minimum_size.x))
-		_intent_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		_status_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	else:
-		_intent_l.autowrap_mode = TextServer.AUTOWRAP_OFF
-		_status_l.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_intent_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_status_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_intent_l.text = _format_intent(e, controller)
 	var ed := e.data as EnemyData
 	if ed != null:
 		var tex := ed.sprite_texture()
 		if tex != null:
 			_sprite.texture = tex
-	_sprite.custom_minimum_size = Vector2(ic_sz, ic_sz)
+	_sprite.custom_minimum_size = Vector2.ZERO
+	_hp_bar.offset_right = -242.0 if enemy_count <= 1 else (-88.0 if index == enemy_count - 1 else -8.0)
+	$Inner/HpText.offset_right = _hp_bar.offset_right
+	_status_l.offset_right = -8.0
+	$Inner/HpText.text = "HP %d/%d" % [e.hp, e.max_hp]
 	_name_l.text = e.unit_name + ("  ◀" if selected else "")
 	_hp_bar.max_value = e.max_hp
 	_hp_bar.value = e.hp

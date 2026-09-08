@@ -44,7 +44,7 @@ func on_card_drag_started(view: CardView) -> void:
 	var gr := view.get_global_rect()
 	ui._ghost = ui.CardViewScene.instantiate()
 	ui._ghost.set_ghost(true)
-	ui._ghost.build_visual(view.card_data, -1, view.enchants, view.upgraded)
+	ui._ghost.build_visual(view.card_data, -1, view.enchants, view.upgraded, view.resolved_cost)
 	ui._ghost.custom_minimum_size = gr.size
 	ui.drag_layer.add_child(ui._ghost)
 	ui._ghost.global_position = gr.position
@@ -58,6 +58,7 @@ func on_card_drag_moved(view: CardView, gpos: Vector2) -> void:
 	# 卡牌浮在手指上方一点，避免被手指遮挡
 	ui._ghost.global_position = gpos - ui._ghost.size * 0.5 - Vector2(0, ui._ghost.size.y * 0.25)
 	ui.drop_layer.hover_update(gpos)
+	ui.drop_layer.set_arrow(view.get_global_rect().get_center(), gpos)
 	var over_discard := ui.drop_layer.hit_test(gpos) == DropLayer.DISCARD_TARGET
 	ui._hand.set_discard_hover(over_discard)
 	if over_discard:
@@ -78,7 +79,7 @@ func on_card_drag_ended(view: CardView, gpos: Vector2) -> void:
 	if idx == -2:
 		snap_back(view)
 		return
-	if ui.controller.energy < view.card_data.cost:
+	if not ui.controller.can_play_card(view.card_index):
 		ui._log("能量不足，可拖到弃牌堆弃置")
 		snap_back(view)
 		return
@@ -90,7 +91,7 @@ func build_drop_targets() -> void:
 	var targets := []
 	if ui.discard_pile_view != null and ui._drag_card != null:
 		targets.append({"node": ui.discard_pile_view, "types": [ui._drag_card.card_data.target], "index": DropLayer.DISCARD_TARGET})
-	if ui._drag_card != null and ui.controller.energy < ui._drag_card.card_data.cost:
+	if ui._drag_card != null and not ui.controller.can_play_card(ui._drag_card.card_index):
 		ui.drop_layer.set_targets(targets)
 		return
 	targets.append({"node": ui.player_panel, "types": [&"self", &"none"], "index": -1})
@@ -183,7 +184,7 @@ func snap_back(view: CardView) -> void:
 		if is_instance_valid(ghost):
 			ghost.queue_free()
 		if is_instance_valid(view):
-			view.set_playable(ui.controller.energy >= view.card_data.cost)
+			view.set_playable(ui.controller.can_play_card(view.card_index))
 		finish_cast_refresh()
 	)
 

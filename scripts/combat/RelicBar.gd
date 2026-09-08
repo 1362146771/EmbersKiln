@@ -37,15 +37,15 @@ func refresh() -> void:
 	if RunState.relic_ids.is_empty():
 		var empty := Label.new()
 		empty.text = "暂无遗物"
-		empty.add_theme_font_size_override("font_size", 20)
+		empty.add_theme_font_size_override("font_size", 16)
 		slots.add_child(empty)
 	for rid in RunState.relic_ids:
 		var relic: RelicData = GameData.get_relic(rid)
 		var button := Button.new()
 		button.name = String(rid)
-		button.custom_minimum_size = Vector2(64, 64)
+		button.custom_minimum_size = Vector2(48, 48)
 		button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		button.add_theme_font_size_override("font_size", 20)
+		button.add_theme_font_size_override("font_size", 16)
 		button.set_meta("relic_id", rid)
 		var title := relic.name if relic != null else String(rid)
 		var description := relic.description if relic != null else "遗物资料暂不可用。"

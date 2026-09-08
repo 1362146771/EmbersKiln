@@ -18,6 +18,7 @@ var _result_title: Label
 var _result_icon: TextureRect
 var _result_name: Label
 var _result_description: Label
+var _result_effect := ""
 var _continue_button: Button
 var _pending_card: Dictionary = {}
 var _pending_card_mode := ""
@@ -69,6 +70,7 @@ func _build_main() -> void:
 		_result_panel.add_theme_stylebox_override("panel", CardBrowserScript.style(CardBrowserScript.SLATE))
 		_result_title = _result_panel.get_node("Content/Title")
 		_result_icon = _result_panel.get_node("Content/Icon")
+		_wire_result_icon()
 		_result_name = _result_panel.get_node("Content/Name")
 		_result_description = _result_panel.get_node("Content/Description")
 		_continue_button = _result_panel.get_node("Content/ContinueButton")
@@ -142,6 +144,7 @@ func _build_result(center: CenterContainer) -> void:
 	_result_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_result_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	column.add_child(_result_icon)
+	_wire_result_icon()
 	_result_name = CardBrowserScript.label("", 32)
 	column.add_child(_result_name)
 	_result_description = CardBrowserScript.label("", 26)
@@ -152,6 +155,11 @@ func _build_result(center: CenterContainer) -> void:
 
 
 func _show_result(title: String, reward_name: String, description: String, icon: String = "") -> void:
+	_result_effect = ""
+	_result_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_icon.focus_mode = Control.FOCUS_NONE
+	_result_icon.mouse_default_cursor_shape = Control.CURSOR_ARROW
+	_result_icon.tooltip_text = ""
 	_result_title.text = title
 	_result_name.text = reward_name
 	_result_description.text = description
@@ -160,6 +168,21 @@ func _show_result(title: String, reward_name: String, description: String, icon:
 	_choice_panel.hide()
 	_result_panel.show()
 	_continue_button.grab_focus()
+
+
+func _wire_result_icon() -> void:
+	if not _result_icon.gui_input.is_connected(_on_result_icon_input):
+		_result_icon.gui_input.connect(_on_result_icon_input)
+
+
+func _on_result_icon_input(event: InputEvent) -> void:
+	if _result_effect.is_empty():
+		return
+	var clicked: bool = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed
+	var touched: bool = event is InputEventScreenTouch and event.pressed
+	if clicked or touched or event.is_action_pressed("ui_accept"):
+		_result_description.text = _result_effect
+		_result_icon.accept_event()
 
 
 func _on_take_card() -> void:
@@ -221,7 +244,15 @@ func _on_take_potion() -> void:
 	RunState.add_potion(pid)
 	var p = GameData.get_potion(pid)
 	_log("宝箱获得药水：%s" % (p.name if p != null else pid))
-	_finish()
+	var effect: String = p.description if p != null else "药水效果资料暂不可用。"
+	_show_result("获得药水", p.name if p != null else String(pid), effect, p.icon if p != null else "")
+	if _result_icon.visible:
+		_result_effect = effect
+		_result_description.text = "点击药水图标查看效果"
+		_result_icon.mouse_filter = Control.MOUSE_FILTER_STOP
+		_result_icon.focus_mode = Control.FOCUS_ALL
+		_result_icon.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		_result_icon.tooltip_text = "查看药水效果"
 
 
 func _begin_claim() -> bool:

@@ -1,76 +1,50 @@
 [gd_scene format=3 uid="uid://doua82ixjjqsc"]
 
 [ext_resource type="Script" uid="uid://hbsk1gllvr77" path="res://scripts/combat/CombatUI.gd" id="1_cui"]
-[ext_resource type="Texture2D" path="res://art/player/SPR_Player_Tannaro.png" id="2_3pd5i"]
+[ext_resource type="Texture2D" uid="uid://dh5emmx0vsiow" path="res://themes/formal/PlayerPortrait.tres" id="2_3pd5i"]
 [ext_resource type="PackedScene" path="res://scenes/combat/RelicBar.tscn" id="3_relics"]
 [ext_resource type="PackedScene" path="res://scenes/combat/DiscardPile.tscn" id="4_discard"]
 [ext_resource type="PackedScene" path="res://scenes/combat/DrawPile.tscn" id="5_draw"]
+[ext_resource type="Texture2D" uid="uid://c6abox28t7283" path="res://art/ui/formal/bd_battle_shuXinJinDu.png" id="barbg"]
+[ext_resource type="Texture2D" uid="uid://b0i4w6lkhicfw" path="res://art/ui/formal/bgIMG_battle.png" id="battle"]
+[ext_resource type="Texture2D" uid="uid://c52caygyq25cl" path="res://art/ui/formal/icon_battle_yaoShui_empty.png" id="empty"]
+[ext_resource type="Texture2D" uid="uid://bgmf5bpmlvxwx" path="res://art/ui/formal/btn_battle_jieShuNormal.png" id="end"]
+[ext_resource type="Texture2D" uid="uid://chhupvtj4jp0o" path="res://art/ui/formal/btn_battle_jieShuDown.png" id="enddown"]
+[ext_resource type="Texture2D" uid="uid://bk5426xhq62wg" path="res://art/ui/formal/nengliang_jindu.png" id="energy"]
+[ext_resource type="Texture2D" uid="uid://jivaohoskdjn" path="res://art/backgrounds/BG_Combat_KilnMouth.png" id="formal_bg"]
+[ext_resource type="Texture2D" uid="uid://bhtiib2pd2y2h" path="res://art/ui/formal/bd_battle_hpJinDu.png" id="hp"]
+[ext_resource type="Texture2D" uid="uid://6tww78we75iw" path="res://art/ui/formal/bd_battle_shuXin.png" id="hud"]
+[ext_resource type="Texture2D" uid="uid://bgqpiu5d3eisg" path="res://art/ui/formal/bd_bettle_liHuiBehind.png" id="portrait"]
+[ext_resource type="Texture2D" uid="uid://08r5ighk7e14" path="res://art/ui/formal/bd_battle_yaoShui.png" id="potions"]
+[ext_resource type="PackedScene" path="res://scenes/ui/PotionDetails.tscn" id="potion_details"]
+[ext_resource type="Texture2D" uid="uid://c1dd0td5gvuyu" path="res://art/enemies/SPR_Enemy_Claylump.png" id="preview_enemy"]
 
-[sub_resource type="StyleBoxFlat" id="SB_log"]
-bg_color = Color(0.15, 0.12, 0.11, 0.75)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.35, 0.3, 0.27, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+[sub_resource type="StyleBoxEmpty" id="Empty"]
 
-[sub_resource type="StyleBoxFlat" id="SB_player"]
-bg_color = Color(0.22, 0.19, 0.17, 0.92)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.35, 0.3, 0.27, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+[sub_resource type="StyleBoxTexture" id="FormalBarBg"]
+texture = ExtResource("barbg")
+texture_margin_left = 12.0
+texture_margin_right = 12.0
 
-[sub_resource type="StyleBoxFlat" id="SB_hpbg"]
-bg_color = Color(0.12, 0.1, 0.1, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+[sub_resource type="StyleBoxTexture" id="FormalHp"]
+texture = ExtResource("hp")
+texture_margin_left = 12.0
+texture_margin_right = 12.0
 
-[sub_resource type="StyleBoxFlat" id="SB_hpfill"]
-bg_color = Color(0.847, 0.353, 0.188, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+[sub_resource type="StyleBoxTexture" id="FormalEnd"]
+texture = ExtResource("end")
+texture_margin_left = 12.0
+texture_margin_right = 12.0
 
-[sub_resource type="StyleBoxFlat" id="SB_btnn"]
-bg_color = Color(0.941, 0.6, 0.482, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+[sub_resource type="StyleBoxTexture" id="FormalEndDown"]
+texture = ExtResource("enddown")
+texture_margin_left = 12.0
+texture_margin_right = 12.0
 
-[sub_resource type="StyleBoxFlat" id="SB_btnp"]
-bg_color = Color(0.8, 0.51, 0.41, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="SB_btnh"]
-bg_color = Color(0.948, 0.648, 0.544, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="SB_btnd"]
-bg_color = Color(0.45, 0.42, 0.4, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+[sub_resource type="StyleBoxTexture" id="FormalEnergy"]
+texture = ExtResource("energy")
+texture_margin_left = 12.0
+texture_margin_right = 12.0
 
 [node name="CombatPlay" type="Control" unique_id=1956281538]
 layout_mode = 3
@@ -80,6 +54,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_cui")
+
+[node name="FormalBackground" type="TextureRect" parent="." unique_id=1526822220]
+modulate = Color(0.85, 0.85, 0.85, 1)
+z_index = -99
+layout_mode = 0
+offset_top = 88.0
+offset_right = 720.0
+offset_bottom = 658.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("formal_bg")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="Bg" type="ColorRect" parent="." unique_id=1972597728]
 z_index = -100
@@ -91,37 +79,40 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.08, 0.08, 1)
 
-[node name="Safe" type="MarginContainer" parent="." unique_id=1099449351]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="Safe" type="Control" parent="." unique_id=1099449351]
+anchors_preset = 0
+offset_right = 720.0
+offset_bottom = 1280.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
 
-[node name="Layout" type="VBoxContainer" parent="Safe" unique_id=2000632486]
-layout_mode = 2
-theme_override_constants/separation = 10
+[node name="Layout" type="Control" parent="Safe" unique_id=2000632486]
+anchors_preset = 0
+offset_right = 720.0
+offset_bottom = 1280.0
 
-[node name="TopRow" type="HBoxContainer" parent="Safe/Layout"]
-layout_mode = 2
+[node name="TopRow" type="HBoxContainer" parent="Safe/Layout" unique_id=1828416070]
+layout_mode = 0
+offset_left = 466.0
+offset_top = 976.0
+offset_right = 714.0
+offset_bottom = 1040.0
 
-[node name="RelicBar" parent="Safe/Layout/TopRow" instance=ExtResource("3_relics")]
+[node name="RelicBar" parent="Safe/Layout/TopRow" unique_id=902753411 instance=ExtResource("3_relics")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="Spacer" type="Control" parent="Safe/Layout/TopRow"]
+[node name="Spacer" type="Control" parent="Safe/Layout/TopRow" unique_id=950670997]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
 [node name="EnemyArea" type="HBoxContainer" parent="Safe/Layout" unique_id=892783163]
-layout_mode = 2
+layout_mode = 0
+offset_right = 720.0
+offset_bottom = 648.0
 size_flags_horizontal = 3
 size_flags_vertical = 16
 size_flags_stretch_ratio = 3.0
@@ -129,9 +120,14 @@ theme_override_constants/separation = 10
 alignment = 1
 
 [node name="LogPanel" type="Panel" parent="Safe/Layout" unique_id=1744960362]
-layout_mode = 2
+layout_mode = 0
+offset_left = 260.0
+offset_top = 935.0
+offset_right = 710.0
+offset_bottom = 969.0
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("SB_log")
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Empty")
 
 [node name="LogLabel" type="Label" parent="Safe/Layout/LogPanel" unique_id=1723709532]
 layout_mode = 1
@@ -141,33 +137,51 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.984, 0.953, 0.894, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="HandArea" type="Control" parent="Safe/Layout" unique_id=244600133]
+anchors_preset = 0
+offset_top = 1085.0
+offset_right = 720.0
+offset_bottom = 1280.0
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.6
+
+[node name="EnergyRow" type="Control" parent="Safe/Layout/HandArea" unique_id=1711211615]
+anchors_preset = 0
+offset_left = 8.0
+offset_top = -389.0
+offset_right = 478.0
+offset_bottom = -357.0
+
+[node name="PlayerEnergy" type="Label" parent="Safe/Layout/HandArea/EnergyRow" unique_id=1718488726]
+layout_mode = 0
+offset_right = 470.0
+offset_bottom = 32.0
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
+text = "能量 3 / 3"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HandArea" type="VBoxContainer" parent="Safe/Layout" unique_id=244600133]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 2.6
-theme_override_constants/separation = 6
+[node name="DrawPile" parent="Safe/Layout/HandArea/EnergyRow" unique_id=556937954 instance=ExtResource("5_draw")]
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 0
+offset_left = 566.0
+offset_top = 349.0
+offset_right = 708.0
+offset_bottom = 387.0
 
-[node name="EnergyRow" type="HBoxContainer" parent="Safe/Layout/HandArea" unique_id=1711211615]
-layout_mode = 2
-alignment = 1
-
-[node name="PlayerEnergy" type="Label" parent="Safe/Layout/HandArea/EnergyRow" unique_id=1718488726]
-layout_mode = 2
-size_flags_horizontal = 3
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.941, 0.6, 0.482, 1)
-theme_override_font_sizes/font_size = 26
-text = "能量 3 / 3"
-
-[node name="DrawPile" parent="Safe/Layout/HandArea/EnergyRow" instance=ExtResource("5_draw")]
-layout_mode = 2
-
-[node name="HandRow" type="HBoxContainer" parent="Safe/Layout/HandArea"]
-layout_mode = 2
+[node name="HandRow" type="HBoxContainer" parent="Safe/Layout/HandArea" unique_id=1793446182]
+layout_mode = 0
+offset_right = 720.0
+offset_bottom = 195.0
 size_flags_vertical = 0
 theme_override_constants/separation = 10
 
@@ -179,15 +193,19 @@ vertical_scroll_mode = 0
 
 [node name="HandContainer" type="HBoxContainer" parent="Safe/Layout/HandArea/HandRow/HandScroll" unique_id=1593778907]
 layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 8
+size_flags_vertical = 0
+theme_override_constants/separation = 4
 alignment = 1
 
-[node name="DiscardPile" parent="Safe/Layout/HandArea/HandRow" instance=ExtResource("4_discard")]
+[node name="DiscardPile" parent="Safe/Layout/HandArea/HandRow" unique_id=1922890882 instance=ExtResource("4_discard")]
 layout_mode = 2
 
 [node name="PotionBar" type="HBoxContainer" parent="Safe/Layout" unique_id=98016797]
-layout_mode = 2
+layout_mode = 0
+offset_left = 468.0
+offset_top = 790.0
+offset_right = 712.0
+offset_bottom = 892.0
 size_flags_horizontal = 3
 size_flags_vertical = 16
 theme_override_constants/separation = 8
@@ -195,15 +213,17 @@ alignment = 1
 
 [node name="SlotBox0" type="VBoxContainer" parent="Safe/Layout/PotionBar" unique_id=1803131878]
 layout_mode = 2
-size_flags_vertical = 16
+size_flags_vertical = 0
 theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="Safe/Layout/PotionBar/SlotBox0" unique_id=1022248287]
-custom_minimum_size = Vector2(56, 56)
+custom_minimum_size = Vector2(67, 66)
 layout_mode = 2
 size_flags_horizontal = 16
 size_flags_vertical = 16
+mouse_filter = 2
+texture = ExtResource("empty")
 expand_mode = 1
 stretch_mode = 3
 
@@ -211,19 +231,23 @@ stretch_mode = 3
 custom_minimum_size = Vector2(72, 28)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Empty")
+theme_override_styles/disabled = SubResource("Empty")
 text = "空"
 
 [node name="SlotBox1" type="VBoxContainer" parent="Safe/Layout/PotionBar" unique_id=1627586637]
 layout_mode = 2
-size_flags_vertical = 16
+size_flags_vertical = 0
 theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="Safe/Layout/PotionBar/SlotBox1" unique_id=83656322]
-custom_minimum_size = Vector2(56, 56)
+custom_minimum_size = Vector2(67, 66)
 layout_mode = 2
 size_flags_horizontal = 16
 size_flags_vertical = 16
+mouse_filter = 2
+texture = ExtResource("empty")
 expand_mode = 1
 stretch_mode = 3
 
@@ -231,19 +255,23 @@ stretch_mode = 3
 custom_minimum_size = Vector2(72, 28)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Empty")
+theme_override_styles/disabled = SubResource("Empty")
 text = "空"
 
 [node name="SlotBox2" type="VBoxContainer" parent="Safe/Layout/PotionBar" unique_id=1202248577]
 layout_mode = 2
-size_flags_vertical = 16
+size_flags_vertical = 0
 theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="Safe/Layout/PotionBar/SlotBox2" unique_id=136686402]
-custom_minimum_size = Vector2(56, 56)
+custom_minimum_size = Vector2(67, 66)
 layout_mode = 2
 size_flags_horizontal = 16
 size_flags_vertical = 16
+mouse_filter = 2
+texture = ExtResource("empty")
 expand_mode = 1
 stretch_mode = 3
 
@@ -251,103 +279,131 @@ stretch_mode = 3
 custom_minimum_size = Vector2(72, 28)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Empty")
+theme_override_styles/disabled = SubResource("Empty")
 text = "空"
 
-[node name="Bottom" type="HBoxContainer" parent="Safe/Layout" unique_id=116092309]
-layout_mode = 2
+[node name="Bottom" type="Control" parent="Safe/Layout" unique_id=116092309]
+anchors_preset = 0
+offset_top = 650.0
+offset_right = 720.0
+offset_bottom = 784.0
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
 
 [node name="PlayerPanel" type="Panel" parent="Safe/Layout/Bottom" unique_id=2002895812]
-custom_minimum_size = Vector2(430, 110)
-layout_mode = 2
+layout_mode = 0
+offset_left = 8.0
+offset_top = 14.0
+offset_right = 478.0
+offset_bottom = 124.0
 size_flags_horizontal = 3
 size_flags_vertical = 16
-theme_override_styles/panel = SubResource("SB_player")
+theme_override_styles/panel = SubResource("Empty")
 
-[node name="Phbox" type="HBoxContainer" parent="Safe/Layout/Bottom/PlayerPanel" unique_id=1440619334]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="Phbox" type="Control" parent="Safe/Layout/Bottom/PlayerPanel" unique_id=1440619334]
+anchors_preset = 0
+offset_right = 470.0
+offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 14
 
-[node name="Plv" type="VBoxContainer" parent="Safe/Layout/Bottom/PlayerPanel/Phbox" unique_id=1794171620]
-layout_mode = 2
+[node name="Plv" type="Control" parent="Safe/Layout/Bottom/PlayerPanel/Phbox" unique_id=1794171620]
+anchors_preset = 0
+offset_right = 470.0
+offset_bottom = 110.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 4
-alignment = 1
 
 [node name="PlayerHp" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Plv" unique_id=880936849]
-layout_mode = 2
+z_index = 1
+layout_mode = 0
+offset_right = 470.0
+offset_bottom = 32.0
 theme_override_colors/font_color = Color(0.984, 0.953, 0.894, 1)
-theme_override_font_sizes/font_size = 28
-text = "玩家 炭  HP 80 / 80"
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
+text = "HP 80 / 80"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PlayerHpBar" type="ProgressBar" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Plv" unique_id=1471008257]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
+layout_mode = 0
+offset_right = 470.0
+offset_bottom = 32.0
 size_flags_horizontal = 3
-theme_override_styles/background = SubResource("SB_hpbg")
-theme_override_styles/fill = SubResource("SB_hpfill")
+mouse_filter = 2
+theme_override_styles/background = SubResource("FormalBarBg")
+theme_override_styles/fill = SubResource("FormalHp")
 max_value = 80.0
 value = 80.0
 show_percentage = false
 
 [node name="PlayerBlock" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Plv" unique_id=47909916]
-layout_mode = 2
+layout_mode = 0
+offset_left = 4.0
+offset_top = 67.0
+offset_right = 134.0
+offset_bottom = 94.0
 theme_override_colors/font_color = Color(0.365, 0.792, 0.647, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 19
 text = "格挡 0"
 
-[node name="Prv" type="VBoxContainer" parent="Safe/Layout/Bottom/PlayerPanel/Phbox" unique_id=1222436232]
-layout_mode = 2
+[node name="Prv" type="Control" parent="Safe/Layout/Bottom/PlayerPanel/Phbox" unique_id=1222436232]
+anchors_preset = 0
+offset_right = 470.0
+offset_bottom = 110.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 4
-alignment = 1
 
 [node name="PlayerKiln" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Prv" unique_id=1288819419]
-layout_mode = 2
+layout_mode = 0
+offset_left = 135.0
+offset_top = 67.0
+offset_right = 305.0
+offset_bottom = 94.0
 theme_override_colors/font_color = Color(0.847, 0.353, 0.188, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 19
 text = "窑温 0 / 5"
 
 [node name="PlayerStatus" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Prv" unique_id=1621538643]
-layout_mode = 2
+layout_mode = 0
+offset_left = 2.0
+offset_top = 94.0
+offset_right = 470.0
+offset_bottom = 121.0
 theme_override_colors/font_color = Color(0.498, 0.467, 0.867, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 3
 
 [node name="EndTurnBtn" type="Button" parent="Safe/Layout/Bottom" unique_id=1610468733]
-custom_minimum_size = Vector2(200, 100)
-layout_mode = 2
+layout_mode = 0
+offset_left = 491.0
+offset_top = 15.0
+offset_right = 714.0
+offset_bottom = 118.0
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("SB_btnn")
-theme_override_styles/pressed = SubResource("SB_btnp")
-theme_override_styles/hover = SubResource("SB_btnh")
-theme_override_styles/disabled = SubResource("SB_btnd")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 7
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("FormalEnd")
+theme_override_styles/pressed = SubResource("FormalEndDown")
+theme_override_styles/hover = SubResource("FormalEndDown")
+theme_override_styles/disabled = SubResource("FormalEnd")
 text = "结束回合"
 
 [node name="PlayerSprite" type="TextureRect" parent="." unique_id=1764906718]
 z_index = -50
-custom_minimum_size = Vector2(390, 390)
-layout_mode = 1
-offset_left = -36.0
-offset_top = 919.0
-offset_right = 354.0
-offset_bottom = 1309.0
-scale = Vector2(0.7771566, 0.7517933)
-offset_transform_enabled = true
-offset_transform_scale = Vector2(0.7, 0.7)
+layout_mode = 0
+offset_left = -6.0
+offset_top = 751.0
+offset_right = 296.54544
+offset_bottom = 1524.8182
 mouse_filter = 2
 texture = ExtResource("2_3pd5i")
 expand_mode = 1
-stretch_mode = 3
+stretch_mode = 5
 
 [node name="ResultLabel" type="Label" parent="." unique_id=1062058977]
 visible = false
@@ -374,3 +430,93 @@ theme_override_colors/font_color = Color(0.941, 0.6, 0.482, 1)
 theme_override_font_sizes/font_size = 26
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="BattleGradient" type="TextureRect" parent="." unique_id=780654691]
+z_index = -100
+layout_mode = 0
+offset_right = 720.0
+offset_bottom = 1280.0
+mouse_filter = 2
+texture = ExtResource("battle")
+expand_mode = 1
+
+[node name="EnemyHeader" type="TextureRect" parent="." unique_id=1807635307]
+z_index = -1
+layout_mode = 0
+offset_right = 720.0
+offset_bottom = 100.0
+mouse_filter = 2
+texture = ExtResource("hud")
+expand_mode = 1
+
+[node name="PlayerHeader" type="TextureRect" parent="." unique_id=103436519]
+z_index = -1
+layout_mode = 0
+offset_top = 650.0
+offset_right = 720.0
+offset_bottom = 784.0
+mouse_filter = 2
+texture = ExtResource("hud")
+expand_mode = 1
+
+[node name="PotionShelf" type="TextureRect" parent="." unique_id=2035273641]
+z_index = -1
+layout_mode = 0
+offset_left = 468.0
+offset_top = 790.0
+offset_right = 712.0
+offset_bottom = 869.0
+mouse_filter = 2
+texture = ExtResource("potions")
+expand_mode = 1
+
+[node name="PortraitBacking" type="TextureRect" parent="." unique_id=707809004]
+z_index = -51
+layout_mode = 0
+offset_left = 9.0
+offset_top = 770.0
+offset_right = 284.0
+offset_bottom = 1052.0
+mouse_filter = 2
+texture = ExtResource("portrait")
+expand_mode = 1
+
+[node name="EnergyBar" type="ProgressBar" parent="." unique_id=1926733990]
+z_index = -1
+layout_mode = 0
+offset_left = 8.0
+offset_top = 696.0
+offset_right = 478.0
+offset_bottom = 728.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("FormalBarBg")
+theme_override_styles/fill = SubResource("FormalEnergy")
+value = 100.0
+show_percentage = false
+
+[node name="FormalEditorPreview" type="Control" parent="." unique_id=1335185158]
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Portrait" type="TextureRect" parent="FormalEditorPreview" unique_id=1647659625]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 185.0
+offset_right = 712.0
+offset_bottom = 635.0
+mouse_filter = 2
+texture = ExtResource("preview_enemy")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Name" type="Label" parent="FormalEditorPreview" unique_id=977682517]
+layout_mode = 0
+offset_top = 106.0
+offset_right = 720.0
+offset_bottom = 145.0
+theme_override_font_sizes/font_size = 27
+text = "陶泥团"
+horizontal_alignment = 1
+
+[node name="PotionDetails" parent="." unique_id=775479005 instance=ExtResource("potion_details")]
+anchors_preset = 0

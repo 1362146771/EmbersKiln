@@ -1,0 +1,52 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/ui/PotionDetails.gd" id="script"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_common_rewardFrame.png" id="frame"]
+[ext_resource type="Theme" path="res://themes/formal/btn_return_normal_small.tres" id="theme"]
+
+[sub_resource type="StyleBoxTexture" id="Panel"]
+texture = ExtResource("frame")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+content_margin_left = 18.0
+content_margin_top = 18.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
+
+[node name="PotionDetails" type="Control"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+z_index = 700
+mouse_filter = 0
+script = ExtResource("script")
+
+[node name="Panel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(320, 0)
+mouse_filter = 0
+theme_override_styles/panel = SubResource("Panel")
+
+[node name="Content" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Panel/Content"]
+layout_mode = 2
+text = "药水名称"
+theme_override_font_sizes/font_size = 25
+autowrap_mode = 3
+
+[node name="Description" type="Label" parent="Panel/Content"]
+layout_mode = 2
+text = "药水效果"
+theme_override_font_sizes/font_size = 21
+autowrap_mode = 3
+
+[node name="Close" type="Button" parent="Panel/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
+theme = ExtResource("theme")
+theme_override_font_sizes/font_size = 20
+text = "关闭"

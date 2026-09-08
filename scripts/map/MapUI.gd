@@ -22,8 +22,8 @@ const GREEN := Color(0.365, 0.792, 0.647)
 const RED := Color(0.847, 0.353, 0.188)
 const AMBER := Color(0.937, 0.624, 0.153)
 const PURPLE := Color(0.498, 0.467, 0.867)
-const DARK := Color(0.25, 0.20, 0.18)
-const LINE := Color(0.25, 0.20, 0.18, 0.35)
+const DARK := Color.WHITE
+const LINE := Color("70675b")
 const BG_DARK := Color(0.12, 0.10, 0.09)
 const BG_CREAM := CREAM
 
@@ -91,7 +91,13 @@ func _ready() -> void:
 		return
 	if not SignalBus.ad_reward_resolved.is_connected(_on_ad_reward_resolved):
 		SignalBus.ad_reward_resolved.connect(_on_ad_reward_resolved)
+	theme = FormalUI.theme()
 	_build_static_ui()
+	_bg.hide()
+	if not has_node("FormalBackground"):
+		FormalUI.background(self, FormalUI.ROOT + "bgIMG_stage.png").name = "FormalBackground"
+	map_scroller.offset_top = 106
+	topbar.hide()
 	if not RunState.pre_run_preparation_resolved:
 		PreRunBuffSystem.prepare_offer()
 	if PreRunBuffSystem.needs_preparation():
@@ -225,7 +231,7 @@ func _on_map_draw() -> void:
 			for j in node.links:
 				var k2 := "%d_%d" % [f + 1, j]
 				if node_pos.has(k2):
-					map_area.draw_line(p1, node_pos[k2], LINE, 3.0)
+					map_area.draw_dashed_line(p1, node_pos[k2], LINE, 4.0, 10.0)
 
 
 func _label(text: String, size: int, color: Color) -> Label:
@@ -322,11 +328,23 @@ func _add_node_button(node, f: int, i: int, x: float, y: float) -> void:
 		b.modulate = Color(1.3, 1.3, 1.3, 1.0)
 	else:
 		b.modulate = Color(0.85, 0.85, 0.85, 1.0)
-	# 用背景色块表达类型（Button 无直接 bg，用主题覆盖）
-	b.add_theme_stylebox_override("normal", _rounded_style(col))
-	b.add_theme_stylebox_override("hover", _rounded_style(col.lightened(0.1)))
-	b.add_theme_stylebox_override("pressed", _rounded_style(col.darkened(0.15)))
-	b.add_theme_stylebox_override("disabled", _rounded_style(col.darkened(0.25)))
+	# 同一节点保留点击/可达逻辑，仅使用正式普通态与描边高亮态。
+	b.text = ""
+	b.size = Vector2(100, 80)
+	b.position = Vector2(x - 50, y - 40)
+	b.modulate = Color.WHITE if reachable or chosen[f] == i else Color(0.72, 0.72, 0.72)
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		var skin := StyleBoxTexture.new()
+		skin.texture = FormalUI.node_texture(node.type, reachable or chosen[f] == i or state == "hover")
+		b.add_theme_stylebox_override(state, skin)
+	if node.type in [&"boss", &"rest", &"altar"]:
+		var caption := _label("首领" if node.type == &"boss" else "休息" if node.type == &"rest" else "祭坛", 17, Color.WHITE)
+		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(caption)
+		caption.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+		caption.offset_top = -4
+		caption.offset_bottom = 20
+		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	b.pressed.connect(_on_node_pressed.bind(f, i))
 	map_area.add_child(b)
 
@@ -491,7 +509,8 @@ func _show_continue_panel(title: String, btn_text: String) -> void:
 	panel.get_child(0).get_child(0).add_child(label)
 	var btn := Button.new()
 	btn.text = btn_text
-	btn.custom_minimum_size = Vector2(240, 80)
+	btn.custom_minimum_size = Vector2(327, 100)
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	btn.add_theme_font_size_override("font_size", 28)
 	btn.pressed.connect(_on_continue.bind(panel))
 	panel.get_child(0).get_child(0).add_child(btn)
@@ -504,49 +523,33 @@ func _on_continue(panel: Control) -> void:
 
 
 func _show_result(victory: bool) -> void:
-	var panel: Control = _overlay_panel()
-	var big := _label("胜  利  !" if victory else "你 倒 下 了", 72, GREEN if victory else RED)
-	big.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	panel.get_child(0).get_child(0).add_child(big)
-	var sub := _label("抵达第 %d 层" % RunState.current_floor, 28, DARK)
-	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	panel.get_child(0).get_child(0).add_child(sub)
+	var panel := (load("res://scenes/ui/RunResult.tscn") as PackedScene).instantiate() as Control
+	PauseManager.hide_pause_button()
+	var content := panel.get_node("Center/Content")
+	content.get_node("Emblem/Title").text = "胜利" if victory else "你倒下了"
+	content.get_node("Floor").text = "抵达第 %d 层" % RunState.current_floor
+	_result_fireseed_label = content.get_node("Fireseed")
+	_result_ad_button = content.get_node("AdButton")
+	_result_ad_button.hide()
 	if RunState.run_end_base_settled:
-		_result_fireseed_label = _label("基础火种 +%d（已到账）" % RunState.run_end_base_fireseed, 28, AMBER)
-		_result_fireseed_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		panel.get_child(0).get_child(0).add_child(_result_fireseed_label)
+		_result_fireseed_label.text = "基础火种 +%d（已到账）" % RunState.run_end_base_fireseed
+		_result_fireseed_label.add_theme_color_override("font_color", AMBER)
 		if RunEndRewardSystem.is_ad_bonus_configured() and RunState.run_end_ad_bonus_fireseed <= 0:
-			_result_ad_button = Button.new()
+			_result_ad_button.show()
 			_result_ad_button.text = "观看广告 · 额外获得 %d 火种" % RunEndRewardSystem.preview_ad_bonus()
-			_result_ad_button.custom_minimum_size = Vector2(420, 80)
-			_result_ad_button.add_theme_font_size_override("font_size", 26)
 			_result_ad_button.disabled = not RunEndRewardSystem.can_offer_ad_bonus()
 			_result_ad_button.tooltip_text = "当前无可用广告" if _result_ad_button.disabled else "基础火种已经到账"
 			_result_ad_button.pressed.connect(_on_run_end_ad_pressed)
-			panel.get_child(0).get_child(0).add_child(_result_ad_button)
 	else:
-		var unavailable := _label("火种暂未结算：正式投放数值尚未配置", 23, RED)
-		unavailable.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		panel.get_child(0).get_child(0).add_child(unavailable)
-	var btn := Button.new()
-	btn.text = "再来一局"
-	btn.custom_minimum_size = Vector2(240, 80)
-	btn.add_theme_font_size_override("font_size", 28)
-	btn.pressed.connect(_on_restart.bind(panel))
-	panel.get_child(0).get_child(0).add_child(btn)
-	var town_btn := Button.new()
-	town_btn.name = "ReturnTownButton"
-	town_btn.text = "返回窑口镇"
-	town_btn.custom_minimum_size = Vector2(240, 80)
-	town_btn.add_theme_font_size_override("font_size", 28)
-	town_btn.pressed.connect(_on_return_town.bind(panel))
-	panel.get_child(0).get_child(0).add_child(town_btn)
+		_result_fireseed_label.text = "火种暂未结算：正式投放数值尚未配置"
+		_result_fireseed_label.add_theme_color_override("font_color", RED)
+	content.get_node("RestartButton").pressed.connect(_on_restart.bind(panel))
+	content.get_node("ReturnTownButton").pressed.connect(_on_return_town.bind(panel))
 	add_child(panel)
 
 
 func _on_restart(panel: Control) -> void:
-	panel.queue_free()
-	start_new_map()
+	_on_return_town(panel)
 
 
 func _on_return_town(panel: Control) -> void:
@@ -574,13 +577,16 @@ func _on_ad_reward_resolved(_transaction_id: String, placement_id: StringName, r
 
 
 func _overlay_panel() -> Control:
-	var cover := _solid_bg(BG_CREAM)
+	var cover := FormalUI.menu_background()
+	cover.set_anchors_preset(Control.PRESET_FULL_RECT)
+	cover.theme = FormalUI.theme("btn_hall_normal_small.png")
 	cover.mouse_filter = Control.MOUSE_FILTER_STOP
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	cover.add_child(center)
 	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", 28)
+	col.custom_minimum_size.x = 480
+	col.add_theme_constant_override("separation", 24)
 	center.add_child(col)
 	return cover
 
@@ -591,6 +597,11 @@ func _overlay_panel() -> Control:
 func _refresh_topbar() -> void:
 	if top_hp == null:
 		return
+	var old_header := get_node_or_null("FormalHeader")
+	if old_header != null:
+		remove_child(old_header)
+		old_header.queue_free()
+	FormalUI.header(self, "第 %d 幕 · %s" % [RunState.current_act + 1, RunState.current_act_config().get("title", "")])
 	var act_cfg: Dictionary = RunState.current_act_config()
 	top_act.text = "第 %d 幕 · %s" % [RunState.current_act + 1, String(act_cfg.get("title", ""))]
 	top_hp.text = "HP %d / %d" % [RunState.hp, RunState.max_hp]

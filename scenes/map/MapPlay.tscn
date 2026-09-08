@@ -1,6 +1,100 @@
 [gd_scene format=3 uid="uid://xxbaecyynxxt"]
 
-[ext_resource type="Script" uid="uid://deunliweghmsf" path="res://scripts/map/MapUI.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/map/MapUI.gd" id="1"]
+[ext_resource type="Theme" path="res://themes/formal/btn_event_normal.tres" id="1_ck1c5"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bgIMG_stage.png" id="3_oldgt"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/btn_event_normal.png" id="4_5g4qy"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_shop_btn.png" id="5_mjk74"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_blood.png" id="6_12puy"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_gold(需ai改.png" id="7_qb5cx"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stair.png" id="8_0q8td"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yw0dd"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("4_5g4qy")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+modulate_color = Color(0.4, 0.40784314, 0.4392157, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ec4rh"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("4_5g4qy")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xm5m2"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("4_5g4qy")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wo7fi"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("4_5g4qy")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cwu1k"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+texture = ExtResource("4_5g4qy")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+modulate_color = Color(0.47058824, 0.50980395, 0.5529412, 1)
+
+[sub_resource type="Theme" id="Theme_bmc0b"]
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_disabled_color = Color(0.5764706, 0.58431375, 0.60784316, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_outline_color = Color(0.03529412, 0.043137256, 0.05490196, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/constants/outline_size = 5
+Button/font_sizes/font_size = 24
+Button/styles/disabled = SubResource("StyleBoxTexture_yw0dd")
+Button/styles/focus = SubResource("StyleBoxTexture_ec4rh")
+Button/styles/hover = SubResource("StyleBoxTexture_xm5m2")
+Button/styles/normal = SubResource("StyleBoxTexture_wo7fi")
+Button/styles/pressed = SubResource("StyleBoxTexture_cwu1k")
+Label/colors/font_color = Color(1, 1, 1, 1)
+Label/colors/font_outline_color = Color(0.03529412, 0.043137256, 0.05490196, 1)
+Label/constants/outline_size = 5
+Label/font_sizes/font_size = 24
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_c307s"]
+content_margin_left = 18.0
+content_margin_top = 18.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
+texture = ExtResource("5_mjk74")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
 
 [node name="MapPlay" type="Control" unique_id=1320572747]
 layout_mode = 3
@@ -9,9 +103,20 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_ck1c5")
 script = ExtResource("1")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="FormalBackground" type="TextureRect" parent="." unique_id=1438048852]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("3_oldgt")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Background" type="ColorRect" parent="." unique_id=613795271]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,7 +126,8 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.984, 0.953, 0.894, 1)
 
-[node name="Topbar" type="HBoxContainer" parent="."]
+[node name="Topbar" type="HBoxContainer" parent="." unique_id=362542415]
+visible = false
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -29,57 +135,133 @@ offset_bottom = 40.0
 grow_horizontal = 2
 theme_override_constants/separation = 40
 
-[node name="Act" type="Label" parent="Topbar"]
+[node name="Act" type="Label" parent="Topbar" unique_id=785193829]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.498, 0.467, 0.867, 1)
 theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.498, 0.467, 0.867, 1)
 text = "第 1 幕"
 
-[node name="HP" type="Label" parent="Topbar"]
+[node name="HP" type="Label" parent="Topbar" unique_id=236219554]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
 theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
 text = "HP 80/80"
 
-[node name="Gold" type="Label" parent="Topbar"]
+[node name="Gold" type="Label" parent="Topbar" unique_id=390898290]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.937, 0.624, 0.153, 1)
 theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.937, 0.624, 0.153, 1)
 text = "金币 0"
 
-[node name="Floor" type="Label" parent="Topbar"]
+[node name="Floor" type="Label" parent="Topbar" unique_id=787183250]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
 theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
 text = "第 0 层"
 
-[node name="Buff" type="Label" parent="Topbar"]
+[node name="Buff" type="Label" parent="Topbar" unique_id=284173929]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.365, 0.792, 0.647, 1)
 theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.365, 0.792, 0.647, 1)
 text = "局前增益"
 
-[node name="MapScroller" type="ScrollContainer" parent="."]
+[node name="MapScroller" type="ScrollContainer" parent="." unique_id=1637664673]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 40.0
+offset_top = 106.0
 grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
 
-[node name="MapArea" type="Control" parent="MapScroller"]
-layout_mode = 2
+[node name="MapArea" type="Control" parent="MapScroller" unique_id=1456000564]
 custom_minimum_size = Vector2(680, 1180)
+layout_mode = 2
 metadata/draw = true
 
-[node name="EditorPreview" type="Label" parent="MapScroller/MapArea"]
+[node name="EditorPreview" type="Label" parent="MapScroller/MapArea" unique_id=15970701]
+layout_mode = 0
 offset_left = 162.0
 offset_top = 520.0
 offset_right = 518.0
 offset_bottom = 585.0
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 0.55)
 theme_override_font_sizes/font_size = 22
-text = "地图节点与连线将在运行时\n按当前 Run 数据生成"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "地图节点与连线将在运行时
+按当前 Run 数据生成"
 horizontal_alignment = 1
+
+[node name="FormalHeader" type="Panel" parent="." unique_id=1222016801]
+layout_mode = 0
+anchor_right = 1.0
+offset_bottom = 102.0
+mouse_filter = 2
+theme = SubResource("Theme_bmc0b")
+theme_override_styles/panel = SubResource("StyleBoxTexture_c307s")
+
+[node name="Title" type="Label" parent="FormalHeader" unique_id=689093172]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 8.0
+offset_right = 590.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 28
+text = "第 1 幕 · 陶原初探"
+horizontal_alignment = 1
+
+[node name="Stats" type="HBoxContainer" parent="FormalHeader" unique_id=573176206]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 52.0
+offset_right = 30.0
+offset_bottom = 52.0
+theme_override_constants/separation = 24
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="FormalHeader/Stats" unique_id=1537712637]
+layout_mode = 2
+
+[node name="TextureRect1" type="TextureRect" parent="FormalHeader/Stats/HBoxContainer2" unique_id=397705143]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("6_12puy")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label2" type="Label" parent="FormalHeader/Stats/HBoxContainer2" unique_id=1658101929]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.41960785, 0.4392157, 1)
+text = "0/0"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="FormalHeader/Stats" unique_id=1297585454]
+layout_mode = 2
+
+[node name="TextureRect2" type="TextureRect" parent="FormalHeader/Stats/HBoxContainer3" unique_id=991444536]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("7_qb5cx")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label3" type="Label" parent="FormalHeader/Stats/HBoxContainer3" unique_id=1552291464]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92941177, 0.8, 0.40392157, 1)
+text = "0"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="FormalHeader/Stats" unique_id=1114371532]
+layout_mode = 2
+
+[node name="TextureRect3" type="TextureRect" parent="FormalHeader/Stats/HBoxContainer4" unique_id=1708994741]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("8_0q8td")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label4" type="Label" parent="FormalHeader/Stats/HBoxContainer4" unique_id=1281230779]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72156864, 0.84313726, 0.8117647, 1)
+text = "第 0 层"

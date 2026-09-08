@@ -9,11 +9,12 @@ func attach(ui_ref: CombatUI) -> void:
 	ui = ui_ref
 
 
-func refresh_hand() -> void:
+func refresh_hand(force_phase_sync := false) -> void:
 	refresh_discard_pile()
-	if ui._casting or ui._drag_active or BattleDirector.input_locked or ui.controller.phase != CombatController.Phase.PLAYER:
+	if ui._casting or ui._drag_active or BattleDirector.input_locked or (not force_phase_sync and ui.controller.phase != CombatController.Phase.PLAYER):
 		ui._needs_refresh = true
 		return
+	ui._needs_refresh = false
 	for c in ui.hand_container.get_children():
 		ui.hand_container.remove_child(c)
 		c.queue_free()
@@ -23,14 +24,15 @@ func refresh_hand() -> void:
 		if cd == null:
 			continue
 		var enchants: Array = entry.get("enchants", [])
-		var b := build_card_view(cd, i, enchants, entry.get("upgraded", false))
+		var level := ui.controller._card_upgrade_state(entry)
+		var b := build_card_view(cd, i, enchants, level > 0, ui.controller.card_cost(entry, cd))
 		ui.hand_container.add_child(b)
 
 
-func build_card_view(cd: CardData, i: int, enchants: Array = [], upgraded: bool = false) -> CardView:
+func build_card_view(cd: CardData, i: int, enchants: Array = [], upgraded: bool = false, resolved_cost: int = -999) -> CardView:
 	var v := ui.CardViewScene.instantiate()
-	v.build_visual(cd, i, enchants, upgraded)
-	v.set_playable(ui.controller.energy >= cd.cost)
+	v.build_visual(cd, i, enchants, upgraded, resolved_cost)
+	v.set_playable(ui.controller.can_play_card(i))
 	if ui.combat_over:
 		v.set_enabled(false)
 	v.drag_started.connect(ui._targeting.on_card_drag_started)

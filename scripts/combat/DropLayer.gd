@@ -10,6 +10,11 @@ const C_VALID := Color(0.365, 0.792, 0.647)   # 绿：合法落点
 const C_HOVER := Color(1.0, 0.92, 0.65)        # 金：悬停（指针所在落点）
 const DISCARD_TARGET := -4                  # 独立于玩家(-1)、无落点(-2)、无悬停(-3)
 
+const ARROW := preload("res://art/ui/formal/effrct_arrow.png")
+var arrow_start := Vector2.ZERO
+var arrow_end := Vector2.ZERO
+var arrow_visible := false
+
 var _targets: Array = []          # [{node:Control, types:Array[StringName], index:int, rect:Rect2}]
 var _card_type: StringName = &""  # 当前拖拽卡的 target 类型，用于筛选合法落点
 var _hover_index: int = -3        # 当前悬停目标 index（-3=无）
@@ -28,6 +33,7 @@ func set_targets(targets: Array) -> void:
 
 
 func clear() -> void:
+	arrow_visible = false
 	_targets = []
 	_card_type = &""
 	_hover_index = -3
@@ -71,7 +77,24 @@ func hit_test(global_pos: Vector2) -> int:
 	return -2
 
 
+func set_arrow(start: Vector2, end: Vector2) -> void:
+	arrow_start = start - global_position
+	arrow_end = end - global_position
+	arrow_visible = start.distance_to(end) > 40.0
+	queue_redraw()
+
+
 func _draw() -> void:
+	if arrow_visible:
+		var delta := arrow_end - arrow_start
+		var count := maxi(1, int(delta.length() / 42.0))
+		for i in range(1, count + 1):
+			var point := arrow_start.lerp(arrow_end, float(i) / count)
+			# 原图尖端朝左上：扣除贴图自身方向，让尖端沿引导线指向拖动卡牌。
+			var texture_forward := Vector2(-33.0 * 44.0 / 113.0, -59.0 * 48.0 / 117.0)
+			draw_set_transform(point, delta.angle() - texture_forward.angle(), Vector2.ONE)
+			draw_texture_rect(ARROW, Rect2(-22, -24, 44, 48), false)
+		draw_set_transform(Vector2.ZERO)
 	if _card_type == &"":
 		return
 	for t in _targets:
@@ -86,9 +109,8 @@ func _draw() -> void:
 			c = Color("f2e8d5") if is_hover else Color("94826f")
 			draw_rect(rect.grow(-2.0), c, false, lw)
 			continue
-		var center: Vector2 = rect.get_center()
-		var r := minf(rect.size.x, rect.size.y) * 0.55 + 10.0
-		# 外环
-		draw_arc(center, r, 0.0, TAU, 48, c, lw, true)
-		# 矩形描边
-		draw_rect(rect.grow(-3.0), c, false, lw)
+		# 指向箭头承担主要反馈，仅描目标边缘，避免大圆环覆盖整个战场。
+		if t.index >= 0:
+			rect.position.y += 185.0
+			rect.size.y = maxf(0.0, rect.size.y - 195.0)
+		draw_rect(rect.grow(-5.0), Color(c, 0.65), false, 2.0)

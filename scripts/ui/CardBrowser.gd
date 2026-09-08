@@ -16,6 +16,8 @@ var _title := ""
 var _subtitle := ""
 var _confirm_text := ""
 var _warning := ""
+var _selection_description := ""
+var _require_selection := false
 var _finished := false
 var _single_card := false
 var _source_card: Control
@@ -32,13 +34,16 @@ var _confirm: Button
 
 
 func setup(title: String, subtitle: String, cards: Array, allow_selection: bool = false,
-		confirm_text: String = "", warning: String = "") -> void:
+		confirm_text: String = "", warning: String = "", selection_description: String = "",
+		require_selection: bool = false) -> void:
 	_title = title
 	_subtitle = subtitle
 	entries = cards.duplicate(true)
 	selectable = allow_selection
 	_confirm_text = confirm_text
 	_warning = warning
+	_selection_description = selection_description
+	_require_selection = require_selection
 
 
 func setup_details(entry: Dictionary, hint: String, source_card: Control) -> void:
@@ -100,6 +105,9 @@ func _ready() -> void:
 	footer.add_theme_constant_override("separation", 14)
 	_body.add_child(footer)
 	_back = button("取消" if selectable else "返回战斗", _go_back)
+	if _require_selection:
+		_back.text = "必须选择一张"
+		_back.disabled = true
 	footer.add_child(_back)
 	_confirm = button(_confirm_text, _confirm_selection)
 	_confirm.add_theme_stylebox_override("normal", style(Color("7e504e"), HIGHLIGHT))
@@ -222,7 +230,8 @@ static func button(text: String, callback: Callable) -> Button:
 
 static func card_name(entry: Dictionary) -> String:
 	var cd: CardData = GameData.get_card(StringName(entry.get("id", "")))
-	return (cd.name if cd != null else String(entry.get("id", "未知卡牌"))) + ("+" if entry.get("upgraded", false) else "")
+	var level := maxi(maxi(int(entry.get("upgrade_level", 0)), int(entry.get("combat_upgrade_level", 0))), 1 if bool(entry.get("upgraded", false)) else 0)
+	return (cd.name if cd != null else String(entry.get("id", "未知卡牌"))) + ("+" + (str(level) if level > 1 else "") if level > 0 else "")
 
 
 func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelContainer:
@@ -234,11 +243,14 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 	column.add_theme_constant_override("separation", 6 if _single_card else 10)
 	panel.add_child(column)
 	var title := label(card_name(entry), 22 if _single_card else 28)
-	if entry.get("upgraded", false):
+	if maxi(maxi(int(entry.get("upgrade_level", 0)), int(entry.get("combat_upgrade_level", 0))), 1 if bool(entry.get("upgraded", false)) else 0) > 0:
 		title.add_theme_color_override("font_color", Color("d9a441"))
 	column.add_child(title)
 	if cd != null:
-		column.add_child(label("%d 能量 · %s · %s" % [cd.cost,
+		var level := maxi(maxi(int(entry.get("upgrade_level", 0)), int(entry.get("combat_upgrade_level", 0))), 1 if bool(entry.get("upgraded", false)) else 0)
+		var resolved_cost := cd.resolved_cost(level)
+		var cost_text := "X" if resolved_cost < 0 else str(resolved_cost)
+		column.add_child(label("%s 能量 · %s · %s" % [cost_text,
 			GameData.card_taxonomy_name(&"types", cd.type),
 			GameData.card_taxonomy_name(&"rarities", cd.rarity)], 18 if _single_card else 20))
 		if not cd.mechanics.is_empty():
@@ -247,16 +259,17 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 				mechanic_names.append(GameData.card_taxonomy_name(&"mechanics", mechanic))
 			column.add_child(label("机制 · %s" % " / ".join(mechanic_names), 16 if _single_card else 18))
 		var texture := GameData.icon_texture(cd.art)
-		if texture != null and not _single_card:
+		if texture != null:
 			var art := TextureRect.new()
+			art.name = "CardArt"
 			art.texture = texture
-			art.custom_minimum_size = Vector2(128, 128)
+			art.custom_minimum_size = Vector2(0, 96 if _single_card else 128)
 			art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			column.add_child(art)
-		column.add_child(label(cd.get_description(entry.get("upgraded", false)), 20 if _single_card else 22))
-		if cd.exhaust:
+		column.add_child(label(cd.get_description(level), 20 if _single_card else 22))
+		if cd.exhausts_on_play(level):
 			column.add_child(label("消耗：打出后本场不再抽到", 20))
 		elif cd.type == &"power":
 			column.add_child(label("能力：生效后移出本场抽弃循环", 20))
@@ -288,13 +301,17 @@ func select_card(index: int) -> void:
 	for child in _detail.get_children():
 		_detail.remove_child(child)
 		child.queue_free()
-	_hint.text = "确认永久移除 · %s" % card_name(entries[index])
-	_detail.add_child(label(_warning + "\n\n该卡会从本局牌组中永久消失，后续战斗不再抽到。此操作不是弃牌，也不是消耗。", 24))
+	_hint.text = "确认选择 · %s" % card_name(entries[index])
+	var detail_text := _selection_description
+	if detail_text.is_empty():
+		detail_text = "该卡会从本局牌组中永久消失，后续战斗不再抽到。此操作不是弃牌，也不是消耗。"
+	_detail.add_child(label((_warning + "\n\n" + detail_text).strip_edges(), 24))
 	_detail.add_child(_card_panel(entries[index], index, false))
 	_cards.hide()
 	_detail.show()
 	_scroll.scroll_vertical = 0
 	_back.text = "重新选牌"
+	_back.disabled = false
 	_confirm.show()
 	_back.grab_focus()  # 不默认聚焦破坏性确认。
 
@@ -305,9 +322,12 @@ func _go_back() -> void:
 		_detail.hide()
 		_cards.show()
 		_hint.text = _subtitle
-		_back.text = "取消"
+		_back.text = "必须选择一张" if _require_selection else "取消"
+		_back.disabled = _require_selection
 		_confirm.hide()
 	else:
+		if _require_selection:
+			return
 		close()
 
 

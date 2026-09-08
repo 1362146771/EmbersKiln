@@ -1,4 +1,3 @@
-@tool
 class_name CombatUI
 extends Control
 ## 竖屏三段式战斗 UI（MVP）—— 门面（P4b 拆分后）。
@@ -55,7 +54,7 @@ var selected_target: int = -1
 const CardViewScene := preload("res://scenes/combat/CardView.tscn")
 const DropLayerScript := preload("res://scripts/combat/DropLayer.gd")
 const EnemyPanelScene := preload("res://scenes/combat/EnemyPanel.tscn")
-const ENEMY_PANEL_OFFSET_Y := 30   # 敌人框整体垂直下偏移（像素，720×1280 基准）
+const ENEMY_PANEL_OFFSET_Y := 0   # 正式界面血条从屏幕顶部开始
 const AllyPanelScene := preload("res://scenes/combat/AllyPanel.tscn")
 const RelicBarScene := preload("res://scenes/combat/RelicBar.tscn")
 const DiscardPileScene := preload("res://scenes/combat/DiscardPile.tscn")
@@ -82,10 +81,10 @@ const PANEL_BG := Color(0.22, 0.19, 0.17, 0.92)
 
 # 玩家动作状态暂时共用同一张正式立绘；状态切换和死亡锁定逻辑保留，便于以后补充独立动作图。
 const PLAYER_POSE_TEX := {
-	&"idle": preload("res://art/player/SPR_Player_Tannaro.png"),
-	&"attack": preload("res://art/player/SPR_Player_Tannaro.png"),
-	&"hit": preload("res://art/player/SPR_Player_Tannaro.png"),
-	&"death": preload("res://art/player/SPR_Player_Tannaro.png"),
+	&"idle": preload("res://themes/formal/PlayerPortrait.tres"),
+	&"attack": preload("res://themes/formal/PlayerPortrait.tres"),
+	&"hit": preload("res://themes/formal/PlayerPortrait.tres"),
+	&"death": preload("res://themes/formal/PlayerPortrait.tres"),
 }
 const PLAYER_POSE_HOLD := 0.7   # attack / hit 姿态保持秒数
 var _player_dead := false       # true 后立绘锁定 death，不再回 idle
@@ -98,11 +97,11 @@ const PLAYER_Z := -50                            # 玩家立绘层级：背景�
 const ALLY_DARK_Z := 50                           # 暗态：在玩家立绘之下 → 被遮挡
 const ALLY_ACT_Z := 150                           # 行动态：在玩家立绘之上 → 盖住玩家
 const ALLY_DARK_ALPHA := 1.0                      # 常驻亮度：随从已移至屏幕右下，不再躲在玩家立绘后，故常显满亮（§6.1 遮挡暗态已停用）
-const ALLY_BASE_X := 500                          # 随从 chip 起始 X（屏幕右下，与玩家立绘左下对称：右缘贴右边界）
-const ALLY_BASE_Y := 820                          # 随从 chip 起始 Y（与玩家立绘 Y 对齐，落在屏幕底部）
-const ALLY_STEP_X := -290                         # 多随从向左排开（从右缘往中心方向，贴近右边界）
-const ALLY_CHIP_W := 280                          # 放大 100%（原 140 → 280）
-const ALLY_CHIP_H := 300                          # 放大 100%（原 150 → 300）
+const ALLY_BASE_X := 530                          # 随从 chip 起始 X（屏幕右下，与玩家立绘左下对称：右缘贴右边界）
+const ALLY_BASE_Y := 892                          # 药水栏下方，底部留出手牌
+const ALLY_STEP_X := -185                         # 多随从向左排开（从右缘往中心方向，贴近右边界）
+const ALLY_CHIP_W := 180                          # 正式竖屏随从栏宽度
+const ALLY_CHIP_H := 192                          # 紧凑随从栏，底边位于手牌上方
 
 # 助手类（门面 + 助手类模式，P4b）
 var _hud: CombatHUD
@@ -114,9 +113,18 @@ var _targeting: TargetingController
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
-		_editor_preview()
 		return
 
+	var formal_background := get_node_or_null("FormalBackground") as TextureRect
+	if formal_background == null:
+		formal_background = FormalUI.background(self, FormalUI.act_background())
+		formal_background.name = "FormalBackground"
+	formal_background.texture = load(FormalUI.act_background()) as Texture2D
+	formal_background.z_index = -99
+	formal_background.modulate = Color(0.85, 0.85, 0.85)
+	FormalUI.combat_reward_pending = false
+	FormalUI.combat_reward_backdrop = null
+	PauseManager.show_pause_button()
 	controller = CombatController.new()
 	add_child(controller)
 	# 实例化并挂载助手类（顺序无关，因 connect 发生在后续 refresh 调用时）
@@ -135,8 +143,13 @@ func _ready() -> void:
 		_build_ui()            # .new() 路径（测试 / MapUI 叠加层）：代码生成全部 HUD
 	else:
 		_wire_ui_signals()     # .tscn 路径（CombatPlay）：节点已在场景烘焙，仅连信号
+	var preview := get_node_or_null("FormalEditorPreview")
+	if preview != null:
+		remove_child(preview)
+		preview.queue_free()
 	_create_overlay_layers()
 	draw_pile_button.pressed.connect(_open_draw_pile)
+	discard_pile_view.gui_input.connect(_on_discard_pile_gui_input)
 	_connect_signals()
 	# P1 场景化：敌人 id 优先取自 RunState（由地图写入），仅在直接启动 CombatPlay.tscn
 	# （编辑器预览 / 旧 verify）且 RunState 未置时回退到默认 pending_enemy_ids。
@@ -147,225 +160,42 @@ func _ready() -> void:
 
 
 # =====================================================================
-# 构建 UI（全部用代码，避免手写 .tscn 锚点出错）
+# 场景复用与信号绑定
 # =====================================================================
 func _build_ui() -> void:
-	# 深色战斗背景
-	var bg := ColorRect.new()
-	bg.color = Color(0.10, 0.08, 0.08)
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
-
-	# 全局安全边距容器
-	var safe := MarginContainer.new()
-	safe.set_anchors_preset(Control.PRESET_FULL_RECT)
-	safe.add_theme_constant_override("margin_left", 10)
-	safe.add_theme_constant_override("margin_right", 10)
-	safe.add_theme_constant_override("margin_top", 10)
-	safe.add_theme_constant_override("margin_bottom", 10)
-	add_child(safe)
-
-	var layout := VBoxContainer.new()
-	layout.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	layout.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	layout.add_theme_constant_override("separation", 10)
-	safe.add_child(layout)
-
-	# 顶部左侧遗物栏；右侧留空给全局暂停按钮，不覆盖敌人意图。
-	var top_row := HBoxContainer.new()
-	top_row.name = "TopRow"
-	layout.add_child(top_row)
-	relic_bar = RelicBarScene.instantiate()
-	relic_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	relic_bar.size_flags_stretch_ratio = 2.0
-	top_row.add_child(relic_bar)
-	var top_spacer := Control.new()
-	top_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top_spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	top_row.add_child(top_spacer)
-
-	# --- 顶部：敌人区（横向卡片，尽可能占满竖向空间）---
-	enemy_area = HBoxContainer.new()
-	enemy_area.alignment = BoxContainer.ALIGNMENT_CENTER
-	enemy_area.add_theme_constant_override("separation", 10)
-	enemy_area.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	enemy_area.size_flags_vertical = Control.SIZE_SHRINK_CENTER  # 改：不再霸占剩余空间，敌区高度=框 420，卡牌才能上移
-	enemy_area.size_flags_stretch_ratio = 3
-	layout.add_child(enemy_area)
-
-	# --- 中部：日志条 ---
-	var log_panel := _styled_panel(Color(0.15, 0.12, 0.11, 0.75))
-	log_panel.custom_minimum_size = Vector2(0, 28)
-	log_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	log_label = _label("", 20, CREAM)
-	log_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	log_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	log_label.set_anchors_preset(Control.PRESET_FULL_RECT)
-	log_panel.add_child(log_label)
-	layout.add_child(log_panel)
-
-	# --- 手牌区（占剩余竖向空间的小头）---
-	var hand_area := VBoxContainer.new()
-	hand_area.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	hand_area.size_flags_stretch_ratio = 2.6
-	hand_area.alignment = BoxContainer.ALIGNMENT_BEGIN  # 改：手牌区顶部贴齐（替代居中）→ 卡牌紧贴能量条下方
-	hand_area.add_theme_constant_override("separation", 6)
-	layout.add_child(hand_area)
-
-	# 能量球（手牌上方）
-	var energy_row := HBoxContainer.new()
-	energy_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	player_energy = _orb_label("能量 3 / 3", 26, ORANGE)
-	player_energy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	player_energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	energy_row.add_child(player_energy)
-	draw_pile_button = DrawPileScene.instantiate()
-	energy_row.add_child(draw_pile_button)
-	hand_area.add_child(energy_row)
-
-	var hand_row := HBoxContainer.new()
-	hand_row.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	hand_row.add_theme_constant_override("separation", 10)
-	hand_area.add_child(hand_row)
-
-	var hand_scroll := ScrollContainer.new()
-	hand_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hand_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	hand_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	hand_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	hand_row.add_child(hand_scroll)
-	discard_pile_view = DiscardPileScene.instantiate()
-	hand_row.add_child(discard_pile_view)
-
-	hand_container = HBoxContainer.new()
-	hand_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	hand_container.add_theme_constant_override("separation", 8)
-	hand_container.size_flags_vertical = Control.SIZE_SHRINK_BEGIN  # 改：卡牌贴 ScrollContainer 顶部 → 卡牌整体上移
-	hand_scroll.add_child(hand_container)
-
-	# --- 药水槽行（战斗中携带 3 格，Free Action 使用，位于底部操作条上方）---
-	potion_bar = HBoxContainer.new()
-	potion_bar.alignment = BoxContainer.ALIGNMENT_CENTER
-	potion_bar.add_theme_constant_override("separation", 8)
-	potion_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	potion_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	layout.add_child(potion_bar)
-	_hud.spawn_potion_slots()
-	_hud.collect_potion_slots()
-	_hud.connect_potion_slots()
-
-	# --- 底部：玩家状态 + 结束回合 ---
-	var bottom := HBoxContainer.new()
-	bottom.add_theme_constant_override("separation", 12)
-	bottom.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	layout.add_child(bottom)
-
-	player_panel = _styled_panel(PANEL_BG)
-	player_panel.custom_minimum_size = Vector2(430, 110)
-	player_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	player_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	bottom.add_child(player_panel)
-
-	var phbox := HBoxContainer.new()
-	phbox.add_theme_constant_override("separation", 14)
-	phbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	player_panel.add_child(phbox)
-
-	# 玩家立绘：直接挂在 root(self) 上，避开所有 Container 的尺寸挤压与重排覆盖。
-	# 位置/尺寸由 position + custom_minimum_size 完全手控（720×1280 基准）。
-	player_sprite = TextureRect.new()
-	player_sprite.name = "PlayerSprite"
-	player_sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	player_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	player_sprite.custom_minimum_size = Vector2(390, 390)
-	player_sprite.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	player_sprite.z_index = PLAYER_Z   # §6.1 基准层级：随从暗态在其下、行动态在其上
-	player_sprite.position = Vector2(-60, 820)   # 立绘区域 ≈ (0,900)-(300,1200)，底部靠左
-	add_child(player_sprite)
-
-	# 左侧：HP 条 + 名字
-	var plv := VBoxContainer.new()
-	plv.add_theme_constant_override("separation", 4)
-	plv.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	plv.alignment = BoxContainer.ALIGNMENT_CENTER
-	plv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	phbox.add_child(plv)
-
-	player_hp = _label("玩家 炭  HP 80 / 80", 28, CREAM)
-	plv.add_child(player_hp)
-
-	player_hp_bar = ProgressBar.new()
-	player_hp_bar.max_value = controller.player.max_hp if controller.player != null else 80
-	player_hp_bar.value = controller.player.hp if controller.player != null else 80
-	player_hp_bar.show_percentage = false
-	player_hp_bar.custom_minimum_size = Vector2(0, 16)
-	player_hp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	player_hp_bar.add_theme_stylebox_override("fill", _hp_fill_style())
-	player_hp_bar.add_theme_stylebox_override("background", _hp_bg_style())
-	plv.add_child(player_hp_bar)
-
-	player_block = _label("格挡 0", 20, GREEN)
-	plv.add_child(player_block)
-
-	# 右侧：窑温 + 状态
-	var prv := VBoxContainer.new()
-	prv.add_theme_constant_override("separation", 4)
-	prv.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	prv.alignment = BoxContainer.ALIGNMENT_CENTER
-	phbox.add_child(prv)
-
-	player_kiln = _label("窑温 0 / 5", 20, RED)
-	prv.add_child(player_kiln)
-
-	player_status = _label("", 28, PURPLE)
-	prv.add_child(player_status)
-
-	# 结束回合按钮
-	end_turn_btn = Button.new()
-	end_turn_btn.text = "结束回合"
-	end_turn_btn.custom_minimum_size = Vector2(200, 100)
-	end_turn_btn.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	end_turn_btn.add_theme_font_size_override("font_size", 28)
-	end_turn_btn.add_theme_color_override("font_color", Color.WHITE)
-	end_turn_btn.add_theme_stylebox_override("normal", _btn_style(ORANGE))
-	end_turn_btn.add_theme_stylebox_override("hover", _btn_style(ORANGE.lightened(0.12)))
-	end_turn_btn.add_theme_stylebox_override("pressed", _btn_style(ORANGE.darkened(0.15)))
-	end_turn_btn.add_theme_stylebox_override("disabled", _btn_style(Color(0.45, 0.42, 0.40)))
-	end_turn_btn.pressed.connect(_targeting.on_end_turn)
-	bottom.add_child(end_turn_btn)
-
-	# --- 胜负面板（全屏覆盖）---
-	result_label = Label.new()
-	result_label.text = ""
-	result_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	result_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	result_label.set_anchors_preset(Control.PRESET_FULL_RECT)
-	result_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	result_label.visible = false
-	result_label.add_theme_font_size_override("font_size", 86)
-	add_child(result_label)
-
-	# 提示横幅（满场/拒绝召唤等），顶部居中，默认隐藏
-	toast_label = Label.new()
-	toast_label.text = ""
-	toast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	toast_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	toast_label.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	toast_label.position = Vector2(20, 12)
-	toast_label.size = Vector2(680, 44)
-	toast_label.z_index = 200   # 始终置顶，不被敌人卡/玩家立绘遮挡
-	toast_label.add_theme_font_size_override("font_size", 26)
-	toast_label.add_theme_color_override("font_color", ORANGE)
-	toast_label.modulate.a = 0.0
-	toast_label.visible = false
-	toast_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(toast_label)
-
-	# 拖拽层 / 落点层改为 _create_overlay_layers() 统一创建（.tscn 与 .new() 两路径共用）。
+	# .new() 入口也复用已保存的正式场景，防止出现第二套旧布局。
+	var shell := (load("res://scenes/combat/CombatPlay.tscn") as PackedScene).instantiate()
+	for child in shell.get_children():
+		var existing := get_node_or_null(NodePath(child.name))
+		if existing != null:
+			remove_child(existing)
+			existing.queue_free()
+		FormalUI._clear_owner(child)
+		shell.remove_child(child)
+		add_child(child)
+	shell.free()
+	enemy_area = get_node("Safe/Layout/EnemyArea")
+	hand_container = get_node("Safe/Layout/HandArea/HandRow/HandScroll/HandContainer")
+	discard_pile_view = get_node("Safe/Layout/HandArea/HandRow/DiscardPile")
+	draw_pile_button = get_node("Safe/Layout/HandArea/EnergyRow/DrawPile")
+	end_turn_btn = get_node("Safe/Layout/Bottom/EndTurnBtn")
+	potion_bar = get_node("Safe/Layout/PotionBar")
+	relic_bar = get_node("Safe/Layout/TopRow/RelicBar")
+	result_label = get_node("ResultLabel")
+	log_label = get_node("Safe/Layout/LogPanel/LogLabel")
+	player_hp = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerHp")
+	player_hp_bar = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerHpBar")
+	player_block = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerBlock")
+	player_energy = get_node("Safe/Layout/HandArea/EnergyRow/PlayerEnergy")
+	player_kiln = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Prv/PlayerKiln")
+	player_status = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Prv/PlayerStatus")
+	player_sprite = get_node("PlayerSprite")
+	player_panel = get_node("Safe/Layout/Bottom/PlayerPanel")
+	toast_label = get_node("ToastLabel")
+	$FormalBackground.texture = load(FormalUI.act_background())
+	_wire_ui_signals()
 
 
-## .tscn 路径：HUD 节点已在 CombatPlay.tscn 烘焙，这里只做运行时信号接线。
-## 样式（面板/血条/按钮底色）由场景自带，无需在此重设。
 func _wire_ui_signals() -> void:
 	if end_turn_btn != null and not end_turn_btn.pressed.is_connected(_targeting.on_end_turn):
 		end_turn_btn.pressed.connect(_targeting.on_end_turn)
@@ -388,68 +218,6 @@ func _create_overlay_layers() -> void:
 
 ## 编辑器预览：在 Godot 编辑器内打开 CombatPlay.tscn 时，用示例数据填充敌人/手牌/药水/立绘，
 ## 让 UI 布局与运行时一致。预览节点不会保存到 .tscn（add_child 不设置 owner）。
-func _editor_preview() -> void:
-	if enemy_area == null or hand_container == null:
-		push_warning("[CombatUI] 编辑器预览：缺少场景节点，跳过")
-		return
-
-	# 清理上次编译遗留的预览节点
-	for c in enemy_area.get_children():
-		c.queue_free()
-	for c in hand_container.get_children():
-		c.queue_free()
-
-	# 玩家立绘
-	if player_sprite != null:
-		var tex: Texture2D = PLAYER_POSE_TEX.get(&"idle")
-		if tex != null:
-			player_sprite.texture = tex
-
-	if not GameData.is_loaded:
-		push_warning("[CombatUI] 编辑器预览：GameData 未加载，仅显示 HUD 骨架")
-		return
-
-	# 示例敌人：陶泥团
-	var ed: EnemyData = GameData.enemies.get(&"claylump") as EnemyData
-	if ed != null:
-		var e := CombatUnit.new()
-		var ehp := int(ed.hp)
-		e.setup(false, &"claylump", ed.name, ehp, ed.sprite)
-		e.max_hp = ehp
-		e.hp = maxi(1, int(ehp * 0.6))
-		e.intent = {"intent": "attack", "value": 8, "times": 1}
-		var p = EnemyPanelScene.instantiate()
-		p.custom_minimum_size = Vector2(480, 600)
-		p.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		p.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		var holder := MarginContainer.new()
-		holder.add_theme_constant_override("margin_top", ENEMY_PANEL_OFFSET_Y)
-		holder.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		holder.add_child(p)
-		enemy_area.add_child(holder)
-		p.build(e, 0, false, 1)
-
-	# 示例手牌：5 张（劈薪/护坯交替）
-	var hand_ids: Array = [&"strike", &"defend", &"strike", &"defend", &"strike"]
-	for i in range(hand_ids.size()):
-		var cd: CardData = GameData.cards.get(hand_ids[i]) as CardData
-		if cd == null:
-			continue
-		var v = CardViewScene.instantiate()
-		v.build_visual(cd, i, [])
-		hand_container.add_child(v)
-
-	# 示例药水：第一格放「灰疗膏」
-	var pd: PotionData = GameData.potions.get(&"ash_salve") as PotionData
-	if pd != null and potion_slots.size() >= 1:
-		var slot: Button = potion_slots[0]
-		var ic: TextureRect = potion_icons[0] if potion_icons.size() > 0 else null
-		slot.text = pd.name
-		if ic != null and pd.icon != "":
-			ic.texture = GameData.icon_texture(pd.icon)
-
-
 # =====================================================================
 # 共享样式 / 格式化工厂（被 _build_ui、各助手类与场景共用，留门面避免跨文件依赖）
 # =====================================================================
@@ -626,11 +394,13 @@ func _connect_signals() -> void:
 	SignalBus.kiln_heat_changed.connect(_on_kiln)
 	SignalBus.combat_ended.connect(_on_combat_end)
 	SignalBus.turn_started.connect(_on_turn_started)
+	SignalBus.turn_ended.connect(_on_turn_ended)
 	SignalBus.damage_dealt.connect(_on_damage)
 	SignalBus.unit_died.connect(_on_unit_died)
 	SignalBus.card_played.connect(_on_card_played)
 	SignalBus.card_discarded.connect(_on_card_discarded)
 	SignalBus.card_drawn.connect(_on_card_drawn)
+	SignalBus.combat_card_choice_requested.connect(_on_combat_card_choice_requested)
 	SignalBus.combat_death_pending.connect(_on_combat_death_pending)
 	SignalBus.combat_revive_ready.connect(_on_combat_revive_ready)
 	SignalBus.ad_reward_resolved.connect(_on_ad_reward_resolved)
@@ -648,6 +418,8 @@ func _connect_signals() -> void:
 
 
 func _exit_tree() -> void:
+	if Engine.is_editor_hint():
+		return
 	if SignalBus.player_hp_changed.is_connected(_on_php):
 		SignalBus.player_hp_changed.disconnect(_on_php)
 	if SignalBus.player_block_changed.is_connected(_on_pblock):
@@ -666,6 +438,8 @@ func _exit_tree() -> void:
 		SignalBus.combat_ended.disconnect(_on_combat_end)
 	if SignalBus.turn_started.is_connected(_on_turn_started):
 		SignalBus.turn_started.disconnect(_on_turn_started)
+	if SignalBus.turn_ended.is_connected(_on_turn_ended):
+		SignalBus.turn_ended.disconnect(_on_turn_ended)
 	if SignalBus.damage_dealt.is_connected(_on_damage):
 		SignalBus.damage_dealt.disconnect(_on_damage)
 	if SignalBus.unit_died.is_connected(_on_unit_died):
@@ -676,6 +450,8 @@ func _exit_tree() -> void:
 		SignalBus.card_discarded.disconnect(_on_card_discarded)
 	if SignalBus.card_drawn.is_connected(_on_card_drawn):
 		SignalBus.card_drawn.disconnect(_on_card_drawn)
+	if SignalBus.combat_card_choice_requested.is_connected(_on_combat_card_choice_requested):
+		SignalBus.combat_card_choice_requested.disconnect(_on_combat_card_choice_requested)
 	if SignalBus.combat_death_pending.is_connected(_on_combat_death_pending):
 		SignalBus.combat_death_pending.disconnect(_on_combat_death_pending)
 	if SignalBus.combat_revive_ready.is_connected(_on_combat_revive_ready):
@@ -729,7 +505,8 @@ func _on_card_drawn(_card_id: StringName) -> void:
 
 
 func card_browser_open() -> bool:
-	return is_instance_valid(_card_browser) and not _card_browser.is_queued_for_deletion()
+	var potion_details := get_node_or_null("PotionDetails") as Control
+	return (is_instance_valid(_card_browser) and not _card_browser.is_queued_for_deletion()) or (potion_details != null and potion_details.visible)
 
 
 func _open_card_details(view: CardView) -> void:
@@ -741,7 +518,7 @@ func _open_card_details(view: CardView) -> void:
 	match view.card_data.target:
 		&"enemy": hint = "拖至目标敌人使用"
 		&"all_enemies": hint = "拖至任一敌人，作用于全体"
-	if controller.energy < view.card_data.cost:
+	if not controller.can_play_card(view.card_index):
 		hint += "\n能量不足，仍可弃牌"
 	var browser := CardBrowserScript.new()
 	browser.setup_details(controller.hand[view.card_index], hint, view)
@@ -755,11 +532,7 @@ func _open_draw_pile() -> void:
 		return
 	# 只排序深拷贝，既不泄露实际顺序，也不消耗任何随机数。
 	var cards := controller.draw_pile.duplicate(true)
-	cards.sort_custom(func(a: Dictionary, b: Dictionary):
-		var key_a := String(a.get("id", "")) + str(a.get("upgraded", false)) + str(a.get("enchants", []))
-		var key_b := String(b.get("id", "")) + str(b.get("upgraded", false)) + str(b.get("enchants", []))
-		return key_a < key_b
-	)
+	_sort_pile_snapshot(cards)
 	var browser := CardBrowserScript.new()
 	browser.setup("抽牌堆", "剩余 %d 张 · 仅供查看\n按卡牌分类排列，不代表抽取顺序。" % cards.size(), cards)
 	_card_browser = browser
@@ -770,10 +543,53 @@ func _open_draw_pile() -> void:
 	add_child(browser)
 
 
+func _on_discard_pile_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		_open_discard_pile()
+		if card_browser_open():
+			discard_pile_view.accept_event()
+
+
+func _open_discard_pile() -> void:
+	if card_browser_open() or _casting or _drag_active or BattleDirector.input_locked or combat_over or controller.phase != CombatController.Phase.PLAYER:
+		return
+	var cards := controller.discard_pile.duplicate(true)
+	_sort_pile_snapshot(cards)
+	var browser := CardBrowserScript.new()
+	browser.setup("弃牌堆", "当前 %d 张 · 仅供查看\n抽牌堆耗尽时，这些牌会洗回抽牌堆。" % cards.size(), cards)
+	_card_browser = browser
+	browser.closed.connect(func():
+		_card_browser = null
+	)
+	add_child(browser)
+
+
+func _sort_pile_snapshot(cards: Array) -> void:
+	cards.sort_custom(func(a: Dictionary, b: Dictionary):
+		var key_a := String(a.get("id", "")) + str(a.get("upgraded", false)) + str(a.get("enchants", []))
+		var key_b := String(b.get("id", "")) + str(b.get("upgraded", false)) + str(b.get("enchants", []))
+		return key_a < key_b
+	)
+
+
 func _close_card_browser() -> void:
 	if card_browser_open():
 		_card_browser.close()
 	_card_browser = null
+
+
+func _on_combat_card_choice_requested(title: String, entries: Array) -> void:
+	_close_card_browser()
+	var browser := CardBrowserScript.new()
+	browser.setup(title, "请选择一张牌以继续结算。", entries, true, "确认选择", "",
+		"选择只作用于本场战斗中的对应卡牌实例。", true)
+	_card_browser = browser
+	browser.confirmed.connect(func(index: int, _snapshot: Dictionary):
+		controller.resolve_card_choice(index)
+		_card_browser = null
+		_refresh_all()
+	)
+	add_child(browser)
 
 
 func _on_php(cur: int, maxv: int) -> void:
@@ -824,26 +640,38 @@ func _on_turn_started(is_player: bool) -> void:
 		_enemy.refresh_enemy()
 
 
+func _on_turn_ended(is_player: bool) -> void:
+	if not is_player:
+		return
+	_close_card_browser()
+	# 回合结束时控制器已完成批量弃置；即使已进入敌方阶段，也必须立即清空手牌视觉。
+	_hand.refresh_hand(true)
+
+
 func _on_combat_end(victory: bool) -> void:
+	FormalUI.combat_reward_pending = victory
+	if victory and DisplayServer.get_name() != "headless":
+		FormalUI.combat_reward_backdrop = ImageTexture.create_from_image(get_viewport().get_texture().get_image())
 	_close_card_browser()
 	combat_over = true
 	_hand.refresh_hand()
-	result_label.visible = true
+	result_label.visible = victory
 	if victory:
 		result_label.text = "胜  利  !"
 		result_label.add_theme_color_override("font_color", GREEN)
 		_log("战斗胜利！")
 	else:
-		result_label.text = "失  败  …"
-		result_label.add_theme_color_override("font_color", RED)
+		result_label.text = ""
 		_log("你倒下了…")
 	# P1 场景化：不再由 MapUI 监听 combat_ended 做叠加层销毁，而是把战果写回 RunState，
-	# 等死亡演出播完再切回地图（MapPlay._ready 据此走结算/奖励/幕转场分支）。
+	# 胜利等待死亡演出；最终战败直接回窑口镇。
 	# combat_ended 仍由 CombatController 发出，SaveManager 的自动存档钩子照常生效。
 	RunState.last_combat_victory = victory
-	RunState.pending_post_combat = true
-	await get_tree().create_timer(VFXSystem.DEATH_DUR + 0.35).timeout
-	get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
+	RunState.pending_post_combat = victory
+	if victory:
+		await get_tree().create_timer(VFXSystem.DEATH_DUR + 0.35).timeout
+	# 延迟到本次信号处理结束，避免切场景打断战斗结束回调。
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/map/MapPlay.tscn" if victory else "res://scenes/town/Town.tscn")
 
 
 func _on_combat_death_pending() -> void:

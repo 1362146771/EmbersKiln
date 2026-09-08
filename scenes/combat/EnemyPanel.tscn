@@ -1,6 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/EnemyPanel.gd" id="1_ep"]
+
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_battle_hpJinDu_monster.png" id="hp"]
+
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_battle_shuXinJinDu.png" id="barbg"]
 
 [sub_resource type="StyleBoxFlat" id="SB_panel"]
 bg_color = Color(0.22, 0.19, 0.17, 0.92)
@@ -28,6 +32,18 @@ corner_radius_top_right = 6
 corner_radius_bottom_left = 6
 corner_radius_bottom_right = 6
 
+[sub_resource type="StyleBoxTexture" id="FormalHp"]
+texture = ExtResource("hp")
+texture_margin_left = 12.0
+texture_margin_right = 12.0
+
+[sub_resource type="StyleBoxTexture" id="FormalBarBg"]
+texture = ExtResource("barbg")
+texture_margin_left = 12.0
+texture_margin_right = 12.0
+
+[sub_resource type="StyleBoxEmpty" id="Empty"]
+
 [node name="EnemyPanel" type="Panel"]
 layout_mode = 3
 anchors_preset = 15
@@ -35,10 +51,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("SB_panel")
+theme_override_styles/panel = SubResource("Empty")
 script = ExtResource("1_ep")
+custom_minimum_size = Vector2(720, 640)
 
-[node name="Inner" type="VBoxContainer" parent="."]
+[node name="Inner" type="Control" parent="."]
 layout_mode = 2
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,37 +63,102 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
+mouse_filter = 2
 
 [node name="IntentLabel" type="Label" parent="Inner"]
-layout_mode = 2
+layout_mode = 0
 text = "意图"
-horizontal_alignment = 2
-theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 23
 theme_override_colors/font_color = Color(0.984, 0.953, 0.894, 1)
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 141.0
+offset_right = -8.0
+offset_bottom = 191.0
+custom_minimum_size = Vector2(0, 0)
+autowrap_mode = 3
 
 [node name="SpriteRect" type="TextureRect" parent="Inner"]
-layout_mode = 2
+layout_mode = 0
 expand_mode = 1
 stretch_mode = 5
-custom_minimum_size = Vector2(260, 260)
+custom_minimum_size = Vector2(0, 0)
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 185.0
+offset_right = -8.0
+offset_bottom = 635.0
+mouse_filter = 2
 
 [node name="NameLabel" type="Label" parent="Inner"]
-layout_mode = 2
+layout_mode = 0
 text = "敌人"
-horizontal_alignment = 2
-theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 27
 theme_override_colors/font_color = Color(0.984, 0.953, 0.894, 1)
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 106.0
+offset_right = -8.0
+offset_bottom = 140.0
+custom_minimum_size = Vector2(0, 0)
 
 [node name="HpBar" type="ProgressBar" parent="Inner"]
-layout_mode = 2
+layout_mode = 0
 show_percentage = false
-custom_minimum_size = Vector2(0, 14)
-theme_override_styles/fill = SubResource("SB_fill")
-theme_override_styles/background = SubResource("SB_bg")
+custom_minimum_size = Vector2(0, 0)
+theme_override_styles/fill = SubResource("FormalHp")
+theme_override_styles/background = SubResource("FormalBarBg")
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 15.0
+offset_right = -242.0
+offset_bottom = 39.0
 
 [node name="StatusLabel" type="Label" parent="Inner"]
-layout_mode = 2
+layout_mode = 0
 text = "格挡 0"
-horizontal_alignment = 2
-theme_override_font_sizes/font_size = 28
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.365, 0.792, 0.647, 1)
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 46.0
+offset_right = -122.0
+offset_bottom = 91.0
+custom_minimum_size = Vector2(0, 0)
+autowrap_mode = 3
+
+[node name="HpText" type="Label" parent="Inner"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 12.0
+offset_right = -242.0
+offset_bottom = 42.0
+custom_minimum_size = Vector2(0, 0)
+text = "HP"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 21
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+mouse_filter = 2
