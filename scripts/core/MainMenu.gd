@@ -1,48 +1,76 @@
 extends Control
-## 主菜单（P4 退出UI）：新游戏 / 继续游戏 / 退出游戏。
-## 启动时检测 SaveManager.has_save() 决定「继续游戏」是否可用。
+## 单一游戏入口：进行中的单局显示继续，否则显示开始。
+## 永久窑口镇档案始终保留；开始游戏不重置养成。
 
-const MAP_PLAY := "res://scenes/map/MapPlay.tscn"
 const TOWN_SCENE := "res://scenes/town/Town.tscn"
-const PRE_RUN_PREPARATION := "res://scenes/main/PreRunPreparation.tscn"
+const COMBAT_SCENE := "res://scenes/combat/CombatPlay.tscn"
+const CARD_COMPENDIUM := preload("res://scenes/ui/CardCompendium.tscn")
 
-@onready var continue_button: Button = %ContinueButton
+@onready var play_button: Button = %PlayButton
 
 
 func _ready() -> void:
 	if PauseManager != null:
 		PauseManager.hide_pause_button()
-	continue_button.disabled = not SaveManager.has_save()
-	continue_button.tooltip_text = "暂无存档" if continue_button.disabled else ""
-	%NewGameButton.pressed.connect(_on_new_game)
-	continue_button.pressed.connect(_on_continue)
-	%TownButton.pressed.connect(_on_town)
+	play_button.text = "继续游戏" if SaveManager.has_active_save() else "开始游戏"
+	play_button.pressed.connect(_on_play)
+	%CompendiumButton.pressed.connect(_on_compendium)
 	%QuitButton.pressed.connect(_on_quit)
 
 
-func _on_new_game() -> void:
-	# 新游戏：清掉旧存档，避免误续玩上一局
-	if SaveManager.has_save():
-		SaveManager.delete_save()
-	if RunState.start_new_run():
-		PreRunBuffSystem.prepare_offer()
-		get_tree().change_scene_to_file(PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY)
+func _on_play() -> void:
+	# 点击时重新检查，避免菜单打开后存档状态变化导致覆盖有效进度。
+	var destination := _continue_destination() if SaveManager.has_active_save() else _start_destination()
+	if not destination.is_empty():
+		get_tree().change_scene_to_file(destination)
 
 
-func _on_continue() -> void:
-	if not SaveManager.has_save():
-		return
-	if not SaveManager.load_game():
-		# 读档失败则退回到新游戏
-		RunState.start_new_run()
-	if not RunState.pre_run_preparation_resolved:
-		PreRunBuffSystem.prepare_offer()
-	get_tree().change_scene_to_file(PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY)
+func _start_destination() -> String:
+	# 只在无进行中的单局时进入；绝不清除永久城镇档案。
+	RunState.is_active = false
+	RunState.clear_combat_checkpoint()
+	RunState.pending_combat_enemy_ids.clear()
+	if ProfileState.first_battle_started:
+		return TOWN_SCENE
+	if not RunState.start_new_run():
+		return ""
+	RunState.pre_run_preparation_resolved = true
+	var map := RunState.current_map()
+	if map.is_empty() or map[0].is_empty():
+		return ""
+	var first_node = map[0][0]
+	if not first_node.is_combat_like() or first_node.enemy_ids.is_empty():
+		push_error("首个地图节点必须配置为战斗")
+		return ""
+	first_node.visited = true
+	RunState.current_floor = first_node.floor
+	RunState.current_node_type = first_node.type
+	if not RunState.create_combat_checkpoint(first_node.enemy_ids) or not SaveManager.save_game():
+		return ""
+	ProfileState.first_battle_started = true
+	SignalBus.profile_changed.emit()
+	return COMBAT_SCENE
+
+
+func _continue_destination() -> String:
+	if SaveManager.has_save() and SaveManager.load_game():
+		ProfileState.first_battle_started = true
+		SignalBus.profile_changed.emit()
+		if RunState.is_active and RunState.has_combat_checkpoint():
+			if RunState.restore_combat_checkpoint():
+				SaveManager.save_game()
+				return COMBAT_SCENE
+		return TOWN_SCENE
+	# 仅有永久档案（例如刚战败）也能继续回镇；坏档不自动创建新局。
+	RunState.is_active = false
+	RunState.clear_combat_checkpoint()
+	RunState.pending_combat_enemy_ids.clear()
+	return TOWN_SCENE
 
 
 func _on_quit() -> void:
 	get_tree().quit()
 
 
-func _on_town() -> void:
-	get_tree().change_scene_to_file(TOWN_SCENE)
+func _on_compendium() -> void:
+	add_child(CARD_COMPENDIUM.instantiate())

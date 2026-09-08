@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://di2cyo1kqxfj1"]
 
+[ext_resource type="Theme" uid="uid://mmwy4iawijb3" path="res://themes/formal/btn_hall_normal_small.tres" id="1_i65kw"]
 [ext_resource type="Script" uid="uid://3xm7rgx7y6d4" path="res://scripts/core/MainMenu.gd" id="1_mm"]
+[ext_resource type="Texture2D" uid="uid://c8mogcsfao2gx" path="res://art/backgrounds/BG_MainMenu_KilnAscent_v1.png" id="4_eclvw"]
+[ext_resource type="Texture2D" uid="uid://beyyq4slyq7gc" path="res://art/ui/formal/logo_kiln_integrated_v2.png" id="5_4gm0a"]
 
 [node name="MainMenu" type="Control" unique_id=541195838]
 layout_mode = 3
@@ -9,19 +12,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_i65kw")
 script = ExtResource("1_mm")
 
-[node name="Background" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
+[node name="Background" type="TextureRect" parent="." unique_id=697641524]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 mouse_filter = 2
-color = Color(0.984, 0.953, 0.894, 1)
+texture = ExtResource("4_eclvw")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="MenuCenter" type="CenterContainer" parent="."]
+[node name="MenuCenter" type="CenterContainer" parent="." unique_id=604896758]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,52 +32,40 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MenuColumn" type="VBoxContainer" parent="MenuCenter"]
+[node name="MenuColumn" type="VBoxContainer" parent="MenuCenter" unique_id=1525433885]
 layout_mode = 2
 theme_override_constants/separation = 28
 
-[node name="Title" type="Label" parent="MenuCenter/MenuColumn"]
+[node name="Logo" type="TextureRect" parent="MenuCenter/MenuColumn" unique_id=637568303]
+custom_minimum_size = Vector2(400, 200)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.941, 0.6, 0.482, 1)
-theme_override_font_sizes/font_size = 64
-text = "炽  窑"
-horizontal_alignment = 1
+size_flags_horizontal = 4
+offset_transform_enabled = true
+mouse_filter = 2
+texture = ExtResource("5_4gm0a")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Subtitle" type="Label" parent="MenuCenter/MenuColumn"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
-theme_override_font_sizes/font_size = 30
-text = "陶原 · 爬塔"
-horizontal_alignment = 1
-
-[node name="NewGameButton" type="Button" parent="MenuCenter/MenuColumn"]
+[node name="PlayButton" type="Button" parent="MenuCenter/MenuColumn" unique_id=77172879]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 96)
+custom_minimum_size = Vector2(327, 100)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
-theme_override_font_sizes/font_size = 34
-text = "新游戏"
+theme_override_font_sizes/font_size = 28
+text = "开始游戏"
+autowrap_mode = 3
 
-[node name="ContinueButton" type="Button" parent="MenuCenter/MenuColumn"]
+[node name="CompendiumButton" type="Button" parent="MenuCenter/MenuColumn" unique_id=806571973]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 96)
+custom_minimum_size = Vector2(327, 100)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
-theme_override_font_sizes/font_size = 34
-text = "继续游戏"
+theme_override_font_sizes/font_size = 28
+text = "卡牌图鉴"
+autowrap_mode = 3
 
-[node name="TownButton" type="Button" parent="MenuCenter/MenuColumn"]
+[node name="QuitButton" type="Button" parent="MenuCenter/MenuColumn" unique_id=763290553]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 96)
+custom_minimum_size = Vector2(327, 100)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
-theme_override_font_sizes/font_size = 34
-text = "窑口镇"
-
-[node name="QuitButton" type="Button" parent="MenuCenter/MenuColumn"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 96)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 28
 text = "退出游戏"
+autowrap_mode = 3

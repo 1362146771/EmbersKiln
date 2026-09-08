@@ -319,6 +319,11 @@ func _on_back() -> void:
 
 
 func _on_depart() -> void:
+	# 非战斗存档先回镇，再由这里继续原来的爬塔进度。
+	if RunState.is_active:
+		PreRunBuffSystem.prepare_offer()
+		get_tree().change_scene_to_file(PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY)
+		return
 	if SaveManager.has_save():
 		SaveManager.delete_save()
 	if RunState.start_new_run():
