@@ -31,11 +31,11 @@ SaveManager="*res://scripts/core/SaveManager.gd"
 PauseManager="*res://scripts/core/PauseManager.gd"
 VFXSystem="*res://scripts/core/VFXSystem.gd"
 BattleDirector="*res://scripts/combat/BattleDirector.gd"
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 ShopInventorySystem="*res://scripts/meta/ShopInventorySystem.gd"
 CardAcquireService="*res://scripts/meta/CardAcquireService.gd"
 PreRunBuffSystem="*res://scripts/meta/PreRunBuffSystem.gd"
 CombatReviveSystem="*res://scripts/meta/CombatReviveSystem.gd"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
