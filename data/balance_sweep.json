@@ -14,11 +14,11 @@
     "full_hp_each_match": true
   },
   "builds": [
-    {"id": "aggro",   "name": "速攻",   "cards": ["strike", "strike", "ember_burst", "kiln_burst", "ember_tide", "shatter_guard"]},
-    {"id": "defense", "name": "防御",   "cards": ["defend", "defend", "kiln_aegis", "shatter_guard", "ash_domain", "ember_tide"]},
-    {"id": "control", "name": "控制",   "cards": ["strike", "defend", "mass_craze", "ash_domain", "shatter_guard", "ember_burst"]},
-    {"id": "burn",    "name": "燃烧",   "cards": ["strike", "defend", "ember_burst", "scorch_field", "ember_tide", "shatter_guard"]},
-    {"id": "summoner", "name": "召主",   "cards": ["summon_hound", "hound_pack", "glaze_ward", "command_horn", "spark_call", "defend"]}
+    {"id": "aggro",   "name": "速攻",   "cards": ["strike", "strike", "twin_strike", "pommel_strike", "anger", "bludgeon"]},
+    {"id": "defense", "name": "防御",   "cards": ["defend", "defend", "shrug_it_off", "flame_barrier", "entrench", "body_slam"]},
+    {"id": "control", "name": "控制",   "cards": ["strike", "defend", "shockwave", "uppercut", "disarm", "dropkick"]},
+    {"id": "exhaust", "name": "消耗",   "cards": ["strike", "defend", "true_grit", "burning_pact", "feel_no_pain", "fiend_fire"]},
+    {"id": "strength", "name": "力量",  "cards": ["strike", "defend", "inflame", "spot_weakness", "heavy_blade", "limit_break"]}
   ],
   "encounters": [
     {"id": "solo_claylump",  "enemies": ["claylump"]},

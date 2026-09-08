@@ -107,39 +107,24 @@ func run() -> void:
 			"actual=%s" % (status.name if status != null else "missing"))
 
 	# ---- 正式卡牌载体数据 ----
-	var war_cry := GameData.get_card(&"war_cry")
-	var unbreakable := GameData.get_card(&"unbreakable")
-	check("鼓风令：基础抽 2 且活力 1",
+	var war_cry := GameData.get_card(&"warcry")
+	var impervious := GameData.get_card(&"impervious")
+	check("鼓风令：基础抽 1、升级抽 2且消耗",
 		war_cry != null
-		and effect_value(war_cry.effects, "draw") == 2
-		and effect_value(war_cry.effects, "apply_status", "stoke") == 1)
-	check("鼓风令+：升级抽 3 且保留活力 1",
-		war_cry != null
-		and effect_value(war_cry.upgrade_effects, "draw") == 3
-		and effect_value(war_cry.upgrade_effects, "apply_status", "stoke") == 1)
-	check("不裂：基础格挡 20 且缓冲 1",
-		unbreakable != null
-		and effect_value(unbreakable.effects, "block") == 20
-		and effect_value(unbreakable.effects, "apply_status", "glaze") == 1)
-	check("不裂+：升级格挡 26 且缓冲 2",
-		unbreakable != null
-		and effect_value(unbreakable.upgrade_effects, "block") == 26
-		and effect_value(unbreakable.upgrade_effects, "apply_status", "glaze") == 2)
+		and effect_value(war_cry.effects, "draw") == 1
+		and effect_value(war_cry.upgrade_effects, "draw") == 2
+		and war_cry.exhaust)
+	check("末薪：基础格挡 30、升级 40且消耗",
+		impervious != null
+		and effect_value(impervious.effects, "block") == 30
+		and effect_value(impervious.upgrade_effects, "block") == 40
+		and impervious.exhaust)
 
-	start("t_dummy", ["war_cry", "war_cry", "war_cry", "war_cry", "war_cry"])
+	start("t_dummy", ["impervious", "impervious", "impervious", "impervious", "impervious"])
 	controller.play_card(0, -1)
-	check("鼓风令：实际出牌获得活力 1",
-		controller.player.get_status(&"stoke") == 1,
-		"stoke=%d" % controller.player.get_status(&"stoke"))
-
-	start("t_dummy", ["unbreakable", "unbreakable", "unbreakable", "unbreakable", "unbreakable"])
-	controller.play_card(0, -1)
-	check("不裂：实际出牌获得格挡 20 与缓冲 1，并进入消耗堆",
-		controller.player.block == 20
-		and controller.player.get_status(&"glaze") == 1
-		and controller.exhaust_pile.size() == 1,
-		"block=%d glaze=%d exhaust=%d" % [controller.player.block,
-			controller.player.get_status(&"glaze"), controller.exhaust_pile.size()])
+	check("末薪：实际出牌获得格挡 30并进入消耗堆",
+		controller.player.block == 30 and controller.exhaust_pile.size() == 1,
+		"block=%d exhaust=%d" % [controller.player.block, controller.exhaust_pile.size()])
 
 	# ---- 2.4 窑温·共鸣 ----
 	start("t_dummy", ["t_strike", "t_strike", "t_strike", "t_strike", "t_strike",

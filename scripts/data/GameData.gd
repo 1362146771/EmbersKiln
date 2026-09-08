@@ -29,6 +29,7 @@ var potions: Dictionary = {}     # StringName -> PotionData
 var enchants: Dictionary = {}    # StringName -> EnchantData
 var effect_kinds: Array = []     # cards.json 顶层 effect_kinds（用于交叉校验）
 var card_taxonomy: Dictionary = {} # cards.json 顶层 taxonomy（类型/稀有度/机制中文名）
+var legacy_card_id_map: Dictionary = {} # 旧卡池存档迁移：旧 id -> 新战士卡 id
 var map_config: Dictionary = {}
 var act_configs: Array = []      # Array[Dictionary] —— 多幕配置（map.json 的 acts 数组）
 var balance: Dictionary = {}
@@ -59,6 +60,7 @@ func load_all() -> bool:
 	enchants.clear()
 	effect_kinds.clear()
 	card_taxonomy.clear()
+	legacy_card_id_map.clear()
 	events.clear()
 	formations.clear()
 	meta_progression.clear()
@@ -99,6 +101,7 @@ func load_all() -> bool:
 
 	effect_kinds = raw["cards"].get("effect_kinds", [])
 	card_taxonomy = raw["cards"].get("taxonomy", {})
+	legacy_card_id_map = raw["cards"].get("legacy_card_id_map", {}).duplicate(true)
 	for d in raw["potions"].get("potions", []):
 		var p := PotionData.from_dict(d)
 		potions[p.id] = p
@@ -186,7 +189,7 @@ func _validate() -> void:
 		for mechanic in c.mechanics:
 			if not valid_mechanics.has(String(mechanic)):
 				load_errors.append("卡牌 %s 含未知机制标签 %s" % [cid, mechanic])
-		for eff in c.effects + c.upgrade_effects:
+		for eff in c.effects + c.upgrade_effects + c.end_turn_effects + c.on_exhaust_effects + c.upgrade_data.get("on_exhaust_effects", []):
 			if eff is Dictionary and not effect_kinds.has(String(eff.get("kind", ""))):
 				load_errors.append("卡牌 %s 含未知 effect_kind：%s" % [cid, eff.get("kind", "")])
 			if eff is Dictionary and eff.has("status"):
@@ -747,6 +750,8 @@ func _is_meta_content_unlocked(config_field: String, id: StringName, profile_unl
 func icon_path(icon_id: String) -> String:
 	if icon_id == "":
 		return ""
+	if icon_id.begins_with("res://"):
+		return icon_id
 	if icon_id.begins_with("ICO_Potion_"):
 		return "res://art/icons/potion/" + icon_id + ".png"
 	if icon_id.begins_with("ICO_Enchant_"):

@@ -12,8 +12,7 @@ func attach(controller: CombatController) -> void:
 ## 计算从 attacker 对 target 的最终伤害：含力量加成、虚弱削弱、易伤增伤。
 func compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int) -> int:
 	var dmg := base
-	if attacker.has_status(&"heat"):
-		dmg += attacker.get_status(&"heat")
+	dmg += attacker.get_status(&"heat")
 	if attacker.has_status(&"damp"):
 		dmg = int(floor(dmg * 0.75))
 	if target.has_status(&"crazed"):
@@ -56,17 +55,21 @@ func deal_kiln_resonance(unit: CombatUnit, dmg: int) -> void:
 
 func add_block(unit: CombatUnit, amount: int) -> void:
 	var real := amount
-	if unit.has_status(&"temper"):
-		real += unit.get_status(&"temper")
+	real += unit.get_status(&"temper")
+	var before := unit.block
 	unit.add_block(real)
 	if unit.is_player:
 		SignalBus.player_block_changed.emit(ctrl.player.block)
 	else:
 		SignalBus.ally_block_changed.emit(ctrl._intent.index_of_ally(unit), unit.block)
+	if unit.is_player and unit.block > before:
+		ctrl.on_player_block_gained()
 
 ## 单次攻击命中结算（供碰撞卡撞击点回调）。
 func enemy_attack_hit(e: CombatUnit, dmg: int) -> void:
 	deal_to_player(dmg)
+	if ctrl._temporary_thorns > 0 and e.is_alive():
+		deal_to_unit(e, ctrl._temporary_thorns)
 	ctrl._tick_sherd_vest(e)   # 遗物：受击反伤（陶片背心）
 
 ## AOE 伤害 + 对玩家施加 debuff（如易伤）；友方随从同步受击（Q2）。

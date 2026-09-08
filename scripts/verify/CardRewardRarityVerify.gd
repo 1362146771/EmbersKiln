@@ -1,5 +1,5 @@
 extends Node
-## 卡牌投放确定性验证：来源概率、隐藏补偿、Boss 奖励、升级率与 v5 存档迁移。
+## 卡牌投放确定性验证：来源概率、隐藏补偿、Boss 奖励、升级率与 v6 存档迁移。
 
 var pass_count := 0
 var fail_count := 0
@@ -144,21 +144,21 @@ func _test_save_and_migration() -> void:
 	var persisted_offset := int(pity.get("initial_offset", 0)) + int(pity.get("common_increment", 0))
 	RunState.card_rare_offset = persisted_offset
 	var saved := RunState.to_save_dict()
-	_check("v5 存档写入隐藏稀有补偿",
-		int(saved.get("version", -1)) == 5
+	_check("v6 存档写入隐藏稀有补偿",
+		int(saved.get("version", -1)) == 6
 		and int(saved.get("card_rare_offset", 999)) == persisted_offset)
 
 	RunState.card_rare_offset = int(pity.get("max_offset", 0))
-	_check("v5 读档恢复隐藏稀有补偿",
+	_check("v6 读档恢复隐藏稀有补偿",
 		RunState.from_save_dict(saved) and RunState.card_rare_offset == persisted_offset)
 
 	var legacy := saved.duplicate(true)
 	legacy["version"] = 4
 	legacy.erase("card_rare_offset")
-	_check("v4 旧档迁移时使用初始补偿并写出 v5",
+	_check("v4 旧档迁移时使用初始补偿并写出 v6",
 		RunState.from_save_dict(legacy)
 		and RunState.card_rare_offset == int(pity.get("initial_offset", 0))
-		and int(RunState.to_save_dict().get("version", -1)) == 5)
+		and int(RunState.to_save_dict().get("version", -1)) == 6)
 
 
 func _check(name: String, condition: bool, detail: String = "") -> void:

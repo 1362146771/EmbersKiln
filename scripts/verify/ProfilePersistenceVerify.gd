@@ -19,6 +19,7 @@ func _ready() -> void:
 	_test_roundtrip()
 	_test_invalid_data_is_transactional()
 	_test_v1_migration()
+	_test_card_discovery()
 	_test_reward_transaction_idempotency()
 	_test_atomic_replace()
 	_test_run_profile_path_isolation()
@@ -43,6 +44,7 @@ func _test_roundtrip() -> void:
 	ProfileState.set_facility_level(&"card_workshop", 2)
 	ProfileState.completed_project_ids.append(&"project_alpha")
 	ProfileState.unlocked_card_ids.assign([&"strike", &"bash"])
+	ProfileState.discover_card(&"cleave", false)
 	ProfileState.construction_queue.assign([{"project_id": "project_beta", "finish_at": 12345, "ad_speedup_count": 0}])
 	ProfileState.town_visual_stage = 3
 	ProfileState.record_reward_transaction("run-test:base")
@@ -75,18 +77,35 @@ func _test_v1_migration() -> void:
 	legacy.erase("pending_reward_transactions")
 	legacy.erase("base_run_deck_capacity")
 	legacy.erase("ad_daily_usage")
+	legacy.erase("discovered_card_ids")
 	check("v1 永久档案可迁移", ProfileState.from_save_dict(legacy, false))
-	check("迁移后使用 v3 结构", int(ProfileState.to_save_dict().get("version", -1)) == 3)
+	check("迁移后使用当前版本结构", int(ProfileState.to_save_dict().get("version", -1)) == ProfileState.PROFILE_VERSION)
 	check("迁移后待发事务默认为空", ProfileState.pending_reward_transactions.is_empty())
 	check("迁移后牌库容量默认未配置", ProfileState.base_run_deck_capacity == -1)
 	check("迁移后每日广告计数为空", ProfileState.ad_daily_usage.is_empty())
+	check("旧档迁移后默认发现三张起始牌", ProfileState.discovered_card_count() == 3)
 
 	var v2 := ProfileState.to_save_dict()
 	v2["version"] = 2
 	v2.erase("base_run_deck_capacity")
 	v2.erase("ad_daily_usage")
+	v2.erase("discovered_card_ids")
 	check("v2 永久档案可迁移", ProfileState.from_save_dict(v2, false))
-	check("v2 迁移后使用 v3 结构", int(ProfileState.to_save_dict().get("version", -1)) == 3)
+	check("v2 迁移后使用当前版本结构", int(ProfileState.to_save_dict().get("version", -1)) == ProfileState.PROFILE_VERSION)
+
+
+func _test_card_discovery() -> void:
+	ProfileState.reset_to_defaults(false)
+	check("新档默认发现三张起始牌", ProfileState.discovered_card_count() == 3
+		and ProfileState.is_card_discovered(&"strike")
+		and ProfileState.is_card_discovered(&"defend")
+		and ProfileState.is_card_discovered(&"bash"))
+	check("首次获得职业牌写入图鉴", ProfileState.discover_card(&"cleave", false)
+		and ProfileState.is_card_discovered(&"cleave"))
+	check("重复获得不会重复计数", not ProfileState.discover_card(&"cleave", false)
+		and ProfileState.discovered_card_count() == 4)
+	check("生成状态牌不计入图鉴", not ProfileState.discover_card(&"wound", false)
+		and not ProfileState.is_card_discovered(&"wound"))
 
 
 func _test_reward_transaction_idempotency() -> void:

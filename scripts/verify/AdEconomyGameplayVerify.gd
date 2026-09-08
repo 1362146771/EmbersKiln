@@ -135,8 +135,8 @@ func _test_shop_refresh() -> void:
 	RunState.current_act = 0
 	RunState.current_floor = 5
 	var shop_id := ShopInventorySystem.current_shop_id()
-	var bought_card := _card_item(&"heavy_slash", 10, true)
-	var open_card := _card_item(&"double_strike", 11, false)
+	var bought_card := _card_item(&"heavy_blade", 10, true)
+	var open_card := _card_item(&"twin_strike", 11, false)
 	check("商店库存可持久化", ShopInventorySystem.capture_state(shop_id, [bought_card, open_card], [], [], 0))
 	fake.enqueue_result(AdService.RESULT_COMPLETED)
 	var request_id := ShopInventorySystem.request_refresh(shop_id)
@@ -145,14 +145,14 @@ func _test_shop_refresh() -> void:
 	var cards: Array = state.get("card_stock", [])
 	check("完整观看刷新商店", not request_id.is_empty() and resolved[2] == &"granted" and int(state.get("refresh_count", 0)) == 1)
 	check("已购买槽位不会复活或变化", cards[0] == bought_card)
-	check("未购买槽位替换为不同卡牌", String(cards[1].get("card", {}).get("id", "")) != "double_strike")
+	check("未购买槽位替换为不同卡牌", String(cards[1].get("card", {}).get("id", "")) != "twin_strike")
 	check("同一商店达到刷新上限", not ShopInventorySystem.can_offer_refresh(shop_id))
 
 
 func _test_deck_capacity_and_shop_purchase() -> void:
 	check("局外基础容量带入新局", RunState.base_run_deck_capacity == 12 and RunState.current_deck_capacity() == 12)
 	while RunState.deck.size() < RunState.current_deck_capacity():
-		check("容量未满时可直接获得卡牌", CardAcquireService.acquire_free_card(&"heavy_slash", false, &"verify") == CardAcquireService.RESULT_ACQUIRED)
+		check("容量未满时可直接获得卡牌", CardAcquireService.acquire_free_card(&"heavy_blade", false, &"verify") == CardAcquireService.RESULT_ACQUIRED)
 	var full_size := RunState.deck.size()
 	check("满库后新卡进入待处理", CardAcquireService.acquire_free_card(&"cleave", false, &"reward") == CardAcquireService.RESULT_FULL)
 	fake.enqueue_result(AdService.RESULT_FAILED)
@@ -171,15 +171,15 @@ func _test_deck_capacity_and_shop_purchase() -> void:
 	RunState.gold = 100
 	RunState.current_floor = 6
 	var shop_id := ShopInventorySystem.current_shop_id()
-	var sale := _card_item(&"titan_strike", 50, false)
+	var sale := _card_item(&"bludgeon", 50, false)
 	ShopInventorySystem.capture_state(shop_id, [sale], [], [], 0)
-	check("满库购买商店卡时先不扣金币", CardAcquireService.acquire_shop_card(shop_id, 0, &"titan_strike", 50) == CardAcquireService.RESULT_FULL and RunState.gold == 100)
+	check("满库购买商店卡时先不扣金币", CardAcquireService.acquire_shop_card(shop_id, 0, &"bludgeon", 50) == CardAcquireService.RESULT_FULL and RunState.gold == 100)
 	fake.enqueue_result(AdService.RESULT_COMPLETED)
 	CardAcquireService.request_expand()
 	await SignalBus.ad_reward_resolved
 	var purchased_state := ShopInventorySystem.get_state(shop_id)
 	check("扩容后原商店购买自动继续", RunState.gold == 50 and bool(purchased_state.get("card_stock", [])[0].get("bought", false)))
-	check("商店卡仅在事务成功后入库", RunState.deck.back().get("id", &"") == &"titan_strike")
+	check("商店卡仅在事务成功后入库", RunState.deck.back().get("id", &"") == &"bludgeon")
 	RunState.remove_card_at(RunState.deck.size() - 1)
 	check("删牌会立即释放容量", RunState.can_add_permanent_card())
 

@@ -1,6 +1,6 @@
 extends Node
 ## 随从 / 召唤系统自检测试（由 Godot MCP run_and_verify 运行）。
-## 覆盖：数据加载 / 召唤卡 / SummonPhase 行动 / 寿命到期 / AoE 清场 / 满场拒绝 / 领袖气质加成。
+## 覆盖：底层随从数据 / SummonPhase 行动 / 寿命到期 / AoE 清场 / 满场拒绝 / 领袖气质加成。
 ## 输出 [PASS]/[FAIL] 供 harness 识别。
 
 var _rejected := false
@@ -12,13 +12,11 @@ func _ready() -> void:
 		return
 
 	_test_data()
-	_test_summon_card()
 	_test_summon_and_action()
 	_test_lifetime_expiry()
 	_test_aoe_clears_ally()
 	_test_full_reject()
 	_test_command_bonus()
-	_test_summoner_build()
 
 	print("[PE_VERIFY_DONE] ALL PASS")
 
@@ -33,19 +31,6 @@ func _test_data() -> void:
 	if GameData.minions.size() != 3:
 		printerr("[FAIL] 随从数量应为 3，实际 %d" % GameData.minions.size()); return
 	print("[PASS] 随从数据加载 OK（%d 种）" % GameData.minions.size())
-
-
-func _test_summon_card() -> void:
-	var cd: CardData = GameData.get_card(&"summon_hound")
-	if cd == null:
-		printerr("[FAIL] 召唤卡 summon_hound 未加载"); return
-	var has_summon := false
-	for ef in cd.get_effects(false):
-		if ef.get("kind", "") == "summon":
-			has_summon = true
-	if not has_summon:
-		printerr("[FAIL] summon_hound 缺少 summon 效果"); return
-	print("[PASS] 召唤卡 summon_hound 含 summon 效果")
 
 
 func _test_summon_and_action() -> void:
@@ -145,25 +130,3 @@ func _test_command_bonus() -> void:
 
 func _on_rejected(_cap: int) -> void:
 	_rejected = true
-
-
-## 召主 build 已接入 BalanceSweep，且 6 张卡均真实存在（避免 sweep 校验阶段 FAIL）。
-func _test_summoner_build() -> void:
-	var f := FileAccess.open("res://data/balance_sweep.json", FileAccess.READ)
-	if f == null:
-		printerr("[FAIL] 无法读取 balance_sweep.json"); return
-	var p := JSON.new()
-	if p.parse(f.get_as_text()) != OK:
-		printerr("[FAIL] balance_sweep.json 解析失败"); return
-	f.close()
-	var cfg: Dictionary = p.data
-	var sbuild: Dictionary = {}
-	for b in cfg.get("builds", []):
-		if String(b.get("id", "")) == "summoner":
-			sbuild = b
-	if sbuild.is_empty():
-		printerr("[FAIL] balance_sweep.json 缺少 summoner build"); return
-	for cid in sbuild.get("cards", []):
-		if GameData.get_card(StringName(cid)) == null:
-			printerr("[FAIL] summoner build 含未知卡 %s" % cid); return
-	print("[PASS] 召主 build 已接入 BalanceSweep（%d 张卡均存在）" % sbuild.get("cards", []).size())

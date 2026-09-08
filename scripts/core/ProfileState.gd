@@ -2,13 +2,16 @@ extends Node
 ## Autoload: ProfileState —— 跨 Run 的永久玩家档案。
 ## 只保存长期状态；当前 Run 的牌组、HP、地图等仍归 RunState。
 
-const PROFILE_VERSION := 3
-const SUPPORTED_PROFILE_VERSIONS := [1, 2, 3]
+const PROFILE_VERSION := 6
+const SUPPORTED_PROFILE_VERSIONS := [1, 2, 3, 4, 5, 6]
+
+var first_battle_started := false
 
 var fireseed_balance: int = 0
 var facility_levels: Dictionary = {}
 var completed_project_ids: Array[StringName] = []
 var unlocked_card_ids: Array[StringName] = []
+var discovered_card_ids: Array[StringName] = []
 var unlocked_relic_ids: Array[StringName] = []
 var unlocked_potion_ids: Array[StringName] = []
 var unlocked_enchant_ids: Array[StringName] = []
@@ -23,10 +26,12 @@ var ad_daily_usage: Dictionary = {}
 
 
 func reset_to_defaults(emit_changed: bool = true) -> void:
+	first_battle_started = false
 	fireseed_balance = 0
 	facility_levels.clear()
 	completed_project_ids.clear()
 	unlocked_card_ids.clear()
+	discovered_card_ids.assign(_starter_card_ids())
 	unlocked_relic_ids.clear()
 	unlocked_potion_ids.clear()
 	unlocked_enchant_ids.clear()
@@ -46,10 +51,12 @@ func reset_to_defaults(emit_changed: bool = true) -> void:
 func to_save_dict() -> Dictionary:
 	return {
 		"version": PROFILE_VERSION,
+		"first_battle_started": first_battle_started,
 		"fireseed_balance": fireseed_balance,
 		"facility_levels": facility_levels.duplicate(true),
 		"completed_project_ids": _string_name_array_to_strings(completed_project_ids),
 		"unlocked_card_ids": _string_name_array_to_strings(unlocked_card_ids),
+		"discovered_card_ids": _string_name_array_to_strings(discovered_card_ids),
 		"unlocked_relic_ids": _string_name_array_to_strings(unlocked_relic_ids),
 		"unlocked_potion_ids": _string_name_array_to_strings(unlocked_potion_ids),
 		"unlocked_enchant_ids": _string_name_array_to_strings(unlocked_enchant_ids),
@@ -70,10 +77,12 @@ func from_save_dict(data: Dictionary, emit_changed: bool = true, report_errors: 
 	if normalized.is_empty():
 		return false
 
+	first_battle_started = normalized["first_battle_started"]
 	fireseed_balance = normalized["fireseed_balance"]
 	facility_levels = normalized["facility_levels"]
 	completed_project_ids.assign(normalized["completed_project_ids"])
 	unlocked_card_ids.assign(normalized["unlocked_card_ids"])
+	discovered_card_ids.assign(normalized["discovered_card_ids"])
 	unlocked_relic_ids.assign(normalized["unlocked_relic_ids"])
 	unlocked_potion_ids.assign(normalized["unlocked_potion_ids"])
 	unlocked_enchant_ids.assign(normalized["unlocked_enchant_ids"])
@@ -85,11 +94,110 @@ func from_save_dict(data: Dictionary, emit_changed: bool = true, report_errors: 
 	reward_transaction_ids.assign(normalized["reward_transaction_ids"])
 	pending_reward_transactions.assign(normalized["pending_reward_transactions"])
 	ad_daily_usage = normalized["ad_daily_usage"]
+	_migrate_card_pool_unlocks()
+	_migrate_discovered_cards()
 
 	if emit_changed:
 		SignalBus.profile_changed.emit()
 		SignalBus.fireseed_changed.emit(fireseed_balance)
 	return true
+
+
+func _migrate_card_pool_unlocks() -> void:
+	var migrated: Array[StringName] = []
+	for old_id in unlocked_card_ids:
+		var card_id := old_id
+		if GameData.get_card(card_id) == null:
+			card_id = StringName(String(GameData.legacy_card_id_map.get(String(card_id), "")))
+		if GameData.get_card(card_id) != null and not migrated.has(card_id):
+			migrated.append(card_id)
+	# 已完成研究沿用原项目 id，按当前 grants 补发换池后的对应卡牌。
+	for project_id in completed_project_ids:
+		var project := GameData.get_meta_project(project_id)
+		for granted_id in project.get("grants", {}).get("unlocked_card_ids", []):
+			var card_id := StringName(String(granted_id))
+			if GameData.get_card(card_id) != null and not migrated.has(card_id):
+				migrated.append(card_id)
+	unlocked_card_ids.assign(migrated)
+
+
+## 图鉴只记录能永久进入单局牌组的职业牌；生成状态牌不计入收藏进度。
+func _migrate_discovered_cards() -> void:
+	var migrated: Array[StringName] = []
+	for old_id in discovered_card_ids:
+		var card_id := _normalized_collectible_card_id(old_id)
+		if card_id != &"" and not migrated.has(card_id):
+			migrated.append(card_id)
+	for starter_id in _starter_card_ids():
+		if not migrated.has(starter_id):
+			migrated.append(starter_id)
+	discovered_card_ids.assign(migrated)
+
+
+func discover_card(card_id: StringName, emit_changed: bool = true) -> bool:
+	var normalized_id := _normalized_collectible_card_id(card_id)
+	if normalized_id == &"" or discovered_card_ids.has(normalized_id):
+		return false
+	discovered_card_ids.append(normalized_id)
+	if emit_changed:
+		SignalBus.card_discovered.emit(normalized_id)
+		SignalBus.profile_changed.emit()
+	return true
+
+
+func discover_cards(card_ids: Array, emit_changed: bool = true) -> int:
+	var added: Array[StringName] = []
+	for raw_id in card_ids:
+		var normalized_id := _normalized_collectible_card_id(StringName(String(raw_id)))
+		if normalized_id != &"" and not discovered_card_ids.has(normalized_id):
+			discovered_card_ids.append(normalized_id)
+			added.append(normalized_id)
+	if emit_changed and not added.is_empty():
+		for card_id in added:
+			SignalBus.card_discovered.emit(card_id)
+		SignalBus.profile_changed.emit()
+	return added.size()
+
+
+func is_card_discovered(card_id: StringName) -> bool:
+	return discovered_card_ids.has(card_id)
+
+
+func collectible_card_ids() -> Array[StringName]:
+	var result: Array[StringName] = []
+	for value in GameData.cards.values():
+		var card := value as CardData
+		if card != null and card.rarity in [&"starter", &"common", &"uncommon", &"rare"]:
+			result.append(card.id)
+	return result
+
+
+func discovered_card_count() -> int:
+	var count := 0
+	for card_id in discovered_card_ids:
+		if _normalized_collectible_card_id(card_id) != &"":
+			count += 1
+	return count
+
+
+func _normalized_collectible_card_id(card_id: StringName) -> StringName:
+	var normalized_id := card_id
+	var card := GameData.get_card(normalized_id)
+	if card == null:
+		normalized_id = StringName(String(GameData.legacy_card_id_map.get(String(card_id), "")))
+		card = GameData.get_card(normalized_id)
+	if card == null or not card.rarity in [&"starter", &"common", &"uncommon", &"rare"]:
+		return &""
+	return normalized_id
+
+
+func _starter_card_ids() -> Array[StringName]:
+	var result: Array[StringName] = []
+	for raw_id in GameData.balance.get("starting_deck", []):
+		var card_id := _normalized_collectible_card_id(StringName(String(raw_id)))
+		if card_id != &"" and not result.has(card_id):
+			result.append(card_id)
+	return result
 
 
 func add_fireseed(amount: int) -> bool:
@@ -460,10 +568,12 @@ func _normalize_save_dict(data: Dictionary, report_errors: bool = true) -> Dicti
 		})
 
 	return {
+		"first_battle_started": bool(data.get("first_battle_started", source_version < 6)),
 		"fireseed_balance": normalized_balance,
 		"facility_levels": normalized_levels,
 		"completed_project_ids": _normalize_string_name_array(data.get("completed_project_ids", [])),
 		"unlocked_card_ids": _normalize_string_name_array(data.get("unlocked_card_ids", [])),
+		"discovered_card_ids": _normalize_string_name_array(data.get("discovered_card_ids", [])),
 		"unlocked_relic_ids": _normalize_string_name_array(data.get("unlocked_relic_ids", [])),
 		"unlocked_potion_ids": _normalize_string_name_array(data.get("unlocked_potion_ids", [])),
 		"unlocked_enchant_ids": _normalize_string_name_array(data.get("unlocked_enchant_ids", [])),
@@ -482,6 +592,7 @@ func _has_expected_container_types(data: Dictionary) -> bool:
 	var array_fields := [
 		"completed_project_ids",
 		"unlocked_card_ids",
+		"discovered_card_ids",
 		"unlocked_relic_ids",
 		"unlocked_potion_ids",
 		"unlocked_enchant_ids",

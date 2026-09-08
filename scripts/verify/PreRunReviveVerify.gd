@@ -212,7 +212,7 @@ func _test_v3_migration() -> void:
 	legacy["version"] = 3
 	for field in ["pre_run_buff_offer_ids", "pre_run_buff_id", "pre_run_buff_remaining_floors", "pre_run_buff_claimed", "pre_run_preparation_resolved", "resolved_floor_keys", "combat_checkpoint", "combat_death_pending", "revive_used_count"]:
 		legacy.erase(field)
-	check("v3 单局存档可迁移到 v5", RunState.from_save_dict(legacy) and int(RunState.to_save_dict().get("version", -1)) == 5)
+	check("v3 单局存档可迁移到当前版本", RunState.from_save_dict(legacy) and int(RunState.to_save_dict().get("version", -1)) == RunState.SAVE_VERSION)
 	check("旧局不会被追溯插入局前广告", RunState.pre_run_preparation_resolved and not RunState.combat_death_pending and RunState.revive_used_count == 0)
 
 

@@ -90,7 +90,8 @@ func is_alive() -> bool:
 func add_status(status_id: StringName, amount: int) -> void:
 	var cur := int(statuses.get(status_id, 0))
 	cur += amount
-	if cur <= 0:
+	var allows_negative := status_id in [&"heat", &"temper"]
+	if cur == 0 or cur < 0 and not allows_negative:
 		statuses.erase(status_id)
 	else:
 		statuses[status_id] = cur
@@ -101,7 +102,7 @@ func get_status(status_id: StringName) -> int:
 
 
 func has_status(status_id: StringName) -> bool:
-	return get_status(status_id) > 0
+	return get_status(status_id) != 0 if status_id in [&"heat", &"temper"] else get_status(status_id) > 0
 
 
 func status_ids() -> Array[StringName]:

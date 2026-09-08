@@ -124,7 +124,8 @@ func start_new_run() -> bool:
 	deck.clear()
 	potions.clear()
 	for cid in GameData.balance.get("starting_deck", []):
-		deck.append({"id": StringName(cid), "upgraded": false, "enchants": []})
+		deck.append({"id": StringName(cid), "upgraded": false, "upgrade_level": 0, "enchants": []})
+	_record_deck_discoveries()
 	base_run_deck_capacity = _resolved_profile_deck_capacity()
 	if base_run_deck_capacity >= 0 and base_run_deck_capacity < deck.size():
 		push_error("[RunState] 新局基础牌库容量 %d 低于起始牌组 %d" % [base_run_deck_capacity, deck.size()])
@@ -202,6 +203,15 @@ func heal(amount: int) -> void:
 	SignalBus.player_hp_changed.emit(hp, max_hp)
 
 
+func increase_max_hp(amount: int) -> void:
+	var gained := maxi(0, amount)
+	if gained <= 0:
+		return
+	max_hp += gained
+	hp += gained
+	SignalBus.player_hp_changed.emit(hp, max_hp)
+
+
 # ---------- 金币 ----------
 func add_gold(amount: int) -> void:
 	var bonus_percent := 0
@@ -224,11 +234,19 @@ func spend_gold(amount: int) -> bool:
 
 # ---------- 牌组 ----------
 func add_card(card_id: StringName, upgraded: bool = false) -> bool:
-	if card_id == &"" or not can_add_permanent_card():
+	if card_id == &"" or GameData.get_card(card_id) == null or not can_add_permanent_card():
 		return false
-	deck.append({"id": card_id, "upgraded": upgraded, "enchants": []})
+	deck.append({"id": card_id, "upgraded": upgraded, "upgrade_level":1 if upgraded else 0, "enchants": []})
+	ProfileState.discover_card(card_id)
 	SignalBus.deck_changed.emit()
 	return true
+
+
+func _record_deck_discoveries() -> void:
+	var card_ids: Array = []
+	for entry in deck:
+		card_ids.append(StringName(String(entry.get("id", ""))))
+	ProfileState.discover_cards(card_ids)
 
 
 func current_deck_capacity() -> int:
@@ -288,6 +306,7 @@ func create_combat_checkpoint(enemy_ids: Array) -> bool:
 		checkpoint_deck.append({
 			"id": String(entry.get("id", "")),
 			"upgraded": bool(entry.get("upgraded", false)),
+			"upgrade_level": int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0)),
 			"enchants": entry.get("enchants", []).duplicate(),
 		})
 	var checkpoint_potions: Array = []
@@ -304,6 +323,7 @@ func create_combat_checkpoint(enemy_ids: Array) -> bool:
 		checkpoint_enemies.append(String(enemy_id))
 	combat_checkpoint = {
 		"hp": hp,
+		"max_hp": max_hp,
 		"gold": gold,
 		"deck": checkpoint_deck,
 		"potions": checkpoint_potions,
@@ -345,6 +365,7 @@ func restore_combat_checkpoint() -> bool:
 	if not has_combat_checkpoint():
 		return false
 	var checkpoint := combat_checkpoint
+	max_hp = int(checkpoint.get("max_hp", max_hp))
 	hp = int(checkpoint.get("hp", hp))
 	gold = int(checkpoint.get("gold", gold))
 	deck.clear()
@@ -352,6 +373,7 @@ func restore_combat_checkpoint() -> bool:
 		deck.append({
 			"id": StringName(String(entry.get("id", ""))),
 			"upgraded": bool(entry.get("upgraded", false)),
+			"upgrade_level": int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0)),
 			"enchants": entry.get("enchants", []).duplicate(),
 		})
 	potions.clear()
@@ -437,9 +459,11 @@ func upgrade_card_at(index: int) -> bool:
 		return false
 	var entry := deck[index]
 	var card: CardData = GameData.get_card(entry["id"])
-	if card == null or not card.has_upgrade() or entry["upgraded"]:
+	var current_level := int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0))
+	if card == null or not card.has_upgrade() or current_level > 0 and not card.repeatable_upgrade:
 		return false
 	entry["upgraded"] = true
+	entry["upgrade_level"] = current_level + 1
 	deck[index] = entry
 	SignalBus.deck_changed.emit()
 	return true
@@ -555,8 +579,8 @@ func is_boss_floor() -> bool:
 
 
 # ---------- 存档（P4 落盘；P-A 升 v2 多幕） ----------
-const SAVE_VERSION := 5
-const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5]
+const SAVE_VERSION := 6
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6]
 
 ## 将运行态序列化为可 JSON 化的 Dictionary。
 ## 所有 StringName 必须转 String，否则 JSON.stringify 会丢失类型。
@@ -585,7 +609,7 @@ func to_save_dict() -> Dictionary:
 
 	var deck_data: Array = []
 	for c in deck:
-		deck_data.append({"id": String(c["id"]), "upgraded": bool(c.get("upgraded", false)), "enchants": c.get("enchants", [])})
+		deck_data.append({"id": String(c["id"]), "upgraded": bool(c.get("upgraded", false)), "upgrade_level":int(c.get("upgrade_level", 1 if bool(c.get("upgraded", false)) else 0)), "enchants": c.get("enchants", [])})
 
 	var potion_data: Array = []
 	for p in potions:
@@ -648,7 +672,16 @@ func from_save_dict(d: Dictionary) -> bool:
 
 	deck.clear()
 	for c in d.get("deck", []):
-		deck.append({"id": StringName(c["id"]), "upgraded": bool(c.get("upgraded", false)), "enchants": c.get("enchants", [])})
+		var loaded_id := StringName(String(c.get("id", "")))
+		if GameData.get_card(loaded_id) == null:
+			loaded_id = StringName(String(GameData.legacy_card_id_map.get(String(loaded_id), "")))
+		if GameData.get_card(loaded_id) == null:
+			continue
+		var loaded_level := int(c.get("upgrade_level", 1 if bool(c.get("upgraded", false)) else 0))
+		deck.append({"id":loaded_id,"upgraded":loaded_level > 0,"upgrade_level":loaded_level,"enchants":c.get("enchants", [])})
+	if deck.is_empty():
+		for starter_id in GameData.balance.get("starting_deck", []):
+			deck.append({"id":StringName(starter_id),"upgraded":false,"upgrade_level":0,"enchants":[]})
 
 	potions.clear()
 	for p in d.get("potions", []):
@@ -688,6 +721,10 @@ func from_save_dict(d: Dictionary) -> bool:
 	deck_capacity_ad_uses = maxi(0, int(d.get("deck_capacity_ad_uses", 0)))
 	pending_card_acquisition = d.get("pending_card_acquisition", {}).duplicate(true)
 	shop_states = d.get("shop_states", {}).duplicate(true)
+	if source_version < 6:
+		# 旧商店/满库事务可能引用已删除卡牌；换池后重新生成，避免悬空引用。
+		pending_card_acquisition.clear()
+		shop_states.clear()
 	ad_reward_transaction_ids.clear()
 	for transaction_id in d.get("ad_reward_transaction_ids", []):
 		var clean_id := String(transaction_id).strip_edges()
@@ -711,6 +748,20 @@ func from_save_dict(d: Dictionary) -> bool:
 		if not clean_floor_key.is_empty() and not resolved_floor_keys.has(clean_floor_key):
 			resolved_floor_keys.append(clean_floor_key)
 	combat_checkpoint = d.get("combat_checkpoint", {}).duplicate(true) if d.get("combat_checkpoint", {}) is Dictionary else {}
+	if combat_checkpoint.has("deck"):
+		var migrated_checkpoint_deck: Array = []
+		for checkpoint_card in combat_checkpoint.get("deck", []):
+			var checkpoint_id := StringName(String(checkpoint_card.get("id", "")))
+			if GameData.get_card(checkpoint_id) == null:
+				checkpoint_id = StringName(String(GameData.legacy_card_id_map.get(String(checkpoint_id), "")))
+			if GameData.get_card(checkpoint_id) == null:
+				continue
+			var checkpoint_level := int(checkpoint_card.get("upgrade_level", 1 if bool(checkpoint_card.get("upgraded", false)) else 0))
+			migrated_checkpoint_deck.append({
+				"id":String(checkpoint_id), "upgraded":checkpoint_level > 0,
+				"upgrade_level":checkpoint_level, "enchants":checkpoint_card.get("enchants", []).duplicate()
+			})
+		combat_checkpoint["deck"] = migrated_checkpoint_deck
 	combat_death_pending = bool(d.get("combat_death_pending", false)) and not combat_checkpoint.is_empty()
 	revive_used_count = maxi(0, int(d.get("revive_used_count", 0)))
 
@@ -741,6 +792,12 @@ func from_save_dict(d: Dictionary) -> bool:
 			floor_arrs.append(floor_arr)
 		act_maps.append(floor_arrs)
 
+	pending_combat_enemy_ids.clear()
+	pending_post_combat = false
+	pending_post_reward = false
+	pending_node_resolved = false
+	pending_reward_data.clear()
+	_record_deck_discoveries()
 	SignalBus.player_hp_changed.emit(hp, max_hp)
 	SignalBus.gold_changed.emit(gold)
 	SignalBus.deck_changed.emit()

@@ -13,6 +13,7 @@ signal fireseed_changed(amount: int)
 signal construction_started(project_id: StringName)
 signal construction_ready(project_id: StringName)
 signal construction_claimed(project_id: StringName)
+signal card_discovered(card_id: StringName)
 
 # ---------- 激励广告 ----------
 signal ad_availability_changed(placement_id: StringName, available: bool)
@@ -50,6 +51,8 @@ signal card_drawn(card_id: StringName)
 signal card_played(card_id: StringName, target_index: int)
 signal card_discarded(card_id: StringName)
 signal card_exhausted(card_id: StringName)
+signal combat_card_choice_requested(title: String, entries: Array)
+signal combat_card_choice_resolved()
 signal deck_changed()
 
 # ---------- 战斗单位 ----------

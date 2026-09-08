@@ -46,17 +46,6 @@ func _ready() -> void:
 	await advance_round()
 	check("death does not cause next-turn replacement", controller.allies.is_empty())
 
-	# Player card summons still work after the one-time relic trigger is spent.
-	var card := GameData.get_card(&"summon_hound")
-	var expected := 0
-	for effect in card.get_effects(false):
-		if effect.get("kind", "") == "summon":
-			expected += int(effect.get("count", 1))
-	controller.hand = [{"id": card.id, "upgraded": false}]
-	controller.energy = card.cost
-	check("summon card remains playable", controller.play_card(0, -1))
-	check("card summons independently of relic", controller.allies.size() == expected)
-
 	# Load a save retaining the owned relic, then start a new battle.
 	var owned_save := RunState.to_save_dict()
 	RunState.start_new_run()

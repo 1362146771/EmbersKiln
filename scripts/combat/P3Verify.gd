@@ -36,18 +36,18 @@ func check(name: String, cond: bool, detail: String = "") -> void:
 # 4.1 卡池深化
 # =====================================================================
 func _test_card_pool() -> void:
-	check("卡池=62（含 12 张机制扩充牌及巨像/残酷）", GameData.cards.size() == 62, "cards=%d" % GameData.cards.size())
+	check("卡池=75 张职业牌 + 3 张生成状态牌", GameData.cards.size() == 78, "cards=%d" % GameData.cards.size())
 
-	var new_ids := ["kiln_burst", "ember_tide", "kiln_aegis", "shatter_guard",
-		"mass_craze", "ash_domain", "ember_burst", "scorch_field"]
+	var new_ids := ["anger", "flame_barrier", "shockwave", "immolate",
+		"corruption", "demon_form", "barricade", "reaper"]
 	for cid in new_ids:
 		check("新卡存在: %s" % cid, GameData.get_card(StringName(cid)) != null, "")
 
 	# 每系至少补到 1 张高稀有度终端卡
-	check("aggro 含 kiln_burst（窑温联动）", GameData.get_card(&"kiln_burst") != null)
-	check("defense 含 kiln_aegis（每回合格挡）", GameData.get_card(&"kiln_aegis") != null)
-	check("control 含 mass_craze（群体易伤）", GameData.get_card(&"mass_craze") != null)
-	check("burn 含 scorch_field（燃烧 AOE）", GameData.get_card(&"scorch_field") != null)
+	check("力量终端熔身存在", GameData.get_card(&"demon_form") != null)
+	check("格挡终端固釉不坠存在", GameData.get_card(&"barricade") != null)
+	check("控制牌震荡波存在", GameData.get_card(&"shockwave") != null)
+	check("状态牌联动燔祭存在", GameData.get_card(&"immolate") != null)
 
 	# gain_kiln_heat effect 真实生效：累计窑温并触发窑变（贯穿伤害）
 	_run_kiln_heat_effect()

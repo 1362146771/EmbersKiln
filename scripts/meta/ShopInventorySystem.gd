@@ -106,6 +106,7 @@ func commit_card_purchase(shop_id: String, slot_index: int, expected_card_id: St
 		RunState.deck.assign(old_deck)
 		RunState.shop_states[shop_id] = old_state
 		return false
+	ProfileState.discover_card(expected_card_id)
 	SignalBus.gold_changed.emit(RunState.gold)
 	SignalBus.deck_changed.emit()
 	SignalBus.shop_inventory_changed.emit(shop_id)

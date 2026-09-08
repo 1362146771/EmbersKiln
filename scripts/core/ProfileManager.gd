@@ -3,7 +3,7 @@ extends Node
 ## Run 结束只由 SaveManager 删除单局存档，不影响本管理器的 profile.json。
 
 const PROFILE_PATH := "user://profile.json"
-const PROFILE_VERSION := 3
+const PROFILE_VERSION := 6
 
 var is_loaded := false
 var autosave_enabled := true

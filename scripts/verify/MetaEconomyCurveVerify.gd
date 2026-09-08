@@ -103,9 +103,9 @@ func _test_vertical_caps() -> void:
 
 func _test_unlock_coverage() -> void:
 	ProfileState.reset_to_defaults(false)
-	check("初始池不包含后期稀有卡", GameData.is_card_unlocked(&"heavy_slash") and not GameData.is_card_unlocked(&"warlord"))
-	ProfileState.unlocked_card_ids.append(&"warlord")
-	check("完成研究后卡牌进入候选池", GameData.is_card_unlocked(&"warlord"))
+	check("初始池不包含后期稀有卡", GameData.is_card_unlocked(&"anger") and not GameData.is_card_unlocked(&"demon_form"))
+	ProfileState.unlocked_card_ids.append(&"demon_form")
+	check("完成研究后卡牌进入候选池", GameData.is_card_unlocked(&"demon_form"))
 	check("卡牌成长覆盖全部非起始卡", _covered_ids("card_ids", "unlocked_card_ids").size() == _nonstarter_card_count())
 	check("遗物成长覆盖全部非起始遗物", _covered_ids("relic_ids", "unlocked_relic_ids").size() == _nonstarter_relic_count())
 	check("药水成长覆盖全部药水", _covered_ids("potion_ids", "unlocked_potion_ids").size() == GameData.potions.size())

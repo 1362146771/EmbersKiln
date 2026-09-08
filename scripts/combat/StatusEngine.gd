@@ -57,12 +57,25 @@ func decay_statuses_at_turn_end(unit: CombatUnit) -> void:
 		unit.add_status(sid, -sd.decay_per_turn)
 
 func apply_player_start_turn_powers() -> void:
+	if ctrl.powers.has(CombatController.POWER_START_TURN_ENERGY):
+		ctrl.energy += int(ctrl.powers[CombatController.POWER_START_TURN_ENERGY])
+		SignalBus.energy_changed.emit(ctrl.energy, ctrl.max_energy)
+	if ctrl.powers.has(CombatController.POWER_START_TURN_HP_DRAW):
+		var start_power: Dictionary = ctrl.powers[CombatController.POWER_START_TURN_HP_DRAW]
+		ctrl._lose_player_hp(int(start_power.get("self_hp", 0)), true)
+		ctrl._draw_cards(int(start_power.get("draw", 0)))
 	if ctrl.powers.has(CombatController.POWER_START_TURN_BLOCK):
 		ctrl._dmg.add_block(ctrl.player, int(ctrl.powers[CombatController.POWER_START_TURN_BLOCK]))
 	if ctrl.powers.has(CombatController.POWER_START_TURN_STRENGTH):
 		apply_status(ctrl.player, &"heat", int(ctrl.powers[CombatController.POWER_START_TURN_STRENGTH]))
 
 func apply_player_end_turn_powers() -> void:
+	if ctrl.powers.has(CombatController.POWER_END_TURN_SELF_HP_AOE):
+		var end_power: Dictionary = ctrl.powers[CombatController.POWER_END_TURN_SELF_HP_AOE]
+		ctrl._lose_player_hp(int(end_power.get("self_hp", 0)), true)
+		ctrl._deal_direct_aoe(int(end_power.get("damage", 0)))
+	if ctrl.powers.has(CombatController.POWER_END_TURN_BLOCK):
+		ctrl._dmg.add_block(ctrl.player, int(ctrl.powers[CombatController.POWER_END_TURN_BLOCK]))
 	if ctrl.powers.has(CombatController.POWER_END_TURN_AOE):
 		for e in ctrl.enemies:
 			if not e.is_alive():

@@ -25,10 +25,10 @@
   },
   "initial_unlocks": {
     "card_ids": [
-      "heavy_slash", "double_strike", "cleave", "thrust", "charge", "burning_fist", "throw_rock",
-      "iron_wall", "parry", "battle_stance", "quick_step", "taunt", "bandage", "war_cry", "rage",
-      "harden", "summon_hound", "glaze_ward", "spark_call",
-      "spark_screen", "pack_assault", "ash_scatter", "thermal_shock"
+      "anger", "armaments", "body_slam", "clash", "cleave", "clothesline", "flex", "havoc",
+      "headbutt", "heavy_blade", "iron_wave", "perfected_strike", "pommel_strike", "shrug_it_off",
+      "sword_boomerang", "thunderclap", "true_grit", "twin_strike", "warcry", "wild_strike",
+      "evolve", "flame_barrier", "inflame"
     ],
     "relic_ids": [
       "bellows_glove", "charcoal_chit", "sherd_vest", "keeper_apron", "mending_slip", "hearth_totem", "kilnmark"
@@ -74,34 +74,34 @@
       "grants": {"facility_levels": {"town_restoration": 1}, "town_visual_stage": 1}
     },
     {
-      "id": "card_pack_berserk_1", "name": "狂暴配方 I", "description": "烧成“嗜热”“处决”“回风”“炉渣回响”四副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_berserk_1", "name": "浴血配方", "description": "解锁以血还血、放血、御血术、撕裂、祭品与残暴。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
       "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["bloodlust", "execute", "second_wind", "slag_echo"]}
+      "grants": {"unlocked_card_ids": ["blood_for_blood", "bloodletting", "hemokinesis", "rupture", "offering", "brutality"]}
     },
     {
-      "id": "card_pack_ironwall_1", "name": "铁壁配方 I", "description": "烧成“不裂”“双壁”“窑盾共鸣”“借盾撞”“巨像”五副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_ironwall_1", "name": "铁壁配方 I", "description": "解锁巩固、无惧疼痛、挡钳、定型、硬撑与末薪。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
       "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["unbreakable", "twin_guard", "kiln_aegis", "shield_ram", "colossus"]}
+      "grants": {"unlocked_card_ids": ["entrench", "feel_no_pain", "ghostly_armor", "metallicize", "power_through", "impervious"]}
     },
     {
-      "id": "card_pack_control_1", "name": "控场配方 I", "description": "烧成“地震”“卷灰”“灰刃”“追裂”四副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_control_1", "name": "控场配方 I", "description": "解锁战斗专注、缴械、泼水、震荡波、观察弱点与上勾拳。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
       "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["earthquake", "whirlwind", "ash_blade", "crack_chaser"]}
+      "grants": {"unlocked_card_ids": ["battle_trance", "disarm", "intimidate", "shockwave", "spot_weakness", "uppercut"]}
     },
     {
-      "id": "card_pack_burning_1", "name": "燃烧配方 I", "description": "烧成“炽心”“增焰”“炽潮”“灰烬决口”四副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_burning_1", "name": "燃烧配方 I", "description": "解锁炽心、火焰吐息、燔祭、残杀与地狱之刃。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
       "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["burning_soul", "empowering", "ember_tide", "ash_rupture"]}
+      "grants": {"unlocked_card_ids": ["combust", "fire_breathing", "immolate", "carnage", "infernal_blade"]}
     },
     {
-      "id": "card_pack_summon_1", "name": "召主配方 I", "description": "烧成“窑犬群”“指挥号”“犬卫并炉”“群窑共鸣”四副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_summon_1", "name": "消耗配方", "description": "解锁燃烧契约、黑暗之拥、重振精神、断魂斩、腐化与恶魔之焰。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
       "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["hound_pack", "command_horn", "paired_kiln_call", "kiln_chorus"]}
+      "grants": {"unlocked_card_ids": ["burning_pact", "dark_embrace", "second_wind", "sever_soul", "corruption", "fiend_fire"]}
     },
     {
       "id": "card_mold_capacity_2", "name": "扩建牌模架 II", "description": "牌模架再添新位，往后的远征可携带 24 张卡牌。",
@@ -137,28 +137,28 @@
       "grants": {"facility_levels": {"town_restoration": 2}, "town_visual_stage": 2}
     },
     {
-      "id": "card_pack_ironwall_2", "name": "铁壁配方 II", "description": "烧成“熔身”“碎甲击”“固釉不坠”三副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_ironwall_2", "name": "铁壁配方 II", "description": "解锁固釉不坠、势不可当与死亡收割。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 180, "duration_seconds": 28800,
       "prerequisite_project_ids": ["card_pack_ironwall_1", "hearth_rekindle_2"],
-      "grants": {"unlocked_card_ids": ["molten_form", "shatter_guard", "fixed_glaze"]}
+      "grants": {"unlocked_card_ids": ["barricade", "juggernaut", "reaper"]}
     },
     {
-      "id": "card_pack_control_2", "name": "控场配方 II", "description": "烧成“群釉咒”“浸灰领域”“残酷”三副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_control_2", "name": "牌技配方", "description": "解锁双发、双持与发掘。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 180, "duration_seconds": 28800,
       "prerequisite_project_ids": ["card_pack_control_1", "hearth_rekindle_2"],
-      "grants": {"unlocked_card_ids": ["mass_craze", "ash_domain", "cruelty"]}
+      "grants": {"unlocked_card_ids": ["double_tap", "dual_wield", "exhume"]}
     },
     {
-      "id": "card_pack_berserk_2", "name": "狂暴配方 II", "description": "烧成“大匠之姿”“末薪”“狂炉”“巨窑一击”四副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_berserk_2", "name": "力量配方", "description": "解锁熔身、突破极限、狂暴、巨窑一击与连续拳。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 220, "duration_seconds": 28800,
       "prerequisite_project_ids": ["card_pack_berserk_1", "hearth_rekindle_2"],
-      "grants": {"unlocked_card_ids": ["warlord", "last_stand", "berserk", "titan_strike"]}
+      "grants": {"unlocked_card_ids": ["demon_form", "limit_break", "berserk", "bludgeon", "pummel"]}
     },
     {
-      "id": "card_pack_burning_2", "name": "燃烧配方 II", "description": "烧成“火暴”“燃窑轰击”“余烬爆发”“焚原”“封炉”五副牌模，往后的远征中均可寻得。",
+      "id": "card_pack_burning_2", "name": "战意配方", "description": "解锁飞身踢、狂怒、暴走、无谋冲锋、灼热攻击、盛怒、哨卫、卷灰与狂宴。",
       "facility_id": "card_mold_workshop", "fireseed_cost": 220, "duration_seconds": 28800,
       "prerequisite_project_ids": ["card_pack_burning_1", "hearth_rekindle_2"],
-      "grants": {"unlocked_card_ids": ["firestorm", "kiln_burst", "ember_burst", "scorch_field", "sealed_furnace"]}
+      "grants": {"unlocked_card_ids": ["dropkick", "rage", "rampage", "reckless_charge", "searing_blow", "seeing_red", "sentinel", "whirlwind", "feed"]}
     },
     {
       "id": "apothecary_research_2", "name": "药釉研究 II", "description": "炼成两种稀有药水，并复原稀有附魔“燃烧”。",

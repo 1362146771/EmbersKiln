@@ -4,8 +4,8 @@ extends Node
 ## 运行时数据全部来自 RunState，本脚本不持有任何玩法数值。
 
 const SAVE_PATH := "user://save.json"
-const SAVE_VERSION := 5
-const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5]
+const SAVE_VERSION := 6
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6]
 
 ## 测试可临时改写到隔离路径；生产环境始终使用默认 SAVE_PATH。
 var runtime_save_path := SAVE_PATH
@@ -77,6 +77,14 @@ func load_game() -> bool:
 		SignalBus.run_loaded.emit()
 		print("[SaveManager] 读档成功 — 第 %d 层，HP %d/%d" % [RunState.current_floor, RunState.hp, RunState.max_hp])
 	return ok
+
+
+## 永久城镇档案不算进行中的单局；主菜单只据此选择开始/继续。
+func has_active_save() -> bool:
+	var data := load_from_file(runtime_save_path)
+	return (not data.is_empty()
+		and SUPPORTED_SAVE_VERSIONS.has(int(data.get("version", -1)))
+		and bool(data.get("is_active", false)))
 
 
 func has_save() -> bool:

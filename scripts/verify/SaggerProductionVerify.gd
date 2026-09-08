@@ -117,8 +117,8 @@ func _test_combat() -> void:
 	check("封匣获得14格挡且预告喷火20", boss.block == 14 and boss.intent.id == "fire" and boss.intent.value == 20)
 	await snapshot("fire")
 	# 设置已存在的重劈手牌用于精确破盾，不改变正式卡牌/敌人数据。
-	c.hand = [{"id": &"heavy_slash", "upgraded": false}]
-	c.energy = GameData.get_card(&"heavy_slash").cost
+	c.hand = [{"id": &"heavy_blade", "upgraded": false}]
+	c.energy = GameData.get_card(&"heavy_blade").cost
 	check("真实重劈卡可用", c.play_card(0, 0))
 	check("重劈恰好破封不扣Boss生命", boss.block == 0 and boss.hp == 160 and boss.intent.id == "vent")
 	check("已显示意图即时变泄压", ui.unit_panels[boss].get_node("Inner/IntentLabel").text == "泄压 · 不攻击")
@@ -133,8 +133,8 @@ func _test_combat() -> void:
 	await end_turn()
 	player_hp = c.player.hp
 	# 未破盾分支：实际窑壁卡给12格挡，喷火20，预计扣血8。
-	c.hand = [{"id": &"iron_wall", "upgraded": false}]
-	c.energy = GameData.get_card(&"iron_wall").cost
+	c.hand = [{"id": &"flame_barrier", "upgraded": false}]
+	c.energy = GameData.get_card(&"flame_barrier").cost
 	check("真实窑壁卡可用", c.play_card(0, 0))
 	await end_turn()
 	check("未破封喷火正确被格挡减伤", c.player.hp == player_hp - 8 and boss.intent.id == "cool")
