@@ -142,11 +142,7 @@ func _build_main() -> void:
 		if not has_node("FormalShopBackground"):
 			$Dim.color = Color.TRANSPARENT
 			FormalUI.background(self, FormalUI.ROOT + "bgIMG_shop.png").name = "FormalShopBackground"
-			var footer_bg := FormalUI.picture(FormalUI.ROOT + "bd_shop_btn.png")
-			scene_panel.add_child(footer_bg)
-			scene_panel.move_child(footer_bg, 0)
-			footer_bg.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-			footer_bg.offset_top = -350
+
 		var old_header := get_node_or_null("FormalHeader")
 		if old_header != null:
 			remove_child(old_header)
@@ -257,6 +253,7 @@ func _relic_offer(i: int) -> Control:
 
 	var info := Label.new()
 	info.text = "遗物：%s\n%s" % [name_txt, desc_txt]
+	preload("res://scripts/ui/RelicInfo.gd").attach(info, StringName(item["id"]))
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.add_theme_font_size_override("font_size", 20)
@@ -266,6 +263,7 @@ func _relic_offer(i: int) -> Control:
 		var icon := GameData.icon_rect(r.icon, 72)
 		box.add_child(icon)
 		box.move_child(icon, 0)
+		preload("res://scripts/ui/RelicInfo.gd").attach(icon, StringName(item["id"]))
 
 	var buy := Button.new()
 	if item["bought"]:

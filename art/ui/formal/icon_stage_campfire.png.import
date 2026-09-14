@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dx7sf0apk2w1j"
-path="res://.godot/imported/img_fall_titleBehind.png-5d3cb8e858158646e199911b67427d3d.ctex"
+uid="uid://cim4sb31g54f"
+path="res://.godot/imported/icon_stage_campfire.png-a607187faafd41c5fba9b03adc3174eb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/ui/formal/img_fall_titleBehind.png"
-dest_files=["res://.godot/imported/img_fall_titleBehind.png-5d3cb8e858158646e199911b67427d3d.ctex"]
+source_file="res://art/ui/formal/icon_stage_campfire.png"
+dest_files=["res://.godot/imported/icon_stage_campfire.png-a607187faafd41c5fba9b03adc3174eb.ctex"]
 
 [params]
 

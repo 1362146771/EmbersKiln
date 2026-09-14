@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/map/ShopUI.gd" id="1"]
 [ext_resource type="Theme" path="res://themes/formal/btn_shop_normal_long.tres" id="1_4a18l"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bgIMG_shop.png" id="3_kmbf8"]
-[ext_resource type="Texture2D" path="res://art/ui/formal/bd_shop_btn.png" id="4_lqij4"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="4_lqij4"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_shop_title.png" id="5_4ude5"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_zhanLiPin_card.png" id="6_igk5h"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/btn_event_normal.png" id="7_yt8vq"]
@@ -172,10 +172,10 @@ content_margin_top = 18.0
 content_margin_right = 18.0
 content_margin_bottom = 18.0
 texture = ExtResource("4_lqij4")
-texture_margin_left = 18.0
-texture_margin_top = 18.0
-texture_margin_right = 18.0
-texture_margin_bottom = 18.0
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
 
 [node name="ShopUI" type="Control" unique_id=1320572750]
 layout_mode = 3
@@ -218,16 +218,14 @@ custom_minimum_size = Vector2(720, 1280)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_s81us")
 
-[node name="FooterBackground" type="TextureRect" parent="Dim/Center/MainPanel" unique_id=844091003]
-layout_mode = 0
+[node name="FooterBackground" type="Panel" parent="Dim/Center/MainPanel"]
+layout_mode = 1
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = -350.0
 mouse_filter = 2
-texture = ExtResource("4_lqij4")
-expand_mode = 1
-stretch_mode = 6
+theme_override_styles/panel = SubResource("StyleBoxTexture_38p4t")
 
 [node name="ContentScroll" type="ScrollContainer" parent="Dim/Center/MainPanel" unique_id=1645848345]
 layout_mode = 1

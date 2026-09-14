@@ -51,31 +51,9 @@ func build_visual(cd: CardData, idx: int, ench: Array, is_upgraded: bool = false
 	enchants = ench
 	upgraded = is_upgraded
 	resolved_cost = cd.cost if cost_override == -999 else cost_override
-	custom_minimum_size = Vector2(120, 180)
+	custom_minimum_size = Vector2(136, 188)
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER
-
-	var body := ORANGE if cd.type == &"attack" else GREEN
-	var style: StyleBox = _card_style(body)
-	if not enchants.is_empty():
-		style = _framed_card_style(body, _enchant_frame_color(enchants))
-	add_theme_stylebox_override("panel", style)
-
-	# 手牌与拖拽卡只保留名称/费用，完整效果及附魔在点击详情中展示。
-	var cost_text := "X" if resolved_cost < 0 else str(resolved_cost)
-	var txt := "%s%s\n[%s能]" % [cd.name, "+" if upgraded else "", cost_text]
-	# 即时取子节点（不依赖 @onready 时机：build_visual 可能在 add_child 之前被调用）
-	var body_l: Label = $Body
-	body_l.text = txt
-	var art: TextureRect = $Art
-	art.texture = GameData.icon_texture(cd.art)
-	art.visible = art.texture != null
-	body_l.anchor_top = 1.0 if art.visible else 0.0
-	body_l.offset_top = -64.0 if art.visible else 8.0
-	body_l.add_theme_font_size_override("font_size", 18 if art.visible else 22)
-
-	var enchant_icon: TextureRect = $EnchantIcon
-	enchant_icon.visible = false
-
+	FormalUI.fill_card_visual(self, {"id": cd.id, "name": cd.name, "upgraded": upgraded, "cost": resolved_cost})
 
 func set_ghost(v: bool) -> void:
 	_ghost = v
@@ -154,25 +132,6 @@ func _update_drag_position(g: Vector2) -> void:
 
 
 # ---- 卡面样式（与 CombatUI 同款，避免跨文件依赖）----
-func _card_style(c: Color) -> StyleBoxTexture:
-	# 正式独立卡框尚未提供，暂复用同批资源的通用石框。
-	var s := FormalUI.stone("bd_common_rewardFrame.png", 7)
-	s.modulate_color = Color.WHITE.lerp(c, 0.16)
-	return s
-
-
-func _framed_card_style(body: Color, frame: Color) -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color = Color("35414c").lerp(body, 0.12)
-	s.border_color = frame
-	s.set_border_width_all(4)
-	s.corner_radius_top_left = 10
-	s.corner_radius_top_right = 10
-	s.corner_radius_bottom_left = 10
-	s.corner_radius_bottom_right = 10
-	return s
-
-
 func _enchant_frame_color(ench: Array) -> Color:
 	for eid in ench:
 		var ed: EnchantData = GameData.get_enchant(StringName(eid))

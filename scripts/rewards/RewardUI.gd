@@ -65,7 +65,6 @@ func _build_main() -> void:
 		scene_panel.get_node("Content/Title").horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		scene_panel.get_node("Content/Prompt").add_theme_font_size_override("font_size", 21)
 		var card_area: ScrollContainer = scene_panel.get_node("Content/CardScroll")
-		card_area.custom_minimum_size.y = 290
 		FormalUI.reward_arrow(scene_panel, card_area)
 		card_area.add_theme_stylebox_override("panel", FormalUI.stone("bd_zhanLiPin_card.png", 4))
 		var summary: VBoxContainer = scene_panel.get_node("Content/Summary")
@@ -76,7 +75,9 @@ func _build_main() -> void:
 		var scene_relic_id: StringName = data.get("relic_id", &"")
 		if scene_relic_id != &"":
 			var scene_relic: RelicData = GameData.get_relic(scene_relic_id)
-			summary.add_child(_label("获得遗物：%s" % (scene_relic.name if scene_relic != null else String(scene_relic_id)), 26, PURPLE))
+			var relic_label := _label("获得遗物：%s" % (scene_relic.name if scene_relic != null else String(scene_relic_id)), 26, PURPLE)
+			summary.add_child(relic_label)
+			preload("res://scripts/ui/RelicInfo.gd").attach(relic_label, scene_relic_id)
 		var scene_potion_id: StringName = data.get("potion_id", &"")
 		if scene_potion_id != &"":
 			var scene_potion: PotionData = GameData.get_potion(scene_potion_id)
@@ -114,7 +115,30 @@ func _build_main() -> void:
 		enchant_button.visible = (reward_tier == &"elite" or reward_tier == &"boss") and RewardBuilder.can_any_card_enchant()
 		if enchant_button.visible and not enchant_button.pressed.is_connected(_on_enchant_pressed):
 			enchant_button.pressed.connect(_on_enchant_pressed)
+		_fit_main_panel.call_deferred()
 		return
+
+
+func _fit_main_panel() -> void:
+	# 保留页头和按钮原尺寸，仅将原中间区缩短 40%。
+	await get_tree().process_frame
+	if not has_node("Dim/Center/MainPanel"):
+		return
+	var panel: Control = get_node("Dim/Center/MainPanel")
+	var content: VBoxContainer = panel.get_node("Content")
+	var cards: ScrollContainer = content.get_node("CardScroll")
+	var other_height := 0.0
+	var visible_count := 0
+	for child in content.get_children():
+		if child is Control and child.visible:
+			visible_count += 1
+			if child != cards:
+				other_height += child.get_combined_minimum_size().y
+	other_height += maxi(0, visible_count - 1) * content.get_theme_constant("separation")
+	var margins := content.offset_top - content.offset_bottom
+	var original_middle := maxf(480.0, 1140.0 - margins - other_height)
+	cards.custom_minimum_size.y = original_middle * 0.6
+	panel.custom_minimum_size.y = margins + other_height + cards.custom_minimum_size.y
 
 func _build_upgrade() -> void:
 	for c in get_children():
@@ -149,6 +173,7 @@ func _build_upgrade() -> void:
 	v.add_child(_label("选择要强化的卡牌（灼热攻击可重复升级）", 20, DARK))
 
 	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	v.add_child(scroll)
 
@@ -167,6 +192,7 @@ func _build_upgrade() -> void:
 		upgradable = true
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(0, 80)
+		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		b.add_theme_color_override("font_color", DARK)
 		b.text = "%s%s → %s" % [cd.name, "+" + str(level) if level > 1 else "+" if level == 1 else "", cd.get_description(level + 1)]
 		b.add_theme_font_size_override("font_size", 20)

@@ -123,8 +123,8 @@ func _build_popup() -> void:
 	_popup.modulate.a = 0.0
 	_popup.mouse_filter = Control.MOUSE_FILTER_STOP
 	var box := style(SLATE, Color("68665e"))
-	box.content_margin_left = 10
-	box.content_margin_right = 10
+	box.content_margin_left = 4
+	box.content_margin_right = 4
 	box.content_margin_top = 10
 	box.content_margin_bottom = 10
 	_popup.add_theme_stylebox_override("panel", box)
@@ -133,6 +133,9 @@ func _build_popup() -> void:
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_scroll.mouse_filter = Control.MOUSE_FILTER_STOP
 	_popup.add_child(_scroll)
+	# 固定预留滚动条宽度，避免短描述在「有/无滚动条」间反复切换，
+	# 导致卡图宽度、最小高度与弹窗内容高度互相反馈。
+	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
 	_cards = GridContainer.new()
 	_cards.columns = 1
 	_cards.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -157,9 +160,9 @@ func _layout_popup() -> void:
 		return
 	var viewport_rect := get_viewport().get_visible_rect().grow(-8.0)
 	var source_rect := _source_card.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, _source_card.size)
-	# 仅呈现尺寸：比手牌稍大；长文滚动，不扩张为全屏详情。
+	# 全宽插画需要额外高度，首屏仍留出卡牌效果；长文继续滚动。
 	var popup_width := minf(maxf(source_rect.size.x * 1.8, 216.0), viewport_rect.size.x)
-	var max_height := minf(maxf(source_rect.size.y * 1.65, 260.0), viewport_rect.size.y)
+	var max_height := minf(maxf(source_rect.size.y * 2.6, 360.0), viewport_rect.size.y)
 	_popup.size = Vector2(popup_width, max_height)
 	# 容器先按指定宽度折行，再收紧至实际内容高度。
 	await get_tree().process_frame
@@ -238,37 +241,23 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 	var cd: CardData = GameData.get_card(StringName(entry.get("id", "")))
 	var panel := PanelContainer.new()
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new() if _single_card else style(Color("332831")))
+	var card_style := style(Color("332831"))
+	card_style.content_margin_left = 4
+	card_style.content_margin_right = 4
+	panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new() if _single_card else card_style)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 6 if _single_card else 10)
 	panel.add_child(column)
-	var title := label(card_name(entry), 22 if _single_card else 28)
-	if maxi(maxi(int(entry.get("upgrade_level", 0)), int(entry.get("combat_upgrade_level", 0))), 1 if bool(entry.get("upgraded", false)) else 0) > 0:
-		title.add_theme_color_override("font_color", Color("d9a441"))
-	column.add_child(title)
+	var level := maxi(maxi(int(entry.get("upgrade_level", 0)), int(entry.get("combat_upgrade_level", 0))), 1 if bool(entry.get("upgraded", false)) else 0)
 	if cd != null:
-		var level := maxi(maxi(int(entry.get("upgrade_level", 0)), int(entry.get("combat_upgrade_level", 0))), 1 if bool(entry.get("upgraded", false)) else 0)
-		var resolved_cost := cd.resolved_cost(level)
-		var cost_text := "X" if resolved_cost < 0 else str(resolved_cost)
-		column.add_child(label("%s 能量 · %s · %s" % [cost_text,
-			GameData.card_taxonomy_name(&"types", cd.type),
-			GameData.card_taxonomy_name(&"rarities", cd.rarity)], 18 if _single_card else 20))
+		column.add_child(FormalUI.card_visual({"id": cd.id, "display_name": card_name(entry), "cost": cd.resolved_cost(level)}))
+		column.add_child(label(GameData.card_taxonomy_name(&"rarities", cd.rarity), 18))
+		column.add_child(label(cd.get_description(level), 20 if _single_card else 22))
 		if not cd.mechanics.is_empty():
 			var mechanic_names: Array[String] = []
 			for mechanic in cd.mechanics:
 				mechanic_names.append(GameData.card_taxonomy_name(&"mechanics", mechanic))
 			column.add_child(label("机制 · %s" % " / ".join(mechanic_names), 16 if _single_card else 18))
-		var texture := GameData.icon_texture(cd.art)
-		if texture != null:
-			var art := TextureRect.new()
-			art.name = "CardArt"
-			art.texture = texture
-			art.custom_minimum_size = Vector2(0, 96 if _single_card else 128)
-			art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			column.add_child(art)
-		column.add_child(label(cd.get_description(level), 20 if _single_card else 22))
 		if cd.exhausts_on_play(level):
 			column.add_child(label("消耗：打出后本场不再抽到", 20))
 		elif cd.type == &"power":

@@ -7,6 +7,8 @@ var reward_claimed := false
 
 func _ready() -> void:
 	visual = OS.get_cmdline_user_args().has("--visual")
+	if visual:
+		get_tree().root.size = Vector2i(1080, 1920)
 	_verify_authored_scenes()
 	ProfileManager.autosave_enabled = false
 	SaveManager.runtime_save_path = "res://Temp/formal_ui_verify_save.json"
@@ -18,6 +20,23 @@ func _ready() -> void:
 	await remove_screen(menu)
 	var map_ui := await show_scene("res://scenes/map/MapPlay.tscn", "map")
 	check(map_ui.has_node("FormalHeader"), "map header")
+	check(get_tree().root.content_scale_size == Vector2i(720, 1280), "720x1280 shared editor and runtime canvas")
+	check(is_equal_approx(get_tree().root.content_scale_factor, 1.0), "window stretch handles output scaling without extra content scaling")
+	var legend: Control = map_ui.get_node("MapLegend")
+	check(map_ui.get_global_rect().encloses(legend.get_global_rect()), "entire legend stays in viewport")
+	check(legend.position.x >= map_ui.map_scroller.get_rect().end.x, "legend has a separate right column")
+	for entry in FormalUI.MAP_LEGEND:
+		var row := legend.find_child(String(entry[0]), true, false)
+		check(row != null and row.get_node("Heading/Icon").texture != null, "legend icon: " + String(entry[0]))
+	var legend_position := legend.global_position
+	map_ui.map_scroller.scroll_vertical = 0
+	await capture("map_top")
+	check(legend.global_position == legend_position, "legend remains fixed while map scrolls")
+	for node in map_ui.map_area.get_children():
+		if node is Button:
+			check(node.position.x >= 0 and node.get_rect().end.x <= map_ui.map_area.size.x, "map node stays inside route column")
+	map_ui._build_map_view()
+	await get_tree().process_frame
 	var clickable := 0
 	for node in map_ui.map_area.get_children():
 		if node is Button and not node.disabled:
@@ -33,7 +52,7 @@ func _ready() -> void:
 	RunState.gold = int(GameData.balance["shop"]["remove_card_cost"]) + int(GameData.balance["shop"]["enchant_cost"])
 	var shop := await show_scene("res://scenes/map/ShopUI.tscn", "shop")
 	var footer: Control = shop.get_node("Dim/Center/MainPanel/Footer")
-	check(footer.get_global_rect().end.y <= 1280, "shop footer stays in viewport")
+	check(footer.get_global_rect().end.y <= get_viewport().get_visible_rect().end.y, "shop footer stays in viewport")
 	check(shop.get_node("Dim/Center/MainPanel/ContentScroll/Content/CardScroll/CardRow").get_child_count() == shop.card_stock.size(), "all configured card offers shown")
 	shop._build_main()
 	await capture("shop_refresh")
@@ -44,6 +63,17 @@ func _ready() -> void:
 	await capture("shop_return")
 	check(shop.has_node("Dim/Center/MainPanel/Footer"), "shop subpage returns to formal layout")
 	await remove_screen(shop)
+	for path in ["map/RestUI", "map/TreasureUI", "map/AltarUI", "town/Town", "main/PreRunPreparation"]:
+		if path == "main/PreRunPreparation":
+			# 测试准备页须有候选，避免已完成准备的 Run 自动切回地图。
+			RunState.pre_run_preparation_resolved = false
+			var config := GameData.ad_placement_config(PreRunBuffSystem.PLACEMENT)
+			RunState.pre_run_buff_offer_ids.assign(config["buff_ids"].slice(0, int(config["choice_count"])))
+		var extra := await show_scene("res://scenes/" + path + ".tscn", path.get_file())
+		check(extra.size == get_viewport().get_visible_rect().size, "page fills logical viewport: " + path)
+		await remove_screen(extra)
+	RunState.pre_run_preparation_resolved = true
+	RunState.pre_run_buff_offer_ids.clear()
 	var event := await show_scene("res://scenes/map/EventUI.tscn", "event")
 	var panel: Control = event.get_node("Dim/Center/MainPanel")
 	for event_data in GameData.events:
@@ -74,7 +104,7 @@ func _ready() -> void:
 		for pressed in [true, false]:
 			var click := InputEventMouseButton.new()
 			click.button_index = MOUSE_BUTTON_LEFT
-			click.position = point
+			click.position = get_viewport().get_final_transform() * point
 			click.pressed = pressed
 			Input.parse_input_event(click)
 			await get_tree().process_frame
@@ -116,7 +146,9 @@ func capture(file: String) -> void:
 		await get_tree().process_frame
 	if visual:
 		await RenderingServer.frame_post_draw
-		var result := get_viewport().get_texture().get_image().save_png("res://Temp/formal_" + file + ".png")
+		var rendered := get_viewport().get_texture().get_image()
+		check(rendered.get_size() == Vector2i(1080, 1920), "native 1080x1920 render: " + file)
+		var result := rendered.save_png("res://Temp/formal_" + file + ".png")
 		check(result == OK, "capture " + file)
 
 func check(ok: bool, title: String) -> void:

@@ -8,6 +8,7 @@ const FILTER_ALL := &"all"
 const FILTER_DISCOVERED := &"discovered"
 const FILTER_UNDISCOVERED := &"undiscovered"
 const RARITY_ORDER := {&"starter": 0, &"common": 1, &"uncommon": 2, &"rare": 3}
+const PAGE_SIZE := 8  # 仅控制图鉴呈现与同时持有的插画数量，不影响卡池。
 
 var _filter: StringName = FILTER_ALL
 var _grid: GridContainer
@@ -16,11 +17,19 @@ var _progress_bar: ProgressBar
 var _empty_label: Label
 var _filter_buttons: Dictionary = {}
 var _finished := false
+var _page := 0
+var _scroll: ScrollContainer
+var _page_label: Label
+var _previous_page: Button
+var _next_page: Button
+var _art_targets: Dictionary = {}
+var _requested_art: Dictionary = {}
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 196
+	set_process(false)
 	_build_interface()
 	_refresh()
 
@@ -96,6 +105,7 @@ func _build_interface() -> void:
 	_add_filter_button(filters, FILTER_UNDISCOVERED, "未发现")
 
 	var scroll := ScrollContainer.new()
+	_scroll = scroll
 	scroll.name = "CardScroll"
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -116,6 +126,30 @@ func _build_interface() -> void:
 	_empty_label.hide()
 	body.add_child(_empty_label)
 
+	var pages := HBoxContainer.new()
+	pages.add_theme_constant_override("separation", 12)
+	body.add_child(pages)
+	_previous_page = Button.new()
+	_previous_page.name = "PreviousPage"
+	_previous_page.text = "上一页"
+	_previous_page.custom_minimum_size = Vector2(130, 58)
+	FormalUI.button(_previous_page, "btn_event_normal.png")
+	_previous_page.pressed.connect(_change_page.bind(-1))
+	pages.add_child(_previous_page)
+	_page_label = Label.new()
+	_page_label.name = "PageLabel"
+	_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_page_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_page_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pages.add_child(_page_label)
+	_next_page = Button.new()
+	_next_page.name = "NextPage"
+	_next_page.text = "下一页"
+	_next_page.custom_minimum_size = Vector2(130, 58)
+	FormalUI.button(_next_page, "btn_event_normal.png")
+	_next_page.pressed.connect(_change_page.bind(1))
+	pages.add_child(_next_page)
+
 
 func _add_filter_button(parent: HBoxContainer, filter_id: StringName, text: String) -> void:
 	var button := Button.new()
@@ -131,7 +165,15 @@ func _add_filter_button(parent: HBoxContainer, filter_id: StringName, text: Stri
 
 
 func _set_filter(filter_id: StringName) -> void:
+	if _filter == filter_id:
+		return
 	_filter = filter_id
+	_page = 0
+	_refresh()
+
+
+func _change_page(direction: int) -> void:
+	_page += direction
 	_refresh()
 
 
@@ -143,19 +185,29 @@ func _refresh() -> void:
 	_progress_bar.value = discovered
 	for filter_id in _filter_buttons:
 		(_filter_buttons[filter_id] as Button).button_pressed = filter_id == _filter
+	_art_targets.clear()
 	for child in _grid.get_children():
 		_grid.remove_child(child)
 		child.queue_free()
-	var visible_count := 0
+	var filtered: Array[CardData] = []
 	for card in cards:
 		var is_discovered := ProfileState.is_card_discovered(card.id)
 		if _filter == FILTER_DISCOVERED and not is_discovered:
 			continue
 		if _filter == FILTER_UNDISCOVERED and is_discovered:
 			continue
+		filtered.append(card)
+	var page_count := maxi(1, ceili(filtered.size() / float(PAGE_SIZE)))
+	_page = clampi(_page, 0, page_count - 1)
+	for index in range(_page * PAGE_SIZE, mini((_page + 1) * PAGE_SIZE, filtered.size())):
+		var card := filtered[index]
+		var is_discovered := ProfileState.is_card_discovered(card.id)
 		_grid.add_child(_discovered_card(card) if is_discovered else _undiscovered_card(card))
-		visible_count += 1
-	_empty_label.visible = visible_count == 0
+	_empty_label.visible = filtered.is_empty()
+	_page_label.text = "%d / %d 页 · %d 张" % [_page + 1, page_count, filtered.size()]
+	_previous_page.disabled = _page == 0
+	_next_page.disabled = _page >= page_count - 1
+	_scroll.scroll_vertical = 0
 
 
 func _collectible_cards() -> Array[CardData]:
@@ -183,8 +235,30 @@ func _discovered_card(card: CardData) -> PanelContainer:
 		"cost": card.cost,
 		"desc": card.description,
 		"upgraded": false,
-	})
+	}, true)
+	var art := panel.find_child("CardArt", true, false) as TextureRect
+	if art != null:
+		_art_targets[card.art] = weakref(art)
+		if not _requested_art.has(card.art):
+			if ResourceLoader.load_threaded_request(card.art, "Texture2D") == OK:
+				_requested_art[card.art] = true
+		set_process(true)
 	return panel
+
+
+func _process(_delta: float) -> void:
+	for path in _requested_art.keys():
+		var status := ResourceLoader.load_threaded_get_status(path)
+		if status == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+			continue
+		if status == ResourceLoader.THREAD_LOAD_LOADED:
+			# 只在完成后取资源，主线程不等待解码。快速翻页的旧请求只回收，不写入新页。
+			var texture := ResourceLoader.load_threaded_get(path) as Texture2D
+			var target: TextureRect = _art_targets[path].get_ref() if _art_targets.has(path) else null
+			if is_instance_valid(target) and not target.is_queued_for_deletion():
+				target.texture = texture
+		_requested_art.erase(path)
+	set_process(not _requested_art.is_empty())
 
 
 func _undiscovered_card(card: CardData) -> PanelContainer:
@@ -192,27 +266,18 @@ func _undiscovered_card(card: CardData) -> PanelContainer:
 	panel.name = "Undiscovered_%s" % String(card.id)
 	panel.custom_minimum_size = Vector2(0, 340)
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var box := FormalUI.stone("bd_zhanLiPin_card.png", 5)
-	box.modulate_color = Color(0.24, 0.26, 0.29, 0.92)
-	panel.add_theme_stylebox_override("panel", box)
-	var center := CenterContainer.new()
-	panel.add_child(center)
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 14)
-	center.add_child(column)
+	FormalUI.card_face(panel, {"name": "未发现", "desc": "在远征中获得后解锁资料。", "cost": 0}, true)
+	panel.find_child("CardEnergyCost", true, false).get_node("Badge/Value").text = "？"
+	panel.find_child("CardDescription", true, false).get_child(0).text = "在远征中获得后解锁资料。"
+	var art: TextureRect = panel.find_child("CardArt", true, false)
 	var mark := Label.new()
 	mark.text = "？"
 	mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	mark.add_theme_font_size_override("font_size", 72)
-	mark.add_theme_color_override("font_color", Color("8d929b"))
-	column.add_child(mark)
-	var status := Label.new()
-	status.text = "未发现\n在远征中获得后解锁资料"
-	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	status.add_theme_font_size_override("font_size", 18)
-	status.add_theme_color_override("font_color", Color("aeb2b9"))
-	column.add_child(status)
+	mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mark.add_theme_font_size_override("font_size", 56)
+	art.add_child(mark)
+	mark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	return panel
 
 
@@ -223,6 +288,25 @@ func close() -> void:
 	hide()
 	closed.emit()
 	queue_free()
+
+
+func _exit_tree() -> void:
+	# 关闭窗口不等待后台读取；完成后释放请求引用，避免多次打开积累纹理。
+	_release_art_requests(_requested_art.keys(), get_tree())
+	_requested_art.clear()
+
+
+static func _release_art_requests(paths: Array, tree: SceneTree) -> void:
+	while not paths.is_empty():
+		for path in paths.duplicate():
+			var status := ResourceLoader.load_threaded_get_status(path)
+			if status == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+				continue
+			if status == ResourceLoader.THREAD_LOAD_LOADED:
+				ResourceLoader.load_threaded_get(path)
+			paths.erase(path)
+		if not paths.is_empty():
+			await tree.process_frame
 
 
 func _unhandled_input(event: InputEvent) -> void:
