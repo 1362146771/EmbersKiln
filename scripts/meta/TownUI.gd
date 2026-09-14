@@ -1,5 +1,5 @@
 extends Control
-## 窑口镇最小可运行界面：查看火种、设施、项目与自然计时队列。
+## 固定镇景叠加分级建筑；工程领取后由档案信号更新外观。
 
 const MAIN_MENU := "res://scenes/main/MainMenu.tscn"
 const MAP_PLAY := "res://scenes/map/MapPlay.tscn"
@@ -7,6 +7,7 @@ const PRE_RUN_PREPARATION := "res://scenes/main/PreRunPreparation.tscn"
 const TownFieldScene := preload("res://scenes/town/TownField.tscn")
 const TEXT_PRIMARY := Color("#F2E8D5")
 const TEXT_MUTED := Color("#B8AA96")
+const VISUAL_CONFIG := "res://data/town_visuals.json"
 
 @onready var _fireseed_balance: Label = %FireseedBalance
 @onready var _facility_layer: Control = %FacilityLayer
@@ -20,19 +21,27 @@ const TEXT_MUTED := Color("#B8AA96")
 var _selected_facility_id: StringName = &""
 var _speedup_request_project: StringName = &""
 var _speedup_status_by_project: Dictionary = {}
+var _facility_tweens: Dictionary = {}
+var _visuals: Dictionary = {}
+var _exterior_cache: Dictionary = {}
+var _selection_revision := 0
+var _courtyard_revision := 0
 
 
 func _ready() -> void:
+	_visuals = JSON.parse_string(FileAccess.get_file_as_string(VISUAL_CONFIG))
 	if PauseManager != null:
 		PauseManager.hide_pause_button()
 	%BackButton.pressed.connect(_on_back)
 	_depart_button.pressed.connect(_on_depart)
 	%CloseDetailButton.pressed.connect(_close_facility_details)
 	%RefreshTimer.timeout.connect(_on_timer)
+	%TownRestoration.pressed.connect(_on_facility_pressed.bind(&"town_restoration"))
 	for child in _facility_layer.get_children():
 		if child is TextureButton:
 			var facility_id := StringName(String(child.get_meta("facility_id", "")))
 			if facility_id != &"":
+				child.material = child.material.duplicate()
 				child.pressed.connect(_on_facility_pressed.bind(facility_id))
 	if not SignalBus.profile_changed.is_connected(_rebuild):
 		SignalBus.profile_changed.connect(_rebuild)
@@ -50,31 +59,129 @@ func _exit_tree() -> void:
 
 
 func _rebuild() -> void:
-	_fireseed_balance.text = "火种  %d" % ProfileState.fireseed_balance
+	_fireseed_balance.text = str(ProfileState.fireseed_balance)
+	var backgrounds: Array = _visuals.get("backgrounds", [])
+	var background_path := String(backgrounds[clampi(ProfileState.town_visual_stage, 0, backgrounds.size() - 1)])
+	if %TownBackground.texture.resource_path != background_path:
+		%TownBackground.texture = load(background_path)
+	%TownRestoration.text = "镇貌修复 · Lv.%d" % int(ProfileState.facility_levels.get("town_restoration", 0))
 	for child in _facility_layer.get_children():
 		if not child is TextureButton:
 			continue
 		var button := child as TextureButton
 		var facility_id := StringName(String(button.get_meta("facility_id", "")))
 		var facility := _facility_data(facility_id)
+		_update_building_art(button, facility_id)
 		button.tooltip_text = String(facility.get("name", facility_id))
+		button.get_node("FacilityName").text = "%s  Lv.%d" % [facility.get("name", facility_id), int(ProfileState.facility_levels.get(String(facility_id), 0))]
 		var level_badge := button.get_node_or_null("LevelBadge") as Label
 		if level_badge != null:
 			level_badge.text = "Lv.%d" % int(ProfileState.facility_levels.get(String(facility_id), 0))
 	if _detail_panel.visible and _selected_facility_id != &"":
 		_refresh_facility_details()
+		if _selected_facility_id != &"town_restoration":
+			_update_courtyard(_selected_facility_id)
+
+
+func _visual_level(facility_id: StringName) -> int:
+	return clampi(int(ProfileState.facility_levels.get(String(facility_id), 0)), 0, 3)
+
+
+func _update_building_art(button: TextureButton, facility_id: StringName) -> void:
+	var level := _visual_level(facility_id)
+	if int(button.get_meta("visual_level", -1)) == level:
+		return
+	var data: Dictionary = _visuals["facilities"][String(facility_id)]
+	var path := String(data["exteriors"][level])
+	if not _exterior_cache.has(path):
+		var crop: Array = data["crop"]
+		var atlas := AtlasTexture.new()
+		atlas.atlas = load(path)
+		atlas.region = Rect2(crop[0], crop[1], crop[2], crop[3])
+		atlas.filter_clip = true
+		var mask := BitMap.new()
+		# Ignore transparent corners so overlapping building rectangles never steal clicks.
+		mask.create_from_image_alpha(atlas.get_image(), 0.1)
+		_exterior_cache[path] = {"texture": atlas, "mask": mask}
+	button.texture_normal = _exterior_cache[path]["texture"]
+	button.texture_click_mask = _exterior_cache[path]["mask"]
+	button.set_meta("visual_level", level)
+
+
+func _courtyard_path(facility_id: StringName) -> String:
+	return String(_visuals["facilities"][String(facility_id)]["courtyards"][_visual_level(facility_id)])
+
+
+## Load only the selected courtyard. Revision checks discard stale rapid-click/upgrade results.
+func _update_courtyard(facility_id: StringName) -> void:
+	_courtyard_revision += 1
+	var revision := _courtyard_revision
+	var path := _courtyard_path(facility_id)
+	if %CourtyardView.texture != null and %CourtyardView.texture.resource_path == path:
+		return
+	var error := ResourceLoader.load_threaded_request(path, "Texture2D")
+	if error != OK:
+		push_error("无法加载院落图：%s" % path)
+		return
+	while ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+		await get_tree().process_frame
+	var texture: Texture2D
+	if ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_LOADED:
+		texture = ResourceLoader.load_threaded_get(path)
+	if revision != _courtyard_revision or facility_id != _selected_facility_id:
+		return
+	if path != _courtyard_path(facility_id):
+		await _update_courtyard(facility_id)
+		return
+	if texture != null:
+		%CourtyardView.texture = texture
 
 
 func _on_facility_pressed(facility_id: StringName) -> void:
+	_selection_revision += 1
+	var revision := _selection_revision
 	_selected_facility_id = facility_id
+	for child in _facility_layer.get_children():
+		if child is TextureButton and StringName(child.get_meta("facility_id", "")) == facility_id:
+			if _facility_tweens.has(facility_id):
+				(_facility_tweens[facility_id] as Tween).kill()
+			_facility_tweens[facility_id] = _pulse_outline(child)
+	if facility_id != &"town_restoration":
+		await get_tree().create_timer(0.26).timeout
+		if revision != _selection_revision:
+			return
+		await _update_courtyard(facility_id)
+		if revision != _selection_revision:
+			return
+		%CourtyardView.show()
+		_facility_layer.hide()
+	else:
+		%CourtyardView.hide()
+		_facility_layer.show()
 	_depart_button.hide()
+	%TownRestoration.hide()
 	_detail_panel.show()
 	_refresh_facility_details()
 
 
+func _pulse_outline(control: Control) -> Tween:
+	var shader_material := control.material as ShaderMaterial
+	shader_material.set_shader_parameter("highlight", 0.0)
+	var tween := create_tween()
+	tween.tween_property(shader_material, "shader_parameter/highlight", 1.0, 0.10)
+	tween.tween_interval(0.16)
+	tween.tween_property(shader_material, "shader_parameter/highlight", 0.0, 0.40)
+	return tween
+
+
 func _close_facility_details() -> void:
+	_selection_revision += 1
+	_courtyard_revision += 1
 	_detail_panel.hide()
+	%CourtyardView.hide()
+	_facility_layer.show()
 	_depart_button.show()
+	%TownRestoration.show()
 	_selected_facility_id = &""
 
 

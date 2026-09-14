@@ -1,0 +1,63 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="1_gwu0d"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_battle_block_shield.png" id="2_d0aao"]
+[ext_resource type="Theme" path="res://themes/formal/btn_event_normal.tres" id="3_nxpok"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_f7mpe"]
+content_margin_left = 18.0
+content_margin_top = 18.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
+texture = ExtResource("1_gwu0d")
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
+
+[node name="BuffOffer" type="PanelContainer" unique_id=95962542]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_f7mpe")
+
+[node name="Column" type="VBoxContainer" parent="." unique_id=1928926532]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Info" type="HBoxContainer" parent="Column" unique_id=1551787389]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Icon" type="TextureRect" parent="Column/Info" unique_id=1128595237]
+custom_minimum_size = Vector2(64, 72)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("2_d0aao")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Copy" type="VBoxContainer" parent="Column/Info" unique_id=1407271042]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Column/Info/Copy" unique_id=158919717]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+theme_override_colors/font_color = Color(0.9529412, 0.8745098, 0.7019608, 1)
+text = "护窑余温"
+
+[node name="Description" type="Label" parent="Column/Info/Copy" unique_id=478176395]
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "前 10 层每场战斗开始时获得 6 点格挡。"
+autowrap_mode = 3
+
+[node name="Activate" type="Button" parent="Column" unique_id=111539915]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+tooltip_text = "完整观看后激活"
+theme = ExtResource("3_nxpok")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 23
+text = "观看广告 · 激活增益"
+autowrap_mode = 3

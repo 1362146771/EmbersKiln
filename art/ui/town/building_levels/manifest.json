@@ -1,0 +1,640 @@
+{
+  "status": "runtime_integrated",
+  "canvas": [
+    1024,
+    1024
+  ],
+  "generator": "built-in image_gen",
+  "art_levels": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "note": "Visual level requests only; gameplay facility levels are unchanged.",
+  "assets": [
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "level": 0,
+      "path": "hearth/hearth_level_0.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        113,
+        412,
+        816,
+        1022
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1460,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/hearth/level_0/raw-sheet.png",
+      "prompt": "processed/hearth/level_0/prompt-used.txt"
+    },
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "level": 1,
+      "path": "hearth/hearth_level_1.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        111,
+        412,
+        815,
+        1022
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1527,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/hearth/level_1/raw-sheet.png",
+      "prompt": "processed/hearth/level_1/prompt-used.txt"
+    },
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "level": 2,
+      "path": "hearth/hearth_level_2.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        114,
+        398,
+        817,
+        1023
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1685,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/hearth/level_2/raw-sheet.png",
+      "prompt": "processed/hearth/level_2/prompt-used.txt"
+    },
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "level": 3,
+      "path": "hearth/hearth_level_3.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        115,
+        387,
+        823,
+        1023
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1603,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/hearth/level_3/raw-sheet.png",
+      "prompt": "processed/hearth/level_3/prompt-used.txt"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "level": 0,
+      "path": "card_mold_workshop/card_mold_workshop_level_0.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        192,
+        366,
+        1011,
+        999
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1507,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/card_mold_workshop/level_0/raw-sheet.png",
+      "prompt": "processed/card_mold_workshop/level_0/prompt-used.txt"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "level": 1,
+      "path": "card_mold_workshop/card_mold_workshop_level_1.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        192,
+        366,
+        1011,
+        998
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1418,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/card_mold_workshop/level_1/raw-sheet.png",
+      "prompt": "processed/card_mold_workshop/level_1/prompt-used.txt"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "level": 2,
+      "path": "card_mold_workshop/card_mold_workshop_level_2.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        187,
+        355,
+        1011,
+        999
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1890,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/card_mold_workshop/level_2/raw-sheet.png",
+      "prompt": "processed/card_mold_workshop/level_2/prompt-used.txt"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "level": 3,
+      "path": "card_mold_workshop/card_mold_workshop_level_3.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        191,
+        324,
+        1016,
+        1010
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1867,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/card_mold_workshop/level_3/raw-sheet.png",
+      "prompt": "processed/card_mold_workshop/level_3/prompt-used.txt"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "level": 0,
+      "path": "relic_shelf/relic_shelf_level_0.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        129,
+        270,
+        842,
+        1005
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1473,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/relic_shelf/level_0/raw-sheet.png",
+      "prompt": "processed/relic_shelf/level_0/prompt-used.txt"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "level": 1,
+      "path": "relic_shelf/relic_shelf_level_1.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        129,
+        270,
+        841,
+        1004
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1423,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/relic_shelf/level_1/raw-sheet.png",
+      "prompt": "processed/relic_shelf/level_1/prompt-used.txt"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "level": 2,
+      "path": "relic_shelf/relic_shelf_level_2.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        120,
+        264,
+        851,
+        1005
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 2036,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/relic_shelf/level_2/raw-sheet.png",
+      "prompt": "processed/relic_shelf/level_2/prompt-used.txt"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "level": 3,
+      "path": "relic_shelf/relic_shelf_level_3.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        101,
+        260,
+        862,
+        1006
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 2226,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/relic_shelf/level_3/raw-sheet.png",
+      "prompt": "processed/relic_shelf/level_3/prompt-used.txt"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "level": 0,
+      "path": "glaze_apothecary/glaze_apothecary_level_0.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        98,
+        370,
+        787,
+        1007
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1246,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/glaze_apothecary/level_0/raw-sheet.png",
+      "prompt": "processed/glaze_apothecary/level_0/prompt-used.txt"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "level": 1,
+      "path": "glaze_apothecary/glaze_apothecary_level_1.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        98,
+        370,
+        786,
+        1007
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1281,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/glaze_apothecary/level_1/raw-sheet.png",
+      "prompt": "processed/glaze_apothecary/level_1/prompt-used.txt"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "level": 2,
+      "path": "glaze_apothecary/glaze_apothecary_level_2.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        93,
+        361,
+        791,
+        1008
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1557,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/glaze_apothecary/level_2/raw-sheet.png",
+      "prompt": "processed/glaze_apothecary/level_2/prompt-used.txt"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "level": 3,
+      "path": "glaze_apothecary/glaze_apothecary_level_3.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        87,
+        326,
+        810,
+        1014
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1722,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/glaze_apothecary/level_3/raw-sheet.png",
+      "prompt": "processed/glaze_apothecary/level_3/prompt-used.txt"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "level": 0,
+      "path": "bellows_station/bellows_station_level_0.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        111,
+        387,
+        877,
+        1019
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1832,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/bellows_station/level_0/raw-sheet.png",
+      "prompt": "processed/bellows_station/level_0/prompt-used.txt"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "level": 1,
+      "path": "bellows_station/bellows_station_level_1.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        112,
+        386,
+        879,
+        1020
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1731,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/bellows_station/level_1/raw-sheet.png",
+      "prompt": "processed/bellows_station/level_1/prompt-used.txt"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "level": 2,
+      "path": "bellows_station/bellows_station_level_2.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        113,
+        378,
+        878,
+        1021
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 2050,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/bellows_station/level_2/raw-sheet.png",
+      "prompt": "processed/bellows_station/level_2/prompt-used.txt"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "level": 3,
+      "path": "bellows_station/bellows_station_level_3.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_bbox": [
+        114,
+        376,
+        878,
+        1022
+      ],
+      "origin": [
+        512.0,
+        963
+      ],
+      "edge_pixels_despilled": 1875,
+      "qc": {
+        "transparent": true,
+        "clipped": false,
+        "magenta_residue": false
+      },
+      "source": "processed/bellows_station/level_3/raw-sheet.png",
+      "prompt": "processed/bellows_station/level_3/prompt-used.txt"
+    }
+  ],
+  "preview_placement_reference_size": [
+    941,
+    1673
+  ],
+  "preview_placements": {
+    "bellows_station": {
+      "center_x": 310,
+      "bottom_y": 505,
+      "union_width": 325,
+      "shared_crop": [
+        111,
+        376,
+        879,
+        1022
+      ]
+    },
+    "relic_shelf": {
+      "center_x": 720,
+      "bottom_y": 470,
+      "union_width": 270,
+      "shared_crop": [
+        101,
+        260,
+        862,
+        1006
+      ]
+    },
+    "card_mold_workshop": {
+      "center_x": 215,
+      "bottom_y": 845,
+      "union_width": 410,
+      "shared_crop": [
+        187,
+        324,
+        1016,
+        1010
+      ]
+    },
+    "glaze_apothecary": {
+      "center_x": 750,
+      "bottom_y": 845,
+      "union_width": 370,
+      "shared_crop": [
+        87,
+        326,
+        810,
+        1014
+      ]
+    },
+    "hearth": {
+      "center_x": 470,
+      "bottom_y": 1070,
+      "union_width": 330,
+      "shared_crop": [
+        111,
+        387,
+        823,
+        1023
+      ]
+    }
+  },
+  "runtime_scene": "res://scenes/town/Town.tscn",
+  "runtime_config": "res://data/town_visuals.json"
+}

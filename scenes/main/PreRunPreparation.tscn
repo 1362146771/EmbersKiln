@@ -1,6 +1,11 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/meta/PreRunPreparationUI.gd" id="1_ui"]
+[ext_resource type="PackedScene" path="res://scenes/main/BuffOffer.tscn" id="buff_offer"]
+
+[ext_resource type="Script" path="res://scripts/meta/PreRunPreparationUI.gd" id="1"]
+[ext_resource type="Theme" path="res://themes/formal/btn_event_normal.tres" id="2"]
+[ext_resource type="Texture2D" path="res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_1.png" id="3"]
+[ext_resource type="StyleBox" path="res://themes/formal/Town_detail.tres" id="4"]
 
 [node name="PreRunPreparation" type="Control"]
 layout_mode = 3
@@ -9,71 +14,126 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_ui")
+theme = ExtResource("2")
+script = ExtResource("1")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 mouse_filter = 2
-color = Color(0.984, 0.953, 0.894, 1)
+color = Color(0.08, 0.095, 0.11, 1)
 
-[node name="PageMargin" type="MarginContainer" parent="."]
+[node name="Courtyard" type="TextureRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 0.49
+mouse_filter = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Header" type="MarginContainer" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 32.0
+offset_top = 30.0
+offset_right = -32.0
+mouse_filter = 2
+
+[node name="Heading" type="VBoxContainer" parent="Header"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Eyebrow" type="Label" parent="Header/Heading"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.85, 0.65, 1)
+theme_override_colors/font_shadow_color = Color(0.06, 0.06, 0.06, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+text = "窑口镇 / 风箱台"
+
+[node name="Title" type="Label" parent="Header/Heading"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.94, 0.79, 1)
+theme_override_colors/font_shadow_color = Color(0.06, 0.06, 0.06, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 44
+text = "临行添薪"
+
+[node name="PreparationPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchor_top = 0.47
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 40
-theme_override_constants/margin_top = 48
-theme_override_constants/margin_right = 40
-theme_override_constants/margin_bottom = 48
+offset_left = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_styles/panel = ExtResource("4")
 
-[node name="PageColumn" type="VBoxContainer" parent="PageMargin"]
+[node name="Margin" type="MarginContainer" parent="PreparationPanel"]
 layout_mode = 2
-theme_override_constants/separation = 22
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_bottom = 26
 
-[node name="Title" type="Label" parent="PageMargin/PageColumn"]
+[node name="Column" type="VBoxContainer" parent="PreparationPanel/Margin"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.941, 0.6, 0.482, 1)
-theme_override_font_sizes/font_size = 42
-text = "风箱台 · 临行添薪"
+theme_override_constants/separation = 16
 
-[node name="Hint" type="Label" parent="PageMargin/PageColumn"]
+[node name="SectionTitle" type="Label" parent="PreparationPanel/Margin/Column"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.87, 0.66, 1)
+theme_override_font_sizes/font_size = 28
+text = "启程前的馈赠"
+
+[node name="Hint" type="Label" parent="PreparationPanel/Margin/Column"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
-theme_override_font_sizes/font_size = 24
-text = "选择一项已解锁增益。观看广告后，它将在本局前若干层生效。"
+theme_override_colors/font_color = Color(0.82, 0.85, 0.86, 1)
+theme_override_font_sizes/font_size = 21
+text = "选择一项增益，完整观看广告后激活。"
 autowrap_mode = 2
 
-[node name="BuffOptions" type="VBoxContainer" parent="PageMargin/PageColumn"]
-unique_name_in_owner = true
+[node name="Scroll" type="ScrollContainer" parent="PreparationPanel/Margin/Column"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 22
+horizontal_scroll_mode = 0
 
-[node name="EditorPreviewOption" type="Button" parent="PageMargin/PageColumn/BuffOptions"]
-custom_minimum_size = Vector2(620, 150)
+[node name="BuffOptions" type="VBoxContainer" parent="PreparationPanel/Margin/Column/Scroll"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 23
-text = "增益名称\n增益说明\n观看广告 · 激活"
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="EditorPreviewOption" parent="PreparationPanel/Margin/Column/Scroll/BuffOptions" instance=ExtResource("buff_offer")]
+layout_mode = 2
+
+[node name="AdStatus" type="Label" parent="PreparationPanel/Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.89, 0.8, 0.61, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="SkipButton" type="Button" parent="PageMargin/PageColumn"]
+[node name="SkipButton" type="Button" parent="PreparationPanel/Margin/Column"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(620, 78)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "跳过，直接出发"
+text = "直接出发"
 
-[node name="Note" type="Label" parent="PageMargin/PageColumn"]
+[node name="Note" type="Label" parent="PreparationPanel/Margin/Column"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.45, 0.39, 0.35, 1)
-theme_override_font_sizes/font_size = 21
-text = "不看广告不会影响正常开局或基础奖励。"
+theme_override_colors/font_color = Color(0.76, 0.79, 0.81, 1)
+theme_override_font_sizes/font_size = 17
+text = "可跳过广告，正常开局与基础奖励不受影响"
 horizontal_alignment = 1
+autowrap_mode = 2

@@ -1,0 +1,230 @@
+{
+  "status": "runtime_integrated",
+  "generator": "built-in image_gen",
+  "scene": "courtyard_with_player_and_workers",
+  "source_manifest": "source_manifest.json",
+  "assets": [
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "level": 0,
+      "path": "hearth/hearth_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "157026557187d3cf2f265501e6f3c4e958ec259e872f1ee911bd133ec7008f4a"
+    },
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "level": 1,
+      "path": "hearth/hearth_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "9668634e5c4fb92644b4ea0c4f0bb7dce529aff53c1aaf1c9b2846962e5de720"
+    },
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "level": 2,
+      "path": "hearth/hearth_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "2db5494407fd74b032828f81e896f63538c04f8dce529b01acfe8c14001784b9"
+    },
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "level": 3,
+      "path": "hearth/hearth_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "c4b80be9b98be23cc931df72cbb01c31ba89d53f57ace24db61199ebab99ee0c"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "level": 0,
+      "path": "card_mold_workshop/card_mold_workshop_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "c4a17b1880495e027670dd2a37be6044040261251e08790b3964c56df787fcea"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "level": 1,
+      "path": "card_mold_workshop/card_mold_workshop_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "2596ff833ff704cfd074cdfb161481d6c2e19ee5860c522f92c5cc483b132186"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "level": 2,
+      "path": "card_mold_workshop/card_mold_workshop_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "04f0b83168d093babb417911f7157f49fc1ba5f90d28243f552281f99d66354b"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "level": 3,
+      "path": "card_mold_workshop/card_mold_workshop_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "4f09a637672d3a8f625de19cc2fa820e5d4d916a72f756987b95a95da5eff8a4"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "level": 0,
+      "path": "relic_shelf/relic_shelf_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "749591ed694640a6b9fd64171eba1c666fa1a94f6aae7ef9b3a60ec389ab6bb2"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "level": 1,
+      "path": "relic_shelf/relic_shelf_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "a6abd0c081ed90261be5df904e33821712eb040faef8dcfca8b728f069db0971"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "level": 2,
+      "path": "relic_shelf/relic_shelf_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "ee4fe731d3c07777aa62650f138a331f1e82a1a6d396f0565895cb8e71bbb9ca"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "level": 3,
+      "path": "relic_shelf/relic_shelf_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "356e5f8f05ab353d5ff088a080c13439eaf58d79e37ef10a29fb6164afcf4ff2"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "level": 0,
+      "path": "glaze_apothecary/glaze_apothecary_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "ebe8dda3632fa6d6c8e2de58d48fc318ead1e55171ec72874d6045d43a6668ab"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "level": 1,
+      "path": "glaze_apothecary/glaze_apothecary_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "45765cd52484e8a6b2814c31d5c40da585d62a6a50dcb60014fabd83696adb16"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "level": 2,
+      "path": "glaze_apothecary/glaze_apothecary_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "72c77fa20b559cd65052c7c1ebf91b2eaadec5120e721053e2c54a76c236f5bf"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "level": 3,
+      "path": "glaze_apothecary/glaze_apothecary_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "7527e6cb796b0351cb9125faebb02bac8b7c789f6065abee0ed58ec3e9d59a53"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "level": 0,
+      "path": "bellows_station/bellows_station_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "f83e347ecc82579c9eb4629e4c4b514fa800ce0adb012952ef13e08e7f5032be"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "level": 1,
+      "path": "bellows_station/bellows_station_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "83bd3c19356fb78c2c894024c00b51591b95d0fd4a24284cda5dc7e981a1ab19"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "level": 2,
+      "path": "bellows_station/bellows_station_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "1f591d294095fb0297f4d948f7c6cd50fff114e6248a73eaa50249594e32a2f2"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "level": 3,
+      "path": "bellows_station/bellows_station_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "618142474c068d927281cc1a5a41c4453f8489e35e6899b2134c426525dbbd3c"
+    }
+  ],
+  "runtime_scene": "res://scenes/town/Town.tscn",
+  "runtime_config": "res://data/town_visuals.json"
+}

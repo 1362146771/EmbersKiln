@@ -10,6 +10,8 @@ var _request_active := false
 
 
 func _ready() -> void:
+	_load_courtyard()
+	FormalUI.button(_skip_button, "btn_hall_normal_small.png")
 	if PauseManager != null:
 		PauseManager.hide_pause_button()
 	if not RunState.is_active:
@@ -32,20 +34,34 @@ func _exit_tree() -> void:
 
 func _build() -> void:
 	for child in _options.get_children():
+		_options.remove_child(child)
 		child.queue_free()
-	_hint.text = "选择一项已解锁增益。观看广告后，它将在本局前 %d 层生效。" % int(GameData.ad_placement_config(PreRunBuffSystem.PLACEMENT)["duration_floors"])
+	_hint.text = "选择一项增益，完整观看广告后激活。\n本局前 %d 层生效。" % int(GameData.ad_placement_config(PreRunBuffSystem.PLACEMENT)["duration_floors"])
+	var available := AdService.is_available(PreRunBuffSystem.PLACEMENT)
+	%AdStatus.text = "正在等待广告结果…" if _request_active else ("完整观看后即可携带增益出发" if available else "暂无可用广告，可直接出发")
 	for buff_id in RunState.pre_run_buff_offer_ids:
 		var buff := GameData.get_pre_run_buff(buff_id)
-		var button := Button.new()
-		button.text = "%s\n%s\n观看广告 · 激活" % [buff.get("name", buff_id), buff.get("description", "" )]
-		button.custom_minimum_size = Vector2(620, 150)
+		var panel := preload("res://scenes/main/BuffOffer.tscn").instantiate()
+		_options.add_child(panel)
+		panel.get_node("Column/Info/Copy/Title").text = String(buff.get("name", buff_id))
+		panel.get_node("Column/Info/Copy/Description").text = String(buff.get("description", ""))
+		var button: Button = panel.get_node("Column/Activate")
+		button.text = "等待广告结果…" if _request_active else ("观看广告 · 激活增益" if available else "广告暂不可用")
+		button.custom_minimum_size = Vector2(0, 64)
+		FormalUI.button(button)
 		button.add_theme_font_size_override("font_size", 23)
 		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		button.disabled = _request_active or not AdService.is_available(PreRunBuffSystem.PLACEMENT)
 		button.tooltip_text = "当前无可用广告" if button.disabled else "完整观看后激活"
 		button.pressed.connect(_on_buff_pressed.bind(buff_id))
-		_options.add_child(button)
 	_skip_button.disabled = _request_active
+
+
+func _load_courtyard() -> void:
+	var visuals: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/town_visuals.json"))
+	var paths: Array = visuals["facilities"]["bellows_station"]["courtyards"]
+	var level := clampi(int(ProfileState.facility_levels.get("bellows_station", 0)), 0, paths.size() - 1)
+	%Courtyard.texture = load(String(paths[level])) as Texture2D
 
 
 func _on_buff_pressed(buff_id: StringName) -> void:

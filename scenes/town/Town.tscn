@@ -1,59 +1,332 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://mvofd0h3hb6e"]
 
-[ext_resource type="Script" path="res://scripts/meta/TownUI.gd" id="1_town"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/BG_Town_KilnMouth.png" id="2_bg"]
-[ext_resource type="Texture2D" path="res://art/ui/town/UI_Town_FacilityPlaceholder.svg" id="3_facility"]
+[ext_resource type="Script" uid="uid://dc4st8uxxivrk" path="res://scripts/meta/TownUI.gd" id="1_town"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/town_progression/town_level_0_base_preview.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://art/ui/town/building_levels/bellows_station/bellows_station_level_0.png" id="bellows_station"]
+[ext_resource type="Texture2D" path="res://art/ui/town/building_levels/card_mold_workshop/card_mold_workshop_level_0.png" id="card_mold_workshop"]
+[ext_resource type="Texture2D" path="res://art/ui/town/building_levels/glaze_apothecary/glaze_apothecary_level_0.png" id="glaze_apothecary"]
+[ext_resource type="Texture2D" path="res://art/ui/town/building_levels/hearth/hearth_level_0.png" id="hearth"]
+[ext_resource type="Shader" uid="uid://bnrua4yc717x5" path="res://art/ui/town/FacilityHighlight.gdshader" id="outline"]
+[ext_resource type="Texture2D" path="res://art/ui/town/building_levels/relic_shelf/relic_shelf_level_0.png" id="relic_shelf"]
+[ext_resource type="Theme" uid="uid://jygg6eyq13il" path="res://themes/formal/btn_return_normal_small.tres" id="return_theme"]
+[ext_resource type="Theme" uid="uid://cxfpxjrywhns" path="res://themes/formal/btn_event_normal.tres" id="theme"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBox_field"]
-bg_color = Color(0.12, 0.105, 0.09, 0.58)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.63, 0.54, 0.4, 0.72)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-shadow_color = Color(0.02, 0.015, 0.012, 0.35)
-shadow_size = 4
+[ext_resource type="Texture2D" path="res://art/icons/currency/ICO_Fireseed.png" id="fireseed_icon"]
+[ext_resource type="PackedScene" path="res://scenes/ui/FireseedInfo.tscn" id="fireseed_info"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="header_skin"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_main_event.png" id="detail_skin"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBox_detail"]
-bg_color = Color(0.227, 0.271, 0.329, 0.97)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.408, 0.4, 0.369, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-shadow_color = Color(0.106, 0.086, 0.071, 0.75)
-shadow_size = 12
 
-[node name="Town" type="Control"]
+[ext_resource type="StyleBox" path="res://themes/formal/Town_field.tres" id="panel_field"]
+
+[ext_resource type="StyleBox" path="res://themes/formal/Town_detail.tres" id="panel_detail"]
+
+[sub_resource type="ShaderMaterial" id="outline_material"]
+resource_local_to_scene = true
+shader = ExtResource("outline")
+shader_parameter/highlight = 0.0
+
+
+
+[sub_resource type="AtlasTexture" id="atlas_bellows_station"]
+atlas = ExtResource("bellows_station")
+region = Rect2(111, 376, 768, 646)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="atlas_relic_shelf"]
+atlas = ExtResource("relic_shelf")
+region = Rect2(101, 260, 761, 746)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="atlas_card_mold_workshop"]
+atlas = ExtResource("card_mold_workshop")
+region = Rect2(187, 324, 829, 686)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="atlas_glaze_apothecary"]
+atlas = ExtResource("glaze_apothecary")
+region = Rect2(87, 326, 723, 688)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="atlas_hearth"]
+atlas = ExtResource("hearth")
+region = Rect2(111, 387, 712, 636)
+filter_clip = true
+
+[node name="Town" type="Control" unique_id=1945562580]
+texture_filter = 2
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("theme")
 script = ExtResource("1_town")
 
-[node name="TownBackground" type="TextureRect" parent="."]
+[node name="TownAspect" type="AspectRatioContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+mouse_filter = 2
+ratio = 0.56246264
+
+[node name="TownCanvas" type="Control" parent="TownAspect"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TownBackground" type="TextureRect" parent="TownAspect/TownCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 mouse_filter = 2
 texture = ExtResource("2_bg")
 expand_mode = 1
-stretch_mode = 6
+stretch_mode = 0
 
-[node name="PageMargin" type="MarginContainer" parent="."]
+[node name="FacilityLayer" type="Control" parent="TownAspect/TownCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="BellowsStation" type="TextureButton" parent="TownAspect/TownCanvas/FacilityLayer"]
+material = SubResource("outline_material")
+layout_mode = 1
+anchor_left = 0.15674814
+anchor_top = 0.13845045
+anchor_right = 0.50212540
+anchor_bottom = 0.30185296
+texture_normal = SubResource("atlas_bellows_station")
+ignore_texture_size = true
+stretch_mode = 0
+metadata/facility_id = "bellows_station"
+
+[node name="FacilityName" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/BellowsStation"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+offset_bottom = 22.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "风箱台  Lv.0"
+horizontal_alignment = 1
+
+[node name="LevelBadge" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/BellowsStation"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -34.0
+offset_top = 28.0
+offset_right = 34.0
+offset_bottom = 54.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "Lv.0"
+horizontal_alignment = 1
+
+[node name="RelicShelf" type="TextureButton" parent="TownAspect/TownCanvas/FacilityLayer"]
+material = SubResource("outline_material")
+layout_mode = 1
+anchor_left = 0.62167906
+anchor_top = 0.12272681
+anchor_right = 0.90860786
+anchor_bottom = 0.28093246
+texture_normal = SubResource("atlas_relic_shelf")
+ignore_texture_size = true
+stretch_mode = 0
+metadata/facility_id = "relic_shelf"
+
+[node name="FacilityName" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/RelicShelf"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+offset_bottom = 22.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "遗珍架  Lv.0"
+horizontal_alignment = 1
+
+[node name="LevelBadge" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/RelicShelf"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -34.0
+offset_top = 28.0
+offset_right = 34.0
+offset_bottom = 54.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "Lv.0"
+horizontal_alignment = 1
+
+[node name="CardMoldWorkshop" type="TextureButton" parent="TownAspect/TownCanvas/FacilityLayer"]
+material = SubResource("outline_material")
+layout_mode = 1
+anchor_left = 0.01062699
+anchor_top = 0.30228557
+anchor_right = 0.44633369
+anchor_bottom = 0.50508069
+texture_normal = SubResource("atlas_card_mold_workshop")
+ignore_texture_size = true
+stretch_mode = 0
+metadata/facility_id = "card_mold_workshop"
+
+[node name="FacilityName" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/CardMoldWorkshop"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+offset_bottom = 22.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "牌模工坊  Lv.0"
+horizontal_alignment = 1
+
+[node name="LevelBadge" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/CardMoldWorkshop"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -34.0
+offset_top = 28.0
+offset_right = 34.0
+offset_bottom = 54.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "Lv.0"
+horizontal_alignment = 1
+
+[node name="GlazeApothecary" type="TextureButton" parent="TownAspect/TownCanvas/FacilityLayer"]
+material = SubResource("outline_material")
+layout_mode = 1
+anchor_left = 0.60042508
+anchor_top = 0.29462730
+anchor_right = 0.99362380
+anchor_bottom = 0.50508069
+texture_normal = SubResource("atlas_glaze_apothecary")
+ignore_texture_size = true
+stretch_mode = 0
+metadata/facility_id = "glaze_apothecary"
+
+[node name="FacilityName" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/GlazeApothecary"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+offset_bottom = 22.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "药釉坊  Lv.0"
+horizontal_alignment = 1
+
+[node name="LevelBadge" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/GlazeApothecary"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -34.0
+offset_top = 28.0
+offset_right = 34.0
+offset_bottom = 54.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "Lv.0"
+horizontal_alignment = 1
+
+[node name="Hearth" type="TextureButton" parent="TownAspect/TownCanvas/FacilityLayer"]
+material = SubResource("outline_material")
+layout_mode = 1
+anchor_left = 0.32412327
+anchor_top = 0.46337401
+anchor_right = 0.67481403
+anchor_bottom = 0.63956964
+texture_normal = SubResource("atlas_hearth")
+ignore_texture_size = true
+stretch_mode = 0
+metadata/facility_id = "hearth"
+
+[node name="FacilityName" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/Hearth"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+offset_bottom = 22.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "炉心  Lv.0"
+horizontal_alignment = 1
+
+[node name="LevelBadge" type="Label" parent="TownAspect/TownCanvas/FacilityLayer/Hearth"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -34.0
+offset_top = 28.0
+offset_right = 34.0
+offset_bottom = 54.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
+theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "Lv.0"
+horizontal_alignment = 1
+
+[node name="PageMargin" type="MarginContainer" parent="." unique_id=12814324]
+mouse_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -61,425 +334,170 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 36
-theme_override_constants/margin_top = 32
+theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 36
 theme_override_constants/margin_bottom = 32
 
-[node name="PageColumn" type="VBoxContainer" parent="PageMargin"]
+[node name="PageColumn" type="VBoxContainer" parent="PageMargin" unique_id=173018171]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="HeaderField" type="PanelContainer" parent="PageMargin/PageColumn"]
+[node name="HeaderField" type="PanelContainer" parent="PageMargin/PageColumn" unique_id=164546615]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBox_field")
+theme_override_styles/panel = ExtResource("panel_field")
 
-[node name="HeaderPadding" type="MarginContainer" parent="PageMargin/PageColumn/HeaderField"]
+[node name="HeaderPadding" type="MarginContainer" parent="PageMargin/PageColumn/HeaderField" unique_id=874462827]
 layout_mode = 2
 theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 12
+theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_bottom = 4
 
-[node name="Header" type="HBoxContainer" parent="PageMargin/PageColumn/HeaderField/HeaderPadding"]
+[node name="Header" type="HBoxContainer" parent="PageMargin/PageColumn/HeaderField/HeaderPadding" unique_id=2004149381]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="PageMargin/PageColumn/HeaderField/HeaderPadding/Header"]
+[node name="Title" type="Label" parent="PageMargin/PageColumn/HeaderField/HeaderPadding/Header" unique_id=822966899]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
-theme_override_font_sizes/font_size = 46
+theme_override_font_sizes/font_size = 40
 text = "窑口镇"
 
-[node name="FireseedBalance" type="Label" parent="PageMargin/PageColumn/HeaderField/HeaderPadding/Header"]
+[node name="FireseedButton" type="Button" parent="PageMargin/PageColumn/HeaderField/HeaderPadding/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(190, 0)
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+tooltip_text = "火种 · 点击查看获取方式与用途"
+flat = true
+icon = ExtResource("fireseed_icon")
+icon_alignment = 1
+expand_icon = true
+theme_override_constants/icon_max_width = 42
+
+[node name="FireseedBalance" type="Label" parent="PageMargin/PageColumn/HeaderField/HeaderPadding/Header" unique_id=870318678]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
-theme_override_font_sizes/font_size = 30
-text = "火种  0"
-horizontal_alignment = 2
+theme_override_font_sizes/font_size = 26
+text = "0"
+horizontal_alignment = 0
 vertical_alignment = 1
 
-[node name="BackButton" type="Button" parent="PageMargin/PageColumn/HeaderField/HeaderPadding/Header"]
+[node name="BackButton" type="Button" parent="PageMargin/PageColumn/HeaderField/HeaderPadding/Header" unique_id=1590325469]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 64)
+custom_minimum_size = Vector2(112, 56)
 layout_mode = 2
+theme = ExtResource("return_theme")
 theme_override_font_sizes/font_size = 26
 text = "返回"
 
-[node name="FacilityViewport" type="Control" parent="PageMargin/PageColumn"]
-custom_minimum_size = Vector2(0, 0)
+[node name="FacilityViewport" type="Control" parent="PageMargin/PageColumn" unique_id=1819546536]
+mouse_filter = 2
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="FacilityLayer" type="Control" parent="PageMargin/PageColumn/FacilityViewport"]
+[node name="TownRestoration" type="Button" parent="PageMargin/PageColumn"]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "镇貌修复 · Lv.0"
 
-[node name="Hearth" type="TextureButton" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer"]
-offset_left = 244.0
-offset_top = 40.0
-offset_right = 404.0
-offset_bottom = 200.0
-texture_normal = ExtResource("3_facility")
-ignore_texture_size = true
-stretch_mode = 5
-metadata/facility_id = "hearth"
-
-[node name="FacilityName" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/Hearth"]
-layout_mode = 1
-anchors_preset = 12
-anchor_right = 1.0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 23
-text = "炉心"
-horizontal_alignment = 1
-
-[node name="LevelBadge" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/Hearth"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -70.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 38.0
-grow_horizontal = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 19
-text = "Lv.0"
-horizontal_alignment = 2
-
-[node name="CardMoldWorkshop" type="TextureButton" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer"]
-offset_left = 24.0
-offset_top = 225.0
-offset_right = 184.0
-offset_bottom = 385.0
-texture_normal = ExtResource("3_facility")
-ignore_texture_size = true
-stretch_mode = 5
-metadata/facility_id = "card_mold_workshop"
-
-[node name="FacilityName" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/CardMoldWorkshop"]
-layout_mode = 1
-anchors_preset = 12
-anchor_right = 1.0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 21
-text = "牌模工坊"
-horizontal_alignment = 1
-
-[node name="LevelBadge" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/CardMoldWorkshop"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -70.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 38.0
-grow_horizontal = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 19
-text = "Lv.0"
-horizontal_alignment = 2
-
-[node name="RelicShelf" type="TextureButton" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer"]
-offset_left = 464.0
-offset_top = 225.0
-offset_right = 624.0
-offset_bottom = 385.0
-texture_normal = ExtResource("3_facility")
-ignore_texture_size = true
-stretch_mode = 5
-metadata/facility_id = "relic_shelf"
-
-[node name="FacilityName" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/RelicShelf"]
-layout_mode = 1
-anchors_preset = 12
-anchor_right = 1.0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 22
-text = "遗珍架"
-horizontal_alignment = 1
-
-[node name="LevelBadge" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/RelicShelf"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -70.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 38.0
-grow_horizontal = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 19
-text = "Lv.0"
-horizontal_alignment = 2
-
-[node name="GlazeApothecary" type="TextureButton" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer"]
-offset_left = 64.0
-offset_top = 450.0
-offset_right = 224.0
-offset_bottom = 610.0
-texture_normal = ExtResource("3_facility")
-ignore_texture_size = true
-stretch_mode = 5
-metadata/facility_id = "glaze_apothecary"
-
-[node name="FacilityName" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/GlazeApothecary"]
-layout_mode = 1
-anchors_preset = 12
-anchor_right = 1.0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 22
-text = "药釉坊"
-horizontal_alignment = 1
-
-[node name="LevelBadge" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/GlazeApothecary"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -70.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 38.0
-grow_horizontal = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 19
-text = "Lv.0"
-horizontal_alignment = 2
-
-[node name="BellowsStation" type="TextureButton" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer"]
-offset_left = 424.0
-offset_top = 450.0
-offset_right = 584.0
-offset_bottom = 610.0
-texture_normal = ExtResource("3_facility")
-ignore_texture_size = true
-stretch_mode = 5
-metadata/facility_id = "bellows_station"
-
-[node name="FacilityName" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/BellowsStation"]
-layout_mode = 1
-anchors_preset = 12
-anchor_right = 1.0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 22
-text = "风箱台"
-horizontal_alignment = 1
-
-[node name="LevelBadge" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/BellowsStation"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -70.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 38.0
-grow_horizontal = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 19
-text = "Lv.0"
-horizontal_alignment = 2
-
-[node name="TownRestoration" type="TextureButton" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer"]
-offset_left = 244.0
-offset_top = 675.0
-offset_right = 404.0
-offset_bottom = 835.0
-texture_normal = ExtResource("3_facility")
-ignore_texture_size = true
-stretch_mode = 5
-metadata/facility_id = "town_restoration"
-
-[node name="FacilityName" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/TownRestoration"]
-layout_mode = 1
-anchors_preset = 12
-anchor_right = 1.0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 21
-text = "镇貌修复"
-horizontal_alignment = 1
-
-[node name="LevelBadge" type="Label" parent="PageMargin/PageColumn/FacilityViewport/FacilityLayer/TownRestoration"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -70.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 38.0
-grow_horizontal = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 19
-text = "Lv.0"
-horizontal_alignment = 2
-
-[node name="DepartButton" type="Button" parent="PageMargin/PageColumn"]
+[node name="DepartButton" type="Button" parent="PageMargin/PageColumn" unique_id=1289604435]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "从风箱台出发"
 
-[node name="FacilityDetailPanel" type="PanelContainer" parent="."]
+[node name="CourtyardView" type="TextureRect" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 19
+layout_mode = 1
+anchor_top = 0.12
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 24.0
+offset_right = -24.0
+offset_bottom = -12.0
+mouse_filter = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FacilityDetailPanel" type="PanelContainer" parent="." unique_id=562989405]
 unique_name_in_owner = true
 visible = false
 z_index = 20
 layout_mode = 1
-anchors_preset = 12
+anchors_preset = -1
+anchor_top = 0.5
 anchor_right = 1.0
-anchor_top = 0.43
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = 0.0
 offset_right = -24.0
 offset_bottom = -24.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBox_detail")
+theme_override_styles/panel = ExtResource("panel_detail")
 
-[node name="DetailMargin" type="MarginContainer" parent="FacilityDetailPanel"]
+[node name="DetailMargin" type="MarginContainer" parent="FacilityDetailPanel" unique_id=164060794]
 layout_mode = 2
 theme_override_constants/margin_left = 22
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 22
 theme_override_constants/margin_bottom = 20
 
-[node name="DetailColumn" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin"]
+[node name="DetailColumn" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin" unique_id=974900549]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="DetailHeader" type="HBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn"]
+[node name="DetailHeader" type="HBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn" unique_id=1419305356]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="DetailThumbnail" type="TextureRect" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader"]
-custom_minimum_size = Vector2(112, 112)
-layout_mode = 2
-texture = ExtResource("3_facility")
-expand_mode = 1
-stretch_mode = 5
 
-[node name="TitleColumn" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader"]
+[node name="TitleColumn" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader" unique_id=2109760264]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="DetailName" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader/TitleColumn"]
+[node name="DetailName" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader/TitleColumn" unique_id=1710985602]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
 theme_override_font_sizes/font_size = 36
 text = "设施名称"
 
-[node name="DetailLevel" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader/TitleColumn"]
+[node name="DetailLevel" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader/TitleColumn" unique_id=463538900]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
 theme_override_font_sizes/font_size = 24
 text = "等级 0"
 
-[node name="CloseDetailButton" type="Button" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader"]
+[node name="CloseDetailButton" type="Button" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailHeader" unique_id=1032874647]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(92, 64)
 layout_mode = 2
+size_flags_vertical = 4
+theme = ExtResource("return_theme")
 theme_override_font_sizes/font_size = 24
 text = "关闭"
 
-[node name="DetailScroll" type="ScrollContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn"]
+[node name="DetailScroll" type="ScrollContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn" unique_id=1103019149]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="DetailBody" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll"]
+[node name="DetailBody" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll" unique_id=2126097549]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="DetailDescription" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody"]
+[node name="DetailDescription" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody" unique_id=881417962]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
@@ -487,29 +505,31 @@ theme_override_font_sizes/font_size = 22
 text = "设施说明"
 autowrap_mode = 2
 
-[node name="StatusTitle" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody"]
+[node name="StatusTitle" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody" unique_id=544895586]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
 theme_override_font_sizes/font_size = 26
 text = "建造状态"
 
-[node name="StatusContent" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody"]
+[node name="StatusContent" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody" unique_id=1453905921]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="ProjectTitle" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody"]
+[node name="ProjectTitle" type="Label" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody" unique_id=651941603]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.851, 0.643, 0.255, 1)
 theme_override_font_sizes/font_size = 26
 text = "下一项工程"
 
-[node name="ProjectContent" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody"]
+[node name="ProjectContent" type="VBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn/DetailScroll/DetailBody" unique_id=1568141759]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="RefreshTimer" type="Timer" parent="."]
+[node name="RefreshTimer" type="Timer" parent="." unique_id=263372610]
 unique_name_in_owner = true
-wait_time = 1.0
 autostart = true
+
+[node name="FireseedInfo" parent="." instance=ExtResource("fireseed_info")]
+[connection signal="pressed" from="PageMargin/PageColumn/HeaderField/HeaderPadding/Header/FireseedButton" to="FireseedInfo" method="open"]
