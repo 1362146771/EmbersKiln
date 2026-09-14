@@ -191,10 +191,74 @@ static func roll_relic(tier: StringName) -> StringName:
 	return candidates[randi_range(0, candidates.size() - 1)].id
 
 
-## 宝箱替代奖励 / 事件单卡沿用原 60/32/8，但同样先抽稀有度再抽具体卡；不读写补偿。
+## 单卡抽取：事件默认 misc；宝箱显式传 treasure，分别遵循对应来源配置。
 static func roll_single_card(source: StringName = &"misc") -> Dictionary:
 	var choices := _roll_card_choices(1, source, [])
 	return choices[0] if not choices.is_empty() else {}
+
+
+## 宝箱独立配置，不改变商店、战斗或事件的物品抽取规则。
+static func roll_treasure_kind() -> StringName:
+	return _weighted_key(GameData.balance.get("treasure", {}).get("reward_weights", {}))
+
+
+static func _weighted_key(weights: Dictionary) -> StringName:
+	var total := 0.0
+	for value in weights.values():
+		total += maxf(float(value), 0.0)
+	if total <= 0.0:
+		return &""
+	var roll := randf() * total
+	for key in weights:
+		roll -= maxf(float(weights[key]), 0.0)
+		if roll < 0.0:
+			return StringName(key)
+	return &""
+
+
+static func _treasure_tier() -> Dictionary:
+	var config: Dictionary = GameData.balance.get("treasure", {})
+	var size := _weighted_key(config.get("chest_size_weights", {}))
+	return config.get("chest_tiers", {}).get(String(size), {})
+
+
+static func roll_treasure_gold() -> int:
+	var band: Dictionary = _treasure_tier().get("gold", {})
+	return randi_range(int(band.get("min", 0)), int(band.get("max", 0)))
+
+
+static func roll_treasure_relic() -> StringName:
+	var pool: Array = []
+	for relic in GameData.relics.values():
+		if relic.rarity in CARD_RARITIES and not RunState.relic_ids.has(relic.id) and GameData.is_relic_unlocked(relic.id):
+			pool.append(relic)
+	return _weighted_item(pool, _treasure_tier().get("relic_rarity_weights", {}))
+
+
+static func roll_treasure_potion() -> StringName:
+	if RunState.potions.size() >= int(GameData.balance.get("potions", {}).get("max_carry", 0)):
+		return &""
+	var pool: Array = []
+	for potion in GameData.potions.values():
+		if GameData.is_potion_unlocked(potion.id):
+			pool.append(potion)
+	return _weighted_item(pool, GameData.balance.get("treasure", {}).get("potion_rarity_weights", {}))
+
+
+## 先按稀有度、后在该稀有度内等概率抽取。空稀有度移除并归一化。
+static func _weighted_item(pool: Array, weights: Dictionary) -> StringName:
+	if pool.is_empty():
+		return &""
+	var available := {}
+	for item in pool:
+		available[String(item.rarity)] = weights.get(String(item.rarity), 0)
+	var rarity := _weighted_key(available)
+	# 如低级箱对应池已完全耗尽，仅从仍有物品的稀有度中回退。
+	var candidates: Array = []
+	for item in pool:
+		if rarity == &"" or item.rarity == rarity:
+			candidates.append(item)
+	return candidates[randi_range(0, candidates.size() - 1)].id
 
 
 ## 随机一个未拥有的非 starter 遗物（商店/宝箱/事件用）。

@@ -1,38 +1,23 @@
 extends Control
-## 宝箱：卡牌 / 遗物 / 药水三选一，仅领取一次；独立场景或 done 回调回地图。
-const CardBrowserScript := preload("res://scripts/ui/CardBrowser.gd")
+## 点击木箱后随机领取一件奖励；动画与领取共用一次性锁。
 
-const CREAM := Color(0.984, 0.953, 0.894)
-const AMBER := Color(0.937, 0.624, 0.153)
-const DARK := Color(0.25, 0.20, 0.18)
-const PURPLE := Color(0.498, 0.467, 0.867)
-const BG_DARK := Color(0.12, 0.10, 0.09)
-
-var on_done: Callable = Callable()
+const OPEN_TEXTURE := preload("res://art/ui/formal/chest_open.png")
+var on_done: Callable
 var _claimed := false
 var _finished := false
-var _choice_buttons: Array[Button] = []
-var _choice_panel: Panel
-var _result_panel: PanelContainer
+var _reward_ready := false
+var _built := false
+var _chest: TextureButton
+var _hint: Label
+var _result_panel: VBoxContainer
 var _result_title: Label
 var _result_icon: TextureRect
+var _result_card: Control
 var _result_name: Label
 var _result_description: Label
-var _result_effect := ""
 var _continue_button: Button
 var _pending_card: Dictionary = {}
-var _pending_card_mode := ""
-
-func _solid_bg(color: Color) -> TextureRect:
-	var img := Image.create(4, 4, false, Image.FORMAT_RGBA8)
-	img.fill(color)
-	var tex := ImageTexture.create_from_image(img)
-	var tr := TextureRect.new()
-	tr.texture = tex
-	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	tr.stretch_mode = TextureRect.STRETCH_SCALE
-	tr.set_anchors_preset(Control.PRESET_FULL_RECT)
-	return tr
+var _tween: Tween
 
 
 func setup(done: Callable) -> void:
@@ -40,281 +25,182 @@ func setup(done: Callable) -> void:
 	_build_main()
 
 
-## P2 场景化：作为独立场景加载时自构建。
 func _ready() -> void:
-	if not SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
-		SignalBus.card_acquisition_resolved.connect(_on_card_acquisition_resolved)
+	SignalBus.card_acquisition_resolved.connect(_on_card_acquisition_resolved)
 	_build_main()
 
 
 func _exit_tree() -> void:
 	if SignalBus.card_acquisition_resolved.is_connected(_on_card_acquisition_resolved):
 		SignalBus.card_acquisition_resolved.disconnect(_on_card_acquisition_resolved)
+	if _tween != null:
+		_tween.kill()
 
 
 func _build_main() -> void:
-	# setup() 与 _ready() 兼容同一实例，避免重复构建/留下待释放的旧按钮。
-	if not _choice_buttons.is_empty():
+	if _built:
 		return
-	var scene_panel: Panel = get_node_or_null("Dim/Center/ChoicePanel")
-	if scene_panel != null:
-		_choice_panel = scene_panel
-		var card_button: Button = scene_panel.get_node("Content/CardButton")
-		var relic_button: Button = scene_panel.get_node("Content/RelicButton")
-		var potion_button: Button = scene_panel.get_node("Content/PotionButton")
-		card_button.pressed.connect(_on_take_card)
-		relic_button.pressed.connect(_on_take_relic)
-		potion_button.pressed.connect(_on_take_potion)
-		_choice_buttons.assign([card_button, relic_button, potion_button])
-		_result_panel = get_node("Dim/Center/ResultPanel")
-		_result_panel.add_theme_stylebox_override("panel", CardBrowserScript.style(CardBrowserScript.SLATE))
-		_result_title = _result_panel.get_node("Content/Title")
-		_result_icon = _result_panel.get_node("Content/Icon")
-		_wire_result_icon()
-		_result_name = _result_panel.get_node("Content/Name")
-		_result_description = _result_panel.get_node("Content/Description")
-		_continue_button = _result_panel.get_node("Content/ContinueButton")
-		_continue_button.pressed.connect(_finish)
-		_result_panel.hide()
-		return
-	for c in get_children():
-		c.queue_free()
-
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var panel := Panel.new()
-	_choice_panel = panel
-	panel.custom_minimum_size = Vector2(680, 980)
-	center.add_child(panel)
-
-	var v := VBoxContainer.new()
-	v.set_anchors_preset(Control.PRESET_FULL_RECT)
-	v.add_theme_constant_override("margin_left", 24)
-	v.add_theme_constant_override("margin_right", 24)
-	v.add_theme_constant_override("margin_top", 24)
-	v.add_theme_constant_override("margin_bottom", 24)
-	v.add_theme_constant_override("separation", 22)
-	panel.add_child(v)
-
-	v.add_child(_label("宝 箱", 40, DARK))
-	v.add_child(_label("一只陶土封存的旧箱，微微透出窑火余温。", 24, DARK))
-
-	var card_btn := Button.new()
-	card_btn.text = "取走一张卡牌"
-	card_btn.custom_minimum_size = Vector2(560, 80)
-	card_btn.add_theme_font_size_override("font_size", 26)
-	card_btn.pressed.connect(_on_take_card)
-	_choice_buttons.append(card_btn)
-	v.add_child(card_btn)
-
-	var relic_btn := Button.new()
-	relic_btn.text = "取走一件遗物"
-	relic_btn.custom_minimum_size = Vector2(560, 80)
-	relic_btn.add_theme_font_size_override("font_size", 26)
-	relic_btn.pressed.connect(_on_take_relic)
-	_choice_buttons.append(relic_btn)
-	v.add_child(relic_btn)
-	var potion_btn := Button.new()
-	potion_btn.text = "取走一瓶药水"
-	potion_btn.custom_minimum_size = Vector2(560, 80)
-	potion_btn.add_theme_font_size_override("font_size", 26)
-	potion_btn.pressed.connect(_on_take_potion)
-	_choice_buttons.append(potion_btn)
-	v.add_child(potion_btn)
-	_build_result(center)
+	_built = true
+	if not has_node("Layout"):
+		FormalUI.restore_layout(self, "res://scenes/map/TreasureUI.tscn")
+	_chest = get_node("Layout/Chest")
+	_hint = get_node("Layout/Panel/Content/Hint")
+	_result_panel = get_node("Layout/Panel/Content/Result")
+	_result_title = _result_panel.get_node("Title")
+	_result_icon = _result_panel.get_node("Icon")
+	_result_name = _result_panel.get_node("Name")
+	_result_description = _result_panel.get_node("Description")
+	_continue_button = _result_panel.get_node("Continue")
+	_chest.resized.connect(_update_pivot)
+	_chest.button_down.connect(_on_chest_down)
+	_chest.button_up.connect(_on_chest_up)
+	_chest.pressed.connect(_on_open)
+	_continue_button.pressed.connect(_finish)
+	_update_pivot()
 
 
-func _build_result(center: CenterContainer) -> void:
-	_result_panel = PanelContainer.new()
-	_result_panel.custom_minimum_size = Vector2(620, 0)
-	_result_panel.add_theme_stylebox_override("panel", CardBrowserScript.style(CardBrowserScript.SLATE))
-	center.add_child(_result_panel)
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 24)
-	_result_panel.add_child(column)
-	_result_title = CardBrowserScript.label("获得遗物", 56)
-	column.add_child(_result_title)
-	_result_icon = TextureRect.new()
-	_result_icon.custom_minimum_size = Vector2(128, 128)
-	_result_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_result_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	column.add_child(_result_icon)
-	_wire_result_icon()
-	_result_name = CardBrowserScript.label("", 32)
-	column.add_child(_result_name)
-	_result_description = CardBrowserScript.label("", 26)
-	column.add_child(_result_description)
-	_continue_button = CardBrowserScript.button("继续", _finish)
-	column.add_child(_continue_button)
-	_result_panel.hide()
+func _update_pivot() -> void:
+	_chest.pivot_offset = Vector2(_chest.size.x * 0.5, _chest.size.y * 0.9)
 
 
-func _show_result(title: String, reward_name: String, description: String, icon: String = "") -> void:
-	_result_effect = ""
-	_result_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_result_icon.focus_mode = Control.FOCUS_NONE
-	_result_icon.mouse_default_cursor_shape = Control.CURSOR_ARROW
-	_result_icon.tooltip_text = ""
-	_result_title.text = title
-	_result_name.text = reward_name
-	_result_description.text = description
-	_result_icon.texture = GameData.icon_texture(icon)
-	_result_icon.visible = _result_icon.texture != null
-	_choice_panel.hide()
-	_result_panel.show()
-	_continue_button.grab_focus()
+func _on_chest_down() -> void:
+	if not _claimed:
+		_scale_to(Vector2(1.06, 0.93), 0.10)
 
 
-func _wire_result_icon() -> void:
-	if not _result_icon.gui_input.is_connected(_on_result_icon_input):
-		_result_icon.gui_input.connect(_on_result_icon_input)
+func _on_chest_up() -> void:
+	if not _claimed:
+		_scale_to(Vector2.ONE, 0.16)
 
 
-func _on_result_icon_input(event: InputEvent) -> void:
-	if _result_effect.is_empty():
-		return
-	var clicked: bool = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed
-	var touched: bool = event is InputEventScreenTouch and event.pressed
-	if clicked or touched or event.is_action_pressed("ui_accept"):
-		_result_description.text = _result_effect
-		_result_icon.accept_event()
+func _scale_to(value: Vector2, duration: float) -> void:
+	if _tween != null:
+		_tween.kill()
+	_tween = create_tween()
+	_tween.tween_property(_chest, "scale", value, duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
-func _on_take_card() -> void:
-	if not _begin_claim():
-		return
-	var card := _grant_card("take")
-	if not card.get("_pending", false):
-		_finish()
-
-
-## 共用发卡逻辑：遗物池空时仍走当前领取，不再次进入带锁的按钮回调。
-func _grant_card(mode: String = "fallback") -> Dictionary:
-	var cd: Dictionary = RewardBuilder.roll_single_card()
-	if cd.is_empty():
-		_log("卡牌池为空")
-		return {}
-	var source_id := &"treasure" if mode == "take" else &"treasure_fallback"
-	var result := CardAcquireService.acquire_free_card(StringName(cd.get("id", "")), false, source_id, {"card_name": cd.get("name", "")})
-	if result == CardAcquireService.RESULT_FULL:
-		_pending_card = cd.duplicate(true)
-		_pending_card_mode = mode
-		cd["_pending"] = true
-		return cd
-	if result != CardAcquireService.RESULT_ACQUIRED:
-		return {}
-	_log("宝箱获得卡牌：%s" % cd.get("name", ""))
-	return cd
-
-
-func _on_take_relic() -> void:
-	if not _begin_claim():
-		return
-	var rid: StringName = RewardBuilder.roll_shop_relic()
-	if rid == &"":
-		_log("遗物已全部拥有，改发卡牌")
-		var card := _grant_card()
-		if card.get("_pending", false):
-			return
-		if card.is_empty():
-			_show_result("宝箱已打开", "暂无可领取的奖励", "遗物已全部拥有，卡牌池为空。")
-		else:
-			_show_result("获得卡牌", String(card.get("name", "")), "遗物已全部拥有，改为获得卡牌。\n\n" + String(card.get("desc", "")))
-	else:
-		RunState.add_relic(rid)
-		var relic: RelicData = GameData.get_relic(rid)
-		var relic_name := relic.name if relic != null else String(rid)
-		_log("宝箱获得遗物：%s" % relic_name)
-		_show_result("获得遗物", relic_name, relic.description if relic != null else "遗物资料暂不可用。", relic.icon if relic != null else "")
-
-
-func _on_take_potion() -> void:
-	if not _begin_claim():
-		return
-	var pid: StringName = RewardBuilder.roll_potion(&"combat", true)
-	if pid == &"":
-		_log("药水背包已满")
-		_finish()
-		return
-	RunState.add_potion(pid)
-	var p = GameData.get_potion(pid)
-	_log("宝箱获得药水：%s" % (p.name if p != null else pid))
-	var effect: String = p.description if p != null else "药水效果资料暂不可用。"
-	_show_result("获得药水", p.name if p != null else String(pid), effect, p.icon if p != null else "")
-	if _result_icon.visible:
-		_result_effect = effect
-		_result_description.text = "点击药水图标查看效果"
-		_result_icon.mouse_filter = Control.MOUSE_FILTER_STOP
-		_result_icon.focus_mode = Control.FOCUS_ALL
-		_result_icon.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-		_result_icon.tooltip_text = "查看药水效果"
-
-
-func _begin_claim() -> bool:
+func _on_open() -> void:
 	if _claimed or _finished or not is_inside_tree() or is_queued_for_deletion():
-		return false
-	# 发奖会发出同步信号，因此必须先锁定，防信号回调或跨按钮重复领取。
+		return
+	if GameData.balance.get("treasure", {}).get("reward_weights", {}).is_empty():
+		_hint.text = "暂时无法打开宝箱。"
+		return
 	_claimed = true
-	_disable_choices()
-	return true
+	_chest.disabled = true
+	_hint.text = "正在打开……"
+	_scale_to(Vector2(1.08, 0.88), 0.12)
+	_tween.tween_callback(func(): _chest.texture_normal = OPEN_TEXTURE)
+	_tween.tween_property(_chest, "scale", Vector2(0.94, 1.08), 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_tween.tween_property(_chest, "scale", Vector2.ONE, 0.24).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_tween.tween_callback(_grant_random_reward)
 
 
-func _disable_choices() -> void:
-	for button in _choice_buttons:
-		button.disabled = true
+func _grant_random_reward() -> void:
+	_grant_kind(String(RewardBuilder.roll_treasure_kind()))
 
 
-func _enable_choices() -> void:
-	for button in _choice_buttons:
-		button.disabled = false
+func _grant_kind(kind: String) -> void:
+	match kind:
+		"relic":
+			var rid: StringName = RewardBuilder.roll_treasure_relic()
+			if rid == &"":
+				_grant_card("遗物已全部拥有，改为获得卡牌。")
+				return
+			RunState.add_relic(rid)
+			var relic := GameData.get_relic(rid)
+			_show_result("获得遗物", relic.name, relic.description, relic.icon)
+			preload("res://scripts/ui/RelicInfo.gd").attach(_result_icon, rid)
+			preload("res://scripts/ui/RelicInfo.gd").attach(_result_name, rid)
+		"potion":
+			var pid: StringName = RewardBuilder.roll_treasure_potion()
+			if pid == &"":
+				_grant_card("药水槽已满或暂无可用药水，改为获得卡牌。")
+				return
+			RunState.add_potion(pid)
+			var potion := GameData.get_potion(pid)
+			_show_result("获得药水", potion.name, potion.description, potion.icon)
+		"card":
+			_grant_card()
+		"gold":
+			var before := RunState.gold
+			RunState.add_gold(RewardBuilder.roll_treasure_gold())
+			_show_result("获得金币", "%d 金币" % (RunState.gold - before), "金币已放入钱袋，可在商店购买物品。", "res://art/ui/formal/icon_gold(需ai改.png")
+		_:
+			_show_result("宝箱已打开", "暂无可领取的奖励", "宝箱奖励类型暂不可用。")
+
+
+func _grant_card(reason: String = "") -> void:
+	var source := StringName(GameData.balance.get("treasure", {}).get("card_source", "treasure"))
+	_pending_card = RewardBuilder.roll_single_card(source)
+	if _pending_card.is_empty():
+		_show_result("宝箱已打开", "暂无可领取的奖励", reason + "\n卡牌池为空。")
+		return
+	_pending_card["reason"] = reason
+	var result := CardAcquireService.acquire_free_card(StringName(_pending_card.id), bool(_pending_card.get("upgraded", false)), &"treasure", {"card_name": _pending_card.get("name", "")})
+	if result == CardAcquireService.RESULT_FULL:
+		_hint.text = "牌库已满，请先处理卡牌领取。"
+	elif result == CardAcquireService.RESULT_ACQUIRED:
+		_show_card_result()
+	else:
+		_show_result("宝箱已打开", "卡牌未领取", "当前无法领取这张卡牌。")
+
+
+func _show_card_result() -> void:
+	var card := GameData.get_card(StringName(_pending_card.get("id", "")))
+	var upgraded := bool(_pending_card.get("upgraded", false))
+	_show_result("获得卡牌", card.name + ("+" if upgraded else ""), String(_pending_card.get("reason", "")) + "\n" + card.get_description(upgraded), card.art)
+	_result_icon.hide()
+	_result_name.hide()
+	_result_card = FormalUI.card_visual({"id": card.id, "name": card.name,
+		"upgraded": upgraded, "cost": card.resolved_cost(1 if upgraded else 0)})
+	_result_card.custom_minimum_size = Vector2(224, 276)
+	_result_card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_result_card.get_node("CardTitle").add_theme_font_size_override("font_size", 20)
+	_result_card.get_node("CardType").add_theme_font_size_override("font_size", 18)
+	_result_panel.add_child(_result_card)
+	_result_panel.move_child(_result_card, 1)
+	_chest.custom_minimum_size = Vector2(340, 340)
+	_pending_card.clear()
 
 
 func _on_card_acquisition_resolved(acquisition: Dictionary, result: StringName) -> void:
-	var source_id := String(acquisition.get("source_id", ""))
-	if source_id not in ["treasure", "treasure_fallback"]:
+	if acquisition.get("source_id", "") != "treasure" or _pending_card.is_empty():
 		return
 	if result == CardAcquireService.RESULT_ACQUIRED:
-		_log("扩容后获得卡牌：%s" % _pending_card.get("name", acquisition.get("card_id", "")))
-		if _pending_card_mode == "fallback":
-			_show_result("获得卡牌", String(_pending_card.get("name", "")), "遗物已全部拥有，改为获得卡牌。\n\n" + String(_pending_card.get("desc", "")))
-		else:
-			_finish()
+		_show_card_result()
 	else:
-		_claimed = false
-		_enable_choices()
+		_show_result("宝箱已打开", "已放弃卡牌", "这只宝箱已经打开，继续探索吧。")
 	_pending_card.clear()
-	_pending_card_mode = ""
+
+
+func _show_result(title: String, reward_name: String, description: String, icon: String = "") -> void:
+	if is_instance_valid(_result_card):
+		_result_card.hide()
+		_result_card.queue_free()
+	_result_name.show()
+	_result_title.text = title
+	_result_name.text = reward_name
+	_result_description.text = description.strip_edges()
+	_result_icon.texture = GameData.icon_texture(icon)
+	_result_icon.visible = _result_icon.texture != null
+	_hint.hide()
+	_result_panel.show()
+	_reward_ready = true
+	_continue_button.grab_focus()
+	if RunState.is_active:
+		SaveManager.save_game()
 
 
 func _finish() -> void:
-	if _finished or not _claimed or not is_inside_tree():
+	if _finished or not _reward_ready or not is_inside_tree():
 		return
 	_finished = true
-	_claimed = true
-	_disable_choices()
-	var tree := get_tree()
-	if self == tree.current_scene:
+	_continue_button.disabled = true
+	if self == get_tree().current_scene:
 		RunState.pending_node_resolved = true
-		tree.change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
+		get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
 	else:
 		queue_free()
 		if on_done.is_valid():
 			on_done.call()
-
-
-func _log(msg: String) -> void:
-	print("[Treasure] " + msg)
-
-
-func _label(text: String, size: int, color: Color) -> Label:
-	var l := Label.new()
-	l.text = text
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", color)
-	return l

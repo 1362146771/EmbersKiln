@@ -60,11 +60,11 @@ const TYPE_SHORT := {
 	&"altar": "坛",
 }
 
-# 布局（虚拟画布宽 680；高度随幕内层数动态，外层 ScrollContainer 纵向滚动）
-const CANVAS_W := 680.0
-const MARGIN_TOP := 48.0
+# 左侧路线画布，右侧固定图例；尺寸为 UI 逻辑单位。
+const CANVAS_W := FormalUI.MAP_CANVAS_WIDTH
+const MARGIN_TOP := FormalUI.MAP_TOP_MARGIN
 const FLOOR_GAP := 120.0
-const COL_GAP := 110.0
+const COL_GAP := FormalUI.MAP_COLUMN_GAP
 const NODE_SIZE := 76
 
 @onready var map_area: Control = get_node_or_null("MapScroller/MapArea")
@@ -97,6 +97,9 @@ func _ready() -> void:
 	if not has_node("FormalBackground"):
 		FormalUI.background(self, FormalUI.ROOT + "bgIMG_stage.png").name = "FormalBackground"
 	map_scroller.offset_top = 106
+	map_scroller.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	map_scroller.anchor_right = 0.0
+	map_scroller.offset_right = CANVAS_W + 12.0
 	topbar.hide()
 	if not RunState.pre_run_preparation_resolved:
 		PreRunBuffSystem.prepare_offer()
@@ -162,6 +165,7 @@ func start_new_map() -> void:
 			if node.visited:
 				chosen[f] = node.index
 	_build_map_view()
+	_build_legend()
 	_refresh_topbar()
 	if PauseManager != null:
 		PauseManager.show_pause_button()
@@ -215,6 +219,17 @@ func _build_static_ui() -> void:
 	map_area.draw.connect(_on_map_draw)
 
 
+func _build_legend() -> void:
+	var panel := get_node_or_null("MapLegend")
+	if panel == null:
+		panel = preload("res://scenes/map/MapLegend.tscn").instantiate()
+		add_child(panel)
+	if not RunState.current_map().is_empty():
+		var boss := FormalUI.boss_map_texture(RunState.current_map().back()[0].enemy_ids)
+		if boss != null:
+			panel.get_node("Column/boss/Heading/Icon").texture = boss
+
+
 func _on_map_gui_input(_ev: InputEvent) -> void:
 	pass
 
@@ -231,7 +246,10 @@ func _on_map_draw() -> void:
 			for j in node.links:
 				var k2 := "%d_%d" % [f + 1, j]
 				if node_pos.has(k2):
-					map_area.draw_dashed_line(p1, node_pos[k2], LINE, 4.0, 10.0)
+					var end: Vector2 = node_pos[k2]
+					if RunState.current_map()[f + 1][j].type == &"boss":
+						end += (p1 - end).normalized() * FormalUI.BOSS_NODE_SIZE * 0.5
+					map_area.draw_dashed_line(p1, end, LINE, 4.0, 10.0)
 
 
 func _label(text: String, size: int, color: Color) -> Label:
@@ -254,15 +272,17 @@ func _build_map_view() -> void:
 
 	var floor_count: int = RunState.current_map().size()
 	var width: int = int(RunState.current_act_config().get("columns", 6))
-	var canvas_h: float = MARGIN_TOP * 2.0 + float(floor_count - 1) * FLOOR_GAP
+	var canvas_h: float = MARGIN_TOP * 2.0 + float(floor_count - 1) * FLOOR_GAP + FormalUI.MAP_BOSS_GAP
 	map_area.custom_minimum_size = Vector2(CANVAS_W, canvas_h)
 	for f in floor_count:
 		var row: Array = RunState.current_map()[f]
 		var n: int = row.size()
-		var y: float = MARGIN_TOP + (floor_count - 1 - f) * FLOOR_GAP
+		var y: float = MARGIN_TOP + (floor_count - 1 - f) * FLOOR_GAP + (FormalUI.MAP_BOSS_GAP if f < floor_count - 1 else 0.0)
 		for i in n:
 			var node = row[i]
 			var x: float = CANVAS_W * 0.5 + (node.col - (width - 1) / 2.0) * COL_GAP
+			if node.type == &"boss":
+				x = CANVAS_W * 0.5
 			node_pos["%d_%d" % [f, i]] = Vector2(x, y)
 			_add_node_button(node, f, i, x, y)
 
@@ -292,6 +312,8 @@ func _focus_player_position(player_y: float, revision: int) -> void:
 
 func _add_node_button(node, f: int, i: int, x: float, y: float) -> void:
 	var b := Button.new()
+	b.name = "MapNode_%d_%d" % [f, i]
+	var boss_art: Texture2D = FormalUI.boss_map_texture(node.enemy_ids) if node.type == &"boss" else null
 	b.custom_minimum_size = Vector2(NODE_SIZE, NODE_SIZE)
 	b.position = Vector2(x - NODE_SIZE / 2.0, y - NODE_SIZE / 2.0)
 	var col: Color = TYPE_COLOR.get(node.type, ORANGE)
@@ -310,14 +332,6 @@ func _add_node_button(node, f: int, i: int, x: float, y: float) -> void:
 	b.tooltip_text = "第 %d 层 · %s" % [f, label_txt]
 	if not enemy_hint.is_empty():
 		b.tooltip_text += "\n" + enemy_hint
-		# 手机端不能依赖悬停：Boss节点下直接显示数据中的机制提示。
-		var hint := _label(enemy_hint, 20, DARK)
-		hint.name = "BossCombatHint"
-		hint.position = Vector2(10, y + NODE_SIZE * 0.5 + 4)
-		hint.size = Vector2(CANVAS_W - 20, 30)
-		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		map_area.add_child(hint)
 
 	var reachable: bool = _is_reachable(f, i)
 	b.disabled = not reachable
@@ -330,21 +344,47 @@ func _add_node_button(node, f: int, i: int, x: float, y: float) -> void:
 		b.modulate = Color(0.85, 0.85, 0.85, 1.0)
 	# 同一节点保留点击/可达逻辑，仅使用正式普通态与描边高亮态。
 	b.text = ""
-	b.size = Vector2(100, 80)
-	b.position = Vector2(x - 50, y - 40)
+	b.size = Vector2(NODE_SIZE, 80)
+	b.position = Vector2(x - NODE_SIZE * 0.5, y - 40)
 	b.modulate = Color.WHITE if reachable or chosen[f] == i else Color(0.72, 0.72, 0.72)
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
-		var skin := StyleBoxTexture.new()
-		skin.texture = FormalUI.node_texture(node.type, reachable or chosen[f] == i or state == "hover")
-		b.add_theme_stylebox_override(state, skin)
-	if node.type in [&"boss", &"rest", &"altar"]:
-		var caption := _label("首领" if node.type == &"boss" else "休息" if node.type == &"rest" else "祭坛", 17, Color.WHITE)
-		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		b.add_child(caption)
-		caption.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-		caption.offset_top = -4
-		caption.offset_bottom = 20
-		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+	if boss_art == null:
+		# 交互热区保持不变，图片单独等比居中，不能用 StyleBox 拉伸填满按钮。
+		var icon := TextureRect.new()
+		icon.name = "NodeIcon"
+		var highlighted: bool = reachable or chosen[f] == i
+		icon.texture = FormalUI.node_texture(node.type, highlighted)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(icon)
+		icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		if node.type == &"rest":
+			var highlight := ShaderMaterial.new()
+			highlight.shader = preload("res://art/ui/formal/CampfireHighlight.gdshader")
+			highlight.set_shader_parameter("highlighted", highlighted)
+			icon.material = highlight
+			b.mouse_entered.connect(func(): highlight.set_shader_parameter("highlighted", highlighted or not b.disabled))
+			b.mouse_exited.connect(func(): highlight.set_shader_parameter("highlighted", highlighted))
+		b.mouse_entered.connect(func(): icon.texture = FormalUI.node_texture(node.type, true) if not b.disabled else FormalUI.node_texture(node.type, highlighted))
+		b.mouse_exited.connect(func(): icon.texture = FormalUI.node_texture(node.type, highlighted))
+	if boss_art != null:
+		b.custom_minimum_size = Vector2.ONE * FormalUI.BOSS_NODE_SIZE
+		b.size = b.custom_minimum_size
+		b.position = Vector2(x, y) - b.size * 0.5
+		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+			b.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+		var emblem := TextureRect.new()
+		emblem.name = "BossEmblem"
+		emblem.texture = boss_art
+		emblem.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		emblem.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(emblem)
+		emblem.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		b.mouse_entered.connect(func(): emblem.modulate = Color(1.5, 1.5, 1.5) if not b.disabled else Color.WHITE)
+		b.mouse_exited.connect(func(): emblem.modulate = Color.WHITE)
 	b.pressed.connect(_on_node_pressed.bind(f, i))
 	map_area.add_child(b)
 

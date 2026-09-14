@@ -1,0 +1,229 @@
+[gd_scene format=3]
+
+[ext_resource type="StyleBox" path="res://themes/formal/StoneLegend.tres" id="frame"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_Monster.png" id="combat"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_eliteMonster.png" id="elite"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_eliteMonster.png" id="boss"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_event.png" id="event"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_shop.png" id="shop"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_campfire.png" id="rest"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_reward.png" id="treasure"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_intensify.png" id="altar"]
+
+[node name="MapLegend" type="PanelContainer"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -190.0
+offset_right = -10.0
+offset_top = 144.0
+theme_override_styles/panel = ExtResource("frame")
+
+[node name="Column" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+horizontal_alignment = 1
+text = "图例"
+
+[node name="combat" type="VBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+[node name="Heading" type="HBoxContainer" parent="Column/combat"]
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="Column/combat/Heading"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 42)
+texture = ExtResource("combat")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Column/combat/Heading"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+text = "普通战斗"
+[node name="Description" type="Label" parent="Column/combat"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "遭遇普通敌人"
+autowrap_mode = 2
+
+[node name="elite" type="VBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+[node name="Heading" type="HBoxContainer" parent="Column/elite"]
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="Column/elite/Heading"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 42)
+texture = ExtResource("elite")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Column/elite/Heading"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+text = "精英战斗"
+[node name="Description" type="Label" parent="Column/elite"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "挑战强力敌人"
+autowrap_mode = 2
+
+[node name="boss" type="VBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+[node name="Heading" type="HBoxContainer" parent="Column/boss"]
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="Column/boss/Heading"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 42)
+texture = ExtResource("boss")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Column/boss/Heading"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+text = "首领"
+[node name="Description" type="Label" parent="Column/boss"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "本幕最终战斗"
+autowrap_mode = 2
+
+[node name="event" type="VBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+[node name="Heading" type="HBoxContainer" parent="Column/event"]
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="Column/event/Heading"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 42)
+texture = ExtResource("event")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Column/event/Heading"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+text = "事件"
+[node name="Description" type="Label" parent="Column/event"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "遭遇随机事件"
+autowrap_mode = 2
+
+[node name="shop" type="VBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+[node name="Heading" type="HBoxContainer" parent="Column/shop"]
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="Column/shop/Heading"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 42)
+texture = ExtResource("shop")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Column/shop/Heading"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+text = "商店"
+[node name="Description" type="Label" parent="Column/shop"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "购买与调整卡组"
+autowrap_mode = 2
+
+[node name="rest" type="VBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+[node name="Heading" type="HBoxContainer" parent="Column/rest"]
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="Column/rest/Heading"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 42)
+texture = ExtResource("rest")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Column/rest/Heading"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+text = "休息"
+[node name="Description" type="Label" parent="Column/rest"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "休整或强化卡牌"
+autowrap_mode = 2
+
+[node name="treasure" type="VBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+[node name="Heading" type="HBoxContainer" parent="Column/treasure"]
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="Column/treasure/Heading"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 42)
+texture = ExtResource("treasure")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Column/treasure/Heading"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+text = "宝箱"
+[node name="Description" type="Label" parent="Column/treasure"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "获取宝物"
+autowrap_mode = 2
+
+[node name="altar" type="VBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+[node name="Heading" type="HBoxContainer" parent="Column/altar"]
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="Column/altar/Heading"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 42)
+texture = ExtResource("altar")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Column/altar/Heading"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
+text = "附魔祭坛"
+[node name="Description" type="Label" parent="Column/altar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "为卡牌免费附魔"
+autowrap_mode = 2
+
+[node name="Note" type="Label" parent="Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
+text = "沿连线选择下一站"
+autowrap_mode = 2

@@ -3,7 +3,7 @@ extends Control
 
 const CREAM := Color(0.984, 0.953, 0.894)
 const GREEN := Color(0.365, 0.792, 0.647)
-const DARK := Color(0.25, 0.20, 0.18)
+const TEXT_COLOR := Color("F2E8D5")
 const RED := Color(0.847, 0.353, 0.188)
 const PURPLE := Color(0.498, 0.467, 0.867)
 const BG_DARK := Color(0.12, 0.10, 0.09)
@@ -71,9 +71,9 @@ func _build_main() -> void:
 	v.add_theme_constant_override("separation", 22)
 	panel.add_child(v)
 
-	v.add_child(_label("休 息 点", 40, DARK))
+	v.add_child(_label("休 息 点", 40, TEXT_COLOR))
 
-	v.add_child(_label("炉火尚温，稍作休整。", 24, DARK))
+	v.add_child(_label("炉火尚温，稍作休整。", 24, TEXT_COLOR))
 
 	var rest_btn := Button.new()
 	rest_btn.text = "休息（恢复 %d 生命）" % heal_amt
@@ -136,10 +136,11 @@ func _build_forge() -> void:
 	v.add_theme_constant_override("separation", 14)
 	panel.add_child(v)
 
-	v.add_child(_label("锻造台", 34, DARK))
-	v.add_child(_label("选择要强化的卡牌（灼热攻击可重复升级）", 20, DARK))
+	v.add_child(_label("锻造台", 34, TEXT_COLOR))
+	v.add_child(_label("选择要强化的卡牌（灼热攻击可重复升级）", 20, TEXT_COLOR))
 
 	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	v.add_child(scroll)
 
@@ -157,8 +158,9 @@ func _build_forge() -> void:
 			continue
 		upgradable = true
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(600, 64)
-		b.add_theme_color_override("font_color", DARK)
+		b.custom_minimum_size = Vector2(0, 64)
+		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b.add_theme_color_override("font_color", TEXT_COLOR)
 		b.text = "%s%s → %s" % [cd.name, "+" + str(level) if level > 1 else "+" if level == 1 else "", cd.get_description(level + 1)]
 		b.add_theme_font_size_override("font_size", 20)
 		b.pressed.connect(_on_upgrade_card.bind(i))

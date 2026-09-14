@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" path="res://art/ui/formal/bgIMG_stage.png" id="4_bnq2b"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_main_event.png" id="5_6ijwg"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/btn_event_normal.png" id="6_budmw"]
-[ext_resource type="Texture2D" path="res://art/ui/formal/bd_shop_btn.png" id="7_kef0w"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="7_kef0w"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_blood.png" id="8_wtqsg"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_gold(需ai改.png" id="9_0e2wr"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_stair.png" id="10_o6scb"]
@@ -104,10 +104,10 @@ content_margin_top = 18.0
 content_margin_right = 18.0
 content_margin_bottom = 18.0
 texture = ExtResource("7_kef0w")
-texture_margin_left = 18.0
-texture_margin_top = 18.0
-texture_margin_right = 18.0
-texture_margin_bottom = 18.0
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
 
 [node name="EventUI" type="Control" unique_id=1320572752]
 layout_mode = 3

@@ -66,6 +66,60 @@
 	"heal_percent": 0.3,
 	"can_upgrade": true
   },
+  "treasure": {
+	"reward_weights": {
+	  "card": 25,
+	  "relic": 25,
+	  "potion": 25,
+	  "gold": 25
+	},
+	"card_source": "treasure",
+	"potion_rarity_weights": {
+	  "common": 65,
+	  "uncommon": 25,
+	  "rare": 10
+	},
+	"chest_size_weights": {
+	  "small": 50,
+	  "medium": 33,
+	  "large": 17
+	},
+	"chest_tiers": {
+	  "small": {
+		"relic_rarity_weights": {
+		  "common": 75,
+		  "uncommon": 25,
+		  "rare": 0
+		},
+		"gold": {
+		  "min": 23,
+		  "max": 28
+		}
+	  },
+	  "medium": {
+		"relic_rarity_weights": {
+		  "common": 35,
+		  "uncommon": 50,
+		  "rare": 15
+		},
+		"gold": {
+		  "min": 45,
+		  "max": 55
+		}
+	  },
+	  "large": {
+		"relic_rarity_weights": {
+		  "common": 0,
+		  "uncommon": 75,
+		  "rare": 25
+		},
+		"gold": {
+		  "min": 68,
+		  "max": 83
+		}
+	  }
+	}
+  },
   "card_rewards": {
 	"probability_scale": 100,
 	"sources": {
@@ -93,6 +147,12 @@
 		"uses_rare_pity": true,
 		"updates_rare_pity": false,
 		"random_upgrade": false
+	  },
+	  "treasure": {
+		"rarity_percent": {"common": 60, "uncommon": 37, "rare": 3},
+		"uses_rare_pity": true,
+		"updates_rare_pity": true,
+		"random_upgrade": true
 	  },
 	  "misc": {
 		"rarity_percent": {"common": 60, "uncommon": 32, "rare": 8},

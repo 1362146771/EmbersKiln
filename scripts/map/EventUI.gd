@@ -220,6 +220,8 @@ func _confirm_remove(i: int, snapshot: Dictionary) -> void:
 	_apply_effects(effects, ["永久移除卡牌：%s" % CardBrowserScript.card_name(snapshot)])
 
 
+var _result_relic_id: StringName = &""
+
 func _apply_effects(effects: Dictionary, parts: Array[String] = []) -> void:
 	if effects.get("add_card", false):
 		var cd: Dictionary = RewardBuilder.roll_single_card()
@@ -259,6 +261,7 @@ func _apply_effects(effects: Dictionary, parts: Array[String] = []) -> void:
 			RunState.add_relic(rid)
 			var r: RelicData = GameData.get_relic(rid)
 			parts.append("获得遗物 %s" % (r.name if r != null else String(rid)))
+			_result_relic_id = rid
 	if effects.get("add_potion", false):
 		var pid: StringName = RewardBuilder.roll_potion(&"combat", true)
 		if pid != &"" and RunState.add_potion(pid):
@@ -337,6 +340,8 @@ func _show_result(msg: String) -> void:
 	res.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	res.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(res)
+	if _result_relic_id != &"":
+		preload("res://scripts/ui/RelicInfo.gd").attach(res, _result_relic_id)
 
 	var btn := Button.new()
 	btn.text = "继续"

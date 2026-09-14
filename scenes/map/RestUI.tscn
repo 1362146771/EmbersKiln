@@ -47,13 +47,13 @@ theme_override_constants/separation = 22
 
 [node name="Title" type="Label" parent="Dim/Center/MainPanel/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
 theme_override_font_sizes/font_size = 40
 text = "休 息 点"
 
 [node name="Description" type="Label" parent="Dim/Center/MainPanel/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.2, 0.18, 1)
+theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
 theme_override_font_sizes/font_size = 24
 text = "炉火尚温，稍作休整。"
 

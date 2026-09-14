@@ -9,7 +9,7 @@ const ORANGE := Color(0.941, 0.600, 0.482)
 const GREEN := Color(0.365, 0.792, 0.647)
 const RED := Color(0.847, 0.353, 0.188)
 const PURPLE := Color(0.498, 0.467, 0.867)
-const DARK := Color(0.25, 0.20, 0.18)
+const TEXT_COLOR := Color("F2E8D5")
 const AMBER := Color(0.937, 0.624, 0.153)
 const ALTAR := Color(0.45, 0.72, 0.85)
 const BG_DARK := Color(0.12, 0.10, 0.09)
@@ -63,7 +63,7 @@ func _build() -> void:
 			choices.append(choice)
 			var choice_button := Button.new()
 			choice_button.custom_minimum_size = Vector2(600, 150)
-			choice_button.add_theme_color_override("font_color", DARK)
+			choice_button.add_theme_color_override("font_color", TEXT_COLOR)
 			choice_button.text = "%s\n附魔：%s\n%s" % [choice["card"], choice["enchant"], choice["effect"]]
 			choice_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			choice_button.add_theme_font_size_override("font_size", 20)
@@ -100,7 +100,7 @@ func _build() -> void:
 	panel.add_child(v)
 
 	v.add_child(_label("附 魔 祭 坛", 40, ALTAR))
-	v.add_child(_label("选择一张未附魔的卡牌，免费获得一个附魔", 22, DARK))
+	v.add_child(_label("选择一张未附魔的卡牌，免费获得一个附魔", 22, TEXT_COLOR))
 
 	# 预滚每个合法卡牌的附魔，保证「展示的附魔」与「实际套用的附魔」一致。
 	choices = []
@@ -131,7 +131,7 @@ func _build() -> void:
 	for ch in choices:
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(600, 150)
-		b.add_theme_color_override("font_color", DARK)
+		b.add_theme_color_override("font_color", TEXT_COLOR)
 		var effect: String = ch.get("effect", "")
 		b.text = "%s\n附魔：%s\n%s" % [ch["card"], ch["enchant"], effect]
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -192,14 +192,14 @@ func _show_result(ch: Dictionary, applied: bool) -> void:
 	panel.add_child(v)
 
 	v.add_child(_label("附 魔 完 成", 40, ALTAR))
-	v.add_child(_label("卡牌：%s" % ch["card"], 26, DARK))
+	v.add_child(_label("卡牌：%s" % ch["card"], 26, TEXT_COLOR))
 	var red := GameData.get_enchant(StringName(ch["eid"]))
 	if red != null and red.icon != "":
 		v.add_child(GameData.icon_rect(red.icon, 64))
 	v.add_child(_label("获得附魔：%s" % ch["enchant"], 26, GREEN))
 
 	var effect: String = ch.get("effect", "")
-	var el := _label(effect if effect != "" else "（无效果描述）", 22, DARK)
+	var el := _label(effect if effect != "" else "（无效果描述）", 22, TEXT_COLOR)
 	el.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	el.custom_minimum_size = Vector2(0, 200)
 	v.add_child(el)
