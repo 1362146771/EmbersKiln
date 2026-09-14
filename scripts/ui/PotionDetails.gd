@@ -7,7 +7,12 @@ func _ready() -> void:
 
 func present(potion: PotionData, source: Rect2) -> void:
 	$Panel/Content/Title.text = potion.name
-	$Panel/Content/Description.text = potion.description
+	var hint := "拖至玩家使用"
+	if potion.target == &"enemy":
+		hint = "拖至目标敌人使用"
+	elif potion.target == &"all_enemies":
+		hint = "拖至任一存活敌人，作用于全体敌人"
+	$Panel/Content/Description.text = potion.description + "\n\n" + hint
 	$Panel.size = Vector2(320, 0)
 	show()
 	_place.call_deferred(source)

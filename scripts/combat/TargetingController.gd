@@ -87,14 +87,15 @@ func on_card_drag_ended(view: CardView, gpos: Vector2) -> void:
 
 
 ## 注入本次拖拽的合法落点：玩家面板（self/none）+ 各存活敌人面板（enemy/all_enemies）。
-func build_drop_targets() -> void:
+func build_drop_targets(include_discard: bool = true) -> void:
 	var targets := []
-	if ui.discard_pile_view != null and ui._drag_card != null:
+	if include_discard and ui.discard_pile_view != null and ui._drag_card != null:
 		targets.append({"node": ui.discard_pile_view, "types": [ui._drag_card.card_data.target], "index": DropLayer.DISCARD_TARGET})
-	if ui._drag_card != null and not ui.controller.can_play_card(ui._drag_card.card_index):
+	if include_discard and ui._drag_card != null and not ui.controller.can_play_card(ui._drag_card.card_index):
 		ui.drop_layer.set_targets(targets)
 		return
-	targets.append({"node": ui.player_panel, "types": [&"self", &"none"], "index": -1})
+	var player_outline: Control = ui.player_sprite if ui.player_sprite != null and ui.player_sprite.is_visible_in_tree() else ui.player_panel
+	targets.append({"outline_node": player_outline, "node": ui.player_panel, "types": [&"self", &"none"], "index": -1})
 	if ui.player_sprite != null and ui.player_sprite.is_visible_in_tree():
 		targets.append({"node": ui.player_sprite, "types": [&"self", &"none"], "index": -1})
 	for i in ui.controller.enemies.size():
@@ -102,7 +103,7 @@ func build_drop_targets() -> void:
 		if e.is_alive():
 			var p: Panel = ui.unit_panels.get(e)
 			if p != null:
-				targets.append({"node": p, "types": [&"enemy", &"all_enemies"], "index": i})
+				targets.append({"outline_node": p.get_node("Inner/SpriteRect"), "node": p, "types": [&"enemy", &"all_enemies"], "index": i})
 	ui.drop_layer.set_targets(targets)
 
 
@@ -139,6 +140,7 @@ func cast_card(view: CardView, target_index: int) -> void:
 	ui._hand.set_discard_hover(false)
 	ui._casting = true
 	ui._drag_active = false
+	ui.drop_layer.clear()
 	var idx: int = view.card_index
 	var cd: CardData = view.card_data
 
@@ -220,27 +222,12 @@ func on_end_turn() -> void:
 	BattleDirector.run_enemy_turn(ui.controller, ui.player_panel, enemy_getter)
 
 
+## 点击药水只显示说明；使用由 PotionInteraction 的拖拽松手入口处理。
 func on_potion_pressed(i: int) -> void:
-	if ui.card_browser_open():
-		return
-	if ui._casting or ui._drag_active or BattleDirector.input_locked or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
+	if ui.card_browser_open() or ui._casting or ui._drag_active:
 		return
 	if i < 0 or i >= RunState.potions.size():
 		return
-	var pid: StringName = RunState.potions[i]
-	var pd: PotionData = GameData.get_potion(pid)
-	if pd == null:
-		return
-	var target := -1
-	if pd.target == &"enemy":
-		if ui.selected_target >= 0 and ui.selected_target < ui.controller.enemies.size() and ui.controller.enemies[ui.selected_target].is_alive():
-			target = ui.selected_target
-		else:
-			target = ui._first_alive_index()
-	var ok := ui.controller.use_potion(i, target)
-	if ok:
-		ui._log("使用药水：%s" % pd.name)
-		ui.selected_target = -1
-		ui._hud.refresh_potions()
-		ui._hud.refresh_resources()
-		ui._enemy.refresh_enemy()
+	var pd := GameData.get_potion(RunState.potions[i])
+	if pd != null:
+		ui.get_node("PotionDetails").present(pd, ui.potion_icons[i].get_global_rect())

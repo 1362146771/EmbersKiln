@@ -4,7 +4,6 @@ extends PanelContainer
 
 @onready var slots: HBoxContainer = $Row/Scroll/Slots
 @onready var scroll: ScrollContainer = $Row/Scroll
-@onready var count_label: Label = $Row/Caption/Count
 @onready var details: ColorRect = $DetailsLayer/Details
 @onready var detail_name: Label = $DetailsLayer/Details/Margin/Panel/Body/Name
 @onready var detail_description: Label = $DetailsLayer/Details/Margin/Panel/Body/Description
@@ -33,15 +32,12 @@ func refresh() -> void:
 	for child in slots.get_children():
 		slots.remove_child(child)
 		child.queue_free()
-	count_label.text = "%d 件" % RunState.relic_ids.size()
-	if RunState.relic_ids.is_empty():
-		var empty := Label.new()
-		empty.text = "暂无遗物"
-		empty.add_theme_font_size_override("font_size", 16)
-		slots.add_child(empty)
 	for rid in RunState.relic_ids:
 		var relic: RelicData = GameData.get_relic(rid)
 		var button := Button.new()
+		for state in ["normal", "hover", "pressed", "disabled"]:
+			button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		button.name = String(rid)
 		button.custom_minimum_size = Vector2(48, 48)
 		button.size_flags_vertical = Control.SIZE_SHRINK_CENTER

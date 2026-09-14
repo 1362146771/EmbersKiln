@@ -31,8 +31,7 @@ var potion_icons: Array = []    # 与 potion_slots 一一对应：每个槽的�
 @onready var player_hp_bar: ProgressBar = get_node_or_null("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerHpBar")
 @onready var player_block: Label = get_node_or_null("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerBlock")
 @onready var player_energy: Label = get_node_or_null("Safe/Layout/HandArea/EnergyRow/PlayerEnergy")
-@onready var player_kiln: Label = get_node_or_null("Safe/Layout/Bottom/PlayerPanel/Phbox/Prv/PlayerKiln")
-@onready var player_status: Label = get_node_or_null("Safe/Layout/Bottom/PlayerPanel/Phbox/Prv/PlayerStatus")
+@onready var player_status = get_node_or_null("Safe/Layout/Bottom/PlayerPanel/Phbox/Prv/PlayerStatus")
 @onready var player_sprite: TextureRect = get_node_or_null("PlayerSprite")
 @onready var player_panel: Panel = get_node_or_null("Safe/Layout/Bottom/PlayerPanel")
 
@@ -54,7 +53,7 @@ var selected_target: int = -1
 const CardViewScene := preload("res://scenes/combat/CardView.tscn")
 const DropLayerScript := preload("res://scripts/combat/DropLayer.gd")
 const EnemyPanelScene := preload("res://scenes/combat/EnemyPanel.tscn")
-const ENEMY_PANEL_OFFSET_Y := 0   # 正式界面血条从屏幕顶部开始
+const ENEMY_PANEL_OFFSET_Y := 0   # 敌人信息从顶部开始；血条由 EnemyPanel 放在立绘脚下
 const AllyPanelScene := preload("res://scenes/combat/AllyPanel.tscn")
 const RelicBarScene := preload("res://scenes/combat/RelicBar.tscn")
 const DiscardPileScene := preload("res://scenes/combat/DiscardPile.tscn")
@@ -79,14 +78,7 @@ const DARK := Color(0.18, 0.15, 0.13)
 const HILITE := Color(1.0, 0.92, 0.65)
 const PANEL_BG := Color(0.22, 0.19, 0.17, 0.92)
 
-# 玩家动作状态暂时共用同一张正式立绘；状态切换和死亡锁定逻辑保留，便于以后补充独立动作图。
-const PLAYER_POSE_TEX := {
-	&"idle": preload("res://themes/formal/PlayerPortrait.tres"),
-	&"attack": preload("res://themes/formal/PlayerPortrait.tres"),
-	&"hit": preload("res://themes/formal/PlayerPortrait.tres"),
-	&"death": preload("res://themes/formal/PlayerPortrait.tres"),
-}
-const PLAYER_POSE_HOLD := 0.7   # attack / hit 姿态保持秒数
+# 攻击/受击由 PlayerCombatPortrait 的 SpriteFrames 播放完成后恢复静态立绘。
 var _player_dead := false       # true 后立绘锁定 death，不再回 idle
 var _revive_prompt: CanvasLayer
 
@@ -98,7 +90,7 @@ const ALLY_DARK_Z := 50                           # 暗态：在玩家立绘之�
 const ALLY_ACT_Z := 150                           # 行动态：在玩家立绘之上 → 盖住玩家
 const ALLY_DARK_ALPHA := 1.0                      # 常驻亮度：随从已移至屏幕右下，不再躲在玩家立绘后，故常显满亮（§6.1 遮挡暗态已停用）
 const ALLY_BASE_X := 530                          # 随从 chip 起始 X（屏幕右下，与玩家立绘左下对称：右缘贴右边界）
-const ALLY_BASE_Y := 892                          # 药水栏下方，底部留出手牌
+const ALLY_BASE_Y := 892                          # 玩家区域右下，底部留出手牌
 const ALLY_STEP_X := -185                         # 多随从向左排开（从右缘往中心方向，贴近右边界）
 const ALLY_CHIP_W := 180                          # 正式竖屏随从栏宽度
 const ALLY_CHIP_H := 192                          # 紧凑随从栏，底边位于手牌上方
@@ -151,6 +143,9 @@ func _ready() -> void:
 	draw_pile_button.pressed.connect(_open_draw_pile)
 	discard_pile_view.gui_input.connect(_on_discard_pile_gui_input)
 	_connect_signals()
+	var feedback := preload("res://scripts/combat/CombatFeedback.gd").new()
+	feedback.name = "CombatFeedback"
+	add_child(feedback)
 	# P1 场景化：敌人 id 优先取自 RunState（由地图写入），仅在直接启动 CombatPlay.tscn
 	# （编辑器预览 / 旧 verify）且 RunState 未置时回退到默认 pending_enemy_ids。
 	var launch_ids: Array = RunState.pending_combat_enemy_ids if RunState.pending_combat_enemy_ids.size() > 0 else pending_enemy_ids
@@ -187,7 +182,6 @@ func _build_ui() -> void:
 	player_hp_bar = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerHpBar")
 	player_block = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerBlock")
 	player_energy = get_node("Safe/Layout/HandArea/EnergyRow/PlayerEnergy")
-	player_kiln = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Prv/PlayerKiln")
 	player_status = get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Prv/PlayerStatus")
 	player_sprite = get_node("PlayerSprite")
 	player_panel = get_node("Safe/Layout/Bottom/PlayerPanel")
@@ -664,14 +658,14 @@ func _on_combat_end(victory: bool) -> void:
 		result_label.text = ""
 		_log("你倒下了…")
 	# P1 场景化：不再由 MapUI 监听 combat_ended 做叠加层销毁，而是把战果写回 RunState，
-	# 胜利等待死亡演出；最终战败直接回窑口镇。
+	# 胜利等待死亡演出；最终战败进入死亡结算，由玩家确认后返回窑口镇。
 	# combat_ended 仍由 CombatController 发出，SaveManager 的自动存档钩子照常生效。
 	RunState.last_combat_victory = victory
-	RunState.pending_post_combat = victory
+	RunState.pending_post_combat = true
 	if victory:
 		await get_tree().create_timer(VFXSystem.DEATH_DUR + 0.35).timeout
 	# 延迟到本次信号处理结束，避免切场景打断战斗结束回调。
-	get_tree().call_deferred("change_scene_to_file", "res://scenes/map/MapPlay.tscn" if victory else "res://scenes/town/Town.tscn")
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/map/MapPlay.tscn")
 
 
 func _on_combat_death_pending() -> void:
@@ -774,8 +768,8 @@ func _on_damage(_is_player_source: bool, target_index: int, amount: int) -> void
 	VFXSystem.spawn_damage(target, amount, to_player)
 	if to_player:
 		VFXSystem.spawn_hit_shake(player_panel)
-		# 玩家受击：立绘短暂切 hit 姿态
-		_set_player_pose(&"hit", PLAYER_POSE_HOLD)
+		if target_index < 0:
+			_set_player_pose(&"hit")
 
 
 ## 死亡淡出：动画播完才释放面板（解决旧方案野指针）。index 稳定（死亡敌人保留在 enemies 数组）。
@@ -837,24 +831,12 @@ func _on_summon_rejected(cap: int) -> void:
 	_log_view.on_summon_rejected(cap)
 
 
-## 切换玩家立绘姿态。hold_sec > 0 时到时自动回 idle（死亡锁定后忽略一切非 death 切换）。
-func _set_player_pose(pose: StringName, hold_sec: float = 0.0) -> void:
+## 纯视觉状态；重播会重置帧，回合刷新不截断动作，死亡停止并锁定。
+func _set_player_pose(pose: StringName) -> void:
 	if player_sprite == null:
 		return
 	if _player_dead and pose != &"death":
 		return
 	if pose == &"death":
 		_player_dead = true
-	var tex: Texture2D = PLAYER_POSE_TEX.get(pose)
-	if tex == null:
-		return
-	player_sprite.texture = tex
-	if hold_sec > 0.0 and not _player_dead:
-		var tween := create_tween()
-		tween.tween_interval(hold_sec)
-		tween.tween_callback(_pose_back_to_idle)
-
-
-func _pose_back_to_idle() -> void:
-	if not _player_dead:
-		_set_player_pose(&"idle")
+	player_sprite.call("play_pose", pose)

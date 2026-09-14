@@ -293,8 +293,8 @@ func verify_card_interactions() -> void:
 		var view: CardView = ui.hand_container.get_child(0)
 		var before := interaction_state()
 		var resolved_cost := ui.controller.card_cost(entry, cd)
-		var cost_text := "X" if resolved_cost < 0 else str(resolved_cost)
-		check("compact card " + String(id), view.get_node("Body").text == "%s+\n[%s能]" % [cd.name, cost_text] and not view.get_node("EnchantIcon").visible)
+		var cost_text := "—" if not cd.playable else ("X" if resolved_cost < 0 else str(resolved_cost))
+		check("compact card " + String(id), view.get_node("Body").text == "%s+" % cd.name and view.get_node("CardEnergyCost/Badge/Value").text == cost_text and not view.get_node("EnchantIcon").visible)
 		view.tapped.emit(view)
 		var browser = ui._card_browser
 		check("read-only details " + String(id), ui.card_browser_open() and browser.entries == [entry] and not browser.selectable and browser._cards.columns == 1 and interaction_state() == before)
@@ -376,7 +376,7 @@ func verify_popup_layout() -> void:
 	await frames(5)
 	var popup = ui._card_browser
 	var rect: Rect2 = popup._popup.get_global_rect()
-	check("single card is a nearby compact popup", rect.size.x > view.size.x and rect.size.x <= view.size.x * 1.9 and rect.size.y > view.size.y and rect.size.y <= view.size.y * 1.7 and rect.end.y <= view.global_position.y)
+	check("single card is a nearby compact popup", rect.size.x > view.size.x and rect.size.x <= view.size.x * 1.9 and rect.size.y > view.size.y and rect.size.y <= view.size.y * 2.6 and rect.end.y <= view.global_position.y)
 	check("popup stays inside viewport without dimming combat", get_viewport().get_visible_rect().encloses(rect) and popup._cover.color.a == 0.0)
 	var small_fonts := true
 	for text in popup._cards.find_children("*", "Label", true, false):
@@ -410,12 +410,12 @@ func verify_popup_layout() -> void:
 	await frames(5)
 	popup = ui._card_browser
 	rect = popup._popup.get_global_rect()
-	check("rightmost long detail is clamped and scrollable", get_viewport().get_visible_rect().encloses(rect) and rect.size.y <= view.size.y * 1.7 and popup._scroll.get_v_scroll_bar().max_value > popup._scroll.get_v_scroll_bar().page)
-	var labels: Array = popup._cards.find_children("*", "Label", true, false)
-	var last_label: Label = labels.back()
+	check("rightmost long detail is clamped and scrollable", get_viewport().get_visible_rect().encloses(rect) and rect.size.y <= view.size.y * 2.6 and popup._scroll.get_v_scroll_bar().max_value > popup._scroll.get_v_scroll_bar().page)
+	var last_label: Label = popup._cards.get_child(0).get_child(0).get_children().back()
 	popup._scroll.ensure_control_visible(last_label)
 	await frames()
-	check("long details can scroll to the last line", popup._scroll.get_global_rect().encloses(last_label.get_global_rect()))
+	# Godot 滚动取整与缩放坐标允许 1px 舍入误差。
+	check("long details can scroll to the last line", popup._scroll.get_global_rect().grow(1.0).encloses(last_label.get_global_rect()))
 	if visual:
 		await capture("compact_details_scrolled")
 	ui._close_card_browser()

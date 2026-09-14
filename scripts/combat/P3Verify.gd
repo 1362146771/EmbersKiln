@@ -1,5 +1,5 @@
 extends Node
-## P3 内容扩展验证：卡池深化 / 多敌编成表 / Boss 三阶段觉醒。
+## P3 内容扩展验证：卡池深化 / 人数优先的加权遇敌 / Boss 三阶段觉醒。
 ## 全部确定性断言，真实运行（headless）后用 stdout 判定 P3_RESULT。
 
 var results: Array[String] = []
@@ -18,7 +18,7 @@ func _ready() -> void:
 
 	_test_card_pool()
 	_test_boss_phase3()
-	_test_formations()
+	_test_encounter_generation()
 
 	_print_report()
 
@@ -76,14 +76,15 @@ func _test_boss_phase3() -> void:
 	var cc := CombatController.new()
 	add_child(cc)
 	RunState.start_new_run()
+	RunState.current_act = 2
 	RunState.hp = 80
 	cc.start_combat([StringName("chi_the_first")])
 
 	var boss: CombatUnit = cc.enemies[0]
 	check("Boss 初始阶段=0", boss.phase_index == 0, "phase_index=%d" % boss.phase_index)
 
-	# 模拟被打到 25% 以下（scaled hp 150，25%≈37）
-	var scaled_hp: int = GameData.scaled_enemy_hp(150)
+	# 模拟第三幕 Boss 被打到 25% 以下。
+	var scaled_hp: int = boss.max_hp
 	boss.hp = int(floor(scaled_hp * 0.24))
 	# 清掉战斗开局可能抽到的蓄力(charge_next)，避免强制释放招式掩盖阶段计算
 	boss.charge_next = &""
@@ -97,7 +98,7 @@ func _test_boss_phase3() -> void:
 	var p_hp_before: int = boss.hp   # not used; track player
 	var player_hp_before: int = cc.player.hp
 	cc._execute_enemy_intent(boss)
-	var expected := 6 + boss.get_status(&"heat")   # AOE6 + 自身力量加成
+	var expected := int(boss.intent.get("value", 0)) + boss.get_status(&"heat")
 	check("觉醒 AOE 命中玩家（含力量加成=%d）" % expected,
 		cc.player.hp == player_hp_before - expected,
 		"player %d -> %d" % [player_hp_before, cc.player.hp])
@@ -108,78 +109,101 @@ func _test_boss_phase3() -> void:
 
 
 # =====================================================================
-# 4.2 多敌编成表落地
+# 4.2 先抽人数、再按规模权重组队
 # =====================================================================
-func _test_formations() -> void:
-	check("编成表=9 组（P-D 新增按幕编成 F/G/H/I）", GameData.formations.size() == 9, "formations=%d" % GameData.formations.size())
+func _test_encounter_generation() -> void:
+	var before: Dictionary = GameData.encounter_generation.get("before_triple_unlock", {})
+	var after: Dictionary = GameData.encounter_generation.get("after_triple_unlock", {})
+	check("三敌未解锁：单70%/双30%/三0%",
+		int(before.get("1", -1)) == 70 and int(before.get("2", -1)) == 30 and int(before.get("3", -1)) == 0)
+	check("三敌已解锁：单65%/双25%/三10%",
+		int(after.get("1", -1)) == 65 and int(after.get("2", -1)) == 25 and int(after.get("3", -1)) == 10)
+	check("每场强怪上限=1", int(GameData.encounter_generation.get("max_strong_per_encounter", -1)) == 1)
 
-	# 每组敌人必须存在
-	for fm in GameData.formations:
-		var ok := true
-		for eid in fm.get("enemies", []):
-			if GameData.get_enemy(StringName(eid)) == null:
-				ok = false
-		check("编成 %s 敌人引用有效" % fm.get("id", ""), ok, "")
+	var enemy_data_ok := true
+	for enemy in GameData.enemies.values():
+		var expected: Array = _expected_encounter_rule(enemy.encounter_class)
+		if expected.is_empty():
+			enemy_data_ok = false
+			continue
+		for count in range(1, 4):
+			if int(enemy.encounter_weight(count)) != int(expected[count - 1]):
+				enemy_data_ok = false
+		if enemy.max_copies_per_encounter != int(expected[3]):
+			enemy_data_ok = false
+	check("所有敌人的规模权重与重复上限完整", enemy_data_ok)
 
-	# 层门控：D（灰颂者+陶泥团）仅在 floor>=5
-	var early := GameData.get_formations_for_floor(0)
-	var late := GameData.get_formations_for_floor(7)
-	check("教学层不含 D 编成", not _has_formation(early, "D"), "")
-	check("后期层含 D 编成", _has_formation(late, "D"), "")
+	var direct_pick_ok := true
+	for cfg in GameData.act_configs:
+		var normals := MapGenerator._pool_enemies(cfg, &"normal")
+		for requested_count in range(1, 4):
+			for i in 100:
+				var picked := MapGenerator._pick_weighted_enemies(normals, requested_count)
+				if not _encounter_is_valid(picked, requested_count):
+					direct_pick_ok = false
+	check("三幕按目标人数抽怪：人数准确、强怪≤1、重复合法", direct_pick_ok)
 
-	# 编成抽选器返回的 id 必须命中某编成
-	var picked := MapGenerator._weighted_formation(GameData.get_formations_for_floor(7))
-	var valid := false
-	for fm in GameData.get_formations_for_floor(7):
-		if _same_ids(picked, fm.get("enemies", [])):
-			valid = true
-			break
-	check("编成抽选返回合法编成", valid, "picked=%s" % str(picked))
-
-	# 真实地图生成：所有多敌（≥2）战斗节点的敌人组合必须恰好匹配某编成（无随机野怪对）
-	var bad := 0
-	for i in 200:
-		var floors: Array = MapGenerator.generate(GameData.map_config)
-		for row in floors:
-			for node in row:
-				if node is MapNode and node.type == &"combat" and node.enemy_ids.size() >= 2:
-					if not _matches_some_formation(node.enemy_ids):
-						bad += 1
-	check("200 张地图：多敌战斗节点均命中编成", bad == 0, "bad=%d" % bad)
-
-
-func _has_formation(list: Array, fid: String) -> bool:
-	for fm in list:
-		if fm.get("id", "") == fid:
-			return true
-	return false
+	var maps_ok := true
+	var triple_seen_after := [false, false, false]
+	for act_index in GameData.act_configs.size():
+		var cfg: Dictionary = GameData.act_configs[act_index]
+		var unlock := int(cfg.get("triple_enemy_unlock_floor", -1))
+		for i in 200:
+			var floors: Array = MapGenerator.generate(cfg)
+			for row in floors:
+				for node in row:
+					if not (node is MapNode):
+						continue
+					if node.type == &"combat":
+						if not _encounter_is_valid(node.enemy_ids):
+							maps_ok = false
+						if node.floor == 0 and node.enemy_ids.size() != 1:
+							maps_ok = false
+						if node.floor < unlock and node.enemy_ids.size() == 3:
+							maps_ok = false
+						if node.floor >= unlock and node.enemy_ids.size() == 3:
+							triple_seen_after[act_index] = true
+					elif (node.type == &"elite" or node.type == &"boss") and node.enemy_ids.size() != 1:
+						maps_ok = false
+	check("600 张地图：人数门控、强怪上限、精英/Boss 单体均合法", maps_ok)
+	check("三幕解锁后均实际生成过三敌战", triple_seen_after.all(func(v: bool) -> bool: return v), str(triple_seen_after))
 
 
-func _same_ids(a: Array, b: Array) -> bool:
-	if a.size() != b.size():
+func _expected_encounter_rule(encounter_class: StringName) -> Array:
+	match encounter_class:
+		&"strong":
+			return [10, 2, 0, 1]
+		&"medium":
+			return [6, 6, 2, 1]
+		&"weak":
+			return [2, 8, 10, 2]
+		&"solo_only":
+			return [10, 0, 0, 1]
+	return []
+
+
+func _encounter_is_valid(ids: Array, expected_count: int = -1) -> bool:
+	if ids.is_empty() or ids.size() > GameData.max_enemies_per_combat():
 		return false
-	# 不依赖排序（StringName 与 String 数组 sort 顺序可能不一致），改为成员包含比较
-	for x in a:
-		var found := false
-		for y in b:
-			if String(x) == String(y):
-				found = true
-				break
-		if not found:
+	if expected_count >= 0 and ids.size() != expected_count:
+		return false
+	var copies: Dictionary = {}
+	var strong_count := 0
+	for raw_id in ids:
+		var enemy: EnemyData = GameData.get_enemy(StringName(raw_id))
+		if enemy == null or enemy.tier != &"normal":
 			return false
-	return true
-
-
-func _matches_some_formation(ids: Array) -> bool:
-	for fm in GameData.formations:
-		if _same_ids(ids, fm.get("enemies", [])):
-			return true
-	return false
+		copies[enemy.id] = int(copies.get(enemy.id, 0)) + 1
+		if int(copies[enemy.id]) > enemy.max_copies_per_encounter:
+			return false
+		if enemy.encounter_class == &"strong":
+			strong_count += 1
+	return strong_count <= int(GameData.encounter_generation.get("max_strong_per_encounter", 0))
 
 
 func _print_report() -> void:
 	var lines := PackedStringArray()
-	lines.append("===== P3 内容扩展验证（卡池/编成/Boss三阶段）=====")
+	lines.append("===== P3 内容扩展验证（卡池/人数优先遇敌/Boss三阶段）=====")
 	for r in results:
 		lines.append(r)
 	lines.append("总计: %d PASS / %d FAIL" % [pass_count, fail_count])

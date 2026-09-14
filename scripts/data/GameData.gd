@@ -18,6 +18,7 @@ const FILES := {
 	"minions": "minions.json",
 	"meta_progression": "meta_progression.json",
 	"ad_economy": "ad_economy.json",
+	"vfx": "vfx.json",
 }
 
 var cards: Dictionary = {}      # StringName -> CardData
@@ -32,14 +33,15 @@ var card_taxonomy: Dictionary = {} # cards.json 顶层 taxonomy（类型/稀有�
 var legacy_card_id_map: Dictionary = {} # 旧卡池存档迁移：旧 id -> 新战士卡 id
 var map_config: Dictionary = {}
 var act_configs: Array = []      # Array[Dictionary] —— 多幕配置（map.json 的 acts 数组）
+var encounter_generation: Dictionary = {} # 普通战：先抽敌人数，再按敌人规模权重组队
 var balance: Dictionary = {}
 var events: Array = []          # Array[Dictionary] —— 事件表（标题/描述/选项/后果）
-var formations: Array = []      # Array[Dictionary] —— 多敌编成表（见 map.json）
 var meta_progression: Dictionary = {}
 var meta_facilities: Dictionary = {} # StringName -> Dictionary
 var meta_projects: Dictionary = {}   # StringName -> Dictionary
 var meta_pre_run_buffs: Dictionary = {} # StringName -> Dictionary
 var ad_economy: Dictionary = {}
+var vfx: Dictionary = {}
 
 var is_loaded: bool = false
 var load_errors: Array[String] = []
@@ -62,7 +64,7 @@ func load_all() -> bool:
 	card_taxonomy.clear()
 	legacy_card_id_map.clear()
 	events.clear()
-	formations.clear()
+	encounter_generation.clear()
 	meta_progression.clear()
 	meta_facilities.clear()
 	meta_projects.clear()
@@ -114,10 +116,11 @@ func load_all() -> bool:
 	if act_configs.is_empty():
 		act_configs = [map_raw]
 	map_config = act_configs[0]
+	encounter_generation = map_raw.get("encounter_generation", {}).duplicate(true)
 	balance = raw["balance"]
-	formations = map_raw.get("formations", [])
 	meta_progression = raw["meta_progression"]
 	ad_economy = raw["ad_economy"]
+	vfx = raw["vfx"]
 	for facility in meta_progression.get("facilities", []):
 		if facility is Dictionary:
 			var facility_id := StringName(String(facility.get("id", "")))
@@ -216,18 +219,49 @@ func _validate() -> void:
 			load_errors.append("起始牌组引用了不存在的卡牌 %s" % cid)
 	_validate_card_reward_config()
 
-	# 编成表校验：引用的敌人必须存在，且不超过单场上限
+	# 普通战组队配置：先按幕/层数抽人数，再按敌人的对应规模权重抽成员。
 	var max_en := int(balance.get("enemy_scaling", {}).get("max_enemies_per_combat", 2))
-	for fm in formations:
-		if not (fm is Dictionary) or fm.get("id", "") == "":
-			load_errors.append("编成表存在无效条目：%s" % str(fm))
-			continue
-		var fl: Array = fm.get("enemies", [])
-		if fl.size() < 1 or fl.size() > max_en:
-			load_errors.append("编成 %s 敌人数越界(%d，上限%d)" % [fm.get("id", ""), fl.size(), max_en])
-		for eid in fl:
-			if not enemies.has(StringName(eid)):
-				load_errors.append("编成 %s 引用了不存在的敌人 %s" % [fm.get("id", ""), eid])
+	var count_rule_names := ["before_triple_unlock", "after_triple_unlock"]
+	for rule_name in count_rule_names:
+		var count_weights: Dictionary = encounter_generation.get(rule_name, {})
+		var total_weight := 0.0
+		for enemy_count in range(1, max_en + 1):
+			var count_weight := float(count_weights.get(str(enemy_count), -1.0))
+			if count_weight < 0.0:
+				load_errors.append("普通战人数规则 %s 缺少或含负权重：%d" % [rule_name, enemy_count])
+			else:
+				total_weight += count_weight
+		if total_weight <= 0.0:
+			load_errors.append("普通战人数规则 %s 总权重必须大于 0" % rule_name)
+	var capacity_scaling: Dictionary = encounter_generation.get("third_act_deck_capacity_scaling", {})
+	if capacity_scaling.is_empty():
+		load_errors.append("普通战缺少第三幕牌库容量动态多人权重配置")
+	else:
+		var scaling_act := int(capacity_scaling.get("act", 0))
+		var capacity_min := int(capacity_scaling.get("capacity_min", -1))
+		var capacity_max := int(capacity_scaling.get("capacity_max", -1))
+		var max_bonus := float(capacity_scaling.get("max_multi_weight_bonus", -1.0))
+		if scaling_act != 3:
+			load_errors.append("牌库容量动态多人权重仅允许配置在第三幕")
+		if capacity_min < 0 or capacity_max <= capacity_min:
+			load_errors.append("牌库容量动态多人权重区间无效：%d..%d" % [capacity_min, capacity_max])
+		if max_bonus < 0.0 or max_bonus > 1.0:
+			load_errors.append("牌库容量动态多人权重上限必须在 0..1：%f" % max_bonus)
+	var max_strong := int(encounter_generation.get("max_strong_per_encounter", 0))
+	if max_strong < 1:
+		load_errors.append("普通战 max_strong_per_encounter 必须至少为 1")
+	var normal_classes := [&"strong", &"medium", &"weak"]
+	for eid in enemies:
+		var encounter_enemy: EnemyData = enemies[eid]
+		if encounter_enemy.max_copies_per_encounter < 1:
+			load_errors.append("敌人 %s 缺少合法 max_copies_per_encounter" % eid)
+		for enemy_count in range(1, max_en + 1):
+			if not encounter_enemy.encounter_weights.has(str(enemy_count)) or encounter_enemy.encounter_weight(enemy_count) < 0.0:
+				load_errors.append("敌人 %s 缺少或含负的 %d 人战权重" % [eid, enemy_count])
+		if encounter_enemy.tier == &"normal" and not normal_classes.has(encounter_enemy.encounter_class):
+			load_errors.append("普通敌人 %s 的 encounter_class 无效：%s" % [eid, encounter_enemy.encounter_class])
+		if encounter_enemy.tier != &"normal" and encounter_enemy.encounter_class != &"solo_only":
+			load_errors.append("精英/Boss %s 必须标记为 solo_only" % eid)
 
 	if not enemies.values().any(func(e: EnemyData) -> bool: return e.is_boss()):
 		load_errors.append("敌人表中没有 boss 层级的敌人")
@@ -252,6 +286,13 @@ func _validate() -> void:
 				load_errors.append("幕 %s boss_id 不存在：%s" % [act_no, bid])
 			elif not bd.is_boss():
 				load_errors.append("幕 %s boss_id %s 非 boss 层级" % [act_no, bid])
+		var triple_unlock := int(ac.get("triple_enemy_unlock_floor", -1))
+		var floor_count := int(ac.get("floor_count", 0))
+		if triple_unlock < 1 or triple_unlock >= floor_count:
+			load_errors.append("幕 %s 的 triple_enemy_unlock_floor 越界：%d" % [act_no, triple_unlock])
+		var non_boss_stat_mult := float(ac.get("non_boss_stat_mult", -1.0))
+		if non_boss_stat_mult <= 0.0 or non_boss_stat_mult > 1.0:
+			load_errors.append("幕 %s 的 non_boss_stat_mult 必须在 0..1：%f" % [act_no, non_boss_stat_mult])
 
 	# 事件表校验
 	if events.is_empty():
@@ -752,6 +793,8 @@ func icon_path(icon_id: String) -> String:
 		return ""
 	if icon_id.begins_with("res://"):
 		return icon_id
+	if icon_id.begins_with("ICO_Status_"):
+		return "res://art/icons/status/" + icon_id + ".png"
 	if icon_id.begins_with("ICO_Potion_"):
 		return "res://art/icons/potion/" + icon_id + ".png"
 	if icon_id.begins_with("ICO_Enchant_"):
@@ -827,41 +870,26 @@ func get_enemies_by_tier(tier: StringName) -> Array[EnemyData]:
 	return out
 
 
-## 多敌编成表：返回在指定层（含 min/max 区间）可用的编成列表（按 weight 加权）。
-## P-D：带 acts 字段的编成仅在对应幕可用（缺省=全幕可用，向后兼容）。
-## 注意：JSON 数字解析为 float，acts 匹配必须数值比较（Array.has 对 int/float 不宽容）。
-## act<=0 表示未指定幕（旧调用方），跳过幕过滤。
-func get_formations_for_floor(floor: int, act: int = 0) -> Array:
-	var out: Array = []
-	for fm in formations:
-		if not (fm is Dictionary):
-			continue
-		if act > 0:
-			var acts: Array = fm.get("acts", [])
-			if not acts.is_empty():
-				var in_act := false
-				for a in acts:
-					if int(a) == act:
-						in_act = true
-						break
-				if not in_act:
-					continue
-		var lo: int = int(fm.get("min_floor", 0))
-		var hi: int = int(fm.get("max_floor", 999))
-		if floor >= lo and floor <= hi:
-			out.append(fm)
-	return out
-
-
 # ---------- 难度系数（全局 balance.enemy_scaling × 当前幕 act mult，P-D） ----------
 func scaled_enemy_hp(base_hp: int) -> int:
 	var m: float = balance.get("enemy_scaling", {}).get("hp_multiplier", 1.0)
 	return maxi(1, int(round(base_hp * m * _current_act_mult("act_hp_mult"))))
 
 
-func scaled_enemy_damage(base_damage: int) -> int:
+func scaled_enemy_damage(base_damage: int, tier: StringName = &"") -> int:
 	var m: float = balance.get("enemy_scaling", {}).get("damage_multiplier", 1.0)
-	return maxi(0, int(round(base_damage * m * _current_act_mult("act_dmg_mult"))))
+	return maxi(0, int(round(base_damage * m * _current_act_mult("act_dmg_mult") * _non_boss_stat_mult(tier))))
+
+
+## 敌人主动格挡此前不吃幕伤害倍率；仅按新配置削弱第一、三幕非 Boss 的防御数值。
+func scaled_enemy_defense(base_defense: int, tier: StringName = &"") -> int:
+	return maxi(0, int(round(base_defense * _non_boss_stat_mult(tier))))
+
+
+func _non_boss_stat_mult(tier: StringName) -> float:
+	if tier == &"" or tier == &"boss":
+		return 1.0
+	return _current_act_mult("non_boss_stat_mult")
 
 
 ## 当前幕局部乘子（P-D 幕缩放）：仅活跃局中生效，否则恒 1.0（无局/编辑器测试不受影响）。

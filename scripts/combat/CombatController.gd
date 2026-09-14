@@ -14,6 +14,9 @@ extends Node
 
 enum Phase { NONE, PLAYER, ENEMY, ENDED }
 
+## Presentation-only receipt: actual energy paid and unique direct attack targets.
+signal attack_feedback(paid_energy: int, target_indices: Array[int])
+
 ## 玩家持久 Power：kind(StringName) -> 数值
 const POWER_START_TURN_BLOCK := &"power_start_turn_block"
 const POWER_START_TURN_STRENGTH := &"power_start_turn_strength"
@@ -274,6 +277,7 @@ func end_player_turn() -> void:
 func enemy_pre(e: CombatUnit) -> bool:
 	# 随从已在此前行动，破封窗口到此关闭；自然清盾不得取消尚未被打断的喷火。
 	e.block_break_next = &""
+	e.gold_steal_resolved = false
 	e.block = 0
 	_status.process_turn_start_statuses(e)
 	return e.is_alive()
@@ -292,7 +296,23 @@ func enemy_outgoing(e: CombatUnit, base: int) -> int:
 
 ## 单次攻击命中结算（供碰撞卡撞击点回调）。
 func enemy_attack_hit(e: CombatUnit, dmg: int) -> void:
+	if not e.gold_steal_resolved:
+		e.gold_steal_resolved = true
+		enemy_attack_done(e, e.intent)
 	_dmg.enemy_attack_hit(e, dmg)
+
+
+## 一次攻击意图全部命中后结算其附带偷金；多段攻击也只结算一次。
+func enemy_attack_done(e: CombatUnit, mv: Dictionary) -> void:
+	var requested := int(mv.get("gold_steal", 0))
+	if requested <= 0:
+		return
+	var lost := RunState.lose_gold(requested)
+	if lost <= 0:
+		_log("敌人 %s 试图抢钱，但玩家没有金币" % e.unit_name)
+		return
+	e.stolen_gold += lost
+	_log("敌人 %s 抢走 %d 金币" % [e.unit_name, lost])
 
 
 ## AOE 伤害 + 对玩家施加 debuff（如易伤）；友方随从同步受击。
@@ -383,8 +403,16 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 	var repeats := 2 if cd.type == &"attack" and _double_tap_charges > 0 else 1
 	if repeats == 2:
 		_double_tap_charges -= 1
+	var struck_targets: Array[int] = []
+	var collect_hit := func(_source: bool, index: int, _amount: int) -> void:
+		if index >= 0 and not struck_targets.has(index):
+			struck_targets.append(index)
+	if cd.type == &"attack":
+		SignalBus.damage_dealt.connect(collect_hit)
 	for repeat_index in repeats:
 		_resolve_effects(effects, player, primary, false, card)
+	if cd.type == &"attack":
+		SignalBus.damage_dealt.disconnect(collect_hit)
 
 	# Power：每次打出攻击牌获得力量
 	if cd.type == &"attack":
@@ -417,6 +445,8 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 		discard_pile.append(card)
 
 	SignalBus.card_played.emit(cd.id, target_index)
+	if cd.type == &"attack":
+		attack_feedback.emit(x_spent if paid_cost < 0 else paid_cost, struck_targets)
 	_log("出牌：%s（耗能 %s，剩余能量 %d）" % [cd.name, "X=%d" % x_spent if paid_cost < 0 else str(paid_cost), energy])
 	_check_combat_end()
 	return true
@@ -1211,10 +1241,23 @@ func _check_combat_end() -> void:
 	if not any_alive:
 		_combat_active = false
 		phase = Phase.ENDED
+		_refund_stolen_gold_from_defeated_enemies()
 		_apply_relics_after_combat()  # 遗物：战后（余温炭回血）
 		RunState.clear_combat_checkpoint()
 		SignalBus.combat_ended.emit(true)
 		_log("战斗胜利！")
+
+
+func _refund_stolen_gold_from_defeated_enemies() -> void:
+	var refund := 0
+	for e in enemies:
+		if not e.is_alive():
+			refund += e.stolen_gold
+			e.stolen_gold = 0
+	if refund <= 0:
+		return
+	RunState.restore_lost_gold(refund)
+	_log("从被击败的抢劫者身上找回 %d 金币" % refund)
 
 
 func _on_player_death() -> void:

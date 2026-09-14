@@ -232,6 +232,27 @@ func spend_gold(amount: int) -> bool:
 	return true
 
 
+## 战斗中的金币损失：最多扣到当前持有量，并返回实际损失。
+## 不走 spend_gold，避免金币不足时整次失败；不走奖励加成。
+func lose_gold(amount: int) -> int:
+	var lost := mini(gold, maxi(0, amount))
+	if lost <= 0:
+		return 0
+	gold -= lost
+	SignalBus.gold_changed.emit(gold)
+	return lost
+
+
+## 返还此前损失的金币。返还不是战利品，不触发金币奖励加成。
+func restore_lost_gold(amount: int) -> int:
+	var restored := maxi(0, amount)
+	if restored <= 0:
+		return 0
+	gold += restored
+	SignalBus.gold_changed.emit(gold)
+	return restored
+
+
 # ---------- 牌组 ----------
 func add_card(card_id: StringName, upgraded: bool = false) -> bool:
 	if card_id == &"" or GameData.get_card(card_id) == null or not can_add_permanent_card():

@@ -1,0 +1,18 @@
+{
+  "attack": {
+    "heavy_cost_minimum": 2,
+    "slash_duration": 0.28,
+    "portrait_shake_duration": 0.3,
+    "portrait_shake_pixels": 9.0,
+    "screen_shake_pixels": 6.0
+  },
+  "low_health": {
+    "threshold_ratio": 0.15,
+    "breath_seconds": 1.8,
+    "fade_seconds": 0.3,
+    "minimum_opacity": 0.25,
+    "maximum_opacity": 0.6,
+    "edge_width": 0.19,
+    "color": "#9b101d"
+  }
+}

@@ -13,20 +13,59 @@ func _ready() -> void:
 	add_child(ui)
 	await settle()
 	check(ui.player_hp_bar.get_theme_stylebox("fill") is StyleBoxTexture, "authored player HP texture")
-	check(ui.get_node("EnergyBar").value == ui.controller.energy, "energy fill uses live energy")
+	check(not ui.has_node("EnergyBar"), "legacy energy bar removed")
+	check(ui.has_node("Safe/Layout/HandArea/EnergyRow/EnergyBadge"), "ceramic energy badge is present")
+	var energy_badge: Control = ui.get_node("Safe/Layout/HandArea/EnergyRow/EnergyBadge")
+	check(ui.player_energy.text == "%d" % ui.controller.energy, "energy badge shows current energy only")
+	ui._on_energy(0, ui.controller.max_energy)
+	check(ui.player_energy.text == "0" and ui.player_energy.get_theme_color("font_color") == Color("7a1f1f"), "zero energy uses deep red number")
+	await capture("energy_zero")
+	ui._on_energy(ui.controller.max_energy, ui.controller.max_energy)
+	check(ui.player_energy.text == "%d" % ui.controller.max_energy and ui.player_energy.get_theme_color("font_color") == ui.CREAM, "positive energy restores light number")
 	check(ui.hand_container.get_global_rect().position.y >= 1080, "hand occupies bottom strip")
 	check(ui.end_turn_btn.get_global_rect().end.x <= 721, "end turn stays inside viewport")
 	var potions: Control = ui.get_node("Safe/Layout/PotionBar")
-	check(potions.get_global_rect().position.x >= 460 and potions.get_global_rect().end.x <= 720, "potions occupy upper right player area")
-	check(ui.get_node("PlayerSprite").position.y <= 784, "player portrait meets state frame")
+	var relics: Control = ui.get_node("Safe/Layout/TopRow/RelicBar")
+	check(potions.get_global_rect().position.y <= 4 and potions.get_global_rect().end.y <= 100, "potions occupy top frame")
+	check(relics.get_global_rect().position.y <= 8 and relics.get_global_rect().end.y <= 100, "relics occupy top frame")
+	check(ui.player_sprite.position.y >= ui.player_panel.get_global_rect().end.y
+		and ui.player_sprite.get_global_rect().end.y <= ui.hand_container.get_global_rect().position.y,
+		"player portrait fits between state frame and hand")
+	var player_shield: Control = ui.get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerBlockShield")
+	check(energy_badge.get_global_rect().position.x < player_shield.get_global_rect().position.x
+		and player_shield.get_global_rect().position.x < ui.player_hp_bar.get_global_rect().position.x
+		and absf(energy_badge.get_global_rect().get_center().y - ui.player_hp_bar.get_global_rect().get_center().y) <= 2.0,
+		"energy badge, block shield and HP bar share one left-to-right row")
+	check(player_shield.get_global_rect().position.x < ui.player_hp_bar.get_global_rect().position.x
+		and player_shield.get_global_rect().end.x - ui.player_hp_bar.get_global_rect().position.x >= 16.0, "player shield visibly overlaps HP bar left end")
+	check(ui.player_block.text == "%d" % ui.controller.player.block, "player block value renders on shield")
+	var original_player_block := ui.controller.player.block
+	ui.controller.player.block = 13
+	ui._on_pblock(13)
+	check(ui.player_block.text == "13", "player shield refreshes live block value")
+	for panel in ui.unit_panels.values():
+		var sprite_rect: Control = panel.get_node("Inner/SpriteRect")
+		var hp_bar: Control = panel.get_node("Inner/HpBar")
+		var block_shield: Control = panel.get_node("Inner/BlockShield")
+		check(hp_bar.get_global_rect().position.y >= sprite_rect.get_global_rect().end.y, "enemy HP bar sits below monster")
+		check(block_shield.get_global_rect().position.x < hp_bar.get_global_rect().position.x
+			and block_shield.get_global_rect().end.x - hp_bar.get_global_rect().position.x >= 16.0, "enemy shield visibly overlaps HP bar left end")
+		check(panel.get_node("Inner/BlockShield/BlockText").text == "0", "enemy block value renders on shield")
 	ui.controller._summon_minion(&"emberhound", 1)
 	await get_tree().create_timer(0.45).timeout
 	await settle()
 	for panel in ui.ally_panels.values():
-		check(panel.get_global_rect().position.y >= potions.get_global_rect().end.y, "ally below potion shelf")
+		check(panel.get_global_rect().position.y >= potions.get_global_rect().end.y, "ally remains below top inventory frame")
 		check(panel.get_global_rect().end.x <= 720, "ally stays inside viewport")
 		check(panel.get_global_rect().end.y <= 1085, "ally does not cover hand")
+	var preview_enemy: CombatUnit = ui.controller.enemies[0]
+	preview_enemy.block = 8
+	ui.unit_panels[preview_enemy].build(preview_enemy, 0, false, 1, ui.controller)
+	check(ui.unit_panels[preview_enemy].get_node("Inner/BlockShield/BlockText").text == "8", "enemy shield refreshes live block value")
 	await capture("single")
+	preview_enemy.block = 0
+	ui.controller.player.block = original_player_block
+	ui._on_pblock(original_player_block)
 	var source: CardView = ui.hand_container.get_child(0)
 	var before := ui.controller.hand.size()
 	ui._targeting.on_card_drag_started(source)
@@ -70,10 +109,12 @@ func _ready() -> void:
 	ui.pending_enemy_ids = ["claylump", "claylump", "claylump"]
 	add_child(ui)
 	await settle()
-	check(ui.has_node("EnergyBar") and ui.unit_panels.size() == 3, "new entry point shares formal scene")
+	check(ui.has_node("Safe/Layout/HandArea/EnergyRow/EnergyBadge") and ui.unit_panels.size() == 3, "new entry point shares formal scene")
 	for panel in ui.unit_panels.values():
 		check(panel.get_global_rect().end.x <= 721, "multi enemy panel within screen")
 		check(panel.get_node("Inner/HpBar").size.x > 0, "multi enemy HP bar retains positive width")
+		check(panel.get_node("Inner/HpBar").get_global_rect().position.y >= panel.get_node("Inner/SpriteRect").get_global_rect().end.y, "multi enemy HP bar remains below monster")
+		check(panel.get_node("Inner/HpText").get_minimum_size().x <= panel.get_node("Inner/HpText").size.x, "multi enemy HP text fits bar")
 	await capture("multi")
 	remove_child(ui)
 	ui.queue_free()

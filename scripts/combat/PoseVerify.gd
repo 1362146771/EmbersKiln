@@ -1,95 +1,104 @@
 extends Node
-## PoseVerify：验证玩家动作状态切换。当前四种状态共用同一张正式立绘，
-## 状态计时和死亡锁定逻辑继续保留，方便以后直接补入独立动作图。
-## 输出 POSE_RESULT:PASS / FAIL
+## Production player animation events and interruption regression.
+var failures := 0
+var checks := 0
 
-const IDLE_TEX := preload("res://art/player/SPR_Player_Tannaro.png")
-const ATTACK_TEX := preload("res://art/player/SPR_Player_Tannaro.png")
-const HIT_TEX := preload("res://art/player/SPR_Player_Tannaro.png")
-const DEATH_TEX := preload("res://art/player/SPR_Player_Tannaro.png")
-
-var results: Array[String] = []
-var pass_count := 0
-var fail_count := 0
-
+func check(condition: bool, message: String) -> void:
+	checks += 1
+	if not condition:
+		failures += 1
+	print("[PASS] " if condition else "[FAIL] ", message)
 
 func _ready() -> void:
+	ProfileManager.autosave_enabled = false
+	SaveManager.runtime_save_path = "res://Temp/pose_verify_save.json"
+	RunState.start_new_run()
+	RunState.pre_run_preparation_resolved = true
+	var ui := preload("res://scenes/combat/CombatPlay.tscn").instantiate() as CombatUI
+	add_child(ui)
 	await get_tree().process_frame
-	if not GameData.is_loaded:
-		GameData.load_all()
-	if not RunState.is_active:
-		RunState.start_new_run()
-	await run()
-	_print_report()
-
-
-func check(name: String, cond: bool, detail: String = "") -> void:
-	if cond:
-		pass_count += 1
-		results.append("[PASS] " + name)
-	else:
-		fail_count += 1
-		results.append("[FAIL] " + name + "  " + detail)
-
-
-func run() -> void:
-	var cui = preload("res://scripts/combat/CombatUI.gd").new()
-	cui.pending_enemy_ids = ["claylump"]
-	add_child(cui)
-	# 等 CombatUI._ready + 首帧构建完成
-	await get_tree().process_frame
-	await get_tree().process_frame
-
-	# 1) 开局加载共用正式立绘
-	check("开局加载共用正式立绘", cui.player_sprite != null and cui.player_sprite.texture == IDLE_TEX,
-		"tex=%s" % (cui.player_sprite.texture.resource_path if cui.player_sprite != null and cui.player_sprite.texture != null else "null"))
-
-	# 2) 攻击状态保持共用立绘，计时结束后仍可正常使用
-	var atk_id := _find_attack_card()
-	check("牌组数据中存在攻击牌", atk_id != &"", "atk_id=%s" % atk_id)
-	SignalBus.card_played.emit(atk_id, 0)
-	await get_tree().process_frame
-	check("攻击状态使用共用立绘", cui.player_sprite.texture == ATTACK_TEX and not cui._player_dead,
-		"tex=%s" % cui.player_sprite.texture.resource_path)
-	await get_tree().create_timer(0.9).timeout
-	check("攻击状态计时结束仍使用共用立绘", cui.player_sprite.texture == IDLE_TEX and not cui._player_dead,
-		"tex=%s" % cui.player_sprite.texture.resource_path)
-
-	# 3) 受击状态使用共用立绘
+	var portrait := ui.player_sprite
+	var body := portrait.get_node("BodyAnimation") as AnimatedSprite2D
+	check(not body.visible and portrait.self_modulate.a == 1.0, "idle uses original portrait")
+	check(body.material is ShaderMaterial and portrait.material == null, "animation tone correction leaves original portrait unchanged")
+	for action in [&"attack", &"hurt"]:
+		var frames := body.sprite_frames
+		var expected_count := 5 if action == &"attack" else 30
+		check(frames.get_frame_count(action) == expected_count and frames.get_animation_speed(action) == 30.0 and not frames.get_animation_loop(action), "%s: %d frames, 30 fps timeline, one shot" % [action, expected_count])
+		var duration := 0.0
+		for i in range(frames.get_frame_count(action)):
+			duration += frames.get_frame_duration(action, i) / frames.get_animation_speed(action)
+		check(is_equal_approx(duration, 1.0), "%s lasts one second" % action)
+		var contained := true
+		var native_hd := true
+		for i in range(frames.get_frame_count(action)):
+			native_hd = native_hd and frames.get_frame_texture(action, i).get_size() == Vector2(768, 768)
+			var bounds := frames.get_frame_texture(action, i).get_image().get_used_rect()
+			var upper := body.to_global(Vector2(bounds.position))
+			var lower := body.to_global(Vector2(bounds.end))
+			contained = contained and upper.x >= 0 and lower.x <= 720 and upper.y >= ui.player_panel.get_global_rect().end.y and lower.y <= ui.hand_container.get_global_rect().position.y
+		check(contained, "%s: all frames fit between status panel and hand" % action)
+		check(native_hd, "%s: all runtime frames use HD 768px textures" % action)
+	var texture_scale := minf(portrait.size.x / portrait.texture.get_width(), portrait.size.y / portrait.texture.get_height())
+	var inset := (portrait.size - portrait.texture.get_size() * texture_scale) * 0.5
+	var static_foot: Vector2 = portrait.get_global_transform() * (inset + portrait.idle_right_foot * texture_scale)
+	check(body.to_global(portrait.frame_right_foot).distance_to(static_foot) < 0.01, "animation right foot matches static portrait contact point")
+	var attack_id := &"strike"
+	for id in GameData.cards:
+		if GameData.get_card(id).type == &"attack":
+			attack_id = id
+			break
+	SignalBus.card_played.emit(attack_id, 0)
+	check(body.visible and body.animation == &"attack" and body.is_playing(), "attack card starts animation")
+	await get_tree().create_timer(0.4).timeout
+	check(body.frame > 0, "attack advances frames")
+	SignalBus.card_played.emit(attack_id, 0)
+	check(body.frame == 0, "repeated attack restarts at frame zero")
+	await get_tree().create_timer(0.75).timeout
+	check(body.visible and body.is_playing(), "old pose timer cannot truncate repeated attack")
+	await get_tree().create_timer(0.35).timeout
+	check(not body.visible and portrait.self_modulate.a == 1.0, "attack completion restores idle")
+	SignalBus.card_played.emit(&"defend", -1)
+	check(not body.visible, "skill card does not swing axe")
+	SignalBus.damage_dealt.emit(false, -1, 0)
+	check(not body.visible, "zero damage does not trigger hurt")
+	SignalBus.card_played.emit(attack_id, 0)
 	SignalBus.damage_dealt.emit(false, -1, 5)
-	await get_tree().process_frame
-	check("受击状态使用共用立绘", cui.player_sprite.texture == HIT_TEX and not cui._player_dead,
-		"tex=%s" % cui.player_sprite.texture.resource_path)
-	await get_tree().create_timer(0.9).timeout
-
-	# 4) 玩家死亡后仍锁定状态，立绘继续共用
+	check(body.animation == &"hurt" and body.visible, "player damage interrupts attack with hurt")
+	await get_tree().create_timer(0.35).timeout
+	SignalBus.damage_dealt.emit(false, -1, 5)
+	check(body.frame == 0, "consecutive damage restarts hurt")
+	ui._on_turn_started(true)
+	check(body.is_playing() and body.visible, "turn refresh preserves hurt animation")
+	await get_tree().create_timer(1.1).timeout
+	check(not body.visible, "hurt completion restores idle")
+	await capture(ui, body, &"attack", 2)
+	await capture(ui, body, &"hit", 8)
+	await capture(ui, body, &"idle", 0)
 	SignalBus.unit_died.emit(true, -1)
+	SignalBus.card_played.emit(attack_id, 0)
+	SignalBus.damage_dealt.emit(false, -1, 5)
+	ui._on_turn_started(true)
+	check(ui._player_dead and not body.visible and not body.is_playing(), "death stops animation and rejects later poses")
+	ui.queue_free()
 	await get_tree().process_frame
-	check("死亡状态使用共用立绘并锁定", cui.player_sprite.texture == DEATH_TEX and cui._player_dead,
-		"tex=%s" % cui.player_sprite.texture.resource_path)
-	cui._set_player_pose(&"attack", 0.1)
+	var legacy := CombatUI.new()
+	add_child(legacy)
 	await get_tree().process_frame
-	check("死亡锁定：切 attack 被忽略", cui.player_sprite.texture == DEATH_TEX and cui._player_dead,
-		"tex=%s" % cui.player_sprite.texture.resource_path)
-	cui._on_turn_started(true)
+	legacy._set_player_pose(&"attack")
+	check(legacy.player_sprite.get_node("BodyAnimation").is_playing(), "CombatUI.new reuses animated scene")
+	legacy.queue_free()
 	await get_tree().process_frame
-	check("死亡锁定：回合开始不解锁", cui.player_sprite.texture == DEATH_TEX and cui._player_dead,
-		"tex=%s" % cui.player_sprite.texture.resource_path)
+	print("POSE_RESULT:%s (%d checks, %d failures)" % ["PASS" if failures == 0 else "FAIL", checks, failures])
+	get_tree().quit(0 if failures == 0 else 1)
 
-	cui.queue_free()
-
-
-func _find_attack_card() -> StringName:
-	for cid in GameData.cards.keys():
-		var cd: CardData = GameData.get_card(cid)
-		if cd != null and cd.type == &"attack":
-			return cid
-	return &""
-
-
-func _print_report() -> void:
-	for r in results:
-		print(r)
-	var verdict := "PASS" if fail_count == 0 else "FAIL"
-	print("POSE_RESULT:%s  (%d 项通过, %d 项失败)" % [verdict, pass_count, fail_count])
-	get_tree().quit(0 if fail_count == 0 else 1)
+func capture(ui: CombatUI, body: AnimatedSprite2D, pose: StringName, frame: int) -> void:
+	if not OS.get_cmdline_user_args().has("--visual"):
+		return
+	ui._set_player_pose(pose)
+	body.pause()
+	body.frame = frame
+	await RenderingServer.frame_post_draw
+	var path := "res://Temp/player_%s_integrated.png" % pose
+	get_viewport().get_texture().get_image().save_png(path)
+	print("CAPTURE: ", path)

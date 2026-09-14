@@ -1,0 +1,25 @@
+[gd_scene format=3]
+[sub_resource type="StyleBoxEmpty" id="Empty"]
+[node name="PotionSlot" type="Control"]
+custom_minimum_size = Vector2(72, 96)
+layout_mode = 2
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 20.0
+offset_right = 56.0
+offset_bottom = 60.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="SlotButton" type="Button" parent="."]
+layout_mode = 0
+offset_top = 66.0
+offset_right = 72.0
+offset_bottom = 94.0
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("Empty")
+theme_override_styles/hover = SubResource("Empty")
+theme_override_styles/pressed = SubResource("Empty")
+theme_override_styles/disabled = SubResource("Empty")
+disabled = true

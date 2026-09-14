@@ -7,17 +7,21 @@
 [ext_resource type="PackedScene" path="res://scenes/combat/DrawPile.tscn" id="5_draw"]
 [ext_resource type="Texture2D" uid="uid://c6abox28t7283" path="res://art/ui/formal/bd_battle_shuXinJinDu.png" id="barbg"]
 [ext_resource type="Texture2D" uid="uid://b0i4w6lkhicfw" path="res://art/ui/formal/bgIMG_battle.png" id="battle"]
-[ext_resource type="Texture2D" uid="uid://c52caygyq25cl" path="res://art/ui/formal/icon_battle_yaoShui_empty.png" id="empty"]
 [ext_resource type="Texture2D" uid="uid://bgmf5bpmlvxwx" path="res://art/ui/formal/btn_battle_jieShuNormal.png" id="end"]
 [ext_resource type="Texture2D" uid="uid://chhupvtj4jp0o" path="res://art/ui/formal/btn_battle_jieShuDown.png" id="enddown"]
-[ext_resource type="Texture2D" uid="uid://bk5426xhq62wg" path="res://art/ui/formal/nengliang_jindu.png" id="energy"]
+[ext_resource type="Texture2D" uid="uid://dbtkkdbuedjiu" path="res://art/ui/formal/icon_battle_energy_hex.png" id="energy_badge"]
 [ext_resource type="Texture2D" uid="uid://jivaohoskdjn" path="res://art/backgrounds/BG_Combat_KilnMouth.png" id="formal_bg"]
 [ext_resource type="Texture2D" uid="uid://bhtiib2pd2y2h" path="res://art/ui/formal/bd_battle_hpJinDu.png" id="hp"]
 [ext_resource type="Texture2D" uid="uid://6tww78we75iw" path="res://art/ui/formal/bd_battle_shuXin.png" id="hud"]
+[ext_resource type="SpriteFrames" path="res://art/player/animations/PlayerCombatFrames.tres" id="player_animation_frames"]
+[ext_resource type="Script" uid="uid://dlexn7swd2s7i" path="res://scripts/combat/PlayerCombatPortrait.gd" id="player_animation_script"]
 [ext_resource type="Texture2D" uid="uid://bgqpiu5d3eisg" path="res://art/ui/formal/bd_bettle_liHuiBehind.png" id="portrait"]
-[ext_resource type="Texture2D" uid="uid://08r5ighk7e14" path="res://art/ui/formal/bd_battle_yaoShui.png" id="potions"]
+[ext_resource type="Texture2D" uid="uid://bcwpeywyoo3ut" path="res://art/ui/formal/bd_battle_potion_sockets.png" id="potions"]
 [ext_resource type="PackedScene" path="res://scenes/ui/PotionDetails.tscn" id="potion_details"]
+[ext_resource type="PackedScene" path="res://scenes/combat/PotionSlot.tscn" id="potion_slot"]
 [ext_resource type="Texture2D" uid="uid://c1dd0td5gvuyu" path="res://art/enemies/SPR_Enemy_Claylump.png" id="preview_enemy"]
+[ext_resource type="Texture2D" uid="uid://dk848px13q54h" path="res://art/ui/formal/icon_battle_block_shield.png" id="shield"]
+[ext_resource type="PackedScene" path="res://scenes/combat/StatusIconBar.tscn" id="status_bar"]
 
 [sub_resource type="StyleBoxEmpty" id="Empty"]
 
@@ -38,11 +42,6 @@ texture_margin_right = 12.0
 
 [sub_resource type="StyleBoxTexture" id="FormalEndDown"]
 texture = ExtResource("enddown")
-texture_margin_left = 12.0
-texture_margin_right = 12.0
-
-[sub_resource type="StyleBoxTexture" id="FormalEnergy"]
-texture = ExtResource("energy")
 texture_margin_left = 12.0
 texture_margin_right = 12.0
 
@@ -91,28 +90,10 @@ anchors_preset = 0
 offset_right = 720.0
 offset_bottom = 1280.0
 
-[node name="TopRow" type="HBoxContainer" parent="Safe/Layout" unique_id=1828416070]
-layout_mode = 0
-offset_left = 466.0
-offset_top = 976.0
-offset_right = 714.0
-offset_bottom = 1040.0
-
-[node name="RelicBar" parent="Safe/Layout/TopRow" unique_id=902753411 instance=ExtResource("3_relics")]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
-
-[node name="Spacer" type="Control" parent="Safe/Layout/TopRow" unique_id=950670997]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-
 [node name="EnemyArea" type="HBoxContainer" parent="Safe/Layout" unique_id=892783163]
 layout_mode = 0
 offset_right = 720.0
-offset_bottom = 648.0
+offset_bottom = 644.0
 size_flags_horizontal = 3
 size_flags_vertical = 16
 size_flags_stretch_ratio = 3.0
@@ -153,20 +134,29 @@ size_flags_stretch_ratio = 2.6
 [node name="EnergyRow" type="Control" parent="Safe/Layout/HandArea" unique_id=1711211615]
 anchors_preset = 0
 offset_left = 8.0
-offset_top = -389.0
-offset_right = 478.0
+offset_top = -453.0
+offset_right = 104.0
 offset_bottom = -357.0
 
-[node name="PlayerEnergy" type="Label" parent="Safe/Layout/HandArea/EnergyRow" unique_id=1718488726]
+[node name="EnergyBadge" type="TextureRect" parent="Safe/Layout/HandArea/EnergyRow" unique_id=895141832]
 layout_mode = 0
-offset_right = 470.0
-offset_bottom = 32.0
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 22
-text = "能量 3 / 3"
+offset_right = 96.0
+offset_bottom = 96.0
+mouse_filter = 2
+texture = ExtResource("energy_badge")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlayerEnergy" type="Label" parent="Safe/Layout/HandArea/EnergyRow" unique_id=1718488726]
+z_index = 1
+layout_mode = 0
+offset_right = 96.0
+offset_bottom = 96.0
+theme_override_colors/font_color = Color(0.984, 0.953, 0.894, 1)
+theme_override_colors/font_outline_color = Color(0.188, 0.078, 0.047, 1)
+theme_override_constants/outline_size = 7
+theme_override_font_sizes/font_size = 38
+text = "3"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -174,9 +164,9 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(0, 0)
 layout_mode = 0
 offset_left = 566.0
-offset_top = 349.0
+offset_top = 413.0
 offset_right = 708.0
-offset_bottom = 387.0
+offset_bottom = 451.0
 
 [node name="HandRow" type="HBoxContainer" parent="Safe/Layout/HandArea" unique_id=1793446182]
 layout_mode = 0
@@ -202,91 +192,26 @@ layout_mode = 2
 
 [node name="PotionBar" type="HBoxContainer" parent="Safe/Layout" unique_id=98016797]
 layout_mode = 0
-offset_left = 468.0
-offset_top = 790.0
-offset_right = 712.0
-offset_bottom = 892.0
+offset_left = 8.0
+offset_top = 2.0
+offset_right = 252.0
+offset_bottom = 98.0
 size_flags_horizontal = 3
 size_flags_vertical = 16
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="SlotBox0" type="VBoxContainer" parent="Safe/Layout/PotionBar" unique_id=1803131878]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_constants/separation = 2
-alignment = 1
+[node name="SlotBox0" parent="Safe/Layout/PotionBar" unique_id=1378126177 instance=ExtResource("potion_slot")]
 
-[node name="Icon" type="TextureRect" parent="Safe/Layout/PotionBar/SlotBox0" unique_id=1022248287]
-custom_minimum_size = Vector2(67, 66)
-layout_mode = 2
-size_flags_horizontal = 16
-size_flags_vertical = 16
-mouse_filter = 2
-texture = ExtResource("empty")
-expand_mode = 1
-stretch_mode = 3
+[node name="SlotBox1" parent="Safe/Layout/PotionBar" unique_id=1008720844 instance=ExtResource("potion_slot")]
 
-[node name="SlotButton" type="Button" parent="Safe/Layout/PotionBar/SlotBox0" unique_id=562297214]
-custom_minimum_size = Vector2(72, 28)
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("Empty")
-theme_override_styles/disabled = SubResource("Empty")
-text = "空"
-
-[node name="SlotBox1" type="VBoxContainer" parent="Safe/Layout/PotionBar" unique_id=1627586637]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_constants/separation = 2
-alignment = 1
-
-[node name="Icon" type="TextureRect" parent="Safe/Layout/PotionBar/SlotBox1" unique_id=83656322]
-custom_minimum_size = Vector2(67, 66)
-layout_mode = 2
-size_flags_horizontal = 16
-size_flags_vertical = 16
-mouse_filter = 2
-texture = ExtResource("empty")
-expand_mode = 1
-stretch_mode = 3
-
-[node name="SlotButton" type="Button" parent="Safe/Layout/PotionBar/SlotBox1" unique_id=780742991]
-custom_minimum_size = Vector2(72, 28)
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("Empty")
-theme_override_styles/disabled = SubResource("Empty")
-text = "空"
-
-[node name="SlotBox2" type="VBoxContainer" parent="Safe/Layout/PotionBar" unique_id=1202248577]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_constants/separation = 2
-alignment = 1
-
-[node name="Icon" type="TextureRect" parent="Safe/Layout/PotionBar/SlotBox2" unique_id=136686402]
-custom_minimum_size = Vector2(67, 66)
-layout_mode = 2
-size_flags_horizontal = 16
-size_flags_vertical = 16
-mouse_filter = 2
-texture = ExtResource("empty")
-expand_mode = 1
-stretch_mode = 3
-
-[node name="SlotButton" type="Button" parent="Safe/Layout/PotionBar/SlotBox2" unique_id=708734402]
-custom_minimum_size = Vector2(72, 28)
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("Empty")
-theme_override_styles/disabled = SubResource("Empty")
-text = "空"
+[node name="SlotBox2" parent="Safe/Layout/PotionBar" unique_id=2103078321 instance=ExtResource("potion_slot")]
 
 [node name="Bottom" type="Control" parent="Safe/Layout" unique_id=116092309]
 anchors_preset = 0
-offset_top = 650.0
-offset_right = 720.0
+offset_left = 6.0
+offset_top = 635.0
+offset_right = 722.0
 offset_bottom = 784.0
 size_flags_horizontal = 3
 
@@ -317,6 +242,7 @@ size_flags_vertical = 3
 [node name="PlayerHp" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Plv" unique_id=880936849]
 z_index = 1
 layout_mode = 0
+offset_left = 142.0
 offset_right = 470.0
 offset_bottom = 32.0
 theme_override_colors/font_color = Color(0.984, 0.953, 0.894, 1)
@@ -329,6 +255,7 @@ vertical_alignment = 1
 
 [node name="PlayerHpBar" type="ProgressBar" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Plv" unique_id=1471008257]
 layout_mode = 0
+offset_left = 142.0
 offset_right = 470.0
 offset_bottom = 32.0
 size_flags_horizontal = 3
@@ -339,15 +266,30 @@ max_value = 80.0
 value = 80.0
 show_percentage = false
 
-[node name="PlayerBlock" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Plv" unique_id=47909916]
+[node name="PlayerBlockShield" type="TextureRect" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Plv" unique_id=15472340]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 67.0
-offset_right = 134.0
-offset_bottom = 94.0
-theme_override_colors/font_color = Color(0.365, 0.792, 0.647, 1)
-theme_override_font_sizes/font_size = 19
-text = "格挡 0"
+offset_left = 92.0
+offset_top = -17.0
+offset_right = 160.0
+offset_bottom = 49.0
+mouse_filter = 2
+texture = ExtResource("shield")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlayerBlock" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Plv" unique_id=47909916]
+z_index = 1
+layout_mode = 0
+offset_left = 92.0
+offset_right = 160.0
+offset_bottom = 32.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Prv" type="Control" parent="Safe/Layout/Bottom/PlayerPanel/Phbox" unique_id=1222436232]
 anchors_preset = 0
@@ -356,31 +298,18 @@ offset_bottom = 110.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="PlayerKiln" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Prv" unique_id=1288819419]
-layout_mode = 0
+[node name="PlayerStatus" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Prv" unique_id=1090941281 instance=ExtResource("status_bar")]
+z_index = 4
 offset_left = 135.0
-offset_top = 67.0
-offset_right = 305.0
-offset_bottom = 94.0
-theme_override_colors/font_color = Color(0.847, 0.353, 0.188, 1)
-theme_override_font_sizes/font_size = 19
-text = "窑温 0 / 5"
-
-[node name="PlayerStatus" type="Label" parent="Safe/Layout/Bottom/PlayerPanel/Phbox/Prv" unique_id=1621538643]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 94.0
-offset_right = 470.0
-offset_bottom = 121.0
-theme_override_colors/font_color = Color(0.498, 0.467, 0.867, 1)
-theme_override_font_sizes/font_size = 15
-autowrap_mode = 3
+offset_top = 40.0
+offset_right = 465.0
+offset_bottom = 112.0
 
 [node name="EndTurnBtn" type="Button" parent="Safe/Layout/Bottom" unique_id=1610468733]
 layout_mode = 0
-offset_left = 491.0
-offset_top = 15.0
-offset_right = 714.0
+offset_left = 470.0
+offset_top = 19.0
+offset_right = 705.0
 offset_bottom = 118.0
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -393,17 +322,42 @@ theme_override_styles/hover = SubResource("FormalEndDown")
 theme_override_styles/disabled = SubResource("FormalEnd")
 text = "结束回合"
 
+[node name="TopRow" type="HBoxContainer" parent="Safe/Layout" unique_id=1828416070]
+layout_mode = 0
+offset_left = 258.0
+offset_top = 8.0
+offset_right = 630.0
+offset_bottom = 92.0
+
+[node name="RelicBar" parent="Safe/Layout/TopRow" unique_id=902753411 instance=ExtResource("3_relics")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="Spacer" type="Control" parent="Safe/Layout/TopRow" unique_id=950670997]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
 [node name="PlayerSprite" type="TextureRect" parent="." unique_id=1764906718]
 z_index = -50
 layout_mode = 0
-offset_left = -6.0
-offset_top = 751.0
-offset_right = 296.54544
-offset_bottom = 1524.8182
+offset_left = 32.0
+offset_top = 773.0
+offset_right = 240.0
+offset_bottom = 1084.0
 mouse_filter = 2
 texture = ExtResource("2_3pd5i")
 expand_mode = 1
 stretch_mode = 5
+script = ExtResource("player_animation_script")
+
+[node name="BodyAnimation" type="AnimatedSprite2D" parent="PlayerSprite" unique_id=1148235585]
+visible = false
+sprite_frames = ExtResource("player_animation_frames")
+animation = &"attack"
+centered = false
 
 [node name="ResultLabel" type="Label" parent="." unique_id=1062058977]
 visible = false
@@ -452,9 +406,10 @@ expand_mode = 1
 [node name="PlayerHeader" type="TextureRect" parent="." unique_id=103436519]
 z_index = -1
 layout_mode = 0
-offset_top = 650.0
-offset_right = 720.0
-offset_bottom = 784.0
+offset_left = -2.0
+offset_top = 639.0
+offset_right = 718.0
+offset_bottom = 773.0
 mouse_filter = 2
 texture = ExtResource("hud")
 expand_mode = 1
@@ -462,10 +417,10 @@ expand_mode = 1
 [node name="PotionShelf" type="TextureRect" parent="." unique_id=2035273641]
 z_index = -1
 layout_mode = 0
-offset_left = 468.0
-offset_top = 790.0
-offset_right = 712.0
-offset_bottom = 869.0
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 252.0
+offset_bottom = 96.0
 mouse_filter = 2
 texture = ExtResource("potions")
 expand_mode = 1
@@ -480,19 +435,6 @@ offset_bottom = 1052.0
 mouse_filter = 2
 texture = ExtResource("portrait")
 expand_mode = 1
-
-[node name="EnergyBar" type="ProgressBar" parent="." unique_id=1926733990]
-z_index = -1
-layout_mode = 0
-offset_left = 8.0
-offset_top = 696.0
-offset_right = 478.0
-offset_bottom = 728.0
-mouse_filter = 2
-theme_override_styles/background = SubResource("FormalBarBg")
-theme_override_styles/fill = SubResource("FormalEnergy")
-value = 100.0
-show_percentage = false
 
 [node name="FormalEditorPreview" type="Control" parent="." unique_id=1335185158]
 anchors_preset = 0

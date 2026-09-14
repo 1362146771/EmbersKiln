@@ -1,16 +1,16 @@
 extends Control
 class_name DropLayer
 ## DropLayer —— 落点层：全屏覆盖、MOUSE_FILTER_IGNORE 的 Control。
-## 自绘合法落点高亮环（不碰节点 modulate，避免与 selected_target 高亮冲突）。
-## 只负责：持目标列表 / 命中测试 / 脉冲高亮。目标由 CombatUI 在每次拖拽开始时 set_targets 注入。
-##
-## 不写 class_name（避免与可能的 autoload 冲突）。
+## 只负责：目标列表 / 命中测试 / 指向箭头 / 弃牌堆高亮。
+## 人物和敌人仅在合法悬停时沿透明图片轮廓描白。
 
-const C_VALID := Color(0.365, 0.792, 0.647)   # 绿：合法落点
-const C_HOVER := Color(1.0, 0.92, 0.65)        # 金：悬停（指针所在落点）
 const DISCARD_TARGET := -4                  # 独立于玩家(-1)、无落点(-2)、无悬停(-3)
 
 const ARROW := preload("res://art/ui/formal/effrct_arrow.png")
+const OUTLINE := preload("res://art/ui/formal/TargetOutline.gdshader")
+var _outlined_portrait: TextureRect
+var _previous_material: Material
+var _outline_material: ShaderMaterial
 var arrow_start := Vector2.ZERO
 var arrow_end := Vector2.ZERO
 var arrow_visible := false
@@ -27,12 +27,14 @@ func _ready() -> void:
 
 ## 注入本次拖拽的合法落点。target = {node, types:Array[StringName], index:int}
 func set_targets(targets: Array) -> void:
+	_clear_outline()
 	_targets = targets
 	_refresh_rects()
 	queue_redraw()
 
 
 func clear() -> void:
+	_clear_outline()
 	arrow_visible = false
 	_targets = []
 	_card_type = &""
@@ -40,7 +42,7 @@ func clear() -> void:
 	queue_redraw()
 
 
-## 设定当前卡类型，仅高亮 accept 该类型的落点。
+## 设定当前卡类型，用于合法落点判定和弃牌堆高亮。
 func highlight(card_type: StringName) -> void:
 	_card_type = card_type
 	queue_redraw()
@@ -63,7 +65,37 @@ func hover_update(global_pos: Vector2) -> void:
 		if t.types.has(_card_type) and t.rect.has_point(lp):
 			_hover_index = t.index
 			break
+	_update_outline()
 	queue_redraw()
+
+
+func _update_outline() -> void:
+	var portrait: TextureRect
+	for t in _targets:
+		if t.index == _hover_index and t.index != DISCARD_TARGET and t.types.has(_card_type):
+			portrait = t.get("outline_node", t.node) as TextureRect
+			break
+	if portrait == _outlined_portrait:
+		return
+	_clear_outline()
+	if is_instance_valid(portrait):
+		if _outline_material == null:
+			_outline_material = ShaderMaterial.new()
+			_outline_material.shader = OUTLINE
+		_outlined_portrait = portrait
+		_previous_material = portrait.material
+		portrait.material = _outline_material
+
+
+func _clear_outline() -> void:
+	if is_instance_valid(_outlined_portrait) and _outlined_portrait.material == _outline_material:
+		_outlined_portrait.material = _previous_material
+	_outlined_portrait = null
+	_previous_material = null
+
+
+func _exit_tree() -> void:
+	_clear_outline()
 
 
 ## 命中测试：返回目标 index（-1=玩家，>=0=敌人，-2=无落点，DISCARD_TARGET=弃牌）。
@@ -98,19 +130,11 @@ func _draw() -> void:
 	if _card_type == &"":
 		return
 	for t in _targets:
-		if not t.types.has(_card_type):
+		if t.index != DISCARD_TARGET or not t.types.has(_card_type):
 			continue
 		var is_hover: bool = (t.index == _hover_index)
-		var c := C_HOVER if is_hover else C_VALID
+		var c := Color("f2e8d5") if is_hover else Color("94826f")
 		var lw := 7.0 if is_hover else 4.0
 		var rect := Rect2(t.rect)
-		if t.index == DISCARD_TARGET:
-			# 弃牌堆只描边，不用圆环遮住紧邻的手牌。使用 v3 米白/铁灰。
-			c = Color("f2e8d5") if is_hover else Color("94826f")
-			draw_rect(rect.grow(-2.0), c, false, lw)
-			continue
-		# 指向箭头承担主要反馈，仅描目标边缘，避免大圆环覆盖整个战场。
-		if t.index >= 0:
-			rect.position.y += 185.0
-			rect.size.y = maxf(0.0, rect.size.y - 195.0)
-		draw_rect(rect.grow(-5.0), Color(c, 0.65), false, 2.0)
+		# 弃牌堆只描边，不用圆环遮住紧邻的手牌。使用 v3 米白/铁灰。
+		draw_rect(rect.grow(-2.0), c, false, lw)

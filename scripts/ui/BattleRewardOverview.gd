@@ -13,7 +13,7 @@ func setup(data: Dictionary, backdrop: Texture2D) -> void:
 	var relic_id := StringName(data.get("relic_id", ""))
 	if relic_id != &"":
 		var relic := GameData.get_relic(relic_id)
-		_add_item(items, relic.name if relic else String(relic_id), GameData.icon_texture(relic.icon) if relic else null)
+		_add_item(items, relic.name if relic else String(relic_id), GameData.icon_texture(relic.icon) if relic else null, relic_id)
 	var potion_id := StringName(data.get("potion_id", ""))
 	if potion_id != &"":
 		var potion := GameData.get_potion(potion_id)
@@ -25,7 +25,7 @@ func setup(data: Dictionary, backdrop: Texture2D) -> void:
 		queue_free()
 	)
 
-func _add_item(grid: GridContainer, title: String, icon: Texture2D) -> void:
+func _add_item(grid: GridContainer, title: String, icon: Texture2D, relic_id: StringName = &"") -> void:
 	var tile := PanelContainer.new()
 	tile.custom_minimum_size = Vector2(82, 122)
 	tile.add_theme_stylebox_override("panel", FormalUI.stone("bd_common_rewardFrame.png", 5))
@@ -46,3 +46,7 @@ func _add_item(grid: GridContainer, title: String, icon: Texture2D) -> void:
 	label.add_theme_font_size_override("font_size", 17)
 	column.add_child(label)
 	grid.add_child(tile)
+	if relic_id != &"":
+		preload("res://scripts/ui/RelicInfo.gd").attach(tile, relic_id)
+		column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		for child in column.get_children(): child.mouse_filter = Control.MOUSE_FILTER_IGNORE

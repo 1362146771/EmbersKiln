@@ -1,0 +1,14 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/combat/StatusIconBar.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/combat/StatusBadge.tscn" id="badge"]
+[node name="StatusIconBar" type="HFlowContainer"]
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 34.0
+mouse_filter = 1
+alignment = 1
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+script = ExtResource("script")
+[node name="PreviewStatus" parent="." instance=ExtResource("badge")]
+layout_mode = 2

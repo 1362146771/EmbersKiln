@@ -62,4 +62,4 @@ func on_card_played(card_id: StringName, _target_index: int) -> void:
 		return
 	var cd: CardData = GameData.get_card(card_id)
 	if cd != null and cd.type == &"attack":
-		ui._set_player_pose(&"attack", ui.PLAYER_POSE_HOLD)
+		ui._set_player_pose(&"attack")

@@ -97,12 +97,12 @@ func verify_scene_relic_bar() -> void:
 
 func verify_relic_bar(cu: CombatUI, path: String) -> void:
 	var bar = cu.relic_bar
-	var expected_slots := maxi(1, RunState.relic_ids.size())  # 空库存有一条提示，不是遗物按钮。
+	var expected_slots := RunState.relic_ids.size()  # 空库存不创建占位。
 	check("遗物栏 %s: 初始库存一致" % path, bar != null and bar.slots.get_child_count() == expected_slots)
 	if bar == null:
 		return
 	if RunState.relic_ids.is_empty():
-		check("遗物栏 %s: 新局显示零件与暂无遗物" % path, bar.count_label.text == "0 件" and bar.slots.get_child(0) is Label and bar.slots.get_child(0).text == "暂无遗物")
+		check("遗物栏 %s: 新局无边框与占位" % path, bar.get_theme_stylebox("panel") is StyleBoxEmpty and bar.slots.get_child_count() == 0 and not bar.has_node("Row/Caption"))
 		RunState.add_relic(&"hearth_totem")
 	var first: Button = bar.slots.get_child(0)
 	var displayed: RelicData = GameData.get_relic(StringName(first.get_meta("relic_id")))
@@ -133,7 +133,7 @@ func verify_relic_bar(cu: CombatUI, path: String) -> void:
 	var saved: Array[StringName] = RunState.relic_ids.duplicate()
 	RunState.relic_ids.clear()
 	bar.refresh()
-	check("遗物栏 %s: 空库存有提示且无残留" % path, bar.count_label.text == "0 件" and bar.slots.get_child_count() == 1 and bar.slots.get_child(0) is Label)
+	check("遗物栏 %s: 空库存无占位与残留" % path, bar.slots.get_child_count() == 0)
 	RunState.relic_ids.assign(saved)
 	bar.refresh()
 

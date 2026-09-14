@@ -37,6 +37,44 @@ const STRIKE_ARC := 90.0                 # 抛物线弧高（px）
 const DMG_BIG_THRESHOLD := 12            # 单次伤害 ≥ 此值视为大伤害：放大字号 + 更强冲击
 
 
+var _screen_tween: Tween
+var _screen_origin := Vector2.ZERO
+var _shake_rng := RandomNumberGenerator.new()
+
+
+## White slash and real portrait movement; bars and intent remain in place.
+func spawn_attack_impact(portrait: Control) -> void:
+	if not is_instance_valid(portrait):
+		return
+	var config: Dictionary = GameData.vfx["attack"]
+	var cut := ColorRect.new()
+	cut.name = "WhiteSlash"
+	cut.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cut.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	cut.z_index = 5
+	var shader := ShaderMaterial.new()
+	shader.shader = preload("res://art/vfx/WhiteSlash.gdshader")
+	cut.material = shader
+	portrait.add_child(cut)
+	var slash_tween := cut.create_tween()
+	slash_tween.tween_method(func(value: float): shader.set_shader_parameter("progress", value), 0.0, 1.0, float(config["slash_duration"]))
+	slash_tween.tween_callback(cut.queue_free)
+	var previous: Tween = portrait.get_meta("hit_tween") if portrait.has_meta("hit_tween") else null
+	var origin: Vector2 = portrait.get_meta("hit_origin", portrait.position)
+	if previous != null and previous.is_valid():
+		previous.kill()
+	else:
+		origin = portrait.position
+	portrait.position = origin
+	portrait.set_meta("hit_origin", origin)
+	var tween := portrait.create_tween()
+	portrait.set_meta("hit_tween", tween)
+	tween.tween_method(func(progress: float):
+		portrait.position = origin + Vector2(sin(progress * TAU * 3.0), sin(progress * TAU * 2.0) * 0.25) * float(config["portrait_shake_pixels"]) * (1.0 - progress),
+		0.0, 1.0, float(config["portrait_shake_duration"]))
+	tween.tween_property(portrait, "position", origin, 0.0)
+
+
 ## 通用飘字（伤害/治疗）。amount 为正数；big=true 时字号随伤害放大并叠加「缩小→弹大→回落」冲击。
 func _float(anchor: Control, amount: int, color: Color, dur: float, rise: float, big := false) -> void:
 	if anchor == null or amount <= 0:
@@ -160,13 +198,25 @@ func screen_shake(intensity: float) -> void:
 	if vp == null:
 		return
 	var amt: float = clamp(intensity, 0.0, SHAKE_MAX)
-	var base: Vector2 = vp.canvas_transform.origin
+	if _screen_tween != null and _screen_tween.is_valid():
+		_screen_tween.kill()
+	else:
+		_screen_origin = vp.canvas_transform.origin
+	var base := _screen_origin
 	var steps := 6
 	var t := create_tween()
+	_screen_tween = t
 	for i in steps:
-		var off: Vector2 = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * amt
+		var off: Vector2 = Vector2(_shake_rng.randf_range(-1.0, 1.0), _shake_rng.randf_range(-1.0, 1.0)) * amt
 		t.tween_property(vp, "canvas_transform:origin", base + off, SHAKE_DUR / float(steps))
 	t.tween_property(vp, "canvas_transform:origin", base, SHAKE_DUR / float(steps))
+
+
+func cancel_screen_shake() -> void:
+	if _screen_tween != null and _screen_tween.is_valid():
+		_screen_tween.kill()
+		get_viewport().canvas_transform.origin = _screen_origin
+	_screen_tween = null
 
 
 ## 敌人攻击"碰撞卡"：从敌方面板浮现攻击卡，沿抛物线弧飞向玩家面板；

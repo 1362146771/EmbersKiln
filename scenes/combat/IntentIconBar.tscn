@@ -1,0 +1,13 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/combat/IntentIconBar.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/combat/IntentBadge.tscn" id="badge"]
+[node name="IntentIconBar" type="HFlowContainer"]
+offset_right = 300.0
+offset_bottom = 42.0
+alignment = 1
+mouse_filter = 1
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 4
+script = ExtResource("script")
+[node name="PreviewAttack" parent="." instance=ExtResource("badge")]
+layout_mode = 2

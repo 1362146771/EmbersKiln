@@ -3,6 +3,7 @@ var failed := 0
 const MENU := "res://scenes/main/MainMenu.tscn"
 const COMBAT := "res://scenes/combat/CombatPlay.tscn"
 const TOWN := "res://scenes/town/Town.tscn"
+const MAP := "res://scenes/map/MapPlay.tscn"
 func check(ok: bool, title: String) -> void:
 	if not ok: failed += 1
 	print("[%s] %s" % ["PASS" if ok else "FAIL", title])
@@ -51,10 +52,32 @@ func _ready() -> void:
 	check(ProfileManager.save_to_file("res://Temp/menu_entry_profile.json", ProfileState.to_save_dict()), "first battle flag written to permanent profile file")
 	ProfileState.reset_to_defaults(false)
 	check(ProfileState.from_save_dict(ProfileManager.load_from_file("res://Temp/menu_entry_profile.json"), false) and ProfileState.first_battle_started, "first battle flag survives profile reload")
-	get_tree().current_scene.controller.finalize_player_death()
+	var fake := FakeRewardedAdProvider.new()
+	fake.set_available(&"death_revive", true)
+	fake.enqueue_result(AdService.RESULT_COMPLETED)
+	AdService.set_provider(fake)
+	get_tree().current_scene.controller.player.hp = 0
+	get_tree().current_scene.controller.check_player_death()
+	check(RunState.combat_death_pending and RunState.is_active, "first death offers revive without ending run")
+	var revive_button := get_tree().current_scene.find_child("ReviveAdButton", true, false) as Button
+	check(revive_button != null and not revive_button.disabled, "first death shows available revive button")
+	if revive_button != null:
+		revive_button.pressed.emit()
 	await settle()
-	check(get_tree().current_scene.scene_file_path == TOWN, "final defeat directly returns town")
+	check(get_tree().current_scene.scene_file_path == COMBAT and RunState.revive_used_count == 1 and not RunState.combat_death_pending, "completed ad reloads combat and consumes revive")
+	get_tree().current_scene.controller.player.hp = 0
+	get_tree().current_scene.controller.check_player_death()
+	await settle()
+	check(get_tree().current_scene.scene_file_path == MAP, "second death opens result scene instead of town")
+	check(get_tree().current_scene.find_child("ReviveAdButton", true, false) == null, "second death does not offer another revive")
+	var return_town := get_tree().current_scene.find_child("ReturnTownButton", true, false) as Button
+	check(return_town != null and return_town.is_visible_in_tree() and not return_town.disabled, "death result shows return town button")
+	check(RunState.run_id == run_id and RunState.run_end_base_settled, "death result preserves original run and settled rewards")
 	check(not RunState.is_active and not SaveManager.has_save(), "defeat ends run and removes run save")
+	if return_town != null:
+		return_town.pressed.emit()
+	await settle()
+	check(get_tree().current_scene.scene_file_path == TOWN, "confirming death result returns town")
 	var town_profile := ProfileState.to_save_dict().duplicate(true)
 	await open_scene(MENU)
 	check(get_tree().current_scene.get_node("MenuCenter/MenuColumn/PlayButton").text == "开始游戏", "profile without active run shows start after defeat")

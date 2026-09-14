@@ -31,6 +31,11 @@ var block_break_next: StringName = &""
 ## 用于检测阶段切换并触发该阶段的 on_enter（如觉醒自身加力量）。
 var phase_index: int = -1
 
+## 本场战斗中由该敌人实际偷走、尚待胜利结算的金币。
+var stolen_gold: int = 0
+## 当前攻击意图的偷金是否已结算，确保多段攻击只偷一次。
+var gold_steal_resolved: bool = false
+
 ## 随从（召唤物）专用字段。
 var lifetime: int = 0            # 存活剩余回合（玩家回合开始时 -1，≤0 消失）
 var move_cursor: int = 0         # fixed AI 循环 moves 的游标（随从意图用）
@@ -49,6 +54,8 @@ func setup(p_is_player: bool, p_id: StringName, p_name: String, p_hp: int, p_spr
 	intent = {}
 	charge_next = &""
 	block_break_next = &""
+	stolen_gold = 0
+	gold_steal_resolved = false
 
 
 # ---------- 生命 / 格挡 ----------
