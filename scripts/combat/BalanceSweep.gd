@@ -1,12 +1,13 @@
 extends Node
 ## 战斗平衡 Sweep Harness（数据驱动，零硬编码数值）。
-## 多 build × 多 encounter 模拟，输出胜率/均回合/终局HP，并标记离群：
+## 多 build × 当前正式数据中的全部分幕遭遇模拟，输出胜率/均回合/终局HP，并标记离群：
 ##   严重(FAIL)：某 encounter 所有 build 皆败（可能不可战胜）/ Boss 被秒杀（平衡崩坏）。
 ##   提示(WARN)：某 build 对某敌过难/秒杀/拖沓/过易（需数值策划复核）。
 ## 全部参数来自 data/balance_sweep.json（数值规范：提案→确认→写入→回填，见 NUMERIC_LEDGER.md）。
 ## 复用 PlaythroughTest 的自动战斗启发式；本脚本不写死任何玩法数值。
 
 const CONFIG_PATH := "res://data/balance_sweep.json"
+const TEST_SAVE_PATH := "res://Temp/balance_sweep_save.json"
 
 var _cfg: Dictionary = {}
 var results: Array[String] = []
@@ -14,6 +15,8 @@ var _report_lines: Array[String] = []
 var pass_count := 0
 var fail_count := 0
 var warn_count := 0
+var _original_profile_autosave := true
+var _original_save_path := ""
 
 
 func _ready() -> void:
@@ -28,7 +31,15 @@ func _ready() -> void:
 	if _cfg.is_empty():
 		_print_report()
 		return
-	run()
+	_original_profile_autosave = ProfileManager.autosave_enabled
+	_original_save_path = SaveManager.runtime_save_path
+	ProfileManager.autosave_enabled = false
+	SaveManager.runtime_save_path = TEST_SAVE_PATH
+	SaveManager.delete_save()
+	await run()
+	SaveManager.delete_save()
+	SaveManager.runtime_save_path = _original_save_path
+	ProfileManager.autosave_enabled = _original_profile_autosave
 	_print_report()
 
 
@@ -55,8 +66,12 @@ func _log_filter(keep: Array) -> void:
 # 主流程
 # =====================================================================
 func run() -> void:
-	if not (_cfg.has("sim") and _cfg.has("builds") and _cfg.has("encounters") and _cfg.has("outlier")):
-		_fail("配置结构缺失 sim/builds/encounters/outlier 之一")
+	if not (_cfg.has("sim") and _cfg.has("builds") and _cfg.has("outlier")):
+		_fail("配置结构缺失 sim/builds/outlier 之一")
+		return
+	var encounters := _build_encounters()
+	if encounters.is_empty():
+		_fail("没有可测试的遭遇")
 		return
 
 	# ---- build 过滤（分 build 回归用；不写此字段则全量）----
@@ -75,7 +90,9 @@ func run() -> void:
 		for cid in b["cards"]:
 			if GameData.get_card(StringName(cid)) == null:
 				bad.append("build=%s 未知卡=%s" % [b["id"], cid])
-	for e in _cfg["encounters"]:
+	for e in encounters:
+		if bool(e.get("generated", false)):
+			continue
 		for eid in e["enemies"]:
 			if GameData.get_enemy(StringName(eid)) == null:
 				bad.append("enc=%s 未知敌=%s" % [e["id"], eid])
@@ -83,16 +100,17 @@ func run() -> void:
 		for s in bad:
 			_fail("未知 id: %s" % s)
 		return
-	_pass("配置与 id 校验通过（build=%d, encounter=%d）" % [builds.size(), _cfg["encounters"].size()])
+	_pass("当前数据与 id 校验通过（cards=%d, enemies=%d, acts=%d, builds=%d, encounters=%d）" % [
+		GameData.cards.size(), GameData.enemies.size(), GameData.act_configs.size(), builds.size(), encounters.size()
+	])
 
 	var cc := CombatController.new()
 	add_child(cc)
 	var attempts: int = int(_cfg["sim"]["attempts_per_match"])
 	var ol: Dictionary = _cfg["outlier"]
 
-	for enc in _cfg["encounters"]:
-		var enc_ids: Array = enc["enemies"]
-		var is_boss: bool = enc_ids.size() == 1 and String(enc_ids[0]) == "chi_the_first"
+	for enc in encounters:
+		var is_boss := String(enc.get("tier", "")) == "boss"
 		var per_build_wr: Array = []
 		var lines: Array[String] = []
 		for b in builds:
@@ -100,7 +118,7 @@ func run() -> void:
 			var turn_sum: int = 0
 			var hp_sum: int = 0
 			for a in range(attempts):
-				var r: Dictionary = _simulate(cc, enc_ids, b["cards"])
+				var r: Dictionary = await _simulate(cc, enc, b["cards"])
 				if r["win"]:
 					wins += 1
 					turn_sum += int(r["turns"])
@@ -135,7 +153,7 @@ func run() -> void:
 				_fail("enc=%s 所有build胜率=0（敌人不可战胜？需人工复核）" % enc["id"])
 			else:
 				_warn("enc=%s build=%s 胜率=0（单build回归，需跨build复核是否不可战胜）" % [enc["id"], builds[0]["name"]])
-		_report_lines.append("enc %s (敌:%s):" % [enc["id"], ",".join(enc_ids)])
+		_report_lines.append("enc %s (%s):" % [enc["id"], _encounter_label(enc)])
 		for l in lines:
 			_report_lines.append(l)
 
@@ -143,12 +161,72 @@ func run() -> void:
 
 
 ## 单次模拟：重置 RunState 为该 build 满血牌组，开战，自动战斗，返回结果。
-func _simulate(cc: CombatController, enemy_ids: Array, build_cards: Array) -> Dictionary:
+func _simulate(cc: CombatController, encounter: Dictionary, build_cards: Array) -> Dictionary:
 	_reset_run_for(build_cards)
+	var act_index := clampi(int(encounter.get("act_index", 0)), 0, maxi(0, GameData.act_configs.size() - 1))
+	RunState.current_act = act_index
+	var enemy_ids: Array = encounter.get("enemies", []).duplicate()
+	if bool(encounter.get("generated", false)):
+		var act_config: Dictionary = GameData.act_configs[act_index]
+		var pool := MapGenerator._pool_enemies(act_config, &"normal")
+		enemy_ids.assign(MapGenerator._pick_weighted_enemies(pool, int(encounter.get("enemy_count", 1))))
+	if enemy_ids.is_empty():
+		return {"win": false, "turns": 0, "hp_left": 0}
 	cc.start_combat(enemy_ids)
-	_auto_battle(cc)
+	await _auto_battle(cc)
 	var win: bool = cc.phase == CombatController.Phase.ENDED and cc.player.is_alive()
 	return {"win": win, "turns": cc.turn, "hp_left": cc.player.hp}
+
+
+## 从当前 map/enemy 数据派生覆盖矩阵，避免敌人扩充后测试夹具继续停留在旧固定编成。
+func _build_encounters() -> Array:
+	var coverage: Dictionary = _cfg.get("coverage", {})
+	if not bool(coverage.get("derive_from_current_acts", false)):
+		return _cfg.get("encounters", []).duplicate(true)
+	var out: Array = []
+	for act_index in GameData.act_configs.size():
+		var act_config: Dictionary = GameData.act_configs[act_index]
+		var act_number := act_index + 1
+		for tier in [&"normal", &"elite"]:
+			for enemy in MapGenerator._pool_enemies(act_config, tier):
+				var ed := enemy as EnemyData
+				if ed == null:
+					continue
+				out.append({
+					"id": "act%d_%s_%s" % [act_number, String(tier), String(ed.id)],
+					"act_index": act_index,
+					"tier": String(tier),
+					"enemies": [ed.id],
+				})
+		var boss_id := StringName(String(act_config.get("boss_id", "")))
+		if boss_id != &"" and GameData.get_enemy(boss_id) != null:
+			out.append({
+				"id": "act%d_boss_%s" % [act_number, String(boss_id)],
+				"act_index": act_index,
+				"tier": "boss",
+				"enemies": [boss_id],
+			})
+		if bool(coverage.get("include_weighted_encounters", true)):
+			for enemy_count in range(1, GameData.max_enemies_per_combat() + 1):
+				out.append({
+					"id": "act%d_weighted_%d" % [act_number, enemy_count],
+					"act_index": act_index,
+					"tier": "normal",
+					"generated": true,
+					"enemy_count": enemy_count,
+				})
+	return out
+
+
+func _encounter_label(encounter: Dictionary) -> String:
+	var act_number := int(encounter.get("act_index", 0)) + 1
+	if bool(encounter.get("generated", false)):
+		return "第%d幕/动态%d敌/每次按正式权重重抽" % [act_number, int(encounter.get("enemy_count", 1))]
+	var names: Array[String] = []
+	for raw_id in encounter.get("enemies", []):
+		var enemy := GameData.get_enemy(StringName(String(raw_id)))
+		names.append(enemy.name if enemy != null else String(raw_id))
+	return "第%d幕/%s/%s" % [act_number, String(encounter.get("tier", "")), ",".join(names)]
 
 
 ## 隔离 build：满血、清遗物、用 build 牌组覆盖 RunState.deck（不重新生成地图，省开销）。
@@ -159,7 +237,13 @@ func _reset_run_for(build_cards: Array) -> void:
 	RunState.hp = RunState.max_hp
 	RunState.deck.clear()
 	for cid in build_cards:
-		RunState.add_card(StringName(cid), false)
+		# Sweep 牌组是瞬时测试夹具，不应触发永久牌库容量、发现记录或档案写入。
+		RunState.deck.append({
+			"id": StringName(cid),
+			"upgraded": false,
+			"upgrade_level": 0,
+			"enchants": [],
+		})
 	RunState.defeated.clear()
 	if not bool(_cfg["player"].get("use_relics", false)):
 		RunState.relic_ids.clear()
@@ -171,6 +255,7 @@ func _reset_run_for(build_cards: Array) -> void:
 func _auto_battle(cc: CombatController) -> void:
 	var guard: int = 0
 	var max_t: int = int(_cfg["sim"]["max_turns"])
+	var get_panel := func(_unit): return null
 	while cc.phase != CombatController.Phase.ENDED and guard < max_t:
 		guard += 1
 		var safety: int = 0
@@ -188,6 +273,9 @@ func _auto_battle(cc: CombatController) -> void:
 		if cc.phase == CombatController.Phase.ENDED:
 			break
 		cc.end_player_turn()
+		# CombatController 只负责锁定回合；随从与敌方行动由 BattleDirector 异步编排。
+		await BattleDirector.run_summon_turn(cc, null, get_panel, get_panel)
+		await BattleDirector.run_enemy_turn(cc, null, get_panel)
 
 
 func _choose_card(cc: CombatController) -> int:
@@ -272,5 +360,6 @@ func _print_report() -> void:
 	for r in results:
 		lines.append(r)
 	lines.append("总计: %d PASS / %d FAIL / %d WARN" % [pass_count, fail_count, warn_count])
-	lines.append("BALANCE_SWEEP_RESULT:%s" % ("PASS" if fail_count == 0 else "FAIL"))
+	var verdict := "FAIL" if fail_count > 0 else ("REVIEW_REQUIRED" if warn_count > 0 else "PASS")
+	lines.append("BALANCE_SWEEP_RESULT:%s" % verdict)
 	print("\n".join(lines))

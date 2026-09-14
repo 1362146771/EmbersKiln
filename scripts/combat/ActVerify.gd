@@ -135,18 +135,23 @@ func _test_act_scaling_and_pools() -> void:
 	# Act1：乘子 1.0，缩放=基础
 	check("Act1 HP 缩放=基础", GameData.scaled_enemy_hp(100) == 100, "scaled=%d" % GameData.scaled_enemy_hp(100))
 	check("Act1 伤害缩放=基础", GameData.scaled_enemy_damage(10) == 10, "scaled=%d" % GameData.scaled_enemy_damage(10))
+	check("Act1 非Boss攻防削弱30%", GameData.scaled_enemy_damage(10, &"normal") == 7 and GameData.scaled_enemy_defense(10, &"elite") == 7)
+	check("Act1 Boss不吃非Boss削弱", GameData.scaled_enemy_damage(10, &"boss") == 10 and GameData.scaled_enemy_defense(10, &"boss") == 10)
 	_check_pool_isolation(0)
 	check("Act1 Boss=封窑兽·匣母", _act_boss_id(0) == "sagger_matron", "boss=%s" % _act_boss_id(0))
 
 	RunState.advance_act()   # → Act2（×1.15）
 	check("Act2 HP 缩放×1.15", GameData.scaled_enemy_hp(100) == 115, "scaled=%d" % GameData.scaled_enemy_hp(100))
 	check("Act2 伤害缩放×1.15", GameData.scaled_enemy_damage(20) == 23, "scaled=%d" % GameData.scaled_enemy_damage(20))
+	check("Act2 非Boss攻防完全保持", GameData.scaled_enemy_damage(20, &"normal") == 23 and GameData.scaled_enemy_defense(10, &"elite") == 10)
 	_check_pool_isolation(1)
 	check("Act2 Boss=窑心·烬", _act_boss_id(1) == "kilnheart_ember", "boss=%s" % _act_boss_id(1))
 
 	RunState.advance_act()   # → Act3（×1.30）
 	check("Act3 HP 缩放×1.30", GameData.scaled_enemy_hp(100) == 130, "scaled=%d" % GameData.scaled_enemy_hp(100))
 	check("Act3 伤害缩放×1.30", GameData.scaled_enemy_damage(10) == 13, "scaled=%d" % GameData.scaled_enemy_damage(10))
+	check("Act3 非Boss在幕倍率后削弱30%", GameData.scaled_enemy_damage(10, &"normal") == 9 and GameData.scaled_enemy_defense(10, &"elite") == 7)
+	check("Act3 Boss保留完整幕倍率", GameData.scaled_enemy_damage(10, &"boss") == 13 and GameData.scaled_enemy_defense(10, &"boss") == 10)
 	_check_pool_isolation(2)
 	check("Act3 Boss=窑主·熾", _act_boss_id(2) == "chi_the_first", "boss=%s" % _act_boss_id(2))
 

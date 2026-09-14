@@ -1,8 +1,8 @@
 {
   "meta": {
-    "purpose": "战斗平衡 sweep：多种 build 对打整张敌人表（含新精英 slagbeast、3 敌编成 E、Boss 三阶段），检测离群（打不死/秒杀/过肉/过易）。",
+    "purpose": "战斗平衡 sweep：多种 build 对打当前三幕完整敌表与按正式权重动态生成的 1/2/3 敌遭遇，检测离群（打不死/秒杀/过肉/过易）。",
     "design_record": "AI_Studio/Design/Balance/NUMERIC_LEDGER.md#balance_sweep",
-    "note": "本文件所有数值均为「实现方提议、2026-08-17 经用户'编写 harness'指令确认」的平衡探针参数，非玩法最终平衡值；调整需回写本文件并同步台账。"
+    "note": "本文件数值沿用 2026-08-17 已确认的平衡探针参数；2026-09-09 按用户要求改为从当前三幕正式数据动态派生遭遇，不再维护易过期的固定遭遇清单。探针参数非玩法最终平衡值，调整需回写本文件并同步台账。"
   },
   "sim": {
     "max_turns": 40,
@@ -20,23 +20,10 @@
     {"id": "exhaust", "name": "消耗",   "cards": ["strike", "defend", "true_grit", "burning_pact", "feel_no_pain", "fiend_fire"]},
     {"id": "strength", "name": "力量",  "cards": ["strike", "defend", "inflame", "spot_weakness", "heavy_blade", "limit_break"]}
   ],
-  "encounters": [
-    {"id": "solo_claylump",  "enemies": ["claylump"]},
-    {"id": "solo_sootling",  "enemies": ["sootling"]},
-    {"id": "solo_embermoth", "enemies": ["embermoth"]},
-    {"id": "solo_glazetick", "enemies": ["glazetick"]},
-    {"id": "solo_potsherd",  "enemies": ["potsherd"]},
-    {"id": "solo_ashcantor", "enemies": ["ashcantor"]},
-    {"id": "solo_kilnward",  "enemies": ["kilnward"]},
-    {"id": "solo_glazemaw",  "enemies": ["glazemaw"]},
-    {"id": "solo_slagbeast", "enemies": ["slagbeast"]},
-    {"id": "solo_boss",      "enemies": ["chi_the_first"]},
-    {"id": "form_A",         "enemies": ["claylump", "sootling"]},
-    {"id": "form_B",         "enemies": ["embermoth", "embermoth"]},
-    {"id": "form_C",         "enemies": ["glazetick", "potsherd"]},
-    {"id": "form_D",         "enemies": ["ashcantor", "claylump"]},
-    {"id": "form_E",         "enemies": ["embermoth", "embermoth", "sootling"]}
-  ],
+  "coverage": {
+    "derive_from_current_acts": true,
+    "include_weighted_encounters": true
+  },
   "outlier": {
     "win_rate_floor": 0.5,
     "trivial_win_turns": 2,

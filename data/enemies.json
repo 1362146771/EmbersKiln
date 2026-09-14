@@ -1,10 +1,13 @@
 {
-  "version": 1,
+  "version": 4,
   "enemies": [
     {
       "id": "claylump",
       "name": "陶泥团",
       "tier": "normal",
+      "encounter_class": "medium",
+      "encounter_weights": {"1": 6, "2": 6, "3": 2},
+      "max_copies_per_encounter": 1,
       "hp": 44,
       "ai": "weighted_random",
       "moves": [
@@ -40,6 +43,9 @@
       "id": "sootling",
       "name": "煤灰仔",
       "tier": "normal",
+      "encounter_class": "medium",
+      "encounter_weights": {"1": 6, "2": 6, "3": 2},
+      "max_copies_per_encounter": 1,
       "hp": 38,
       "ai": "weighted_random",
       "moves": [
@@ -76,6 +82,9 @@
       "id": "embermoth",
       "name": "火蛾",
       "tier": "normal",
+      "encounter_class": "weak",
+      "encounter_weights": {"1": 2, "2": 8, "3": 10},
+      "max_copies_per_encounter": 2,
       "hp": 34,
       "ai": "weighted_random",
       "moves": [
@@ -106,6 +115,9 @@
       "id": "potsherd",
       "name": "陶片兵",
       "tier": "normal",
+      "encounter_class": "medium",
+      "encounter_weights": {"1": 6, "2": 6, "3": 2},
+      "max_copies_per_encounter": 1,
       "hp": 42,
       "ai": "weighted_random",
       "moves": [
@@ -134,6 +146,9 @@
       "id": "glazetick",
       "name": "釉蛭",
       "tier": "normal",
+      "encounter_class": "weak",
+      "encounter_weights": {"1": 2, "2": 8, "3": 10},
+      "max_copies_per_encounter": 2,
       "hp": 36,
       "ai": "weighted_random",
       "moves": [
@@ -170,6 +185,9 @@
       "id": "kilnstatue",
       "name": "窑龛像",
       "tier": "normal",
+      "encounter_class": "strong",
+      "encounter_weights": {"1": 10, "2": 2, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 52,
       "ai": "weighted_random",
       "moves": [
@@ -205,6 +223,9 @@
       "id": "ashcantor",
       "name": "灰颂者",
       "tier": "normal",
+      "encounter_class": "strong",
+      "encounter_weights": {"1": 10, "2": 2, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 48,
       "ai": "weighted_random",
       "moves": [
@@ -245,9 +266,35 @@
       "sprite": "SPR_Enemy_Ashcantor"
     },
     {
+      "id": "robber",
+      "name": "抢劫的",
+      "tier": "normal",
+      "encounter_class": "medium",
+      "encounter_weights": {"1": 6, "2": 6, "3": 2},
+      "max_copies_per_encounter": 1,
+      "hp": 44,
+      "ai": "weighted_random",
+      "description": "游荡在陶原商路上的普通人类劫匪，惯用短刀逼近旅人。",
+      "combat_hint": "每次小刀攻击会抢走至多 15 金币；击败他并赢得战斗后，可找回实际损失的金币。",
+      "moves": [
+        {
+          "id": "mug",
+          "name": "打劫",
+          "intent": "attack",
+          "value": 10,
+          "gold_steal": 15,
+          "chance": 1.0
+        }
+      ],
+      "sprite": "SPR_Enemy_Robber"
+    },
+    {
       "id": "kilnward",
       "name": "陶偶将",
       "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 84,
       "ai": "weighted_random",
       "moves": [
@@ -277,6 +324,9 @@
       "id": "glazemaw",
       "name": "釉裂兽",
       "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 82,
       "ai": "weighted_random",
       "moves": [
@@ -300,6 +350,9 @@
       "id": "slagbeast",
       "name": "熔渣兽",
       "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 82,
       "ai": "weighted_random",
       "moves": [
@@ -329,6 +382,9 @@
       "id": "kilnwarden",
       "name": "炽窑卫",
       "tier": "normal",
+      "encounter_class": "medium",
+      "encounter_weights": {"1": 6, "2": 6, "3": 2},
+      "max_copies_per_encounter": 1,
       "hp": 48,
       "ai": "weighted_random",
       "moves": [
@@ -364,6 +420,9 @@
       "id": "cindermoth",
       "name": "烬蝶",
       "tier": "normal",
+      "encounter_class": "weak",
+      "encounter_weights": {"1": 2, "2": 8, "3": 10},
+      "max_copies_per_encounter": 2,
       "hp": 36,
       "ai": "weighted_random",
       "moves": [
@@ -401,6 +460,9 @@
       "id": "meltgolem",
       "name": "熔心傀儡",
       "tier": "normal",
+      "encounter_class": "strong",
+      "encounter_weights": {"1": 10, "2": 2, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 54,
       "ai": "weighted_random",
       "moves": [
@@ -436,6 +498,9 @@
       "id": "kiln_captain",
       "name": "窑卫长",
       "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 92,
       "ai": "weighted_random",
       "moves": [
@@ -465,6 +530,9 @@
       "id": "cinderfiend",
       "name": "烬魈",
       "tier": "normal",
+      "encounter_class": "medium",
+      "encounter_weights": {"1": 6, "2": 6, "3": 2},
+      "max_copies_per_encounter": 1,
       "hp": 42,
       "ai": "weighted_random",
       "moves": [
@@ -501,6 +569,9 @@
       "id": "magmawhelp",
       "name": "岩浆幼兽",
       "tier": "normal",
+      "encounter_class": "medium",
+      "encounter_weights": {"1": 6, "2": 6, "3": 2},
+      "max_copies_per_encounter": 1,
       "hp": 46,
       "ai": "weighted_random",
       "moves": [
@@ -537,6 +608,9 @@
       "id": "coalseer",
       "name": "煤烟先知",
       "tier": "normal",
+      "encounter_class": "strong",
+      "encounter_weights": {"1": 10, "2": 2, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 50,
       "ai": "weighted_random",
       "moves": [
@@ -573,6 +647,9 @@
       "id": "ember_eater",
       "name": "烬噬",
       "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "max_copies_per_encounter": 1,
       "hp": 96,
       "ai": "weighted_random",
       "moves": [
@@ -600,9 +677,13 @@
     },
     {
       "id": "kilnheart_ember",
+      "map_icon": "res://art/map/bosses/MAP_Boss_KilnheartEmber_v6.png",
       "name": "窑心·烬",
       "tier": "boss",
-      "hp": 165,
+      "encounter_class": "solo_only",
+      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "max_copies_per_encounter": 1,
+      "hp": 200,
       "ai": "scripted_phases",
       "phases": [
         {
@@ -611,13 +692,13 @@
             {
               "id": "ember_claw",
               "intent": "attack",
-              "value": 13,
+              "value": 14,
               "chance": 0.5
             },
             {
               "id": "cinder_wave",
               "intent": "attack",
-              "value": 11,
+              "value": 12,
               "aoe": true,
               "chance": 0.5
             }
@@ -629,21 +710,27 @@
             {
               "id": "pyre_fist",
               "intent": "attack",
-              "value": 20,
-              "chance": 0.4
+              "value": 22,
+              "chance": 0.35
             },
             {
               "id": "smolder",
               "intent": "debuff",
               "status": "ashrot",
               "value": 2,
-              "chance": 0.2
+              "chance": 0.15
             },
             {
               "id": "stoke",
               "intent": "buff",
               "status": "heat",
               "value": 3,
+              "chance": 0.1
+            },
+            {
+              "id": "cinder_shell",
+              "intent": "defend",
+              "value": 16,
               "chance": 0.15
             },
             {
@@ -656,7 +743,7 @@
             {
               "id": "kilnburst",
               "intent": "attack",
-              "value": 26,
+              "value": 32,
               "chance": 0.0
             }
           ]
@@ -670,7 +757,7 @@
             {
               "id": "final_gasp",
               "intent": "aoe_debuff",
-              "value": 6,
+              "value": 12,
               "status": "crazed",
               "status_value": 2,
               "chance": 1.0
@@ -682,27 +769,42 @@
     },
     {
       "id": "sagger_matron",
+      "map_icon": "res://art/map/bosses/MAP_Boss_SaggerMatron_v6.png",
       "name": "封窑兽·匣母",
       "tier": "boss",
-      "hp": 160,
+      "encounter_class": "solo_only",
+      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "max_copies_per_encounter": 1,
+      "hp": 180,
       "ai": "scripted_cycle",
       "first_move": "bar",
       "description": "她记得护坯，忘了开匣。",
       "combat_hint": "封匣蓄火时，打掉格挡可阻止喷火。",
       "moves": [
-        {"id": "bar", "name": "拦路", "intent": "attack", "value": 12, "next": "seal"},
-        {"id": "seal", "name": "封匣", "intent": "charge", "value": 14, "next": "fire", "on_block_break": "vent"},
-        {"id": "fire", "name": "开窑", "intent": "attack", "value": 20, "next": "cool"},
+        {"id": "bar", "name": "拦路", "intent": "attack", "value": 16, "next": "seal"},
+        {"id": "seal", "name": "封匣", "intent": "charge", "value": 18, "next": "fire", "on_block_break": "vent"},
+        {"id": "fire", "name": "开窑", "intent": "attack", "value": 32, "next": "cool"},
         {"id": "vent", "name": "泄压", "intent": "unknown", "next": "cool"},
         {"id": "cool", "name": "散热", "intent": "unknown", "next": "bar"}
       ],
-      "sprite": "SPR_Enemy_SaggerMatron"
+      "sprite": "SPR_Enemy_SaggerMatron",
+      "state_sprites": {
+        "bar": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Bar.png",
+        "seal": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Seal.png",
+        "fire": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Fire.png",
+        "vent": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Vent.png",
+        "cool": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Cool.png"
+      }
     },
     {
       "id": "chi_the_first",
+      "map_icon": "res://art/map/bosses/MAP_Boss_ChiTheFirst_v5.png",
       "name": "窑主·熾",
       "tier": "boss",
-      "hp": 150,
+      "encounter_class": "solo_only",
+      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "max_copies_per_encounter": 1,
+      "hp": 190,
       "ai": "scripted_phases",
       "phases": [
         {
@@ -711,13 +813,13 @@
             {
               "id": "swipe",
               "intent": "attack",
-              "value": 12,
+              "value": 13,
               "chance": 0.5
             },
             {
               "id": "quake",
               "intent": "attack",
-              "value": 10,
+              "value": 11,
               "aoe": true,
               "chance": 0.5
             }
@@ -729,21 +831,27 @@
             {
               "id": "crush",
               "intent": "attack",
-              "value": 18,
-              "chance": 0.4
+              "value": 24,
+              "chance": 0.35
             },
             {
               "id": "curse",
               "intent": "debuff",
               "status": "crazed",
               "value": 2,
-              "chance": 0.2
+              "chance": 0.15
             },
             {
               "id": "rage",
               "intent": "buff",
               "status": "heat",
               "value": 3,
+              "chance": 0.1
+            },
+            {
+              "id": "bone_ward",
+              "intent": "defend",
+              "value": 18,
               "chance": 0.15
             },
             {
@@ -756,7 +864,7 @@
             {
               "id": "inferno",
               "intent": "attack",
-              "value": 22,
+              "value": 32,
               "chance": 0.0
             }
           ]
@@ -770,7 +878,7 @@
             {
               "id": "awaken_blast",
               "intent": "aoe_debuff",
-              "value": 6,
+              "value": 14,
               "status": "crazed",
               "status_value": 2,
               "chance": 1.0

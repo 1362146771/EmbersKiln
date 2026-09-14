@@ -1,0 +1,70 @@
+{
+  "version": 5,
+  "status": "user_approved",
+  "runtime_integrated": true,
+  "generator": "built-in image_gen",
+  "generated_on": "2026-09-08",
+  "purpose": "更大、不规则、有破坏性与邪恶气质的抽象 Boss 地图徽记",
+  "style_source": "art/references/REF_boss_map_abstract_user.png",
+  "preview_size_px": 240,
+  "base_prompt": "Generate one new boss map emblem for the dark fantasy ceramic-kiln game Ember's Kiln. Use case: stylized-concept, isolated raster game map asset. Input reference: screenshot is ONLY a reference for dark single-ink map-symbol language; do NOT copy its precise geometry or symmetry. USER CORRECTION: previous sigils were much too regular and tame. This version must feel malevolent, violently destructive, oppressive, hand-drawn and irregular. An abstract threatening omen rather than a creature portrait. Strongly asymmetric silhouette, uneven coarse ink strokes, jagged torn edges, heavy broken dark masses, sharp hooks, a few lively scratch lines and scattered shards. Simple bold shapes, sparse detail, no fine ornamental filigree, no neat logo, no perfect circles, straight geometric frames, mirrored wreaths or evenly spaced decorations. Flat ONE dark blue-black ink #18272e. Genuine transparent PNG alpha background including all internal negative spaces. Do not draw paper, checkerboard, backdrop, shadows, color accents, text or UI. Square image; make main symbol very large, filling about 90-94% of canvas height and width while keeping every extremity uncropped. The evil destructive quality must come from forceful abstract shapes, NOT eyes, face, skull, limbs, body or literal monster anatomy. ",
+  "images": [
+    {
+      "id": "sagger_matron",
+      "file": "MAP_Boss_SaggerMatron_v6.png",
+      "name": "封窑兽·匣母",
+      "act": 1,
+      "motif": "裂匣凶印",
+      "subject": "A massive binding seal violently bursting under pressure from within: two heavy crooked interlocking angular bands wrench apart diagonally, one side thick and blunt, the opposite side torn into long stabbing ceramic splinters. Off-center dark wedge trapped in the split; a wide jagged empty fissure cuts through it. Sparse hooked smoke-like strokes drag out to one side and a few angular fragments eject to the other. Broad crushing silhouette, an ominous fractured seal, not a literal chest, mouth or doorway.",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-022dda8e-cc81-475d-a851-12d176ab6e0f.png",
+      "status": "user_approved",
+      "transparent_background": true,
+      "size": [
+        1254,
+        1254
+      ],
+      "final_prompt": "Generate one new boss map emblem for the dark fantasy ceramic-kiln game Ember's Kiln. Use case: stylized-concept, isolated raster game map asset. Input reference: screenshot is ONLY a reference for dark single-ink map-symbol language; do NOT copy its precise geometry or symmetry. USER CORRECTION: previous sigils were much too regular and tame. This version must feel malevolent, violently destructive, oppressive, hand-drawn and irregular. An abstract threatening omen rather than a creature portrait. Strongly asymmetric silhouette, uneven coarse ink strokes, jagged torn edges, heavy broken dark masses, sharp hooks, a few lively scratch lines and scattered shards. Simple bold shapes, sparse detail, no fine ornamental filigree, no neat logo, no perfect circles, straight geometric frames, mirrored wreaths or evenly spaced decorations. Flat ONE dark blue-black ink #18272e. Genuine transparent PNG alpha background including all internal negative spaces. Do not draw paper, checkerboard, backdrop, shadows, color accents, text or UI. Square image; make main symbol very large, filling about 90-94% of canvas height and width while keeping every extremity uncropped. The evil destructive quality must come from forceful abstract shapes, NOT eyes, face, skull, limbs, body or literal monster anatomy. \nSpecific emblem: A massive binding seal violently bursting under pressure from within: two heavy crooked interlocking angular bands wrench apart diagonally, one side thick and blunt, the opposite side torn into long stabbing ceramic splinters. Off-center dark wedge trapped in the split; a wide jagged empty fissure cuts through it. Sparse hooked smoke-like strokes drag out to one side and a few angular fragments eject to the other. Broad crushing silhouette, an ominous fractured seal, not a literal chest, mouth or doorway.",
+      "background_removal_prompt": "Make the background transparent.",
+      "runtime_map_icon": "res://art/map/bosses/MAP_Boss_SaggerMatron_v6.png"
+    },
+    {
+      "id": "kilnheart_ember",
+      "file": "MAP_Boss_KilnheartEmber_v6.png",
+      "name": "窑心·烬",
+      "act": 2,
+      "motif": "失控炉核",
+      "subject": "An uncontrolled devouring kiln-fire vortex: a lopsided broken spiral of heavy black hooked flame strokes crushes inward around an off-center jagged ember-shaped void, while two huge unequal flame scythes whip explosively outwards. Jagged torn chunks break away on one side, thick sweeping strokes collide at the bottom. Violent rotational energy, hostile serrated silhouette. NOT a neat ring, flower, sun, evenly radiating rosette, eye or monster face.",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-700e1995-ca7b-432f-8402-f77a9ea3ced4.png",
+      "status": "user_approved",
+      "transparent_background": true,
+      "size": [
+        1254,
+        1254
+      ],
+      "final_prompt": "Generate one new boss map emblem for the dark fantasy ceramic-kiln game Ember's Kiln. Use case: stylized-concept, isolated raster game map asset. Input reference: screenshot is ONLY a reference for dark single-ink map-symbol language; do NOT copy its precise geometry or symmetry. USER CORRECTION: previous sigils were much too regular and tame. This version must feel malevolent, violently destructive, oppressive, hand-drawn and irregular. An abstract threatening omen rather than a creature portrait. Strongly asymmetric silhouette, uneven coarse ink strokes, jagged torn edges, heavy broken dark masses, sharp hooks, a few lively scratch lines and scattered shards. Simple bold shapes, sparse detail, no fine ornamental filigree, no neat logo, no perfect circles, straight geometric frames, mirrored wreaths or evenly spaced decorations. Flat ONE dark blue-black ink #18272e. Genuine transparent PNG alpha background including all internal negative spaces. Do not draw paper, checkerboard, backdrop, shadows, color accents, text or UI. Square image; make main symbol very large, filling about 90-94% of canvas height and width while keeping every extremity uncropped. The evil destructive quality must come from forceful abstract shapes, NOT eyes, face, skull, limbs, body or literal monster anatomy. \nSpecific emblem: An uncontrolled devouring kiln-fire vortex: a lopsided broken spiral of heavy black hooked flame strokes crushes inward around an off-center jagged ember-shaped void, while two huge unequal flame scythes whip explosively outwards. Jagged torn chunks break away on one side, thick sweeping strokes collide at the bottom. Violent rotational energy, hostile serrated silhouette. NOT a neat ring, flower, sun, evenly radiating rosette, eye or monster face.",
+      "background_removal_prompt": "Make the background transparent. Keep only the dark blue emblem, with actual PNG alpha transparency in every white and grey area, including internal gaps. Preserve the exact emblem shape, size, rough ink edges and color. Background removal only.",
+      "runtime_map_icon": "res://art/map/bosses/MAP_Boss_KilnheartEmber_v6.png"
+    },
+    {
+      "id": "chi_the_first",
+      "file": "MAP_Boss_ChiTheFirst_v5.png",
+      "name": "窑主·熾",
+      "act": 3,
+      "motif": "暴君焰冠",
+      "subject": "An ancient tyrant's savage flame-crown omen: three unequal torn flame-spikes rise from a heavy fractured diagonal slash, the tallest spike bends like a vicious hook, one short broad spike splits sideways. Beneath it a cracked tapering blaze rips downward with several detached angular fragments, the whole shape leaning and twisting under immense destructive pressure. Broad flaring shoulders made ONLY of abstract flame marks, no body. A threatening ragged coronation sigil, no diamond frame, no balanced heraldry, no face or head.",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-e9bfd366-ef8b-4049-8513-17f23d1e3802.png",
+      "status": "user_approved",
+      "transparent_background": true,
+      "size": [
+        1254,
+        1254
+      ],
+      "final_prompt": "Generate one new boss map emblem for the dark fantasy ceramic-kiln game Ember's Kiln. Use case: stylized-concept, isolated raster game map asset. Input reference: screenshot is ONLY a reference for dark single-ink map-symbol language; do NOT copy its precise geometry or symmetry. USER CORRECTION: previous sigils were much too regular and tame. This version must feel malevolent, violently destructive, oppressive, hand-drawn and irregular. An abstract threatening omen rather than a creature portrait. Strongly asymmetric silhouette, uneven coarse ink strokes, jagged torn edges, heavy broken dark masses, sharp hooks, a few lively scratch lines and scattered shards. Simple bold shapes, sparse detail, no fine ornamental filigree, no neat logo, no perfect circles, straight geometric frames, mirrored wreaths or evenly spaced decorations. Flat ONE dark blue-black ink #18272e. Genuine transparent PNG alpha background including all internal negative spaces. Do not draw paper, checkerboard, backdrop, shadows, color accents, text or UI. Square image; make main symbol very large, filling about 90-94% of canvas height and width while keeping every extremity uncropped. The evil destructive quality must come from forceful abstract shapes, NOT eyes, face, skull, limbs, body or literal monster anatomy. \nSpecific emblem: An ancient tyrant's savage flame-crown omen: three unequal torn flame-spikes rise from a heavy fractured diagonal slash, the tallest spike bends like a vicious hook, one short broad spike splits sideways. Beneath it a cracked tapering blaze rips downward with several detached angular fragments, the whole shape leaning and twisting under immense destructive pressure. Broad flaring shoulders made ONLY of abstract flame marks, no body. A threatening ragged coronation sigil, no diamond frame, no balanced heraldry, no face or head.",
+      "background_removal_prompt": "Make the background transparent. Keep only the dark blue emblem, with actual PNG alpha transparency in every white and grey area, including internal gaps. Preserve the exact emblem shape, size, rough ink edges and color. Background removal only.",
+      "runtime_map_icon": "res://art/map/bosses/MAP_Boss_ChiTheFirst_v5.png"
+    }
+  ],
+  "runtime_note": "三张新版已实装，交互地图与地图底图共用 240 像素显示尺寸。",
+  "approved_on": "2026-09-09",
+  "runtime_size_px": 240
+}

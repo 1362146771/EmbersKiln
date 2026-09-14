@@ -20,8 +20,8 @@ func _ready() -> void:
 	await get_tree().process_frame
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST))
 	records = manifest.get("images", [])
-	check("20 selected production portraits", records.size() == 20)
-	check("21 existing enemy definitions", GameData.enemies.size() == 21)
+	check("21 selected production portraits", records.size() == 21)
+	check("22 existing enemy definitions", GameData.enemies.size() == 22)
 	var ids: Array = []
 	for record in records:
 		var path := "res://" + String(record.production)
@@ -79,7 +79,7 @@ func combat(ids: Array, tag: String) -> void:
 		if not is_instance_valid(panel):
 			continue
 		var sprite: TextureRect = panel.get_node("Inner/SpriteRect")
-		check(tag + " production portrait bound", sprite.texture == unit.data.sprite_texture())
+		check(tag + " production portrait bound", sprite.texture == unit.data.sprite_texture(StringName(unit.intent.get("id", ""))))
 		check(tag + " preserve aspect", sprite.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED)
 		check(tag + " sprite visible", sprite.is_visible_in_tree() and sprite.size.x > 0 and sprite.size.y > 0)
 		check(tag + " portrait fits viewport", ui.get_viewport_rect().encloses(sprite.get_global_rect()))

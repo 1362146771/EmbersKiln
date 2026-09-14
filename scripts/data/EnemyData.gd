@@ -8,8 +8,18 @@ extends Resource
 @export var base_hp: int = 10
 @export var ai: StringName = &"weighted_random"
 @export var sprite: String = ""
+## 可选：招式 id -> 完整立绘路径；未配置的状态回退到默认 sprite。
+@export var state_sprites: Dictionary = {}
+var _sprite_cache: Dictionary = {}
+@export var map_icon: String = ""
 @export var description: String = ""
 @export var combat_hint: String = ""
+## 普通战组队元数据：strong / medium / weak；精英与 Boss 为 solo_only。
+@export var encounter_class: StringName = &""
+## 目标敌人数 -> 被选入该规模战斗的权重。键使用 JSON 字符串 "1" / "2" / "3"。
+var encounter_weights: Dictionary = {}
+## 同一个敌人 id 在一场普通战中的最多副本数。
+@export var max_copies_per_encounter: int = 0
 ## scripted_cycle：首招以及 moves 内的 next / on_block_break 构成数据驱动循环。
 @export var first_move: StringName = &""
 
@@ -28,8 +38,13 @@ static func from_dict(d: Dictionary) -> EnemyData:
 	e.base_hp = int(d.get("hp", 10))
 	e.ai = StringName(d.get("ai", "weighted_random"))
 	e.sprite = d.get("sprite", "")
+	e.state_sprites = d.get("state_sprites", {}).duplicate(true)
+	e.map_icon = d.get("map_icon", "")
 	e.description = d.get("description", "")
 	e.combat_hint = d.get("combat_hint", "")
+	e.encounter_class = StringName(d.get("encounter_class", ""))
+	e.encounter_weights = d.get("encounter_weights", {}).duplicate(true)
+	e.max_copies_per_encounter = int(d.get("max_copies_per_encounter", 0))
 	e.first_move = StringName(d.get("first_move", ""))
 	e.moves = d.get("moves", [])
 	e.phases = d.get("phases", [])
@@ -43,9 +58,23 @@ func is_boss() -> bool:
 func is_elite() -> bool:
 	return tier == &"elite"
 
-## 返回 sprite 字段对应的敌人立绘纹理；无 sprite 或资源缺失时返回 null。
+
+func encounter_weight(enemy_count: int) -> float:
+	return float(encounter_weights.get(str(enemy_count), 0.0))
+
+## 传入招式 id 时优先返回状态立绘，否则使用默认 sprite。
+## 缺失状态图回退默认图；默认 sprite 为空或资源缺失时返回 null。
 ## 路径约定：res://art/enemies/<sprite>.png
-func sprite_texture() -> Texture2D:
+func sprite_texture(move_id: StringName = &"") -> Texture2D:
+	var state_path: String = state_sprites.get(String(move_id), "")
+	if not state_path.is_empty():
+		if _sprite_cache.has(state_path):
+			return _sprite_cache[state_path]
+		if ResourceLoader.exists(state_path):
+			var state_texture := load(state_path) as Texture2D
+			if state_texture != null:
+				_sprite_cache[state_path] = state_texture
+				return state_texture
 	if sprite.is_empty():
 		return null
 	var p := "res://art/enemies/%s.png" % sprite

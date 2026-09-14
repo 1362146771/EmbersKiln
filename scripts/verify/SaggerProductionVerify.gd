@@ -1,5 +1,5 @@
 extends Node
-## 正式数据/存档/真实战斗UI接入验证；测试断言数值来自已批准的XM台账。
+## 正式数据/存档/真实战斗UI接入验证；测试断言数值来自已批准的R25台账。
 ## -- --visual 时用实际渲染后截图；必须隔离APPDATA，不能操作用户正在玩的局。
 
 var passed := 0
@@ -45,12 +45,20 @@ func _finish() -> void:
 
 
 func _test_data_and_saves() -> void:
-	check("内容规模21敌人3Boss", GameData.enemies.size() == 21 and GameData.get_enemies_by_tier(&"boss").size() == 3)
-	check("确认基础生命160", ed.base_hp == 160)
-	check("确认伤害12/格挡14/喷火20", ed.find_move(&"bar").value == 12 and ed.find_move(&"seal").value == 14 and ed.find_move(&"fire").value == 20)
+	check("内容规模22敌人3Boss", GameData.enemies.size() == 22 and GameData.get_enemies_by_tier(&"boss").size() == 3)
+	check("确认基础生命180", ed.base_hp == 180)
+	check("确认伤害16/格挡18/喷火32", ed.find_move(&"bar").value == 16 and ed.find_move(&"seal").value == 18 and ed.find_move(&"fire").value == 32)
 	check("固定循环链接合法", ed.ai == &"scripted_cycle" and ed.cycle_validation_errors().is_empty())
 	check("图鉴和提示已接入数据", not ed.description.is_empty() and not ed.combat_hint.is_empty())
 	check("生产sprite可加载", ed.sprite_texture() != null)
+	check("未知状态回退默认立绘", ed.sprite_texture(&"unconfigured") == ed.sprite_texture())
+	var state_paths: Dictionary = {}
+	for move in ed.moves:
+		var state_texture := ed.sprite_texture(StringName(move.id))
+		check("状态立绘独立加载 " + String(move.id), state_texture != null and state_texture.resource_path == ed.state_sprites.get(move.id, ""))
+		if state_texture != null:
+			state_paths[state_texture.resource_path] = true
+	check("五种状态使用不同图片", state_paths.size() == 5)
 	if ed.sprite_texture() != null:
 		var sprite_image := ed.sprite_texture().get_image()
 		check("生产sprite保持批准原图尺寸", sprite_image.get_size() == Vector2i(1254, 1254))
@@ -76,7 +84,7 @@ func _test_data_and_saves() -> void:
 	check("旧局首幕Boss不被静默迁移", RunState.act_maps[0][-1][0].enemy_ids == [&"chi_the_first"])
 	check("旧局再次保存仍保留原Boss", RunState.to_save_dict().act_maps[0][-1][0].enemy_ids == ["chi_the_first"])
 	check("新匣母局序列化可还原", RunState.from_save_dict(fresh_save) and RunState.act_maps[0][-1][0].enemy_ids == [&"sagger_matron"])
-	check("旧Boss数值未变", GameData.get_enemy(&"chi_the_first").base_hp == 150 and GameData.get_enemy(&"kilnheart_ember").base_hp == 165)
+	check("后两幕Boss数值同步完成重标", GameData.get_enemy(&"chi_the_first").base_hp == 300 and GameData.get_enemy(&"kilnheart_ember").base_hp == 260)
 
 
 func _test_map_hint() -> void:
@@ -86,7 +94,7 @@ func _test_map_hint() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var hint: Label = map_ui.map_area.get_node_or_null("BossCombatHint")
-	check("地图机制提示无需悬停", hint != null and hint.text == ed.combat_hint and hint.visible)
+	check("地图不常驻显示Boss机制提示", hint == null or not hint.visible)
 	if visual:
 		map_ui.map_scroller.scroll_vertical = 0
 		await snapshot("map")
@@ -105,23 +113,23 @@ func _test_combat() -> void:
 	await get_tree().process_frame
 	var c := ui.controller
 	var boss := c.enemies[0]
-	check("真实CombatPlay加载匣母且生命160", boss.id == ed.id and boss.hp == 160)
-	check("开局意图为拦路12", boss.intent.id == "bar" and boss.intent.value == 12)
-	check("敌人面板使用生产贴图", ui.unit_panels[boss].get_node("Inner/SpriteRect").texture == ed.sprite_texture())
+	check("真实CombatPlay加载匣母且生命180", boss.id == ed.id and boss.hp == 180)
+	check("开局意图为拦路16", boss.intent.id == "bar" and boss.intent.value == 16)
+	check("敌人面板使用生产贴图", ui.unit_panels[boss].get_node("Inner/SpriteRect").texture == ed.sprite_texture(&"bar"))
 	await snapshot("bar")
 	var player_hp := c.player.hp
 	await end_turn()
-	check("拦路实际命中12且转封匣", c.player.hp == player_hp - 12 and boss.intent.id == "seal")
+	check("拦路实际命中16且转封匣", c.player.hp == player_hp - 16 and boss.intent.id == "seal")
 	await snapshot("seal")
 	await end_turn()
-	check("封匣获得14格挡且预告喷火20", boss.block == 14 and boss.intent.id == "fire" and boss.intent.value == 20)
+	check("封匣获得18格挡且预告喷火32", boss.block == 18 and boss.intent.id == "fire" and boss.intent.value == 32)
 	await snapshot("fire")
-	# 设置已存在的重劈手牌用于精确破盾，不改变正式卡牌/敌人数据。
-	c.hand = [{"id": &"heavy_blade", "upgraded": false}]
-	c.energy = GameData.get_card(&"heavy_blade").cost
-	check("真实重劈卡可用", c.play_card(0, 0))
-	check("重劈恰好破封不扣Boss生命", boss.block == 0 and boss.hp == 160 and boss.intent.id == "vent")
-	check("已显示意图即时变泄压", ui.unit_panels[boss].get_node("Inner/IntentLabel").text == "泄压 · 不攻击")
+	# 设置已存在的残杀手牌验证越过18格挡后的真实破封路径，不改变正式卡牌/敌人数据。
+	c.hand = [{"id": &"carnage", "upgraded": false}]
+	c.energy = GameData.get_card(&"carnage").cost
+	check("真实残杀卡可用", c.play_card(0, 0))
+	check("残杀破封且溢出2点伤害", boss.block == 0 and boss.hp == 178 and boss.intent.id == "vent")
+	check("已显示意图即时变泄压", ui.unit_panels[boss].get_node("Inner/IntentBar").tooltip_text == "泄压 · 不攻击")
 	await snapshot("vent")
 	player_hp = c.player.hp
 	await end_turn()
@@ -129,15 +137,17 @@ func _test_combat() -> void:
 	await snapshot("cool")
 	await end_turn()
 	check("散热无伤害后恢复拦路", c.player.hp == player_hp and boss.intent.id == "bar")
+	check("散热后恢复拦路图", ui.unit_panels[boss].get_node("Inner/SpriteRect").texture == ed.sprite_texture(&"bar"))
 	await end_turn()
 	await end_turn()
 	player_hp = c.player.hp
-	# 未破盾分支：实际窑壁卡给12格挡，喷火20，预计扣血8。
+	# 未破盾分支：实际窑壁卡给12格挡，喷火32，预计扣血20。
 	c.hand = [{"id": &"flame_barrier", "upgraded": false}]
 	c.energy = GameData.get_card(&"flame_barrier").cost
 	check("真实窑壁卡可用", c.play_card(0, 0))
 	await end_turn()
-	check("未破封喷火正确被格挡减伤", c.player.hp == player_hp - 8 and boss.intent.id == "cool")
+	check("未破封喷火正确被格挡减伤", c.player.hp == player_hp - 20 and boss.intent.id == "cool")
+	check("未打断喷火后切换散热图", ui.unit_panels[boss].get_node("Inner/SpriteRect").texture == ed.sprite_texture(&"cool"))
 	# 不跳过战斗结束：测试打出足够伤害并检查真实UI回程标记。
 	c._dmg.deal_to_unit(boss, boss.hp + boss.block)
 	check("匣母死亡结束战斗", not c.combat_active() and not boss.is_alive())
@@ -165,8 +175,13 @@ func end_turn() -> void:
 
 
 func snapshot(tag: String) -> void:
+	if ed.state_sprites.has(tag):
+		var boss := ui.controller.enemies[0]
+		check("真实状态即时换图 " + tag, ui.unit_panels[boss].get_node("Inner/SpriteRect").texture == ed.sprite_texture(StringName(tag)))
 	if not visual:
 		return
+	# 先检查即时换图，再等待伤害刀光和漂字结束以便视觉验收。
+	await get_tree().create_timer(0.5).timeout
 	await get_tree().process_frame
 	await RenderingServer.frame_post_draw
 	var path := "res://Temp/sagger-verify/production_%s.png" % tag

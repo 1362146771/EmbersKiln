@@ -1,16 +1,16 @@
 {
-  "version": 2,
-  "formations": [
-    {"id": "A", "enemies": ["claylump", "sootling"], "acts": [1], "min_floor": 1, "max_floor": 9, "weight": 1.0},
-    {"id": "B", "enemies": ["embermoth", "embermoth"], "acts": [1], "min_floor": 1, "max_floor": 9, "weight": 1.0},
-    {"id": "C", "enemies": ["glazetick", "potsherd"], "acts": [1], "min_floor": 1, "max_floor": 9, "weight": 1.0},
-    {"id": "D", "enemies": ["ashcantor", "claylump"], "acts": [1], "min_floor": 5, "max_floor": 9, "weight": 1.0},
-    {"id": "E", "enemies": ["embermoth", "embermoth", "sootling"], "acts": [1], "min_floor": 5, "max_floor": 9, "weight": 1.0},
-    {"id": "F", "enemies": ["kilnwarden", "cindermoth"], "acts": [2], "min_floor": 1, "max_floor": 9, "weight": 1.0},
-    {"id": "G", "enemies": ["meltgolem", "embermoth", "cindermoth"], "acts": [2], "min_floor": 4, "max_floor": 9, "weight": 1.0},
-    {"id": "H", "enemies": ["cinderfiend", "magmawhelp"], "acts": [3], "min_floor": 1, "max_floor": 9, "weight": 1.0},
-    {"id": "I", "enemies": ["coalseer", "magmawhelp", "cinderfiend"], "acts": [3], "min_floor": 3, "max_floor": 9, "weight": 1.0}
-  ],
+  "version": 4,
+  "encounter_generation": {
+    "before_triple_unlock": {"1": 70, "2": 30, "3": 0},
+    "after_triple_unlock": {"1": 65, "2": 25, "3": 10},
+    "third_act_deck_capacity_scaling": {
+      "act": 3,
+      "capacity_min": 18,
+      "capacity_max": 24,
+      "max_multi_weight_bonus": 0.20
+    },
+    "max_strong_per_encounter": 1
+  },
   "acts": [
     {
       "act": 1,
@@ -18,15 +18,17 @@
       "floor_count": 15,
       "boss_floor": 14,
       "boss_id": "sagger_matron",
+      "triple_enemy_unlock_floor": 5,
       "transition_heal": 0.0,
       "act_hp_mult": 1.0,
       "act_dmg_mult": 1.0,
+      "non_boss_stat_mult": 0.70,
       "columns": 6,
       "num_paths": 6,
       "single_start_node": true,
       "mid_treasure_floor": 7,
       "enemy_pool": {
-        "normal": ["claylump", "sootling", "embermoth", "potsherd", "glazetick", "kilnstatue", "ashcantor"],
+        "normal": ["claylump", "sootling", "embermoth", "potsherd", "glazetick", "kilnstatue", "ashcantor", "robber"],
         "elite": ["kilnward", "glazemaw", "slagbeast"]
       },
       "fixed_rows": {
@@ -50,9 +52,11 @@
       "floor_count": 15,
       "boss_floor": 14,
       "boss_id": "kilnheart_ember",
+      "triple_enemy_unlock_floor": 4,
       "transition_heal": 0.30,
       "act_hp_mult": 1.15,
       "act_dmg_mult": 1.15,
+      "non_boss_stat_mult": 1.0,
       "columns": 6,
       "num_paths": 6,
       "single_start_node": true,
@@ -82,9 +86,11 @@
       "floor_count": 15,
       "boss_floor": 14,
       "boss_id": "chi_the_first",
+      "triple_enemy_unlock_floor": 3,
       "transition_heal": 0.20,
       "act_hp_mult": 1.30,
       "act_dmg_mult": 1.30,
+      "non_boss_stat_mult": 0.70,
       "columns": 6,
       "num_paths": 6,
       "single_start_node": true,

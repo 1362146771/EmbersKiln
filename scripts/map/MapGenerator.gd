@@ -83,7 +83,7 @@ static func generate(config: Dictionary) -> Array:
 		for i in floors[1].size():
 			start_node.links.append(i)
 
-	# 6) 分配敌人编成（战斗/精英/Boss）
+	# 6) 分配敌人：普通战先抽数量、再按该数量的怪物权重组队；精英/Boss 固定单体。
 	for r in height:
 		for node in floors[r]:
 			_assign_enemies(node, config)
@@ -230,15 +230,8 @@ static func _assign_enemies(node: MapNode, config: Dictionary) -> void:
 	match node.type:
 		&"combat":
 			var normals := _pool_enemies(config, &"normal")
-			# 教学层（f0）固定单怪；否则约 45% 触发多敌编成，未命中则随机单怪。
-			if node.floor == 0 or normals.size() < 2 or randf() >= 0.45:
-				node.enemy_ids = [_random_id(normals)]
-			else:
-				var forms := GameData.get_formations_for_floor(node.floor, int(config.get("act", 0)))
-				if forms.is_empty():
-					node.enemy_ids = [_random_id(normals)]
-				else:
-					node.enemy_ids = _weighted_formation(forms, normals)
+			var enemy_count := _roll_enemy_count(node.floor, config)
+			node.enemy_ids = _pick_weighted_enemies(normals, enemy_count)
 		&"elite":
 			node.enemy_ids = [_random_id(_pool_enemies(config, &"elite"))]
 		&"boss":
@@ -271,21 +264,100 @@ static func _random_id(list: Array) -> StringName:
 	return list[randi_range(0, list.size() - 1)].id
 
 
-## 按编成 weight 加权抽一组，返回该编成的敌人 id 列表（StringName 数组）。
-static func _weighted_formation(forms: Array, normals: Array = []) -> Array[StringName]:
-	if normals.is_empty():
-		normals = GameData.get_enemies_by_tier(&"normal")
+## 教学层固定单怪；之后按当前幕的三敌解锁层读取人数权重。
+## 第三幕额外按当前牌库容量为多怪权重提供 0..配置上限的线性加成。
+static func _roll_enemy_count(floor: int, config: Dictionary) -> int:
+	if floor == 0:
+		return 1
+	var triple_unlock := int(config.get("triple_enemy_unlock_floor", -1))
+	var rule_name := "after_triple_unlock" if floor >= triple_unlock else "before_triple_unlock"
+	var weights := _resolved_enemy_count_weights(config, rule_name)
+	var max_count := GameData.max_enemies_per_combat()
 	var total := 0.0
-	for fm in forms:
-		total += float(fm.get("weight", 1.0))
+	for enemy_count in range(1, max_count + 1):
+		total += maxf(0.0, float(weights.get(str(enemy_count), 0.0)))
 	if total <= 0.0:
-		return [_random_id(normals)]
-	var r := randf() * total
-	for fm in forms:
-		r -= float(fm.get("weight", 1.0))
-		if r <= 0.0:
-			var ids: Array[StringName] = []
-			for eid in fm.get("enemies", []):
-				ids.append(StringName(eid))
-			return ids
-	return [_random_id(normals)]
+		return 1
+	var roll := randf() * total
+	for enemy_count in range(1, max_count + 1):
+		roll -= maxf(0.0, float(weights.get(str(enemy_count), 0.0)))
+		if roll <= 0.0:
+			return enemy_count
+	return 1
+
+
+## 返回当前容量下的实际人数权重。override 仅供确定性验证；负值表示读取 RunState。
+static func _resolved_enemy_count_weights(config: Dictionary, rule_name: String, deck_capacity_override: int = -1) -> Dictionary:
+	var weights: Dictionary = GameData.encounter_generation.get(rule_name, {}).duplicate(true)
+	var scaling: Dictionary = GameData.encounter_generation.get("third_act_deck_capacity_scaling", {})
+	if int(config.get("act", 0)) != int(scaling.get("act", -1)):
+		return weights
+	var capacity := deck_capacity_override
+	if capacity < 0 and RunState != null:
+		capacity = RunState.current_deck_capacity()
+	var capacity_min := int(scaling.get("capacity_min", 0))
+	var capacity_max := int(scaling.get("capacity_max", capacity_min))
+	if capacity < 0:
+		capacity = capacity_min
+	var progress := 0.0
+	if capacity_max > capacity_min:
+		progress = clampf(float(capacity - capacity_min) / float(capacity_max - capacity_min), 0.0, 1.0)
+	var multi_bonus := float(scaling.get("max_multi_weight_bonus", 0.0)) * progress
+	for enemy_count in range(2, GameData.max_enemies_per_combat() + 1):
+		var key := str(enemy_count)
+		weights[key] = float(weights.get(key, 0.0)) * (1.0 + multi_bonus)
+	return weights
+
+
+## 按目标敌人数对应的怪物权重逐个抽取；强怪共享编组上限，同种怪受副本上限约束。
+static func _pick_weighted_enemies(pool: Array, requested_count: int) -> Array[StringName]:
+	var picked: Array[StringName] = []
+	if pool.is_empty():
+		return picked
+	var target_count := clampi(requested_count, 1, GameData.max_enemies_per_combat())
+	var picked_per_id: Dictionary = {}
+	var strong_count := 0
+	var max_strong := int(GameData.encounter_generation.get("max_strong_per_encounter", 0))
+	for _slot in target_count:
+		var candidates: Array = []
+		var weights: Array[float] = []
+		for enemy in pool:
+			var ed := enemy as EnemyData
+			if ed == null:
+				continue
+			var weight := ed.encounter_weight(target_count)
+			if weight <= 0.0:
+				continue
+			var copies := int(picked_per_id.get(ed.id, 0))
+			if copies >= ed.max_copies_per_encounter:
+				continue
+			if ed.encounter_class == &"strong" and strong_count >= max_strong:
+				continue
+			candidates.append(ed)
+			weights.append(weight)
+		if candidates.is_empty():
+			break
+		var chosen: EnemyData = _weighted_enemy(candidates, weights)
+		if chosen == null:
+			break
+		picked.append(chosen.id)
+		picked_per_id[chosen.id] = int(picked_per_id.get(chosen.id, 0)) + 1
+		if chosen.encounter_class == &"strong":
+			strong_count += 1
+	if picked.is_empty():
+		picked.append(_random_id(pool))
+	return picked
+
+
+static func _weighted_enemy(candidates: Array, weights: Array[float]) -> EnemyData:
+	var total := 0.0
+	for weight in weights:
+		total += maxf(0.0, weight)
+	if total <= 0.0 or candidates.is_empty():
+		return null
+	var roll := randf() * total
+	for i in candidates.size():
+		roll -= maxf(0.0, weights[i])
+		if roll <= 0.0:
+			return candidates[i] as EnemyData
+	return candidates.back() as EnemyData

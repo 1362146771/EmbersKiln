@@ -54,7 +54,7 @@ func check(name: String, cond: bool, detail: String = "") -> void:
 func run() -> void:
 	# ---------- 数据层不变量 ----------
 	check("卡牌数据=75职业牌+3状态牌", GameData.cards.size() == 78, "cards=%d" % GameData.cards.size())
-	check("敌人数据=21（新增首幕Boss匣母）", GameData.enemies.size() == 21, "enemies=%d" % GameData.enemies.size())
+	check("敌人数据=22（含抢劫的与三幕Boss）", GameData.enemies.size() == 22, "enemies=%d" % GameData.enemies.size())
 	check("遗物数据=11", GameData.relics.size() == 11, "relics=%d" % GameData.relics.size())
 	check("状态数据=10（含活力/缓冲/衰朽/领袖气质）", GameData.statuses.size() == 10, "statuses=%d" % GameData.statuses.size())
 	check("层数=floor_count", RunState.total_floors() == int(GameData.act_configs[0].get("floor_count", 15)), "floors=%d" % RunState.total_floors())

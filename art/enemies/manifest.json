@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "current",
-  "count": 20,
+  "count": 21,
   "images": [
     {
       "key": "EmberEater",
@@ -321,6 +321,72 @@
           1055
         ]
       ]
+    },
+    {
+      "key": "Robber",
+      "name": "抢劫的",
+      "production": "art/enemies/SPR_Enemy_Robber.png",
+      "sha256": "6b5fdc310e7d4b29a473a701d8d55bbdec68b0d69ba4c81e73cfd75ca1301477",
+      "size": [
+        1254,
+        1254
+      ],
+      "gap_seeds": []
     }
-  ]
+  ],
+  "state_sets": {
+    "sagger_matron": {
+      "default": "art/enemies/SPR_Enemy_SaggerMatron.png",
+      "selection": "current move id; unknown states use default",
+      "scale": 0.9,
+      "bottom_y": 1120,
+      "states": {
+        "bar": {
+          "name": "拦路",
+          "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Bar.png",
+          "sha256": "1e5892cc30dcbd12aee11356fd2086a8da295db7299cca320ad8a18777438f07",
+          "size": [
+            1254,
+            1254
+          ]
+        },
+        "seal": {
+          "name": "封匣",
+          "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Seal.png",
+          "sha256": "2786746aef2d36dcc5be003d90a02cfebc05fb78d26aa3640d5b4ec2691a5577",
+          "size": [
+            1254,
+            1254
+          ]
+        },
+        "fire": {
+          "name": "开窑",
+          "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Fire.png",
+          "sha256": "0416f25d407b737f9c9990423fa2cda28c6bd55db27cf02e59c55260827ce1c0",
+          "size": [
+            1254,
+            1254
+          ]
+        },
+        "vent": {
+          "name": "泄压",
+          "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Vent.png",
+          "sha256": "c548be148de2ad7aa447d21433ef10f5cad851a25465b509fbc69da5f61a89a3",
+          "size": [
+            1254,
+            1254
+          ]
+        },
+        "cool": {
+          "name": "散热",
+          "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Cool.png",
+          "sha256": "68d70e4983d4d53fba6e5dba4a85707f4ead61eb9743401f81e4472ba8546414",
+          "size": [
+            1254,
+            1254
+          ]
+        }
+      }
+    }
+  }
 }

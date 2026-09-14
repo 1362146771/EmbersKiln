@@ -199,8 +199,8 @@ func _test_ui_and_scaling() -> void:
 	var panel: EnemyPanel = load("res://scenes/combat/EnemyPanel.tscn").instantiate()
 	add_child(panel)
 	panel.build(boss, 0, false, 1, ctrl)
-	check("喷火和破封提示可见", panel.get_node("Inner/IntentLabel").text.contains("打掉格挡可打断"))
-	check("剩余封匣格挡可见", panel.get_node("Inner/StatusLabel").text.contains("封匣格挡 8"))
+	check("喷火和破封提示可见", panel.get_node("Inner/IntentBar").tooltip_text.contains("打掉格挡可打断"))
+	check("剩余封匣格挡数值显示在盾上", panel.get_node("Inner/BlockShield/BlockText").text == "8")
 	# 无需进入 CombatUI._ready；只验证已持有面板时的真实信号处理路径。
 	var ui := CombatUI.new()
 	ui.controller = ctrl
@@ -211,7 +211,7 @@ func _test_ui_and_scaling() -> void:
 	SignalBus.enemy_intent_changed.connect(manager.on_eintent)
 	BattleDirector.input_locked = true
 	ctrl._dmg.deal_to_unit(boss, 8)
-	var label: String = panel.get_node("Inner/IntentLabel").text
+	var label: String = panel.get_node("Inner/IntentBar").tooltip_text
 	check("动画锁定期间即时换提示无残留喷火", label == "泄压 · 不攻击" and ui._needs_refresh)
 	SignalBus.enemy_intent_changed.disconnect(manager.on_eintent)
 	BattleDirector.input_locked = false

@@ -1,6 +1,6 @@
 extends Control
 ## T3 地图生成测试（StS 式稀疏网格 DAG）。
-## 覆盖：层数/列界/单一起点/固定层/单 Boss/出入边/连接列差/敌人编成/祭坛≤1/类型门控/BFS 可达；
+## 覆盖：层数/列界/单一起点/固定层/单 Boss/出入边/连接列差/人数优先遇敌/祭坛≤1/类型门控/BFS 可达；
 ## 每幕再压力跑 100 次，校验结构不变量恒成立。
 
 var _results: Array[bool] = []
@@ -46,7 +46,7 @@ func _test_act(cfg: Dictionary) -> void:
 	check("Act%d 每非末层节点有出边" % act_id, _all_have_out(m))
 	check("Act%d 每非首层节点可达(有入边)" % act_id, _all_reachable(m))
 	check("Act%d 出边列差合规" % act_id, _link_deltas_ok(m, boss_floor, single_start_node))
-	check("Act%d 战斗/精英/Boss 含敌, 非战斗空" % act_id, _enemy_assignment_ok(m))
+	check("Act%d 遇敌人数门控、强怪/重复上限、单体精英Boss合法" % act_id, _enemy_assignment_ok(m, cfg))
 	check("Act%d BFS 可达 Boss" % act_id, _reach_boss(m))
 
 	# 压力：N 次生成，结构不变量必须恒成立
@@ -57,6 +57,7 @@ func _test_act(cfg: Dictionary) -> void:
 	var boss_ok := true
 	var reachable_ok := true
 	var single_start_ok := true
+	var encounters_ok := true
 	for it in N:
 		var mm: Array = MapGenerator.generate(cfg)
 		var altar := 0
@@ -74,6 +75,8 @@ func _test_act(cfg: Dictionary) -> void:
 			boss_ok = false
 		if not _all_reachable(mm):
 			reachable_ok = false
+		if not _enemy_assignment_ok(mm, cfg):
+			encounters_ok = false
 		if single_start_node and (not _single_combat_start(mm) or not _start_links_all_second_floor(mm)):
 			single_start_ok = false
 	check("Act%d 压力:%d次 祭坛≤1(实测max=%d)" % [act_id, N, altar_max], altar_max <= 1)
@@ -81,6 +84,7 @@ func _test_act(cfg: Dictionary) -> void:
 	check("Act%d 压力:%d次 列坐标恒定合法" % [act_id, N], cols_ok)
 	check("Act%d 压力:%d次 顶层单Boss恒定" % [act_id, N], boss_ok)
 	check("Act%d 压力:%d次 全节点可达恒定" % [act_id, N], reachable_ok)
+	check("Act%d 压力:%d次 遇敌编组约束恒定" % [act_id, N], encounters_ok)
 	if single_start_node:
 		check("Act%d 压力:%d次 单一起点且全连第二层" % [act_id, N], single_start_ok)
 
@@ -179,7 +183,8 @@ func _link_deltas_ok(m: Array, boss_floor: int, single_start_node: bool) -> bool
 	return true
 
 
-func _enemy_assignment_ok(m: Array) -> bool:
+func _enemy_assignment_ok(m: Array, cfg: Dictionary) -> bool:
+	var triple_unlock := int(cfg.get("triple_enemy_unlock_floor", -1))
 	for row in m:
 		for node in row:
 			var combat_like: bool = node.type == &"combat" or node.type == &"elite" or node.type == &"boss"
@@ -187,7 +192,33 @@ func _enemy_assignment_ok(m: Array) -> bool:
 				return false
 			if not combat_like and not node.enemy_ids.is_empty():
 				return false
+			if (node.type == &"elite" or node.type == &"boss") and node.enemy_ids.size() != 1:
+				return false
+			if node.type == &"combat":
+				if node.floor == 0 and node.enemy_ids.size() != 1:
+					return false
+				if node.floor < triple_unlock and node.enemy_ids.size() == 3:
+					return false
+				if not _normal_encounter_valid(node.enemy_ids):
+					return false
 	return true
+
+
+func _normal_encounter_valid(ids: Array) -> bool:
+	if ids.is_empty() or ids.size() > GameData.max_enemies_per_combat():
+		return false
+	var copies: Dictionary = {}
+	var strong_count := 0
+	for raw_id in ids:
+		var enemy: EnemyData = GameData.get_enemy(StringName(raw_id))
+		if enemy == null or enemy.tier != &"normal":
+			return false
+		copies[enemy.id] = int(copies.get(enemy.id, 0)) + 1
+		if int(copies[enemy.id]) > enemy.max_copies_per_encounter:
+			return false
+		if enemy.encounter_class == &"strong":
+			strong_count += 1
+	return strong_count <= int(GameData.encounter_generation.get("max_strong_per_encounter", 0))
 
 
 func _gated_bad(t: StringName, r: int, elite_min: int, rest_min: int, shop_min: int) -> bool:

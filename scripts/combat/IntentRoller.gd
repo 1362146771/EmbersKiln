@@ -24,7 +24,7 @@ func roll_enemy_intent(e: CombatUnit) -> void:
 		var nx: StringName = ed.first_move if e.intent.is_empty() else StringName(e.intent.get("next", ""))
 		# 当前意图可能已被破封分支替换，必须从替换后的 next 继续，不能随机选招。
 		e.charge_next = &""
-		e.intent = scale_intent_damage(ed.find_move(nx))
+		e.intent = scale_intent_damage(ed.find_move(nx), ed.tier)
 		SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
 		return
 	if e.charge_next != &"":
@@ -35,7 +35,7 @@ func roll_enemy_intent(e: CombatUnit) -> void:
 		if forced.is_empty() and ed != null:
 			# 释放招式不存在时回退到正常选择（不卡死）
 			forced = EnemyAI.choose_intent(ed, float(e.hp) / float(e.max_hp) if e.max_hp > 0 else 1.0)
-		e.intent = scale_intent_damage(forced)
+		e.intent = scale_intent_damage(forced, ed.tier if ed != null else &"")
 		SignalBus.enemy_intent_changed.emit(
 			ctrl._index_of(e),
 			StringName(e.intent.get("intent", "unknown")),
@@ -52,7 +52,7 @@ func roll_enemy_intent(e: CombatUnit) -> void:
 		if pidx > e.phase_index:
 			apply_phase_on_enter(e, ed.phases[pidx])
 		e.phase_index = pidx
-	e.intent = scale_intent_damage(EnemyAI.choose_intent(ed, ratio))
+	e.intent = scale_intent_damage(EnemyAI.choose_intent(ed, ratio), ed.tier)
 	SignalBus.enemy_intent_changed.emit(
 		ctrl._index_of(e),
 		StringName(e.intent.get("intent", "unknown")),
@@ -72,20 +72,23 @@ func interrupt_on_block_break(e: CombatUnit, block_before: int) -> void:
 		return
 	e.block_break_next = &""
 	e.charge_next = &""
-	e.intent = scale_intent_damage(replacement)
+	e.intent = scale_intent_damage(replacement, ed.tier)
 	ctrl._log("%s 封匣破裂 → %s" % [e.unit_name, replacement.get("name", "泄压")])
 	SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
 
-## 伤害类意图（attack / aoe_debuff）按难度系数 × 当前幕 act_dmg_mult 缩放（P-D 接线）。
+## 攻击按难度/幕倍率缩放；第一、三幕非 Boss 的攻击、主动格挡再吃约 30% 削弱。
 ## 注意：choose_intent 返回的是 EnemyData.moves 内部字典的引用，必须 duplicate 后再改。
-func scale_intent_damage(intent: Dictionary) -> Dictionary:
+func scale_intent_damage(intent: Dictionary, tier: StringName = &"") -> Dictionary:
 	if intent.is_empty():
 		return intent
 	var kind: String = intent.get("intent", "")
-	if kind != "attack" and kind != "aoe_debuff":
+	if kind != "attack" and kind != "aoe_debuff" and kind != "defend" and kind != "charge":
 		return intent
 	var out: Dictionary = intent.duplicate()
-	out["value"] = GameData.scaled_enemy_damage(int(intent.get("value", 0)))
+	if kind == "attack" or kind == "aoe_debuff":
+		out["value"] = GameData.scaled_enemy_damage(int(intent.get("value", 0)), tier)
+	else:
+		out["value"] = GameData.scaled_enemy_defense(int(intent.get("value", 0)), tier)
 	return out
 
 ## 阶段切换时触发该阶段的 on_enter（自增益类，如觉醒自身加 3 力量）。
@@ -112,7 +115,7 @@ func execute_enemy_intent(e: CombatUnit) -> void:
 				if not ctrl.player.is_alive():
 					break
 				var dmg := ctrl._dmg.compute_outgoing(e, ctrl.player, value)
-				ctrl._dmg.enemy_attack_hit(e, dmg)
+				ctrl.enemy_attack_hit(e, dmg)
 		"defend":
 			e.add_block(value)
 		"buff":
