@@ -1,9 +1,9 @@
 {
-  "version": 1,
+  "version": 3,
   "generator": "built-in image_gen",
   "generated_on": "2026-09-08",
-  "status": "pending_user_review",
-  "runtime_integrated": false,
+  "status": "user_approved",
+  "runtime_integrated": true,
   "base_prompt": "Redraw reference image 1 as one square full-bleed game card illustration. Closely preserve its recognizable subject, camera angle, composition, gesture and motion. Fill the curved black card-crop corners with the surrounding background. No text, card frame, UI, numbers or watermark.\nUse BOLD THICK hand-drawn ink outlines with natural stroke variation, simple loosely hand-painted shapes, broad hard-edged shadows and a muted slate/olive/taupe palette, with limited effect accents appropriate to the original. MUCH SIMPLER than reference 2: few essential details, sparse abstract dashes and dots for texture; NO dense hair strands, tiny rivets, scratches, elaborate crack networks, polished realism or meticulous rendering.\nReference 2 is ONLY the protagonist identity: lean male kiln worker, swept-back dark shoulder-length hair, tan sleeveless workshirt, slate apron, iron wristguards, pale angular ceramic 3/4 mask with pointed brows and narrow black eye slits, chipped lower edge. Right hand natural skin; left hand pale ceramic. Do not import its pose, background or extra equipment. Only show character parts appropriate to image 1.\nAny protagonist sword becomes a functional single-bladed grey iron woodcutting axe with wooden handle, connected socket/head/short poll. Correct anatomy, flowing wrists, plausible grip and blade-leading motion; no floating blades or wooden arms. Do not add a weapon where the original has none. No gore.\nIdentity override: NEVER retain the original golden full helmet or golden pauldrons on the hero. Use pale angular ceramic partial mask, swept dark hair and tan kiln workshirt. Existing non-sword objects such as hammers, shields, staves and empty hands stay as appropriate. Keep all rendering much simpler than full character reference, with coarse outlines and large flat shapes.",
   "identity_reference": "art/player/SPR_Player_Tannaro.png",
   "reference_source": "https://github.com/nkhoit/spire-archive/tree/main/public/images/sts1/cards",
@@ -16,10 +16,12 @@
       "subject": "Preserve the close-up CLUSTER of overlapping wooden and iron shields piled into a defensive wall, big rectangular shields upper middle, round shield left-middle, two smaller shields in lower foreground. Three swords tucked behind shields become THREE modest practical woodcutting axes with intact crosswise grey heads and brown handles peeking between shields. No sword crossguards or long sword blades. Cool dark slate ground. Broad wood panels, only two or three grain lines, few rivet dots, no person.",
       "number": 1,
       "file": "CARD_barricade.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/barricade.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/barricade.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-d05773b7-9684-4a61-8739-d3af30fb9139.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-d05773b7-9684-4a61-8739-d3af30fb9139.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_barricade.png"
     },
     {
       "id": "berserk",
@@ -29,10 +31,12 @@
       "subject": "Preserve side-view waist-up hero on RIGHT leaning toward LEFT, snarling mouth open, shoulders hunched, visible hand tensed clawlike near hip. Huge angular orange-red roar bolts burst left across background. Replace green skin/gold helmet with natural tan skin, PALE angular ceramic partial mask exposing shouting mouth, dark hair, tan sleeveless workshirt and iron guard. Strong large silhouette, minimal details, no weapon.",
       "number": 2,
       "file": "CARD_berserk.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/berserk.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/berserk.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-67e1762c-8aa3-4dd2-a70a-7cbe60a69fd0.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-67e1762c-8aa3-4dd2-a70a-7cbe60a69fd0.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_berserk.png"
     },
     {
       "id": "bludgeon",
@@ -42,10 +46,12 @@
       "subject": "Preserve extreme close shot of massive ROUND IRON WARHAMMER head driving DOWN onto dark blue humanoid silhouette's upper body at lower-right, shaft enters diagonally from upper-right. Orange circular impact ring and sparse jagged red-orange graphic rays. Keep original HAMMER, it is NOT a sword and must NOT become axe. Show solid continuous head/socket/wood handle, foreshortened circular flat striking face. Impact conceals contact, non-graphic, no wounds, no blood splash, use orange sparks.",
       "number": 3,
       "file": "CARD_bludgeon.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/bludgeon.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/bludgeon.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-aff282c2-4246-4495-bf0c-710c4d849d41.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-aff282c2-4246-4495-bf0c-710c4d849d41.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_bludgeon.png"
     },
     {
       "id": "brutality",
@@ -55,10 +61,12 @@
       "subject": "Preserve a large hand entering lower-right gripping a simplified RED HEART symbol centered upper-left, violet magic dripping below into a few large drops, dark purple radial rays. Heart should be a stylized magical icon with two simple tube-like stubs like original, NOT realistic anatomy or gore. Correct five-finger gripping hand, natural skin flat planes, sparse knuckle lines. No character face or weapon.",
       "number": 4,
       "file": "CARD_brutality.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/brutality.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/brutality.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-66e1e006-9b57-49c9-9e8c-90652670d865.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-66e1e006-9b57-49c9-9e8c-90652670d865.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_brutality.png"
     },
     {
       "id": "corruption",
@@ -68,10 +76,12 @@
       "subject": "Preserve extreme FRONTAL face/mask close-up filling frame, two blazing purple-magenta angular eye slits, dark hair framing sides, narrow pale central nose ridge. Adapt full original helmet to protagonist's PALE CERAMIC geometric mask with pointed brow contours and small broken lower side exposing a sliver of skin. Violet corruption runs from eye slits in a few abstract drips. Dark muted red/slate background, no mouth redesign, no added weapon, few lines.",
       "number": 5,
       "file": "CARD_corruption.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/corruption.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/corruption.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-69f1d349-0979-44aa-8876-3fd560da9e07.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-69f1d349-0979-44aa-8876-3fd560da9e07.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_corruption.png"
     },
     {
       "id": "demon_form",
@@ -81,10 +91,12 @@
       "subject": "Preserve symmetric waist-up demonic transformation: hero centered, arms extended to both sides, elbows bent, palms up with little flames; large black bat-wing silhouettes spread behind; two long upward horns. Adapt to our transformed protagonist: angular PALE CERAMIC mask with narrow glowing amber eye slits, dark shoulder-length hair, tan kiln workshirt scorched into simple dark blocks, arms glowing ember-orange. Horns are two extended ceramic brow points with dark bands, not original golden helmet. Pale ceramic left hand and natural right tinted by fire. Maintain large readable silhouette and no ornate details, no weapon.",
       "number": 6,
       "file": "CARD_demon_form.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/demon_form.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/demon_form.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-055bcd46-c307-4fe7-97a8-5b1f71c53bd5.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-055bcd46-c307-4fe7-97a8-5b1f71c53bd5.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_demon_form.png"
     },
     {
       "id": "double_tap",
@@ -94,10 +106,12 @@
       "subject": "Preserve tight crop of a dark blue humanoid torso from shoulders to thighs on deep purple ground. TWO distinct simple red-orange hit marks positioned diagonally on chest and side, two small black centers, sparse red angular rays behind each. No attacker or weapon shown. No exposed organs or flesh, graphic abstract impacts only. Big block silhouette with few contour lines, original composition.",
       "number": 7,
       "file": "CARD_double_tap.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/double_tap.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/double_tap.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-26816d4f-479c-42c5-ab8b-3bf297c0b28b.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-26816d4f-479c-42c5-ab8b-3bf297c0b28b.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_double_tap.png"
     },
     {
       "id": "exhume",
@@ -107,10 +121,12 @@
       "subject": "Preserve ONE glowing yellow hand thrust upward from cracked earth at lower-left center, all five fingers splayed, forearm partly buried. Tall grey pointed gravestone occupies upper-right with a tiny abstract skull symbol and single long crack. Dark green-blue radial background, few simple grass blades and dirt chunks. Simple natural hand anatomy; no extra body or weapon, keep gold rim glow.",
       "number": 8,
       "file": "CARD_exhume.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/exhume.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/exhume.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-ddfe34e9-9093-48f6-b69a-b171285ec776.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-ddfe34e9-9093-48f6-b69a-b171285ec776.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_exhume.png"
     },
     {
       "id": "feed",
@@ -120,10 +136,12 @@
       "subject": "Preserve close-up mouth at top center taking a hungry bite from large ROASTED MEAT LEG held horizontally by TWO hands at lower corners. Oversized orange-brown cooked meat, bone end visible left, a few stretchy orange sauce strands from mouth to roast. Adapt cropped mouth to protagonist's natural lower face beneath small edge of pale ceramic mask; right hand natural, left pale ceramic. Meat looks cooked with tan/brown cross section and central bone icon, NOT raw bleeding anatomy. Dark red-orange radial backdrop, few marks.",
       "number": 9,
       "file": "CARD_feed.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/feed.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/feed.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-d12051ea-8a85-4545-971b-d09d7621abd4.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-d12051ea-8a85-4545-971b-d09d7621abd4.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_feed.png"
     },
     {
       "id": "fiend_fire",
@@ -133,10 +151,12 @@
       "subject": "Preserve tiny RED caster silhouette at bottom center pointing one arm straight UP, other arm lifted outward. Above float THREE card-like blank rectangles arranged left, upper-right, far-right around rising orange flame at upper-center-left. Keep blank card backs with simple pale ovals, NO text/numbers/card UI. Dark violet/slate background. Flame and three floating cards dominate, tiny caster can have pointed mask silhouette but no detailed face or weapon.",
       "number": 10,
       "file": "CARD_fiend_fire.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/fiend_fire.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/fiend_fire.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-296a0e84-c920-4381-b32b-fabf43013fd1.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-296a0e84-c920-4381-b32b-fabf43013fd1.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_fiend_fire.png"
     },
     {
       "id": "immolate",
@@ -145,11 +165,14 @@
       "rarity": "rare",
       "subject": "Preserve group of THREE fantasy enemies engulfed by a spreading orange-yellow flame pool: blue spiky armored small enemy left, hooded terrified figure center raising pale hands, red horned silhouette right raising both arms, green hands/shapes behind. Broad rising flames at waist level and foreground horizontal flame ribbons. Keep graphic enemy silhouettes from original, do not replace victims with hero or pots. No gore or detailed burns. Dominant broad flames, dark burgundy ground, sparse sparks.",
       "number": 11,
-      "file": "CARD_immolate.png",
-      "status": "pending_user_review",
+      "file": "CARD_immolate_v2.png",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/immolate.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/immolate.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-e4700bfc-0955-415d-9b6a-1d3bd3653e9c.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-ca0bcf32-92ec-43a4-b40d-e1d67a305c4b.png",
+      "edit_prompt": "Use case: precise-object-edit. Image 1 is the existing approved-composition card illustration to edit. Make ONLY a SMALL visual material adjustment to the monsters so they feel like kiln-fired ceramic monsters from Ember's Kiln. Keep EXACT same composition, positions, raised-hand gestures, number of subjects, silhouettes, camera, enormous orange/yellow flames and burgundy background. Left blue spiky creature: suggest blue-grey glazed ceramic shell with a few chipped tan edges. Center hooded creature: suggest a simple pale clay face/mask and muted sage glazed clay hands using broad planes and just two or three cracks. The small pale foreground raised arm may have one subtle ceramic joint/crack. Right red horned creature: retain its horned shape and raised arms but suggest brick-red terracotta surface, a couple dark angular cracks and small light clay chips. Only enough material cues to recognize pottery creatures; DO NOT redesign them into pots or add armor/equipment. VERY SIMPLE thick hand-drawn outlines, flat handpainted broad shadow shapes, sparse short strokes/dots. No intricate details, dense crack networks, realistic texture, glossy 3D or elaborate anatomy. Keep the fire effect and background unchanged. Square 1:1 full-bleed card art, no text/UI/frame.",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_immolate_v2.png"
     },
     {
       "id": "impervious",
@@ -159,10 +182,12 @@
       "subject": "Preserve fullbody central standing human with feet apart, BOTH HANDS ON HIPS, elbows out, surrounded by bright white-gold outline. Large white-gold rays strike from all sides and break into few blocky impact stars around torso/legs, cool slate-blue radial backdrop. Keep body mostly ochre/dark silhouette with just simplified pale angular mask, dark hair, tan workshirt/slate apron suggested by a few blocks. No held weapon, no gold armor.",
       "number": 12,
       "file": "CARD_impervious.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/impervious.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/impervious.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-b4a91542-ba40-40ac-9fe8-7ee3162e87f9.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-b4a91542-ba40-40ac-9fe8-7ee3162e87f9.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_impervious.png"
     },
     {
       "id": "juggernaut",
@@ -172,10 +197,12 @@
       "subject": "Preserve hero standing on LEFT, one arm extended straight right with OPEN PALM touching large circular cracked dark stone wall on RIGHT. Impact center lies directly under palm with thick radial cracks dividing wall into large chunks. Golden outline around hero, warm red background. Adapt protagonist pale angular mask/dark hair/tan shirt/slate apron, correct palm-to-wall contact and relaxed other arm. No weapon. Sparse large cracks, not a dense fracture texture.",
       "number": 13,
       "file": "CARD_juggernaut.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/juggernaut.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/juggernaut.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-25dd13ad-d96b-4344-a99d-be5b40a01db2.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-25dd13ad-d96b-4344-a99d-be5b40a01db2.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_juggernaut.png"
     },
     {
       "id": "limit_break",
@@ -185,10 +212,12 @@
       "subject": "Preserve SMALL BLACK frontal hero silhouette centered, elbows bent outward, two fists lifted around shoulder height, surrounded by ENORMOUS vertical GOLD energy column and a white angular crown-like eruption rising from bottom. Concentric orange/gold ground shock rings fill lower frame. Keep silhouette simple, only tiny angular mask contour, no detailed face/clothes/weapon. Flat orange background with broad bright streaks, minimal marks.",
       "number": 14,
       "file": "CARD_limit_break.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/limit_break.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/limit_break.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-2c5b713b-fdcb-4832-83a1-71e71cf308a1.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-2c5b713b-fdcb-4832-83a1-71e71cf308a1.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_limit_break.png"
     },
     {
       "id": "offering",
@@ -198,10 +227,12 @@
       "subject": "Preserve still life of pale stylized SKULL at center over hand-drawn red pentagram on dark purple ground, short burning CANDLE sitting on skull, two crossed small BONES lower-left, three pale STONES upper-left, looped GREEN herb sprig upper-right, small fang lower-right. Flat comic skull, simple black sockets with red interior shadows and grouped teeth, only few marks. No realistic bone pores or gore, no character/weapon, NO text. Coarse handdrawn ritual lines.",
       "number": 15,
       "file": "CARD_offering.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/offering.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/offering.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-1a798596-0dd7-4fe9-a766-50a8bbd8eaa6.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-1a798596-0dd7-4fe9-a766-50a8bbd8eaa6.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_offering.png"
     },
     {
       "id": "reaper",
@@ -211,10 +242,12 @@
       "subject": "Preserve the original's standing hero in center, wide legs, head looking LEFT, left side arm extended diagonally low-left and right side arm high-right, both open hands channeling icy cyan soul streams from stylized defeated monster heads at lower corners. A giant very dark abstract demonic silhouette in burgundy background. Hero is kiln-worker ceramic mask and workshirt, never golden armor. Make cyan streams and silhouettes broad simple expressive shapes. No weapon, no scythe. Keep just two anatomically connected arms.",
       "number": 16,
       "file": "CARD_reaper.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/reaper.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/reaper.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-e3e8762f-ce99-4a1f-836c-fd9a78fd4f72.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-e3e8762f-ce99-4a1f-836c-fd9a78fd4f72.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_reaper.png"
     },
     {
       "id": "wound",
@@ -224,11 +257,13 @@
       "subject": "Preserve original extreme side close-up of a damaged mask facing LEFT, cropped head fills right two-thirds with flowing dark hair trailing right, deep red background left. Replace golden original helmet with the hero's ivory angular ceramic mask, a SINGLE bold jagged crack crossing cheek with glowing red-orange inner seam and one tiny molten bead. No exposed wound anatomy. Simple broad mask planes and sparse ink cracks, not elaborate texture. No hands or weapons.",
       "number": 17,
       "file": "CARD_wound_v2.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/wound.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/wound.png",
       "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-f7de5ca7-1db4-46df-ac76-99b5e30d619c.png",
-      "edit_prompt": "Edit this existing card illustration ONLY to make its canvas exactly SQUARE, 1:1 aspect ratio. Preserve the left-facing pale cracked ceramic mask, dark hair, red background, bold hand-drawn outlines and single glowing orange crack. Expand the surrounding red background vertically above and below as needed, maintaining large closeup framing. Output square full-bleed illustration, no frame, no words. Do NOT produce a landscape image. Match established simple hand-painted rendering."
+      "edit_prompt": "Edit this existing card illustration ONLY to make its canvas exactly SQUARE, 1:1 aspect ratio. Preserve the left-facing pale cracked ceramic mask, dark hair, red background, bold hand-drawn outlines and single glowing orange crack. Expand the surrounding red background vertically above and below as needed, maintaining large closeup framing. Output square full-bleed illustration, no frame, no words. Do NOT produce a landscape image. Match established simple hand-painted rendering.",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_wound_v2.png"
     },
     {
       "id": "burn",
@@ -238,10 +273,12 @@
       "subject": "Preserve original abstract orange-red damaged surface with one large jagged dark outlined irregular patch running bottom-left to upper-right, glowing red inside and a few large amber round bubbling blisters with pale highlights. Treat it as scorched kiln glaze/material, a symbolic burn status icon-like illustration, not a detailed human injury. Entire square filled warm orange background with sparse dabs. Bold outlines, minimal uncomplicated shapes. NO character, face, hand, weapon.",
       "number": 18,
       "file": "CARD_burn.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/burn.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/burn.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-1b920a3f-96ca-4d37-943d-de6e68f2c9f8.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-1b920a3f-96ca-4d37-943d-de6e68f2c9f8.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_burn.png"
     },
     {
       "id": "dazed",
@@ -251,10 +288,15 @@
       "subject": "Preserve original simple red head and neck silhouette lower center, head tilted up LEFT with tiny zigzag mouth, a diagonal orbital ribbon of several bright cyan cartoon birds circulating above/across head from upper-left toward lower-right. Purple dark blue background with a few broad wavy vertical shapes. Keep abstract faceless silhouette rather than detailed armor; coarse black lines, simple cyan birds with dot or cross eyes, no feathers detail. No weapon.",
       "number": 19,
       "file": "CARD_dazed.png",
-      "status": "pending_user_review",
+      "status": "user_approved",
       "reference_file": "../../../references/sts1_remaining/dazed.png",
       "reference_url": "https://raw.githubusercontent.com/nkhoit/spire-archive/main/public/images/sts1/cards/dazed.png",
-      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-fbf89643-fb76-421e-9340-0de291a42838.png"
+      "generated_source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a07b08-4241-71b3-89a7-46d25ee02349\\exec-fbf89643-fb76-421e-9340-0de291a42838.png",
+      "approved_on": "2026-09-08",
+      "runtime_art": "res://art/cards/illustrations/remaining/CARD_dazed.png"
     }
-  ]
+  ],
+  "approved_count": 19,
+  "runtime_mapping": "data/cards.json",
+  "approved_on": "2026-09-08"
 }
