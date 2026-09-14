@@ -1,0 +1,211 @@
+{
+  "target": "player",
+  "mode": "hurt",
+  "prompt": "",
+  "role": "",
+  "input": "F:\\WorkingFiles\\AI Studio\\\u6740\u622e\u5c16\u5854\\art\\player\\animations\\hd_source\\hurt\\13\\registered.png",
+  "threshold": 100,
+  "edge_threshold": 150,
+  "duration": 33,
+  "rows": 2,
+  "cols": 1,
+  "cell_size": 768,
+  "fit_scale": 1.0,
+  "trim_border": 0,
+  "edge_clean_depth": 3,
+  "align": "center",
+  "shared_scale": true,
+  "scale_strategy": "preserve",
+  "component_mode": "largest",
+  "component_padding": 0,
+  "min_component_area": 1,
+  "edge_touch_margin": 0,
+  "frame_labels": [
+    "hurt-1",
+    "hurt-2"
+  ],
+  "frames": [
+    {
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        1000,
+        1000
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 138715,
+      "selected_component_bbox": [
+        235,
+        196,
+        630,
+        892
+      ],
+      "crop_bbox": [
+        235,
+        196,
+        630,
+        892
+      ],
+      "source_frame_size": [
+        1000,
+        1000
+      ],
+      "is_empty": false,
+      "subject_area": 138715,
+      "body_core_area": 138347,
+      "body_area_fraction": 0.138347,
+      "anchor_source": [
+        432.5,
+        544.0
+      ],
+      "source_edge_touch": false,
+      "output_edge_touch": false,
+      "edge_touch": false,
+      "output_size": [
+        303,
+        535
+      ],
+      "preserved_subject_size": [
+        303,
+        535
+      ],
+      "paste_position": [
+        232,
+        117
+      ],
+      "unclamped_paste_position": [
+        232,
+        117
+      ],
+      "paste_clamped": false,
+      "aligned_bbox": [
+        232,
+        117,
+        535,
+        652
+      ],
+      "scale_adjustment": 1.0,
+      "source_to_output_scale": 0.768,
+      "bbox_scale_applied": false,
+      "scale_changed": false,
+      "anchor_target": [
+        384.0,
+        384.0
+      ],
+      "scale_strategy": "preserve",
+      "shared_center_x": 384.0,
+      "shared_feet_y": 384.0
+    },
+    {
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        1000,
+        1000,
+        2000
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 136668,
+      "selected_component_bbox": [
+        297,
+        173,
+        620,
+        918
+      ],
+      "crop_bbox": [
+        297,
+        173,
+        620,
+        918
+      ],
+      "source_frame_size": [
+        1000,
+        1000
+      ],
+      "is_empty": false,
+      "subject_area": 136668,
+      "body_core_area": 136668,
+      "body_area_fraction": 0.136668,
+      "anchor_source": [
+        458.5,
+        545.5
+      ],
+      "source_edge_touch": false,
+      "output_edge_touch": false,
+      "edge_touch": false,
+      "output_size": [
+        248,
+        572
+      ],
+      "preserved_subject_size": [
+        248,
+        572
+      ],
+      "paste_position": [
+        260,
+        98
+      ],
+      "unclamped_paste_position": [
+        260,
+        98
+      ],
+      "paste_clamped": false,
+      "aligned_bbox": [
+        260,
+        98,
+        508,
+        670
+      ],
+      "scale_adjustment": 1.0,
+      "source_to_output_scale": 0.768,
+      "bbox_scale_applied": false,
+      "scale_changed": false,
+      "anchor_target": [
+        384.0,
+        384.0
+      ],
+      "scale_strategy": "preserve",
+      "shared_center_x": 384.0,
+      "shared_feet_y": 384.0
+    }
+  ],
+  "edge_touch_frames": [],
+  "source_edge_touch_frames": [],
+  "output_edge_touch_frames": [],
+  "empty_frames": [],
+  "paste_clamped_frames": [],
+  "qc_summary": {
+    "frame_count": 2,
+    "valid_frame_count": 2,
+    "empty_count": 0,
+    "edge_touch_count": 0,
+    "paste_clamped_count": 0,
+    "body_scale_mean": 0.3708183095205486,
+    "output_subject_height_mean": 553.5,
+    "body_scale_cv": 0.0030525892140923646,
+    "anchor_x_std": 0.013000000000000012,
+    "anchor_y_std": 0.000749999999999973,
+    "anchor_y_mean": 0.5447500000000001
+  },
+  "output_origin": [
+    384.0,
+    384.0
+  ],
+  "qc_config": {
+    "strict_qc": true,
+    "reject_edge_touch": false,
+    "allow_source_edge_touch": false,
+    "max_body_scale_cv": 0.08,
+    "max_anchor_y_std": 0.05,
+    "max_profile_scale_drift": null
+  }
+}

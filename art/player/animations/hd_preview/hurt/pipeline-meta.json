@@ -1,0 +1,582 @@
+{
+  "frames": [
+    {
+      "frame": 1,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 2,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 3,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.019903949753318,
+      "source_mask_length": 79.74665270701854,
+      "output_mask_length": 82.9408470847286,
+      "right_foot": [
+        240.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "bbox": [
+        148,
+        134,
+        374,
+        702
+      ],
+      "source_frame": 2
+    },
+    {
+      "frame": 4,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.019903949753318,
+      "source_mask_length": 79.74665270701854,
+      "output_mask_length": 82.9408470847286,
+      "right_foot": [
+        240.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "bbox": [
+        148,
+        134,
+        374,
+        702
+      ],
+      "source_frame": 2
+    },
+    {
+      "frame": 5,
+      "source": "hd_source\\hurt\\02\\generation.json",
+      "drawing_scale_correction": 0.9603427518260487,
+      "source_mask_length": 84.6926015954632,
+      "output_mask_length": 78.89489937841199,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        157,
+        136,
+        396,
+        702
+      ],
+      "source_frame": 3
+    },
+    {
+      "frame": 6,
+      "source": "hd_source\\hurt\\02\\generation.json",
+      "drawing_scale_correction": 0.9603427518260487,
+      "source_mask_length": 84.6926015954632,
+      "output_mask_length": 78.89489937841199,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        157,
+        136,
+        396,
+        702
+      ],
+      "source_frame": 3
+    },
+    {
+      "frame": 7,
+      "source": "hd_source\\hurt\\02\\generation.json",
+      "drawing_scale_correction": 0.9603427518260487,
+      "source_mask_length": 84.6926015954632,
+      "output_mask_length": 78.89489937841199,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        157,
+        136,
+        396,
+        702
+      ],
+      "source_frame": 3
+    },
+    {
+      "frame": 8,
+      "source": "hd_source\\hurt\\03\\generation.json",
+      "drawing_scale_correction": 1.0241196533855876,
+      "source_mask_length": 79.41838222381188,
+      "output_mask_length": 81.62035180162923,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        189,
+        122,
+        437,
+        702
+      ],
+      "source_frame": 5
+    },
+    {
+      "frame": 9,
+      "source": "hd_source\\hurt\\03\\generation.json",
+      "drawing_scale_correction": 1.0241196533855876,
+      "source_mask_length": 79.41838222381188,
+      "output_mask_length": 81.62035180162923,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        189,
+        122,
+        437,
+        702
+      ],
+      "source_frame": 5
+    },
+    {
+      "frame": 10,
+      "source": "hd_source\\hurt\\03\\generation.json",
+      "drawing_scale_correction": 1.0241196533855876,
+      "source_mask_length": 79.41838222381188,
+      "output_mask_length": 81.62035180162923,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        189,
+        122,
+        437,
+        702
+      ],
+      "source_frame": 5
+    },
+    {
+      "frame": 11,
+      "source": "hd_source\\hurt\\03\\generation.json",
+      "drawing_scale_correction": 1.0241196533855876,
+      "source_mask_length": 79.41838222381188,
+      "output_mask_length": 81.62035180162923,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        189,
+        122,
+        437,
+        702
+      ],
+      "source_frame": 5
+    },
+    {
+      "frame": 12,
+      "source": "hd_source\\hurt\\02\\generation.json",
+      "drawing_scale_correction": 0.9603427518260487,
+      "source_mask_length": 84.6926015954632,
+      "output_mask_length": 78.89489937841199,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        157,
+        136,
+        396,
+        702
+      ],
+      "source_frame": 3
+    },
+    {
+      "frame": 13,
+      "source": "hd_source\\hurt\\02\\generation.json",
+      "drawing_scale_correction": 0.9603427518260487,
+      "source_mask_length": 84.6926015954632,
+      "output_mask_length": 78.89489937841199,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        157,
+        136,
+        396,
+        702
+      ],
+      "source_frame": 3
+    },
+    {
+      "frame": 14,
+      "source": "hd_source\\hurt\\02\\generation.json",
+      "drawing_scale_correction": 0.9603427518260487,
+      "source_mask_length": 84.6926015954632,
+      "output_mask_length": 78.89489937841199,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        157,
+        136,
+        396,
+        702
+      ],
+      "source_frame": 3
+    },
+    {
+      "frame": 15,
+      "source": "hd_source\\hurt\\02\\generation.json",
+      "drawing_scale_correction": 0.9603427518260487,
+      "source_mask_length": 84.6926015954632,
+      "output_mask_length": 78.89489937841199,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        157,
+        136,
+        396,
+        702
+      ],
+      "source_frame": 3
+    },
+    {
+      "frame": 16,
+      "source": "hd_source\\hurt\\02\\generation.json",
+      "drawing_scale_correction": 0.9603427518260487,
+      "source_mask_length": 84.6926015954632,
+      "output_mask_length": 78.89489937841199,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        157,
+        136,
+        396,
+        702
+      ],
+      "source_frame": 3
+    },
+    {
+      "frame": 17,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.019903949753318,
+      "source_mask_length": 79.74665270701854,
+      "output_mask_length": 82.9408470847286,
+      "right_foot": [
+        240.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "bbox": [
+        148,
+        134,
+        374,
+        702
+      ],
+      "source_frame": 2
+    },
+    {
+      "frame": 18,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.019903949753318,
+      "source_mask_length": 79.74665270701854,
+      "output_mask_length": 82.9408470847286,
+      "right_foot": [
+        240.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "bbox": [
+        148,
+        134,
+        374,
+        702
+      ],
+      "source_frame": 2
+    },
+    {
+      "frame": 19,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.019903949753318,
+      "source_mask_length": 79.74665270701854,
+      "output_mask_length": 82.9408470847286,
+      "right_foot": [
+        240.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "bbox": [
+        148,
+        134,
+        374,
+        702
+      ],
+      "source_frame": 2
+    },
+    {
+      "frame": 20,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.019903949753318,
+      "source_mask_length": 79.74665270701854,
+      "output_mask_length": 82.9408470847286,
+      "right_foot": [
+        240.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "bbox": [
+        148,
+        134,
+        374,
+        702
+      ],
+      "source_frame": 2
+    },
+    {
+      "frame": 21,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.019903949753318,
+      "source_mask_length": 79.74665270701854,
+      "output_mask_length": 82.9408470847286,
+      "right_foot": [
+        240.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "bbox": [
+        148,
+        134,
+        374,
+        702
+      ],
+      "source_frame": 2
+    },
+    {
+      "frame": 22,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 23,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 24,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 25,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 26,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 27,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 28,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 29,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    },
+    {
+      "frame": 30,
+      "source": "hd_source\\hurt\\01\\generation.json",
+      "drawing_scale_correction": 1.0028458345668838,
+      "source_mask_length": 81.10312001307898,
+      "output_mask_length": 81.07918776087678,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "bbox": [
+        158,
+        142,
+        378,
+        702
+      ],
+      "source_frame": 1
+    }
+  ],
+  "max_right_foot_error_px": 0.5,
+  "reference_mask_length": 81.33392607549433,
+  "mask_length_cv": 0.017950508579323763,
+  "empty_frames": [],
+  "edge_touch_frames": [],
+  "paste_clamped_frames": [],
+  "scale_strategy": "preserve",
+  "native_pixel_scale": 0.768
+}

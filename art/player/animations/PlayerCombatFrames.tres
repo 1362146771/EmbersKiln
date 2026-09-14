@@ -1,0 +1,298 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dsbgkxufhb1ck"]
+
+[ext_resource type="Texture2D" uid="uid://dufekob6kjiyq" path="res://art/player/animations/attack/atlas-5.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://dmg0fm30kslwv" path="res://art/player/animations/hurt/atlas-hd-1.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://bshmtypqgaena" path="res://art/player/animations/hurt/atlas-hd-2.png" id="3"]
+
+[sub_resource type="AtlasTexture" id="attack_1"]
+atlas = ExtResource("1")
+region = Rect2(0, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_2"]
+atlas = ExtResource("1")
+region = Rect2(768, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_3"]
+atlas = ExtResource("1")
+region = Rect2(0, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_4"]
+atlas = ExtResource("1")
+region = Rect2(768, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_5"]
+atlas = ExtResource("1")
+region = Rect2(0, 1536, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_1"]
+atlas = ExtResource("2")
+region = Rect2(0, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_2"]
+atlas = ExtResource("2")
+region = Rect2(768, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_3"]
+atlas = ExtResource("2")
+region = Rect2(1536, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_4"]
+atlas = ExtResource("2")
+region = Rect2(0, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_5"]
+atlas = ExtResource("2")
+region = Rect2(768, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_6"]
+atlas = ExtResource("2")
+region = Rect2(1536, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_7"]
+atlas = ExtResource("2")
+region = Rect2(0, 1536, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_8"]
+atlas = ExtResource("2")
+region = Rect2(768, 1536, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_9"]
+atlas = ExtResource("2")
+region = Rect2(1536, 1536, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_10"]
+atlas = ExtResource("2")
+region = Rect2(0, 2304, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_11"]
+atlas = ExtResource("2")
+region = Rect2(768, 2304, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_12"]
+atlas = ExtResource("2")
+region = Rect2(1536, 2304, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_13"]
+atlas = ExtResource("2")
+region = Rect2(0, 3072, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_14"]
+atlas = ExtResource("2")
+region = Rect2(768, 3072, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_15"]
+atlas = ExtResource("2")
+region = Rect2(1536, 3072, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_16"]
+atlas = ExtResource("3")
+region = Rect2(0, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_17"]
+atlas = ExtResource("3")
+region = Rect2(768, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_18"]
+atlas = ExtResource("3")
+region = Rect2(1536, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_19"]
+atlas = ExtResource("3")
+region = Rect2(0, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_20"]
+atlas = ExtResource("3")
+region = Rect2(768, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_21"]
+atlas = ExtResource("3")
+region = Rect2(1536, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_22"]
+atlas = ExtResource("3")
+region = Rect2(0, 1536, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_23"]
+atlas = ExtResource("3")
+region = Rect2(768, 1536, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_24"]
+atlas = ExtResource("3")
+region = Rect2(1536, 1536, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_25"]
+atlas = ExtResource("3")
+region = Rect2(0, 2304, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_26"]
+atlas = ExtResource("3")
+region = Rect2(768, 2304, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_27"]
+atlas = ExtResource("3")
+region = Rect2(1536, 2304, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_28"]
+atlas = ExtResource("3")
+region = Rect2(0, 3072, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_29"]
+atlas = ExtResource("3")
+region = Rect2(768, 3072, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="hurt_30"]
+atlas = ExtResource("3")
+region = Rect2(1536, 3072, 768, 768)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 6.0,
+"texture": SubResource("attack_1")
+}, {
+"duration": 6.0,
+"texture": SubResource("attack_2")
+}, {
+"duration": 6.0,
+"texture": SubResource("attack_3")
+}, {
+"duration": 6.0,
+"texture": SubResource("attack_4")
+}, {
+"duration": 6.0,
+"texture": SubResource("attack_5")
+}],
+"loop": 0,
+"name": &"attack",
+"speed": 30.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("hurt_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_7")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_8")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_9")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_10")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_11")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_12")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_13")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_14")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_15")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_16")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_17")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_18")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_19")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_20")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_21")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_22")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_23")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_24")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_25")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_26")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_27")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_28")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_29")
+}, {
+"duration": 1.0,
+"texture": SubResource("hurt_30")
+}],
+"loop": 0,
+"name": &"hurt",
+"speed": 30.0
+}]

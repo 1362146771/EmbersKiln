@@ -1,0 +1,44 @@
+{
+  "source_size": [
+    887,
+    1774
+  ],
+  "source_cut": 887,
+  "frames": [
+    {
+      "source_bbox": [
+        246,
+        84,
+        618,
+        814
+      ],
+      "left_foot": [
+        550.0,
+        793.0
+      ],
+      "translation": [
+        20,
+        97
+      ],
+      "native_subject_height": 730
+    },
+    {
+      "source_bbox": [
+        290,
+        95,
+        620,
+        773
+      ],
+      "left_foot": [
+        550.0,
+        751.0
+      ],
+      "translation": [
+        20,
+        139
+      ],
+      "native_subject_height": 678
+    }
+  ],
+  "scale_applied": 1.0
+}

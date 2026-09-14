@@ -1,0 +1,1264 @@
+{
+  "fps": 30,
+  "duration_seconds": 1,
+  "frames_per_action": 30,
+  "cell_size": [
+    768,
+    768
+  ],
+  "grid": [
+    6,
+    5
+  ],
+  "origin": [
+    240,
+    700
+  ],
+  "anchor": "anatomical_right_boot_sole",
+  "native_pixel_scale": 0.768,
+  "loop": false,
+  "actions": {
+    "attack": {
+      "sheet": "attack/sheet-transparent.png",
+      "atlases": [
+        "attack/atlas-hd-1.png",
+        "attack/atlas-hd-2.png"
+      ],
+      "frames": [
+        "attack/attack-1.png",
+        "attack/attack-2.png",
+        "attack/attack-3.png",
+        "attack/attack-4.png",
+        "attack/attack-5.png",
+        "attack/attack-6.png",
+        "attack/attack-7.png",
+        "attack/attack-8.png",
+        "attack/attack-9.png",
+        "attack/attack-10.png",
+        "attack/attack-11.png",
+        "attack/attack-12.png",
+        "attack/attack-13.png",
+        "attack/attack-14.png",
+        "attack/attack-15.png",
+        "attack/attack-16.png",
+        "attack/attack-17.png",
+        "attack/attack-18.png",
+        "attack/attack-19.png",
+        "attack/attack-20.png",
+        "attack/attack-21.png",
+        "attack/attack-22.png",
+        "attack/attack-23.png",
+        "attack/attack-24.png",
+        "attack/attack-25.png",
+        "attack/attack-26.png",
+        "attack/attack-27.png",
+        "attack/attack-28.png",
+        "attack/attack-29.png",
+        "attack/attack-30.png"
+      ],
+      "qc": {
+        "frames": [
+          {
+            "frame": 1,
+            "source": "hd_source\\attack\\01\\generation.json",
+            "drawing_scale_correction": 1.0,
+            "source_mask_length": 81.33392607549433,
+            "output_mask_length": 81.33392607549433,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              162,
+              155,
+              376,
+              700
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 2,
+            "source": "hd_source\\attack\\01\\generation.json",
+            "drawing_scale_correction": 0.980992355121922,
+            "source_mask_length": 82.90984700424684,
+            "output_mask_length": 79.42891620885786,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              148,
+              180,
+              380,
+              703
+            ],
+            "source_frame": 2
+          },
+          {
+            "frame": 3,
+            "source": "hd_source\\attack\\02\\generation.json",
+            "drawing_scale_correction": 0.9968775329548173,
+            "source_mask_length": 81.58868405270874,
+            "output_mask_length": 80.36058075534913,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              50,
+              158,
+              457,
+              703
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 4,
+            "source": "hd_source\\attack\\02\\generation.json",
+            "drawing_scale_correction": 0.9803245630819776,
+            "source_mask_length": 82.9663247647228,
+            "output_mask_length": 83.06581190064253,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              18,
+              165,
+              454,
+              703
+            ],
+            "source_frame": 4
+          },
+          {
+            "frame": 5,
+            "source": "hd_source\\attack\\03\\generation.json",
+            "drawing_scale_correction": 1.032610938028303,
+            "source_mask_length": 78.76531526074638,
+            "output_mask_length": 81.93286918786373,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              102,
+              137,
+              416,
+              703
+            ],
+            "source_frame": 5
+          },
+          {
+            "frame": 6,
+            "source": "hd_source\\attack\\03\\generation.json",
+            "drawing_scale_correction": 1.132843845862936,
+            "source_mask_length": 71.79623773613633,
+            "output_mask_length": 81.08415378050455,
+            "right_foot": [
+              239.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              134,
+              2,
+              433,
+              702
+            ],
+            "source_frame": 6
+          },
+          {
+            "frame": 7,
+            "source": "hd_source\\attack\\04\\generation.json",
+            "drawing_scale_correction": 0.9210447871335062,
+            "source_mask_length": 88.30615754161465,
+            "output_mask_length": 81.7621584913565,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              180,
+              115,
+              449,
+              702
+            ],
+            "source_frame": 7
+          },
+          {
+            "frame": 8,
+            "source": "hd_source\\attack\\04\\generation.json",
+            "drawing_scale_correction": 0.8859731780192571,
+            "source_mask_length": 91.80179275554377,
+            "output_mask_length": 70.9532110815037,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              190,
+              160,
+              452,
+              703
+            ],
+            "source_frame": 8
+          },
+          {
+            "frame": 9,
+            "source": "hd_source\\attack\\05\\generation.json",
+            "drawing_scale_correction": 0.8998331766548738,
+            "source_mask_length": 90.38778318649338,
+            "output_mask_length": 78.06464495129728,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              198,
+              166,
+              467,
+              702
+            ],
+            "source_frame": 9
+          },
+          {
+            "frame": 10,
+            "source": "hd_source\\attack\\05\\generation.json",
+            "drawing_scale_correction": 0.9300183499406918,
+            "source_mask_length": 87.45410892234662,
+            "output_mask_length": 80.40643064752044,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              196,
+              151,
+              474,
+              703
+            ],
+            "source_frame": 10
+          },
+          {
+            "frame": 11,
+            "source": "hd_source\\attack\\06\\generation.json",
+            "drawing_scale_correction": 1.0567940561773712,
+            "source_mask_length": 76.96289130324493,
+            "output_mask_length": 84.96065097615025,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              193,
+              86,
+              484,
+              702
+            ],
+            "source_frame": 11
+          },
+          {
+            "frame": 12,
+            "source": "hd_source\\attack\\06\\generation.json",
+            "drawing_scale_correction": 1.051136274657863,
+            "source_mask_length": 77.37714703259377,
+            "output_mask_length": 80.05849840735368,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              193,
+              52,
+              453,
+              703
+            ],
+            "source_frame": 12
+          },
+          {
+            "frame": 13,
+            "source": "hd_source\\attack\\07\\generation.json",
+            "drawing_scale_correction": 1.0544937202595226,
+            "source_mask_length": 77.13078277552677,
+            "output_mask_length": 82.20855132907474,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              200,
+              29,
+              486,
+              703
+            ],
+            "source_frame": 13
+          },
+          {
+            "frame": 14,
+            "source": "hd_source\\attack\\07\\generation.json",
+            "drawing_scale_correction": 1.1315456584898884,
+            "source_mask_length": 71.87860734142981,
+            "output_mask_length": 81.28685652164216,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              198,
+              145,
+              621,
+              702
+            ],
+            "source_frame": 14
+          },
+          {
+            "frame": 15,
+            "source": "hd_source\\attack\\08\\generation.json",
+            "drawing_scale_correction": 0.8228111295576097,
+            "source_mask_length": 98.84884046138765,
+            "output_mask_length": 80.74720377093337,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              199,
+              275,
+              603,
+              702
+            ],
+            "source_frame": 15
+          },
+          {
+            "frame": 16,
+            "source": "hd_source\\attack\\08\\generation.json",
+            "drawing_scale_correction": 0.827496100738337,
+            "source_mask_length": 98.28919556590512,
+            "output_mask_length": 81.13986142957407,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              196,
+              307,
+              644,
+              702
+            ],
+            "source_frame": 16
+          },
+          {
+            "frame": 17,
+            "source": "hd_source\\attack\\09\\generation.json",
+            "drawing_scale_correction": 0.7545120767720943,
+            "source_mask_length": 107.79671867341338,
+            "output_mask_length": 77.24780448526514,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              197,
+              332,
+              617,
+              702
+            ],
+            "source_frame": 17
+          },
+          {
+            "frame": 18,
+            "source": "hd_source\\attack\\09\\generation.json",
+            "drawing_scale_correction": 0.7996980772887721,
+            "source_mask_length": 101.7057917048418,
+            "output_mask_length": 79.63000808374358,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              193,
+              342,
+              638,
+              703
+            ],
+            "source_frame": 18
+          },
+          {
+            "frame": 19,
+            "source": "hd_source\\attack\\10\\generation.json",
+            "drawing_scale_correction": 0.791617549593203,
+            "source_mask_length": 102.74396533691083,
+            "output_mask_length": 79.25834635596914,
+            "right_foot": [
+              239.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              195,
+              321,
+              565,
+              702
+            ],
+            "source_frame": 19
+          },
+          {
+            "frame": 20,
+            "source": "hd_source\\attack\\10\\generation.json",
+            "drawing_scale_correction": 0.771427687062495,
+            "source_mask_length": 105.43298800332701,
+            "output_mask_length": 77.06565308805455,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              198,
+              289,
+              518,
+              702
+            ],
+            "source_frame": 20
+          },
+          {
+            "frame": 21,
+            "source": "hd_source\\attack\\11\\generation.json",
+            "drawing_scale_correction": 0.9143407714744028,
+            "source_mask_length": 88.95362496450952,
+            "output_mask_length": 80.93236134088579,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              203,
+              211,
+              534,
+              702
+            ],
+            "source_frame": 21
+          },
+          {
+            "frame": 22,
+            "source": "hd_source\\attack\\11\\generation.json",
+            "drawing_scale_correction": 0.8864534921548414,
+            "source_mask_length": 91.75205106111457,
+            "output_mask_length": 80.50663551443932,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              173,
+              176,
+              397,
+              703
+            ],
+            "source_frame": 22
+          },
+          {
+            "frame": 23,
+            "source": "hd_source\\attack\\12\\generation.json",
+            "drawing_scale_correction": 0.9938812431909214,
+            "source_mask_length": 81.83465241215981,
+            "output_mask_length": 80.13650330322201,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              173,
+              139,
+              413,
+              702
+            ],
+            "source_frame": 23
+          },
+          {
+            "frame": 24,
+            "source": "hd_source\\attack\\12\\generation.json",
+            "drawing_scale_correction": 0.9466434843718361,
+            "source_mask_length": 85.9182230884577,
+            "output_mask_length": 80.65259504112936,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              174,
+              161,
+              404,
+              703
+            ],
+            "source_frame": 24
+          },
+          {
+            "frame": 25,
+            "source": "hd_source\\attack\\13\\generation.json",
+            "drawing_scale_correction": 1.0075226058813804,
+            "source_mask_length": 80.72665129368829,
+            "output_mask_length": 81.1323998004874,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              143,
+              378,
+              703
+            ],
+            "source_frame": 25
+          },
+          {
+            "frame": 26,
+            "source": "hd_source\\attack\\13\\generation.json",
+            "drawing_scale_correction": 1.0188498218072906,
+            "source_mask_length": 79.82916062273029,
+            "output_mask_length": 81.64022756365074,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              150,
+              151,
+              402,
+              702
+            ],
+            "source_frame": 26
+          },
+          {
+            "frame": 27,
+            "source": "hd_source\\attack\\14\\generation.json",
+            "drawing_scale_correction": 1.0206656847839966,
+            "source_mask_length": 79.68713682453921,
+            "output_mask_length": 80.8241735492931,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              157,
+              132,
+              383,
+              702
+            ],
+            "source_frame": 27
+          },
+          {
+            "frame": 28,
+            "source": "hd_source\\attack\\14\\generation.json",
+            "drawing_scale_correction": 0.9873160986177113,
+            "source_mask_length": 82.37881078751337,
+            "output_mask_length": 79.27272500289178,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              137,
+              167,
+              410,
+              702
+            ],
+            "source_frame": 28
+          },
+          {
+            "frame": 29,
+            "source": "hd_source\\attack\\15\\generation.json",
+            "drawing_scale_correction": 1.053922369987277,
+            "source_mask_length": 77.17259676011639,
+            "output_mask_length": 83.50632363136623,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              152,
+              114,
+              396,
+              703
+            ],
+            "source_frame": 29
+          },
+          {
+            "frame": 30,
+            "source": "hd_source\\attack\\15\\generation.json",
+            "drawing_scale_correction": 0.9726946939716062,
+            "source_mask_length": 83.61711704563749,
+            "output_mask_length": 81.52373761651688,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              149,
+              156,
+              379,
+              702
+            ],
+            "source_frame": 30
+          }
+        ],
+        "max_right_foot_error_px": 0.5,
+        "reference_mask_length": 81.33392607549433,
+        "mask_length_cv": 0.02975830413621901,
+        "empty_frames": [],
+        "edge_touch_frames": [],
+        "paste_clamped_frames": [],
+        "scale_strategy": "preserve",
+        "native_pixel_scale": 0.768
+      }
+    },
+    "hurt": {
+      "sheet": "hurt/sheet-transparent.png",
+      "atlases": [
+        "hurt/atlas-hd-1.png",
+        "hurt/atlas-hd-2.png"
+      ],
+      "frames": [
+        "hurt/hurt-1.png",
+        "hurt/hurt-2.png",
+        "hurt/hurt-3.png",
+        "hurt/hurt-4.png",
+        "hurt/hurt-5.png",
+        "hurt/hurt-6.png",
+        "hurt/hurt-7.png",
+        "hurt/hurt-8.png",
+        "hurt/hurt-9.png",
+        "hurt/hurt-10.png",
+        "hurt/hurt-11.png",
+        "hurt/hurt-12.png",
+        "hurt/hurt-13.png",
+        "hurt/hurt-14.png",
+        "hurt/hurt-15.png",
+        "hurt/hurt-16.png",
+        "hurt/hurt-17.png",
+        "hurt/hurt-18.png",
+        "hurt/hurt-19.png",
+        "hurt/hurt-20.png",
+        "hurt/hurt-21.png",
+        "hurt/hurt-22.png",
+        "hurt/hurt-23.png",
+        "hurt/hurt-24.png",
+        "hurt/hurt-25.png",
+        "hurt/hurt-26.png",
+        "hurt/hurt-27.png",
+        "hurt/hurt-28.png",
+        "hurt/hurt-29.png",
+        "hurt/hurt-30.png"
+      ],
+      "qc": {
+        "frames": [
+          {
+            "frame": 1,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 2,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 3,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.019903949753318,
+            "source_mask_length": 79.74665270701854,
+            "output_mask_length": 82.9408470847286,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              148,
+              134,
+              374,
+              702
+            ],
+            "source_frame": 2
+          },
+          {
+            "frame": 4,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.019903949753318,
+            "source_mask_length": 79.74665270701854,
+            "output_mask_length": 82.9408470847286,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              148,
+              134,
+              374,
+              702
+            ],
+            "source_frame": 2
+          },
+          {
+            "frame": 5,
+            "source": "hd_source\\hurt\\02\\generation.json",
+            "drawing_scale_correction": 0.9603427518260487,
+            "source_mask_length": 84.6926015954632,
+            "output_mask_length": 78.89489937841199,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              157,
+              136,
+              396,
+              702
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 6,
+            "source": "hd_source\\hurt\\02\\generation.json",
+            "drawing_scale_correction": 0.9603427518260487,
+            "source_mask_length": 84.6926015954632,
+            "output_mask_length": 78.89489937841199,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              157,
+              136,
+              396,
+              702
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 7,
+            "source": "hd_source\\hurt\\02\\generation.json",
+            "drawing_scale_correction": 0.9603427518260487,
+            "source_mask_length": 84.6926015954632,
+            "output_mask_length": 78.89489937841199,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              157,
+              136,
+              396,
+              702
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 8,
+            "source": "hd_source\\hurt\\03\\generation.json",
+            "drawing_scale_correction": 1.0241196533855876,
+            "source_mask_length": 79.41838222381188,
+            "output_mask_length": 81.62035180162923,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              189,
+              122,
+              437,
+              702
+            ],
+            "source_frame": 5
+          },
+          {
+            "frame": 9,
+            "source": "hd_source\\hurt\\03\\generation.json",
+            "drawing_scale_correction": 1.0241196533855876,
+            "source_mask_length": 79.41838222381188,
+            "output_mask_length": 81.62035180162923,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              189,
+              122,
+              437,
+              702
+            ],
+            "source_frame": 5
+          },
+          {
+            "frame": 10,
+            "source": "hd_source\\hurt\\03\\generation.json",
+            "drawing_scale_correction": 1.0241196533855876,
+            "source_mask_length": 79.41838222381188,
+            "output_mask_length": 81.62035180162923,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              189,
+              122,
+              437,
+              702
+            ],
+            "source_frame": 5
+          },
+          {
+            "frame": 11,
+            "source": "hd_source\\hurt\\03\\generation.json",
+            "drawing_scale_correction": 1.0241196533855876,
+            "source_mask_length": 79.41838222381188,
+            "output_mask_length": 81.62035180162923,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              189,
+              122,
+              437,
+              702
+            ],
+            "source_frame": 5
+          },
+          {
+            "frame": 12,
+            "source": "hd_source\\hurt\\02\\generation.json",
+            "drawing_scale_correction": 0.9603427518260487,
+            "source_mask_length": 84.6926015954632,
+            "output_mask_length": 78.89489937841199,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              157,
+              136,
+              396,
+              702
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 13,
+            "source": "hd_source\\hurt\\02\\generation.json",
+            "drawing_scale_correction": 0.9603427518260487,
+            "source_mask_length": 84.6926015954632,
+            "output_mask_length": 78.89489937841199,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              157,
+              136,
+              396,
+              702
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 14,
+            "source": "hd_source\\hurt\\02\\generation.json",
+            "drawing_scale_correction": 0.9603427518260487,
+            "source_mask_length": 84.6926015954632,
+            "output_mask_length": 78.89489937841199,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              157,
+              136,
+              396,
+              702
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 15,
+            "source": "hd_source\\hurt\\02\\generation.json",
+            "drawing_scale_correction": 0.9603427518260487,
+            "source_mask_length": 84.6926015954632,
+            "output_mask_length": 78.89489937841199,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              157,
+              136,
+              396,
+              702
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 16,
+            "source": "hd_source\\hurt\\02\\generation.json",
+            "drawing_scale_correction": 0.9603427518260487,
+            "source_mask_length": 84.6926015954632,
+            "output_mask_length": 78.89489937841199,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              157,
+              136,
+              396,
+              702
+            ],
+            "source_frame": 3
+          },
+          {
+            "frame": 17,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.019903949753318,
+            "source_mask_length": 79.74665270701854,
+            "output_mask_length": 82.9408470847286,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              148,
+              134,
+              374,
+              702
+            ],
+            "source_frame": 2
+          },
+          {
+            "frame": 18,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.019903949753318,
+            "source_mask_length": 79.74665270701854,
+            "output_mask_length": 82.9408470847286,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              148,
+              134,
+              374,
+              702
+            ],
+            "source_frame": 2
+          },
+          {
+            "frame": 19,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.019903949753318,
+            "source_mask_length": 79.74665270701854,
+            "output_mask_length": 82.9408470847286,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              148,
+              134,
+              374,
+              702
+            ],
+            "source_frame": 2
+          },
+          {
+            "frame": 20,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.019903949753318,
+            "source_mask_length": 79.74665270701854,
+            "output_mask_length": 82.9408470847286,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              148,
+              134,
+              374,
+              702
+            ],
+            "source_frame": 2
+          },
+          {
+            "frame": 21,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.019903949753318,
+            "source_mask_length": 79.74665270701854,
+            "output_mask_length": 82.9408470847286,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "bbox": [
+              148,
+              134,
+              374,
+              702
+            ],
+            "source_frame": 2
+          },
+          {
+            "frame": 22,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 23,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 24,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 25,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 26,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 27,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 28,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 29,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          },
+          {
+            "frame": 30,
+            "source": "hd_source\\hurt\\01\\generation.json",
+            "drawing_scale_correction": 1.0028458345668838,
+            "source_mask_length": 81.10312001307898,
+            "output_mask_length": 81.07918776087678,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "bbox": [
+              158,
+              142,
+              378,
+              702
+            ],
+            "source_frame": 1
+          }
+        ],
+        "max_right_foot_error_px": 0.5,
+        "reference_mask_length": 81.33392607549433,
+        "mask_length_cv": 0.017950508579323763,
+        "empty_frames": [],
+        "edge_touch_frames": [],
+        "paste_clamped_frames": [],
+        "scale_strategy": "preserve",
+        "native_pixel_scale": 0.768
+      }
+    }
+  }
+}

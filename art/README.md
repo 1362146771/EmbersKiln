@@ -7,10 +7,11 @@
 - `enemies/`：敌人立绘与当前生产映射 `manifest.json`
 - `icons/`：附魔、药水、遗物、状态图标
 - `minions/`：召唤物立绘
-- `player/SPR_Player_Tannaro.png`：主角当前正式透明立绘，所有动作暂时共用
+- `player/SPR_Player_Tannaro.png`：主角当前正式透明立绘；Idle 与 Death 使用
+- `player/animations/`：攻击与受击帧动画、运行图集和重建说明
 - `player/outfits/`：其余 4 张待用服装透明立绘
 - `references/`：仍有效的风格和造型锚点
 - `ui/`：界面面板与界面图标
 - `vfx/`：特效贴图
 
-审核稿、生成候选、旧版本、备份和测试截图不进入 `art/`。测试截图统一写入忽略版本控制的 `Temp/`，完成核对后删除。
+仍在选择中的候选只允许放在对应类别的 `candidates/`，确定正式版本后删除被淘汰文件。旧版本、备份和测试截图不进入 `art/`；测试截图统一写入忽略版本控制的 `Temp/`，完成核对后删除。资产旁的 README 只记录当前映射、重建方式和不可丢失的生产约束，不保存生成日志或已完成批次提示词。

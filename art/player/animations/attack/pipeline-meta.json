@@ -1,0 +1,96 @@
+{
+  "frames": [
+    {
+      "frame": 1,
+      "right_foot": [
+        240.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "shared_scale": 1.1401673640167365,
+      "weapon_angle_degrees": -166,
+      "weapon_scale": 0.166,
+      "bbox": [
+        163,
+        149,
+        473,
+        702
+      ]
+    },
+    {
+      "frame": 2,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "shared_scale": 1.1401673640167365,
+      "weapon_angle_degrees": -48,
+      "weapon_scale": 0.166,
+      "bbox": [
+        158,
+        130,
+        559,
+        702
+      ]
+    },
+    {
+      "frame": 3,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "shared_scale": 1.1401673640167365,
+      "weapon_angle_degrees": -118,
+      "weapon_scale": 0.166,
+      "bbox": [
+        207,
+        210,
+        650,
+        703
+      ]
+    },
+    {
+      "frame": 4,
+      "right_foot": [
+        239.5,
+        700.0
+      ],
+      "anchor_error_px": 0.5,
+      "shared_scale": 1.1401673640167365,
+      "weapon_angle_degrees": -108,
+      "weapon_scale": 0.166,
+      "bbox": [
+        188,
+        239,
+        657,
+        703
+      ]
+    },
+    {
+      "frame": 5,
+      "right_foot": [
+        240.0,
+        700.0
+      ],
+      "anchor_error_px": 0.0,
+      "shared_scale": 1.1401673640167365,
+      "weapon_angle_degrees": -167,
+      "weapon_scale": 0.166,
+      "bbox": [
+        154,
+        141,
+        463,
+        703
+      ]
+    }
+  ],
+  "frame_count": 5,
+  "empty_frames": [],
+  "edge_touch_frames": [],
+  "paste_clamped_frames": [],
+  "max_right_foot_error_px": 0.5,
+  "scale_strategy": "one_shared_scale",
+  "weapon_source": "attack5_source/axe-master.png"
+}

@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "name": "Tannaro HD shared native scale",
+  "processing": {
+    "cell_size": 768,
+    "fit_scale": 1.0,
+    "trim_border": 0,
+    "edge_clean_depth": 3,
+    "align": "center",
+    "shared_scale": true,
+    "scale_strategy": "preserve",
+    "component_mode": "largest",
+    "component_padding": 0,
+    "min_component_area": 1,
+    "edge_touch_margin": 0
+  },
+  "output_origin": [
+    384.0,
+    384.0
+  ],
+  "reference": {
+    "target": "player",
+    "mode": "attack",
+    "rows": 2,
+    "cols": 1,
+    "body_scale_mean": 0.338017875348835,
+    "body_scale_cv": 0.002831359070938503,
+    "anchor_y_mean": 0.5762499999999999
+  },
+  "qc": {
+    "max_body_scale_drift": 0.15
+  },
+  "final_registration": {
+    "anchor": "anatomical_right_boot_sole",
+    "origin": [
+      240,
+      700
+    ],
+    "native_pixel_scale": 0.768,
+    "proportion_calibration": {
+      "standing_height": 545,
+      "moving_pose_scale_limit": [
+        0.95,
+        1.05
+      ],
+      "landmark": "ceramic_mask_major_axis",
+      "preserve_pose_height": true
+    }
+  },
+  "runtime_tone": {
+    "shader": "PortraitTone.gdshader",
+    "midtone_gamma": 1.2,
+    "saturation": 1.04
+  }
+}
