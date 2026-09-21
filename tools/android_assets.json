@@ -1,0 +1,57 @@
+{
+  "prune_roots": [
+    "art/cards/illustrations/",
+    "art/enemies/",
+    "art/map/bosses/",
+    "art/backgrounds/"
+  ],
+  "lossy_roots": [
+    "art/cards/illustrations/",
+    "art/enemies/",
+    "art/backgrounds/",
+    "art/ui/town/building_levels/",
+    "art/ui/town/interior_levels/runtime/"
+  ],
+  "lossy_quality": 0.85,
+  "include_filters": [
+    "data/*.json"
+  ],
+  "exclude_filters": [
+    "Temp/*",
+    "outputs/*",
+    "logs/*",
+    "AI_Studio/*",
+    "docs/*",
+    "tools/*",
+    "scenes/verify/*",
+    "scripts/verify/*",
+    "*Verify.gd",
+    "*Verify.tscn",
+    "*Lab.gd",
+    "*Lab.tscn",
+    "*Sweep.gd",
+    "data/testing/*",
+    "art/references/*",
+    "art/ui/formal/reference/*",
+    "*.zip",
+    "*.py",
+    "*.gif",
+    "*.TMP",
+    "art/ui/town/building_levels/processed/*",
+    "art/ui/town/building_levels/preview/*",
+    "art/ui/town/interior_levels/preview/*",
+    "art/player/outfits/*",
+    "art/player/animations/attack/attack-*.png",
+    "art/player/animations/hurt/hurt-*.png",
+    "art/player/animations/*/animation*.png",
+    "art/player/animations/*/contact*.png",
+    "art/player/animations/*/raw-sheet*.png",
+    "art/player/animations/*/sheet-transparent.png",
+    "art/player/animations/attack/atlas-5.png",
+    "art/ui/town/interior_levels/hearth/*",
+    "art/ui/town/interior_levels/bellows_station/*",
+    "art/ui/town/interior_levels/glaze_apothecary/*",
+    "art/ui/town/interior_levels/relic_shelf/*",
+    "art/ui/town/interior_levels/card_mold_workshop/*"
+  ]
+}

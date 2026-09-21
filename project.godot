@@ -13,7 +13,10 @@ config_version=5
 config/name="炽窑"
 config/description="《炽窑》Ember's Kiln — 2D 回合制卡组构筑 Roguelike（战士单职业）"
 run/main_scene="res://scenes/main/MainMenu.tscn"
+config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "Mobile")
+config/icon="res://art/icons/app/ICO_EmbersKiln.png"
+run/max_fps.android=60
 
 [autoload]
 
@@ -28,6 +31,7 @@ AdRewardCoordinator="*res://scripts/ads/AdRewardCoordinator.gd"
 RunState="*res://scripts/core/RunState.gd"
 RunEndRewardSystem="*res://scripts/meta/RunEndRewardSystem.gd"
 SaveManager="*res://scripts/core/SaveManager.gd"
+TransitionManager="*res://scripts/core/TransitionManager.gd"
 PauseManager="*res://scripts/core/PauseManager.gd"
 VFXSystem="*res://scripts/core/VFXSystem.gd"
 BattleDirector="*res://scripts/combat/BattleDirector.gd"
@@ -44,6 +48,7 @@ window/size/viewport_height=1280
 window/size/window_width_override=1080
 window/size/window_height_override=1920
 window/stretch/mode="canvas_items"
+window/handheld/orientation=1
 
 [editor_plugins]
 
@@ -57,4 +62,5 @@ enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/godo
 
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.984, 0.953, 0.894, 1)
