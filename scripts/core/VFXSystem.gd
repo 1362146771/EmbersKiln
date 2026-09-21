@@ -190,9 +190,24 @@ func spawn_block(anchor: Control) -> void:
 	_flash(anchor, C_BLOCK, BLOCK_DUR)
 
 
-## 状态获得脉冲（增益青绿 / 减益紫灰）。
-func spawn_status(anchor: Control, is_buff: bool) -> void:
-	_flash(anchor, C_BUFF if is_buff else C_DEBUFF2, STATUS_DUR)
+## Shared by every status source; restart the same aura instead of piling it up.
+func spawn_status(anchor: Control, is_buff: bool, status_id: StringName = &"") -> Control:
+	if not is_instance_valid(anchor): return null
+	var config: Dictionary = GameData.vfx["status_orbit"]
+	var key := String(status_id) if config["profiles"].has(String(status_id)) else ("heat" if is_buff else "damp")
+	for child in anchor.get_children():
+		if child.get_meta("status_orbit", "") == key and not child.is_queued_for_deletion():
+			child.refresh()
+			return child
+	var effect := preload("res://scripts/combat/StatusOrbitFX.gd").new()
+	effect.name = "StatusOrbit_" + key
+	effect.set_meta("status_orbit", key)
+	effect.status_id = StringName(key)
+	effect.config = config
+	effect.profile = config["profiles"][key]
+	effect.reduced_motion = bool(GameData.vfx["enchant_attack"].get("reduced_motion", false))
+	anchor.add_child(effect)
+	return effect
 
 
 ## 出牌闪光（琥珀）。

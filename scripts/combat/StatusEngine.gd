@@ -5,6 +5,8 @@ extends RefCounted
 ## 本文件零 preload：所有外部类型（CombatController / CombatUnit / StatusData / SignalBus / GameData 等）均为全局 class_name。
 
 var ctrl: CombatController
+## Presentation receipt; reductions, expiry and cleansing do not play gain effects.
+signal status_gained(unit: CombatUnit, status_id: StringName)
 
 func attach(controller: CombatController) -> void:
 	ctrl = controller
@@ -12,11 +14,14 @@ func attach(controller: CombatController) -> void:
 func apply_status(unit: CombatUnit, status_id: StringName, amount: int) -> void:
 	if status_id == &"":
 		return
+	var before := unit.get_status(status_id)
 	unit.add_status(status_id, amount)
 	if unit.is_player:
 		SignalBus.status_applied.emit(true, -1, status_id, unit.get_status(status_id))
 	else:
 		SignalBus.status_applied.emit(false, ctrl._index_of(unit), status_id, unit.get_status(status_id))
+	if unit.get_status(status_id) > maxi(0, before):
+		status_gained.emit(unit, status_id)
 
 func process_turn_start_statuses(unit: CombatUnit, on_death: Callable = Callable()) -> void:
 	for sid in unit.status_ids():

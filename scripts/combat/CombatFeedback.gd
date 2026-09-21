@@ -43,10 +43,42 @@ func _ready() -> void:
 	blood.hide()
 	set_process(false)
 	ui.controller.attack_feedback.connect(on_attack)
+	ui.controller._status.status_gained.connect(_on_status_gained)
 	SignalBus.player_hp_changed.connect(update_health)
 	SignalBus.combat_ended.connect(_on_combat_end)
 	SignalBus.combat_death_pending.connect(clear)
 	update_health(RunState.hp, RunState.max_hp)
+
+
+func _on_status_gained(unit: CombatUnit, status_id: StringName) -> void:
+	if ui.combat_over or ui._player_dead or not unit.is_alive(): return
+	var anchor: Control = ui.player_sprite if unit.is_player else null
+	if not unit.is_player:
+		var panel: Control = ui.unit_panels.get(unit)
+		if not is_instance_valid(panel):
+			# Opening phase buffs can arrive before the first panel is built.
+			_show_opening_status.call_deferred(unit, status_id)
+			return
+		anchor = panel.get_node("Inner/SpriteRect")
+	var data := GameData.get_status(status_id)
+	VFXSystem.spawn_status(anchor, data != null and not data.is_debuff(), status_id)
+
+
+func _show_opening_status(unit: CombatUnit, status_id: StringName) -> void:
+	if ui.unit_panels.has(unit) and unit.get_status(status_id) > 0:
+		_on_status_gained(unit, status_id)
+
+
+func _clear_status_orbits() -> void:
+	var portraits: Array[Control] = [ui.player_sprite]
+	for panel in ui.unit_panels.values():
+		if is_instance_valid(panel): portraits.append(panel.get_node("Inner/SpriteRect"))
+	for portrait in portraits:
+		if not is_instance_valid(portrait): continue
+		for child in portrait.get_children():
+			if child.has_meta("status_orbit"):
+				child.hide()
+				child.queue_free()
 
 
 func on_attack(paid_energy: int, _targets: Array[int]) -> void:
@@ -215,6 +247,7 @@ func _hide_blood() -> void:
 
 
 func clear() -> void:
+	_clear_status_orbits()
 	_cast_attack_prepared = false
 	if is_instance_valid(ui.player_sprite): ui.player_sprite.cancel_cast_attack()
 	_playback_token += 1
@@ -230,6 +263,7 @@ func clear() -> void:
 
 
 func _on_combat_end(victory: bool) -> void:
+	_clear_status_orbits()
 	# The existing victory delay lets the final impact finish before scene change.
 	if not victory:
 		clear()

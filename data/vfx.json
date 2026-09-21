@@ -1,4 +1,35 @@
 {
+  "status_orbit": {
+    "duration": 1.05,
+    "opacity": 0.62,
+    "rear_opacity": 0.48,
+    "fade_in": 0.12,
+    "fade_out": 0.65,
+    "center_y": 0.56,
+    "lane_spacing": 0.20,
+    "radius_x": 0.57,
+    "radius_y": 0.09,
+    "line_ratio": 0.016,
+    "line_min": 1.8,
+    "line_max": 3.5,
+    "glyph_ratio": 0.065,
+    "glyph_min": 8.0,
+    "glyph_max": 14.0,
+    "glyph_count": 5,
+    "segments": 32,
+    "arc_fraction": 0.72,
+    "profiles": {
+      "heat": {"color": "#D9A441", "glyph": "strength", "turns": 1.1, "rise": 0.22, "tilt": -0.35},
+      "temper": {"color": "#94826F", "glyph": "agility", "turns": 1.35, "rise": 0.14, "tilt": 0.45},
+      "damp": {"color": "#7A3D6E", "glyph": "weak", "turns": -0.8, "rise": -0.18, "tilt": -0.25},
+      "crazed": {"color": "#7E504E", "glyph": "vulnerable", "turns": -1.0, "rise": -0.04, "tilt": 0.4},
+      "ashrot": {"color": "#D9A441", "glyph": "burn", "turns": 0.85, "rise": 0.3, "tilt": 0.3},
+      "anneal": {"color": "#3FA67A", "glyph": "regen", "turns": 0.8, "rise": 0.2, "tilt": -0.2},
+      "stoke": {"color": "#D9A441", "glyph": "vigor", "turns": 1.4, "rise": 0.13, "tilt": 0.6},
+      "glaze": {"color": "#94826F", "glyph": "shield", "turns": 0.7, "rise": 0.02, "tilt": -0.1},
+      "thirst": {"color": "#7A3D6E", "glyph": "wither", "turns": -0.65, "rise": -0.25, "tilt": 0.5}
+    }
+  },
   "enemy_portrait": {
     "multi_enemy_scale": 1.5
   },

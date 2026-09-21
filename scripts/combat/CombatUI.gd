@@ -563,21 +563,13 @@ func _on_eintent(index: int, intent: StringName, value: int) -> void:
 	_enemy.on_eintent(index, intent, value)
 
 
-func _on_status(is_player: bool, index: int, status_id: StringName, _stacks: int) -> void:
+func _on_status(_is_player: bool, _index: int, _status_id: StringName, _stacks: int) -> void:
 	# 出牌反制/全队强化发生在演出锁内；现有面板的威胁数值仍须立即刷新。
 	for e in controller.enemies:
 		if e.is_alive() and unit_panels.has(e):
 			_enemy.update_enemy_panel(e, controller.enemies.find(e))
 	_enemy.refresh_enemy()
 	_hud.refresh_resources()
-	var is_buff: bool = _is_buff(status_id)
-	if is_player:
-		VFXSystem.spawn_status(player_panel, is_buff)
-	elif index >= 0 and index < controller.enemies.size():
-		var e: CombatUnit = controller.enemies[index]
-		var p: Panel = unit_panels.get(e)
-		if p != null:
-			VFXSystem.spawn_status(p, is_buff)
 
 
 func _on_kiln(current: int, threshold: int) -> void:
