@@ -33,7 +33,13 @@ func _ready() -> void:
 		await settle(1)
 		check(view.get_node("Art").texture == texture and view.get_node("Art").visible, "hand art " + item.id)
 		check(view.get_node("Art").mouse_filter == Control.MOUSE_FILTER_IGNORE, "art passes pointer " + item.id)
-		check(is_equal_approx(view.size.y - view.size.x, 52.0), "hand frame reserves name and type rows " + item.id)
+		var badge: TextureRect = view.get_node("RarityBadge")
+		check(badge.visible and badge.texture == FormalUI.RARITY_BADGES.get(cd.rarity), "rarity image matches card data " + item.id)
+		check(badge.mouse_filter == Control.MOUSE_FILTER_IGNORE, "rarity image passes pointer " + item.id)
+		check(badge.position.y >= view.get_node("Art").get_rect().end.y, "rarity image below artwork " + item.id)
+		check(is_equal_approx(view.size.y - view.size.x, 76.0), "hand frame reserves doubled rarity row " + item.id)
+		check(is_equal_approx(badge.size.y, 48.0), "rarity row doubles to 48 pixels " + item.id)
+		check(view.get_node("Art").get_rect() == Rect2(12, 40, 112, 112), "hand illustration position and size unchanged " + item.id)
 		check(view.get_node("Art").stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED, "hand illustration never crops " + item.id)
 		check(view.get_node("Art").size.x >= view.size.x - 28.0, "hand art fills decorated frame interior " + item.id)
 		check(view.get_node("Body").get_rect().end.y <= view.get_node("Art").position.y, "title above framed art " + item.id)
@@ -42,15 +48,20 @@ func _ready() -> void:
 		var entry := {"id": item.id, "upgraded": true, "enchants": []}
 		var panel: Control = browser._card_panel(entry, 0, false)
 		check(panel.find_child("CardArt", true, false) != null, "browser art " + item.id)
+		check(panel.find_child("RarityBadge", true, false).texture == badge.texture, "browser rarity " + item.id)
 		panel.free()
 		var offer := Button.new()
 		FormalUI.card_face(offer, {"id": item.id, "name": cd.name, "cost": cd.cost, "desc": cd.description})
 		check(offer.find_child("CardArt", true, false).texture == texture, "reward/shop art " + item.id)
+		check(offer.find_child("RarityBadge", true, false).texture == badge.texture, "reward/shop rarity from card data " + item.id)
 		offer.free()
 		remove_child(view)
 		view.queue_free()
 		count += 1
 	browser.free()
+	var undiscovered := FormalUI.card_visual({"name": "未发现", "cost": 0})
+	check(not undiscovered.get_node("RarityBadge").visible, "undiscovered card hides rarity")
+	undiscovered.free()
 	check(count == 78, "all 78 card illustrations")
 	RunState.start_new_run()
 	RunState.pre_run_preparation_resolved = true
@@ -58,10 +69,12 @@ func _ready() -> void:
 	add_child(ui)
 	await settle()
 	ui.controller.hand = []
-	for id in ["immolate", "barricade", "wound", "burn", "dazed"]:
+	for id in ["strike", "anger", "uppercut", "immolate", "wound"]:
 		ui.controller.hand.append({"id": id, "upgraded": false, "enchants": []})
 	ui._refresh_all()
 	await settle()
+	check(get_viewport().get_visible_rect().encloses(ui.discard_pile_view.get_global_rect()), "discard pile fits viewport")
+	check(get_viewport().get_visible_rect().encloses(ui.hand_container.get_child(0).get_global_rect()), "elongated hand card stays inside viewport")
 	await capture("combat")
 	var first: CardView = ui.hand_container.get_child(0)
 	var before: int = ui.controller.energy
@@ -75,6 +88,7 @@ func _ready() -> void:
 	await settle()
 	ui._targeting.on_card_drag_started(first)
 	check(ui._ghost != null and ui._ghost.get_node("Art").texture == first.get_node("Art").texture, "drag ghost shares art")
+	check(ui._ghost.get_node("RarityBadge").texture == first.get_node("RarityBadge").texture, "drag ghost shares rarity")
 	ui._targeting.on_card_drag_ended(first, Vector2(-100, -100))
 	await get_tree().create_timer(0.3).timeout
 	remove_child(ui)
@@ -82,7 +96,7 @@ func _ready() -> void:
 	await settle()
 	var gallery = load("res://scripts/ui/CardBrowser.gd").new()
 	var entries: Array = []
-	for id in ["immolate", "wound", "burn", "dazed"]:
+	for id in ["anger", "uppercut", "immolate", "wound"]:
 		entries.append({"id": id})
 	gallery.setup("卡牌插画", "已验收稀有与状态卡", entries)
 	add_child(gallery)
@@ -101,7 +115,7 @@ func _ready() -> void:
 		offer.position = Vector2(24 + i * 198, 80)
 		offer.size = sizes[i]
 		samples.add_child(offer)
-		var cd := GameData.get_card(&"immolate")
+		var cd := GameData.get_card([&"anger", &"uppercut", &"immolate"][i])
 		FormalUI.card_face(offer, {"id": cd.id, "name": cd.name, "cost": cd.cost, "desc": cd.description, "rarity": cd.rarity})
 	await settle()
 	for offer in samples.get_children():
@@ -113,7 +127,7 @@ func _ready() -> void:
 		check(body.size.y <= offer.size.y, "offer content remains within frame")
 		var title: Control = offer.find_child("CardTitle", true, false)
 		var description: Control = offer.find_child("CardDescription", true, false)
-		check(is_equal_approx(body.size.y - body.size.x, 52.0), "offer frame follows shared name-image-type layout")
+		check(is_equal_approx(body.size.y - body.size.x, 76.0), "offer frame reserves doubled rarity row")
 		check(title.get_global_rect().end.y <= art.global_position.y, "name above artwork frame")
 		check(description.global_position.y >= body.get_global_rect().end.y, "description below artwork frame")
 		check(offer.get_global_rect().encloses(description.get_global_rect()), "description stays within offer")

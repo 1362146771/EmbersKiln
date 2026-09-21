@@ -9,6 +9,10 @@ func check(ok: bool, title: String) -> void:
 	print("[%s] %s" % ["PASS" if ok else "FAIL", title])
 func settle() -> void:
 	for i in 15: await get_tree().process_frame
+	var current := get_tree().current_scene
+	while is_instance_valid(current) and current.scene_file_path == MENU and current.get("_menu_busy"):
+		await get_tree().process_frame
+	while TransitionManager.is_transitioning: await get_tree().process_frame
 func open_scene(path: String) -> void:
 	get_tree().change_scene_to_file(path)
 	await settle()

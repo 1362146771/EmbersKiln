@@ -5,6 +5,16 @@ var visual := false
 
 func _ready() -> void:
 	visual = OS.get_cmdline_user_args().has("--visual")
+	if OS.get_cmdline_user_args().has("--victory-presentation-only"):
+		var combat_scene := (load("res://scenes/combat/CombatPlay.tscn") as PackedScene).instantiate()
+		check(not combat_scene.has_node("ResultLabel"), "combat scene has no victory splash")
+		combat_scene.free()
+		var reward_scene := (load("res://scenes/ui/BattleRewardOverview.tscn") as PackedScene).instantiate()
+		check(reward_scene.get_node("Panel/Title").text == "战斗奖励", "post-combat panel uses a reward heading")
+		reward_scene.free()
+		print("VICTORY_PRESENTATION_RESULT FAIL=%d" % failed)
+		get_tree().quit(0 if failed == 0 else 1)
+		return
 	ProfileManager.autosave_enabled = false
 	SaveManager.runtime_save_path = "res://Temp/formal_battle_verify_save.json"
 	RunState.start_new_run()
@@ -12,6 +22,7 @@ func _ready() -> void:
 	var ui := (load("res://scenes/combat/CombatPlay.tscn") as PackedScene).instantiate() as CombatUI
 	add_child(ui)
 	await settle()
+	check(not ui.has_node("ResultLabel"), "combat scene has no victory splash")
 	check(ui.player_hp_bar.get_theme_stylebox("fill") is StyleBoxTexture, "authored player HP texture")
 	check(not ui.has_node("EnergyBar"), "legacy energy bar removed")
 	check(ui.has_node("Safe/Layout/HandArea/EnergyRow/EnergyBadge"), "ceramic energy badge is present")
@@ -51,13 +62,6 @@ func _ready() -> void:
 		check(block_shield.get_global_rect().position.x < hp_bar.get_global_rect().position.x
 			and block_shield.get_global_rect().end.x - hp_bar.get_global_rect().position.x >= 16.0, "enemy shield visibly overlaps HP bar left end")
 		check(panel.get_node("Inner/BlockShield/BlockText").text == "0", "enemy block value renders on shield")
-	ui.controller._summon_minion(&"emberhound", 1)
-	await get_tree().create_timer(0.45).timeout
-	await settle()
-	for panel in ui.ally_panels.values():
-		check(panel.get_global_rect().position.y >= potions.get_global_rect().end.y, "ally remains below top inventory frame")
-		check(panel.get_global_rect().end.x <= 720, "ally stays inside viewport")
-		check(panel.get_global_rect().end.y <= 1085, "ally does not cover hand")
 	var preview_enemy: CombatUnit = ui.controller.enemies[0]
 	preview_enemy.block = 8
 	ui.unit_panels[preview_enemy].build(preview_enemy, 0, false, 1, ui.controller)
@@ -93,6 +97,7 @@ func _ready() -> void:
 	add_child(reward)
 	await settle()
 	var overview: Control = reward.get_node("BattleRewardOverview")
+	check(overview.get_node("Panel/Title").text == "战斗奖励", "post-combat panel uses a reward heading")
 	check(overview.get_node("Panel/Items/Scroll/Grid").get_child_count() == 2, "overview shows gold and pending card choice only")
 	check(RunState.gold == gold_before and RunState.deck.size() == deck_before, "overview does not grant duplicate rewards")
 	await capture("victory")

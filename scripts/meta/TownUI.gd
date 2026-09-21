@@ -22,6 +22,7 @@ var _selected_facility_id: StringName = &""
 var _speedup_request_project: StringName = &""
 var _speedup_status_by_project: Dictionary = {}
 var _facility_tweens: Dictionary = {}
+var _facility_rest_scales: Dictionary = {}
 var _visuals: Dictionary = {}
 var _exterior_cache: Dictionary = {}
 var _selection_revision := 0
@@ -29,6 +30,8 @@ var _courtyard_revision := 0
 
 
 func _ready() -> void:
+	%ProjectTab.pressed.connect(_show_mutation.bind(false))
+	%MutationTab.pressed.connect(_show_mutation.bind(true))
 	_visuals = JSON.parse_string(FileAccess.get_file_as_string(VISUAL_CONFIG))
 	if PauseManager != null:
 		PauseManager.hide_pause_button()
@@ -41,6 +44,7 @@ func _ready() -> void:
 		if child is TextureButton:
 			var facility_id := StringName(String(child.get_meta("facility_id", "")))
 			if facility_id != &"":
+				_facility_rest_scales[child] = child.scale
 				child.material = child.material.duplicate()
 				child.pressed.connect(_on_facility_pressed.bind(facility_id))
 	if not SignalBus.profile_changed.is_connected(_rebuild):
@@ -141,6 +145,7 @@ func _on_facility_pressed(facility_id: StringName) -> void:
 	_selection_revision += 1
 	var revision := _selection_revision
 	_selected_facility_id = facility_id
+	_show_mutation(false)
 	for child in _facility_layer.get_children():
 		if child is TextureButton and StringName(child.get_meta("facility_id", "")) == facility_id:
 			if _facility_tweens.has(facility_id):
@@ -155,9 +160,11 @@ func _on_facility_pressed(facility_id: StringName) -> void:
 			return
 		%CourtyardView.show()
 		_facility_layer.hide()
+		%DetailBackdrop.show()
 	else:
 		%CourtyardView.hide()
 		_facility_layer.show()
+		%DetailBackdrop.hide()
 	_depart_button.hide()
 	%TownRestoration.hide()
 	_detail_panel.show()
@@ -167,10 +174,14 @@ func _on_facility_pressed(facility_id: StringName) -> void:
 func _pulse_outline(control: Control) -> Tween:
 	var shader_material := control.material as ShaderMaterial
 	shader_material.set_shader_parameter("highlight", 0.0)
-	var tween := create_tween()
+	control.pivot_offset = control.size * 0.5
+	var rest_scale: Vector2 = _facility_rest_scales[control]
+	var tween := create_tween().set_parallel(true)
 	tween.tween_property(shader_material, "shader_parameter/highlight", 1.0, 0.10)
-	tween.tween_interval(0.16)
-	tween.tween_property(shader_material, "shader_parameter/highlight", 0.0, 0.40)
+	tween.tween_property(shader_material, "shader_parameter/highlight", 0.0, 0.40).set_delay(0.26)
+	# Return to the authored scale before the courtyard transition, including rapid clicks.
+	tween.tween_property(control, "scale", rest_scale * 0.90, 0.10).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(control, "scale", rest_scale, 0.14).set_delay(0.10).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	return tween
 
 
@@ -178,6 +189,7 @@ func _close_facility_details() -> void:
 	_selection_revision += 1
 	_courtyard_revision += 1
 	_detail_panel.hide()
+	%DetailBackdrop.hide()
 	%CourtyardView.hide()
 	_facility_layer.show()
 	_depart_button.show()
@@ -191,6 +203,15 @@ func _facility_data(facility_id: StringName) -> Dictionary:
 			return facility
 	return {}
 
+
+func _show_mutation(enabled: bool) -> void:
+	var available := _selected_facility_id == &"glaze_apothecary"
+	%MutationTabs.visible = available
+	%CardMutationPanel.visible = enabled and available
+	%DetailScroll.visible = not %CardMutationPanel.visible
+	_detail_panel.anchor_top = 0.38 if %CardMutationPanel.visible else 0.5
+	%CourtyardView.anchor_bottom = _detail_panel.anchor_top
+	if %CardMutationPanel.visible: %CardMutationPanel.refresh()
 
 func _refresh_facility_details() -> void:
 	var facility := _facility_data(_selected_facility_id)
@@ -422,17 +443,20 @@ func _on_ad_reward_resolved(_transaction_id: String, placement_id: StringName, r
 
 
 func _on_back() -> void:
-	get_tree().change_scene_to_file(MAIN_MENU)
+	TransitionManager.change_scene_to_file(MAIN_MENU)
 
 
 func _on_depart() -> void:
+	TransitionManager.change_scene_resolved(_depart_destination)
+
+func _depart_destination() -> String:
 	# 非战斗存档先回镇，再由这里继续原来的爬塔进度。
 	if RunState.is_active:
 		PreRunBuffSystem.prepare_offer()
-		get_tree().change_scene_to_file(PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY)
-		return
+		return PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY
 	if SaveManager.has_save():
 		SaveManager.delete_save()
 	if RunState.start_new_run():
 		PreRunBuffSystem.prepare_offer()
-		get_tree().change_scene_to_file(PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY)
+		return PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY
+	return ""

@@ -1,5 +1,5 @@
-extends Control
-## 战后奖励界面（MVP）。展示金币、遗物、3 选 1 卡牌；可选「升级一张已有卡牌」或「跳过」。
+extends "res://scripts/core/NodePanel.gd"
+## 战后奖励界面。卡牌、升级碎片/碎片升级、附魔择一；金币与遗物独立入账。
 ## 通过 setup(reward_data, done_callback) 注入数据；完成后调用 done_callback 交还控制权。
 
 const CREAM := Color(0.984, 0.953, 0.894)
@@ -11,8 +11,12 @@ const DARK := Color.WHITE
 const AMBER := Color(0.937, 0.624, 0.153)
 const BG_DARK := Color(0.12, 0.10, 0.09)
 
+var _entrance_cards: Array[Control] = []
+var _entrance_prepared := false
+var _overview: Control
 var data: Dictionary = {}
 var on_done: Callable = Callable()
+var _upgrade_picker: CanvasLayer
 
 func _solid_bg(color: Color) -> TextureRect:
 	var img := Image.create(4, 4, false, Image.FORMAT_RGBA8)
@@ -33,13 +37,24 @@ func _ready() -> void:
 		SignalBus.card_acquisition_resolved.connect(_on_card_acquisition_resolved)
 	if data.is_empty():
 		data = RunState.pending_reward_data
+	if String(data.get("stage", "cards")) == "boss_relic":
+		FormalUI.combat_reward_pending = false
+		_show_boss_relic_choices()
+		return
+	if String(data.get("stage", "cards")) == "complete":
+		_finish.call_deferred()
+		return
 	_build_main()
 	if FormalUI.combat_reward_pending:
 		FormalUI.combat_reward_pending = false
 		var overview := preload("res://scenes/ui/BattleRewardOverview.tscn").instantiate()
+		_overview = overview
 		add_child(overview)
+		overview.continued.connect(_on_overview_continued)
 		overview.setup(data, FormalUI.combat_reward_backdrop)
 		FormalUI.combat_reward_backdrop = null
+	if TransitionManager.is_transitioning:
+		prepare_entrance()
 
 
 func _exit_tree() -> void:
@@ -54,6 +69,7 @@ func setup(reward_data: Dictionary, done: Callable) -> void:
 
 
 func _build_main() -> void:
+	_entrance_cards.clear()
 	theme = FormalUI.theme("btn_zhanLiPin_normal.png")
 	if not has_node("Dim/Center/MainPanel"):
 		FormalUI.restore_layout(self, "res://scenes/rewards/RewardUI.tscn")
@@ -101,11 +117,23 @@ func _build_main() -> void:
 			card_button.text = "%s\n[%d 能 · %s]\n%s" % [scene_name, int(scene_card.get("cost", 0)), _rarity_cn(StringName(scene_card.get("rarity", "common"))), scene_card.get("desc", "")]
 			card_button.add_theme_font_size_override("font_size", 20)
 			card_button.pressed.connect(_on_choose_card.bind(i))
+			card_button.disabled = bool(data.get("upgrade_shards_collected", false))
+			if card_button.disabled:
+				card_button.modulate.a = 0.45
 			cards_row.add_child(card_button)
+			_entrance_cards.append(card_button)
 			FormalUI.card_face(card_button, scene_card)
 		var upgrade_button: Button = scene_panel.get_node("Content/Actions/UpgradeButton")
 		var skip_button: Button = scene_panel.get_node("Content/Actions/SkipButton")
 		var enchant_button: Button = scene_panel.get_node("Content/Actions/EnchantButton")
+		upgrade_button.text = "升级卡牌" if RunState.can_spend_upgrade_shards() else "收集升级碎片（已有：%d）" % RunState.upgrade_shards
+		upgrade_button.tooltip_text = "已有 %d 个升级碎片；每 %d 个可升级一张卡牌。" % [RunState.upgrade_shards, RunState.upgrade_shard_cost()]
+		upgrade_button.disabled = bool(data.get("upgrade_shards_collected", false)) and not RunState.can_spend_upgrade_shards()
+		enchant_button.disabled = bool(data.get("upgrade_shards_collected", false))
+		if bool(data.get("upgrade_shards_collected", false)):
+			scene_panel.get_node("Content/Prompt").text = "碎片已收集，可升级卡牌或保留碎片离开"
+		else:
+			scene_panel.get_node("Content/Prompt").text = "选择卡牌，或消耗碎片升级：" if RunState.can_spend_upgrade_shards() else "选择卡牌，或收集升级碎片："
 		if not upgrade_button.pressed.is_connected(_on_upgrade_pressed):
 			upgrade_button.pressed.connect(_on_upgrade_pressed)
 		skip_button.text = "离开"
@@ -141,76 +169,16 @@ func _fit_main_panel() -> void:
 	panel.custom_minimum_size.y = margins + other_height + cards.custom_minimum_size.y
 
 func _build_upgrade() -> void:
-	for c in get_children():
-		remove_child(c)
-		c.queue_free()
-
-	FormalUI.map_backdrop(self)
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(620, 1000)
-	panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_main_zhanLiPin.png"))
-	center.add_child(panel)
-
-	var v := VBoxContainer.new()
-	v.set_anchors_preset(Control.PRESET_FULL_RECT)
-	v.offset_left = 32
-	v.offset_right = -32
-	v.offset_top = 32
-	v.offset_bottom = -32
-	v.add_theme_constant_override("margin_left", 24)
-	v.add_theme_constant_override("margin_right", 24)
-	v.add_theme_constant_override("margin_top", 24)
-	v.add_theme_constant_override("margin_bottom", 24)
-	v.add_theme_constant_override("separation", 14)
-	panel.add_child(v)
-
-	v.add_child(_label("升级一张卡牌", 34, DARK))
-	v.add_child(_label("选择要强化的卡牌（灼热攻击可重复升级）", 20, DARK))
-
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	v.add_child(scroll)
-
-	var col := VBoxContainer.new()
-	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col.add_theme_constant_override("separation", 10)
-	scroll.add_child(col)
-
-	var upgradable := false
-	for i in RunState.deck.size():
-		var entry: Dictionary = RunState.deck[i]
-		var cd: CardData = GameData.get_card(StringName(entry["id"]))
-		var level := int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0))
-		if cd == null or level > 0 and not cd.repeatable_upgrade:
-			continue
-		upgradable = true
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(0, 80)
-		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		b.add_theme_color_override("font_color", DARK)
-		b.text = "%s%s → %s" % [cd.name, "+" + str(level) if level > 1 else "+" if level == 1 else "", cd.get_description(level + 1)]
-		b.add_theme_font_size_override("font_size", 20)
-		b.pressed.connect(_on_upgrade_card.bind(i))
-		col.add_child(b)
-
-	if not upgradable:
-		v.add_child(_label("（没有可升级的卡牌）", 22, RED))
-
-	var back := Button.new()
-	back.text = "返回"
-	back.custom_minimum_size = Vector2(300, 60)
-	back.add_theme_font_size_override("font_size", 22)
-	back.pressed.connect(_build_main)
-	v.add_child(back)
+	if not can_interact() or is_instance_valid(_overview) or is_instance_valid(_upgrade_picker): return
+	if not RunState.can_spend_upgrade_shards(): return
+	_upgrade_picker = preload("res://scripts/ui/CardUpgradePicker.gd").new()
+	_upgrade_picker.confirmed.connect(_on_upgrade_card)
+	add_child(_upgrade_picker)
 
 
 func _on_choose_card(i: int) -> void:
+	if not _can_choose_reward() or bool(data.get("upgrade_shards_collected", false)):
+		return
 	var cards: Array = data.get("cards", [])
 	if i < 0 or i >= cards.size():
 		return
@@ -235,26 +203,84 @@ func _on_card_acquisition_resolved(acquisition: Dictionary, result: StringName) 
 
 
 func _on_upgrade_pressed() -> void:
-	_build_upgrade()
+	if not _can_choose_reward():
+		return
+	if RunState.can_spend_upgrade_shards():
+		_build_upgrade()
+		return
+	if bool(data.get("upgrade_shards_collected", false)):
+		return
+	var amount := RunState.collect_upgrade_shards()
+	if amount <= 0:
+		return
+	data["upgrade_shards_collected"] = true
+	_log_reward("升级碎片 +%d（已有：%d）" % [amount, RunState.upgrade_shards])
+	if RunState.can_spend_upgrade_shards():
+		RunState.pending_reward_data = data
+		SaveManager.save_game()
+		_build_main()
+	else:
+		_finish()
 
 
-func _on_upgrade_card(i: int) -> void:
-	if RunState.upgrade_card_at(i):
+func _can_choose_reward() -> bool:
+	return (can_interact() and not is_instance_valid(_overview)
+		and not is_instance_valid(_upgrade_picker)
+		and RunState.pending_card_acquisition.is_empty()
+		and String(data.get("stage", "cards")) == "cards")
+
+
+func _on_upgrade_card(i: int, snapshot: Dictionary = {}) -> void:
+	if not can_interact() or is_instance_valid(_overview) or String(data.get("stage", "cards")) != "cards":
+		return
+	if not snapshot.is_empty() and (i < 0 or i >= RunState.deck.size() or RunState.deck[i] != snapshot):
+		return
+	if RunState.upgrade_card_with_shards_at(i):
 		_log_reward("卡牌已升级")
-	_finish()
+		_finish()
 
 
 func _on_skip() -> void:
+	if not _can_choose_reward():
+		return
 	_log_reward("跳过奖励")
 	_finish()
 
 
 func _finish() -> void:
-	if self == get_tree().current_scene:
-		RunState.pending_post_reward = true
-		get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
-	elif on_done.is_valid():
-		on_done.call()
+	if not can_interact(): return
+	if data.has("boss_relic_choices") and String(data.get("stage", "cards")) == "cards":
+		data["stage"] = "boss_relic"
+		RunState.pending_reward_data = data
+		SaveManager.save_game()
+		_show_boss_relic_choices()
+		return
+	data["stage"] = "complete"
+	RunState.pending_reward_data = data
+	RunState.pending_post_reward = true
+	SaveManager.save_game()
+	_finish_transition(on_done, true)
+
+
+func _show_boss_relic_choices() -> void:
+	_entrance_cards.clear()
+	for child in get_children():
+		remove_child(child)
+		child.queue_free()
+	var panel := preload("res://scenes/rewards/BossRelicChoice.tscn").instantiate()
+	panel.setup(data.get("boss_relic_choices", []))
+	panel.chosen.connect(_on_boss_relic_chosen)
+	add_child(panel)
+
+
+func _on_boss_relic_chosen(relic_id: StringName) -> void:
+	if not can_interact() or String(data.get("stage", "")) != "boss_relic": return
+	if relic_id != &"":
+		if not data.get("boss_relic_choices", []).has(String(relic_id)): return
+		if not RunState.add_relic(relic_id): return
+	data["boss_relic_selected"] = String(relic_id)
+	data["stage"] = "complete"
+	_finish()
 
 
 func _log_reward(msg: String) -> void:
@@ -279,6 +305,8 @@ func _rarity_cn(r: StringName) -> String:
 
 
 func _on_enchant_pressed() -> void:
+	if not _can_choose_reward() or bool(data.get("upgrade_shards_collected", false)):
+		return
 	_build_enchant()
 
 
@@ -362,7 +390,7 @@ func _build_enchant() -> void:
 	for i in RunState.deck.size():
 		var entry: Dictionary = RunState.deck[i]
 		var cd: CardData = GameData.get_card(StringName(entry["id"]))
-		if cd == null or not entry.get("enchants", []).is_empty():
+		if cd == null or not RunState.can_receive_run_enchant(entry):
 			continue
 		var eid: StringName = RewardBuilder.roll_enchant_for_card(cd)
 		if eid == &"":
@@ -380,7 +408,7 @@ func _build_enchant() -> void:
 		if ed != null and ed.icon != "":
 			b.icon = GameData.icon_texture(ed.icon)
 			b.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.pressed.connect(_on_enchant_card.bind(i))
+		b.pressed.connect(_on_enchant_card.bind(i, eid))
 		col.add_child(b)
 	if not any:
 		v.add_child(_label("（没有可附魔的卡牌）", 22, RED))
@@ -392,7 +420,12 @@ func _build_enchant() -> void:
 	v.add_child(back)
 
 
-func _on_enchant_card(i: int) -> void:
+func _on_enchant_card(i: int, eid: StringName) -> void:
+	if not can_interact() or is_instance_valid(_overview):
+		return
+	CardMutation.confirm_run_replace(self, i, eid, _commit_enchant_card.bind(i, eid))
+
+func _commit_enchant_card(i: int, eid: StringName) -> void:
 	if i < 0 or i >= RunState.deck.size():
 		_finish()
 		return
@@ -401,7 +434,6 @@ func _on_enchant_card(i: int) -> void:
 	if cd == null:
 		_finish()
 		return
-	var eid: StringName = RewardBuilder.roll_enchant_for_card(cd)
 	if eid == &"":
 		_finish()
 		return
@@ -411,3 +443,37 @@ func _on_enchant_card(i: int) -> void:
 		_show_enchant_result(cd, ed)
 	else:
 		_finish()
+
+
+func prepare_entrance() -> void:
+	_entrance_prepared = true
+	for card in _entrance_cards:
+		card.modulate.a = 0.0
+		card.scale = Vector2(0.97, 0.97)
+
+func play_entrance() -> Tween:
+	if not _entrance_prepared or _entrance_cards.is_empty():
+		return null
+	_entrance_prepared = false
+	var tween := create_tween().set_parallel(true)
+	tween.set_ignore_time_scale(true)
+	tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	for i in _entrance_cards.size():
+		var card := _entrance_cards[i]
+		card.pivot_offset = card.size * 0.5
+		tween.tween_property(card, "modulate:a", 1.0, 0.16).set_delay(i * 0.03)
+		tween.tween_property(card, "scale", Vector2.ONE, 0.16).set_delay(i * 0.03)
+	return tween
+
+func play_transition_entrance() -> Tween:
+	if is_instance_valid(_overview):
+		return null
+	return play_entrance()
+
+func focus_transition_target() -> void:
+	TransitionManager.focus_panel(_overview if is_instance_valid(_overview) else self)
+
+func _on_overview_continued() -> void:
+	_overview = null
+	prepare_entrance()
+	TransitionManager.reveal_content(self)

@@ -3,11 +3,18 @@ extends RefCounted
 ## 正式 UI 资源适配。只负责呈现，不生成奖励、地图或改变 Run 状态。
 
 const ROOT := "res://art/ui/formal/"
+const RARITY_BADGES := {
+	&"starter": preload("res://art/ui/cards/rarity/common.tres"),
+	&"common": preload("res://art/ui/cards/rarity/common.tres"),
+	&"uncommon": preload("res://art/ui/cards/rarity/uncommon.tres"),
+	&"rare": preload("res://art/ui/cards/rarity/rare.tres"),
+	&"special": preload("res://art/ui/cards/rarity/special.tres"),
+}
 # 地图与只读底图共用的呈现尺寸，不影响层数或路径。
 const MAP_TOP_MARGIN := 130.0
 const MAP_BOSS_GAP := 102.0
 const BOSS_NODE_SIZE := 240.0
-const MAP_CANVAS_WIDTH := 510.0
+const MAP_CANVAS_WIDTH := 505.0
 const MAP_COLUMN_GAP := 82.0
 const BACKGROUNDS := [
 	"res://art/backgrounds/BG_Combat_KilnMouth.png",
@@ -219,9 +226,19 @@ static func card_energy(parent: Control, cost: int, playable: bool = true) -> vo
 
 
 static func fill_card_visual(visual: Control, card: Dictionary, defer_art: bool = false) -> void:
+	card = CardMutation.preview(card)
+	var enchant_badge := visual.get_node_or_null("EnchantBadge") as Label
+	if enchant_badge != null:
+		enchant_badge.visible = not card.get("enchants", []).is_empty()
+		enchant_badge.text = "窑变" if card.get("enchant_preview", false) else ("附魔" if CardMutation.is_active(card) else "待命")
+		enchant_badge.modulate = Color("ffd083") if CardMutation.is_active(card) else Color("aaa49c")
 	var cd := GameData.get_card(StringName(card.get("id", "")))
 	visual.get_node("Body").text = String(card.get("display_name", String(card.get("name", "")) + ("+" if card.get("upgraded", false) else "")))
-	visual.get_node("CardType").text = GameData.card_taxonomy_name(&"types", cd.type) if cd != null else "未发现"
+	var upgraded := bool(card.get("upgraded", false)) or int(card.get("upgrade_level", 0)) > 0 or int(card.get("combat_upgrade_level", 0)) > 0
+	visual.get_node("Body").add_theme_color_override("font_color", Color("ffd083") if upgraded else Color.WHITE)
+	var badge := visual.get_node("RarityBadge") as TextureRect
+	badge.texture = RARITY_BADGES.get(cd.rarity) if cd != null else null
+	badge.visible = badge.texture != null
 	visual.get_node("Art").texture = GameData.icon_texture(cd.art) if cd != null and not defer_art else null
 	for child in visual.get_children():
 		if child is Control:
@@ -243,6 +260,7 @@ static func card_visual(card: Dictionary, defer_art: bool = false) -> Control:
 
 
 static func card_face(parent: Control, card: Dictionary, defer_art: bool = false) -> void:
+	card = CardMutation.preview(card)
 	# 非战斗卡牌显示完整内容；输入仍由原有商品/奖励按钮处理。
 	var cd := GameData.get_card(StringName(card.get("id", "")))
 	var padding := MarginContainer.new()
@@ -270,8 +288,8 @@ static func card_face(parent: Control, card: Dictionary, defer_art: bool = false
 	body.add_child(detail_scroll)
 	var desc := Label.new()
 	var types := {&"attack": "攻击", &"skill": "技能", &"power": "能力", &"status": "状态"}
-	var rarities := {"starter": "初始", "common": "普通", "uncommon": "精良", "rare": "稀有", "special": "特殊"}
-	desc.text = "%s\n%s" % [rarities.get(String(card.get("rarity", "common")), "普通"), card.get("desc", "")]
+	desc.text = "%s\n%s" % [types.get(cd.type, "") if cd != null else "", card.get("desc", "")]
+	if not card.get("enchants", []).is_empty(): desc.text += "\n" + CardMutation.note(card)
 	desc.add_theme_font_size_override("font_size", 17)
 	desc.add_theme_color_override("font_color", Color("f2e8d5"))
 	desc.add_theme_color_override("font_outline_color", Color("1b1612"))

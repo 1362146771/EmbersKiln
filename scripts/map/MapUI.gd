@@ -66,6 +66,8 @@ const MARGIN_TOP := FormalUI.MAP_TOP_MARGIN
 const FLOOR_GAP := 120.0
 const COL_GAP := FormalUI.MAP_COLUMN_GAP
 const NODE_SIZE := 76
+const NODE_PRESS_SCALE := 0.86
+const NODE_REBOUND_SCALE := 1.08
 
 @onready var map_area: Control = get_node_or_null("MapScroller/MapArea")
 @onready var map_scroller: ScrollContainer = get_node_or_null("MapScroller")
@@ -82,10 +84,25 @@ var chosen: Array[int] = []
 var node_pos: Dictionary = {}
 @onready var _bg: ColorRect = get_node_or_null("Background")  # 全屏背景：P1 起战斗改为独立场景切换，不再需要隐藏/恢复
 var _result_fireseed_label: Label
+var _transition_destination: PackedScene
+var _transition_panel: Control
 var _result_ad_button: Button
 
 
+func _refresh_enchant_count() -> void:
+	RunState.normalize_enchant_selection()
+	var total := RunState.deck.filter(func(entry): return not entry.get("enchants", []).is_empty()).size()
+	%EnchantLoadoutButton.text = "配印 %d/%d%s" % [RunState.selected_enchant_instance_ids.size(), RunState.enchant_limit(), " · 有待命" if total > RunState.selected_enchant_instance_ids.size() else ""]
+
+func _show_enchant_loadout() -> void:
+	if not RunState.is_active or has_node("EnchantLoadout") or RunState.has_combat_checkpoint(): return
+	add_child(preload("res://scenes/ui/EnchantLoadout.tscn").instantiate())
+
 func _ready() -> void:
+	%EnchantLoadoutButton.pressed.connect(_show_enchant_loadout)
+	SignalBus.deck_changed.connect(_refresh_enchant_count)
+	_refresh_enchant_count()
+	if RunState.pending_enchant_review: _show_enchant_loadout.call_deferred()
 	if not GameData.is_loaded:
 		push_error("[MapUI] GameData 未就绪")
 		return
@@ -99,23 +116,26 @@ func _ready() -> void:
 	map_scroller.offset_top = 106
 	map_scroller.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	map_scroller.anchor_right = 0.0
-	map_scroller.offset_right = CANVAS_W + 12.0
+	map_scroller.offset_right = CANVAS_W
 	topbar.hide()
 	if not RunState.pre_run_preparation_resolved:
 		PreRunBuffSystem.prepare_offer()
 	if PreRunBuffSystem.needs_preparation():
-		get_tree().call_deferred("change_scene_to_packed", PreRunPreparationScene)
+		_route_scene(PreRunPreparationScene)
 		return
 	if RunState.has_combat_checkpoint() and not RunState.pending_combat_enemy_ids.is_empty():
-		get_tree().call_deferred("change_scene_to_packed", CombatPlayScene)
+		_route_scene(CombatPlayScene)
 		return
 	# —— 场景化回程分支（P1+P2）：地图每次重入重建，靠 RunState 瞬时标记区分来源 ——
 	# 1) 奖励界面返回：走 _on_reward_done（boss→幕转场/通关，普通→继续面板）
 	if RunState.pending_post_reward:
-		RunState.pending_post_reward = false
+		# Keep the completion marker through the floor-resolution autosave.
 		_resolve_current_floor()
 		start_new_map()
 		_on_reward_done()
+		return
+	if not RunState.pending_reward_data.is_empty():
+		_route_scene(RewardScene)
 		return
 	# 2) 战斗返回：胜利发奖励（场景切到 RewardUI），失败弹结算屏
 	if RunState.pending_post_combat:
@@ -153,7 +173,7 @@ func start_new_map() -> void:
 			return
 		PreRunBuffSystem.prepare_offer()
 		if PreRunBuffSystem.needs_preparation():
-			get_tree().call_deferred("change_scene_to_packed", PreRunPreparationScene)
+			_route_scene(PreRunPreparationScene)
 			return
 	chosen.clear()
 	for f in RunState.current_map().size():
@@ -223,7 +243,7 @@ func _build_legend() -> void:
 	var panel := get_node_or_null("MapLegend")
 	if panel == null:
 		panel = preload("res://scenes/map/MapLegend.tscn").instantiate()
-		add_child(panel)
+		_show_transition_panel(panel)
 	if not RunState.current_map().is_empty():
 		var boss := FormalUI.boss_map_texture(RunState.current_map().back()[0].enemy_ids)
 		if boss != null:
@@ -267,6 +287,7 @@ func _build_map_view() -> void:
 	_map_view_revision += 1
 	# 清空旧节点（保留 map_area 本身）
 	for c in map_area.get_children():
+		map_area.remove_child(c)
 		c.queue_free()
 	node_pos.clear()
 
@@ -425,57 +446,54 @@ func _is_reachable(f: int, i: int) -> bool:
 # 进入节点
 # =====================================================================
 func _on_node_pressed(f: int, i: int) -> void:
-	if not _is_reachable(f, i):
+	if TransitionManager.is_transitioning or not _is_reachable(f, i):
 		return
+	var node = RunState.current_map()[f][i]
+	var destination: PackedScene = CombatPlayScene if node.is_combat_like() else _node_scene(node.type)
+	if destination == null:
+		return
+	var effect := &"boss" if node.type == &"boss" else (&"clay" if node.is_combat_like() else &"fade")
+	var button := map_area.get_node_or_null("MapNode_%d_%d" % [f, i]) as Control
+	var pulse: Tween
+	var ready_gate := Callable()
+	if is_instance_valid(button) and not button.is_queued_for_deletion():
+		button.pivot_offset = button.size * 0.5
+		pulse = button.create_tween()
+		pulse.tween_property(button, "scale", Vector2.ONE * NODE_PRESS_SCALE, 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		pulse.tween_property(button, "scale", Vector2.ONE * NODE_REBOUND_SCALE, 0.13).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		pulse.tween_property(button, "scale", Vector2.ONE, 0.09).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		ready_gate = func(): return not pulse.is_valid() or not pulse.is_running()
+	# 立即锁住输入，等节点回弹完毕才开始遮幕，沿用原有节点提交和场景路由。
+	var error := TransitionManager.change_scene_to_packed(destination, _prepare_node.bind(f, i), 0.0, effect, ready_gate)
+	if error != OK and pulse != null:
+		pulse.kill()
+		button.scale = Vector2.ONE
+
+func _prepare_node(f: int, i: int) -> Error:
 	var node = RunState.current_map()[f][i]
 	chosen[f] = i
 	node.visited = true
 	RunState.current_floor = f
 	RunState.current_node_type = node.type
 	SignalBus.floor_entered.emit(f, node.type)
-	_refresh_topbar()
-
 	if node.is_combat_like():
-		_start_combat_node(node)
-	else:
-		_start_noncombat(node)
+		RunState.pending_combat_enemy_ids = node.enemy_ids.duplicate()
+		RunState.create_combat_checkpoint(node.enemy_ids)
+		SaveManager.save_game()
+	return OK
+
+func _node_scene(kind: StringName) -> PackedScene:
+	return {&"rest": RestScene, &"treasure": TreasureScene, &"shop": ShopScene, &"event": EventScene, &"altar": AltarScene}.get(kind)
 
 
 func _start_combat_node(node) -> void:
-	# P1 场景化：不再把战斗当 MapPlay 子节点 overlay，而是切到独立 CombatPlay 场景。
-	# 敌人 id 经 RunState 跨场景传递；当前节点类型已写入 RunState.current_node_type，
-	# 战后结算据此判定 tier / 是否 boss。
-	RunState.pending_combat_enemy_ids = node.enemy_ids.duplicate()
-	RunState.create_combat_checkpoint(node.enemy_ids)
-	SaveManager.save_game()
-	get_tree().change_scene_to_packed(CombatPlayScene)
-	print("[MapUI] 进入战斗节点：%s，敌人=%s" % [node.type, node.enemy_ids])
+	_on_node_pressed(node.floor, node.index)
 
 
 func _start_noncombat(node) -> void:
-	# P2 场景化：非战斗节点改为独立场景切换（不再 add_child 叠加到 MapPlay，避免层级冲突）。
-	# 子屏 _finish 置 pending_node_resolved 后切回本场景，由 _ready 的对应分支重建地图并弹面板。
-	match node.type:
-		&"rest":
-			get_tree().change_scene_to_packed(RestScene)
-		&"treasure":
-			get_tree().change_scene_to_packed(TreasureScene)
-		&"shop":
-			get_tree().change_scene_to_packed(ShopScene)
-		&"event":
-			get_tree().change_scene_to_packed(EventScene)
-		&"altar":
-			get_tree().change_scene_to_packed(AltarScene)
-		_:
-			_refresh_topbar()
-			_show_continue_panel("未知节点", "继续前进")
+	_on_node_pressed(node.floor, node.index)
 
 
-## 战斗结束流程已移到 _ready 的 pending_post_combat 分支驱动：
-## CombatUI 在 combat_ended 后写 RunState.last_combat_victory/pending_post_combat 并切回 MapPlay，
-## 本场景 _ready 据此重建地图并走奖励/结算/幕转场。combat_ended 信号仅剩 SaveManager 自动存档监听。
-
-## 战斗胜利后发放奖励（金币立即入账、遗物立即获得、卡牌三选一由 RewardUI 处理），结束后回地图或通关。
 func _grant_reward() -> void:
 	var tier: StringName = RunState.current_node_type
 	var gold := RewardBuilder.roll_gold(tier)
@@ -493,12 +511,18 @@ func _grant_reward() -> void:
 	var rw_data := {"tier": tier, "gold": gold, "relic_id": relic_id, "potion_id": potion_id, "cards": cards}
 	# P2 场景化：奖励界面改为独立场景。先把数据交给 RunState，再切场景；
 	# RewardUI._finish 置 pending_post_reward 后切回本场景，_ready 走 _on_reward_done。
+	if tier == &"boss" and not RunState.is_last_act():
+		rw_data["boss_relic_choices"] = RewardBuilder.roll_boss_relic_choices()
+	rw_data["stage"] = "cards"
 	RunState.pending_reward_data = rw_data
+	SaveManager.save_game()
 	print("[MapUI] 发放奖励 tier=%s 金币+%d 遗物=%s 药水=%s 卡牌%d张" % [tier, gold, relic_id, potion_id, cards.size()])
-	get_tree().call_deferred("change_scene_to_packed", RewardScene)
+	_route_scene(RewardScene)
 
 
 func _on_reward_done() -> void:
+	RunState.pending_reward_data.clear()
+	RunState.pending_post_reward = false
 	_refresh_topbar()
 	if RunState.current_node_type == &"boss":
 		if RunState.is_last_act():
@@ -509,14 +533,16 @@ func _on_reward_done() -> void:
 			RunState.advance_act()
 			_show_act_transition(RunState.current_act)
 		return
+	SaveManager.save_game()
 	_show_continue_panel("战斗胜利！获得战利品。", "继续前进")
 
 
 ## 幕间转场屏：击败非终幕 Boss 后展示，点击「进入第 N 幕」重建本幕地图。
 func _show_act_transition(act_idx: int) -> void:
 	var panel: Control = _overlay_panel()
+	panel.name = "ActTransition"
 	var col := panel.get_child(0).get_child(0) as VBoxContainer
-	var title := _label("第 %d 幕" % (act_idx + 1), 64, PURPLE)
+	var title := _label("第 %d 幕" % (act_idx + 1), 64, CREAM)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	col.add_child(title)
 	var ctitle := _label(String(RunState.current_act_config().get("title", "")), 34, DARK)
@@ -531,17 +557,22 @@ func _show_act_transition(act_idx: int) -> void:
 	btn.add_theme_font_size_override("font_size", 30)
 	btn.pressed.connect(_on_enter_act.bind(panel))
 	col.add_child(btn)
-	add_child(panel)
+	_show_transition_panel(panel)
 
 
 func _on_enter_act(panel: Control) -> void:
-	panel.queue_free()
-	start_new_map()
+	if self != get_tree().current_scene:
+		TransitionManager.close_panel(panel, start_new_map)
+		return
+	# 不叠加面板退场；保留章节页直到完全遮盖，再用当前运行态构建新地图。
+	TransitionManager.change_scene_to_file("res://scenes/map/MapPlay.tscn", Callable(), 0.0, &"chapter")
 
 
 # =====================================================================
 # 覆盖面板（继续 / 结算）
 # =====================================================================
+
+
 func _show_continue_panel(title: String, btn_text: String) -> void:
 	var panel: Control = _overlay_panel()
 	var label := _label(title, 40, DARK)
@@ -554,12 +585,11 @@ func _show_continue_panel(title: String, btn_text: String) -> void:
 	btn.add_theme_font_size_override("font_size", 28)
 	btn.pressed.connect(_on_continue.bind(panel))
 	panel.get_child(0).get_child(0).add_child(btn)
-	add_child(panel)
+	_show_transition_panel(panel)
 
 
 func _on_continue(panel: Control) -> void:
-	panel.queue_free()
-	_build_map_view()  # 刷新可达
+	TransitionManager.close_panel(panel, _return_to_map)
 
 
 func _show_result(victory: bool) -> void:
@@ -585,16 +615,15 @@ func _show_result(victory: bool) -> void:
 		_result_fireseed_label.add_theme_color_override("font_color", RED)
 	content.get_node("RestartButton").pressed.connect(_on_restart.bind(panel))
 	content.get_node("ReturnTownButton").pressed.connect(_on_return_town.bind(panel))
-	add_child(panel)
+	_show_transition_panel(panel)
 
 
 func _on_restart(panel: Control) -> void:
 	_on_return_town(panel)
 
 
-func _on_return_town(panel: Control) -> void:
-	panel.queue_free()
-	get_tree().change_scene_to_packed(TownScene)
+func _on_return_town(_panel: Control) -> void:
+	TransitionManager.change_scene_to_packed(TownScene)
 
 
 func _on_run_end_ad_pressed() -> void:
@@ -655,3 +684,44 @@ func _refresh_topbar() -> void:
 func _resolve_current_floor() -> void:
 	if RunState.resolve_current_floor():
 		SaveManager.save_game()
+
+func _route_scene(scene: PackedScene) -> void:
+	if TransitionManager.is_transitioning:
+		_transition_destination = scene
+	else:
+		TransitionManager.change_scene_to_packed.call_deferred(scene)
+
+func take_transition_destination() -> PackedScene:
+	var next := _transition_destination
+	_transition_destination = null
+	return next
+
+func _show_transition_panel(panel: Control) -> void:
+	_transition_panel = panel
+	if TransitionManager.is_transitioning:
+		add_child(panel)
+	else:
+		TransitionManager.open_panel(self, panel)
+
+func focus_transition_target() -> void:
+	if is_instance_valid(_transition_panel) and not _transition_panel.is_queued_for_deletion():
+		TransitionManager.focus_panel(_transition_panel)
+	elif has_node("EnchantLoadout"):
+		TransitionManager.focus_panel(get_node("EnchantLoadout"))
+	else:
+		_focus_map()
+
+func _focus_map() -> void:
+	for button in map_area.get_children():
+		if button is BaseButton and not button.disabled and not button.is_queued_for_deletion():
+			button.grab_focus()
+			return
+
+func _return_to_map() -> void:
+	_build_map_view()
+	_focus_map()
+	for button in map_area.get_children():
+		if button is BaseButton and not button.disabled and not button.is_queued_for_deletion():
+			var target: Color = button.modulate
+			button.modulate = target.darkened(0.15)
+			button.create_tween().tween_property(button, "modulate", target, 0.18)

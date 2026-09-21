@@ -20,10 +20,7 @@ func setup(data: Dictionary, backdrop: Texture2D) -> void:
 		_add_item(items, potion.name if potion else String(potion_id), GameData.icon_texture(potion.icon) if potion else null)
 	if not data.get("cards", []).is_empty():
 		_add_item(items, "卡牌\n待选择", null)
-	$Panel/Continue.pressed.connect(func():
-		continued.emit()
-		queue_free()
-	)
+	$Panel/Continue.pressed.connect(_on_continue)
 
 func _add_item(grid: GridContainer, title: String, icon: Texture2D, relic_id: StringName = &"") -> void:
 	var tile := PanelContainer.new()
@@ -50,3 +47,9 @@ func _add_item(grid: GridContainer, title: String, icon: Texture2D, relic_id: St
 		preload("res://scripts/ui/RelicInfo.gd").attach(tile, relic_id)
 		column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		for child in column.get_children(): child.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func _on_continue() -> void:
+	if TransitionManager.is_transitioning:
+		return
+	# 用信号对象绑定，面板排队释放后仍可发出一次完成通知。
+	TransitionManager.close_panel(self, func(): continued.emit(), 0.12, 0.0)

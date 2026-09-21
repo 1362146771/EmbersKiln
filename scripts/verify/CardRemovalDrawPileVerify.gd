@@ -252,7 +252,7 @@ func verify_draw(formal: bool) -> void:
 	var ui: CombatUI = Combat.instantiate() if formal else CombatUI.new()
 	add_child(ui)
 	await frames()
-	check("draw count matches opening hand " + str(formal), ui.draw_pile_button.text == "抽牌堆 %d" % ui.controller.draw_pile.size())
+	check("draw count matches opening hand " + str(formal), ui.draw_pile_button.get_node("Count").text == str(ui.controller.draw_pile.size()))
 	var piles := [ui.controller.draw_pile.duplicate(true), ui.controller.hand.duplicate(true), ui.controller.discard_pile.duplicate(true), RunState.deck.duplicate(true)]
 	seed(218)
 	var expected_rng := randi()
@@ -285,14 +285,14 @@ func verify_draw(formal: bool) -> void:
 	ui.controller.hand.clear()
 	ui.controller.draw_pile = [card(&"strike"), card(&"bash", true)]
 	ui.controller._draw_cards(1)
-	check("draw signal updates count", ui.draw_pile_button.text == "抽牌堆 1")
+	check("draw signal updates count", ui.draw_pile_button.get_node("Count").text == "1")
 	ui.controller._draw_cards(1)
 	ui._open_draw_pile()
 	check("empty draw pile has readable state", ui._card_browser.entries.is_empty() and ui._card_browser._cards.get_child_count() == 1)
 	ui._close_card_browser()
 	ui.controller.discard_pile = [card(&"defend"), card(&"strike"), card(&"bash")]
 	ui.controller._draw_cards(1)
-	check("reshuffle updates draw and discard counters", ui.draw_pile_button.text == "抽牌堆 2" and ui.discard_pile_view.get_node("Content/Labels/Count").text == "弃牌堆\n0")
+	check("reshuffle updates draw and discard counters", ui.draw_pile_button.get_node("Count").text == "2" and ui.discard_pile_view.get_node("Content/Labels/Count").text == "0")
 	ui._open_draw_pile()
 	ui.controller._draw_cards(1)
 	check("external pile change closes stale browser", not ui.card_browser_open())

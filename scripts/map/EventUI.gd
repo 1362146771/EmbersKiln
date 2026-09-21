@@ -1,4 +1,4 @@
-extends Control
+extends "res://scripts/core/NodePanel.gd"
 ## 事件：数据驱动于 res://data/events.json（经 GameData 加载）。
 ## 选项带后果网络（金币/回血/掉血/得卡/得遗物），由 _on_choose 解释执行。
 ## done 回调回地图。
@@ -159,6 +159,8 @@ func _build_main() -> void:
 
 
 func _on_choose(effects: Dictionary) -> void:
+	if not can_interact():
+		return
 	if _resolved or _choosing or not is_inside_tree() or is_queued_for_deletion():
 		return
 	if effects.get("remove_card", false) and not RunState.can_remove_card():
@@ -271,6 +273,8 @@ func _apply_effects(effects: Dictionary, parts: Array[String] = []) -> void:
 		var enc_ok := false
 		for i in RunState.deck.size():
 			var eentry = RunState.deck[i]
+			# 自动事件不覆盖玩家已经培养的附魔；替换在可确认的祭坛/商店进行。
+			if not eentry.get("enchants", []).is_empty(): continue
 			var ecd = GameData.get_card(StringName(eentry["id"]))
 			if ecd == null:
 				continue
@@ -352,16 +356,12 @@ func _show_result(msg: String) -> void:
 
 
 func _finish() -> void:
-	if _finished or not _resolved or not is_inside_tree():
+	if not can_interact() or not is_inside_tree():
+		return
+	if _finished or not _resolved:
 		return
 	_finished = true
-	var tree := get_tree()
-	if self == tree.current_scene:
-		RunState.pending_node_resolved = true
-		tree.change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
-	elif on_done.is_valid():
-		queue_free()
-		on_done.call()
+	_finish_transition(on_done)
 
 
 func _log(msg: String) -> void:

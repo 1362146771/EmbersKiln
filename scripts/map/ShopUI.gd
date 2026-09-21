@@ -1,4 +1,4 @@
-extends Control
+extends "res://scripts/core/NodePanel.gd"
 ## 真实商店：买卡 / 买遗物 / 移除卡。金币取自 RunState，价格取自 balance.shop。
 ## 每次操作刷新界面；离开后 done 回调回地图。
 
@@ -39,6 +39,8 @@ var _finished := false
 var shop_id := ""
 var refresh_count := 0
 var _refresh_status := ""
+var _purchase_status := ""
+var _buying_potion := false
 
 
 func setup(done: Callable) -> void:
@@ -203,8 +205,8 @@ func _build_main() -> void:
 				refresh_hint = ShopInventorySystem.refresh_block_reason(shop_id) + "\n" + refresh_hint
 			refresh_box.get_node("Hint").text = refresh_hint
 			var feedback: Label = refresh_box.get_node("Hint")
-			feedback.text = _refresh_status
-			feedback.visible = not _refresh_status.is_empty()
+			feedback.text = _purchase_status if not _purchase_status.is_empty() else _refresh_status
+			feedback.visible = not feedback.text.is_empty()
 			feedback.autowrap_mode = TextServer.AUTOWRAP_OFF
 			feedback.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			feedback.tooltip_text = refresh_hint
@@ -213,8 +215,13 @@ func _build_main() -> void:
 			leave_button.pressed.connect(_finish)
 		for heading in ["CardTitle", "RelicTitle", "PotionTitle"]:
 			var label: Label = content.get_node(heading)
-			label.add_theme_stylebox_override("normal", FormalUI.stone("bd_shop_title.png", 10))
-			label.custom_minimum_size = Vector2(128, 49)
+			var heading_frame := FormalUI.stone("bd_shop_title.png", 10)
+			heading_frame.content_margin_left = 18.0
+			heading_frame.content_margin_top = 14.0
+			heading_frame.content_margin_right = 18.0
+			heading_frame.content_margin_bottom = 14.0
+			label.add_theme_stylebox_override("normal", heading_frame)
+			label.custom_minimum_size = Vector2(150, 58)
 			label.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		return
 
@@ -280,6 +287,8 @@ func _relic_offer(i: int) -> Control:
 
 
 func _on_buy_card(i: int) -> void:
+	if not can_interact():
+		return
 	if removing:
 		return
 	if i < 0 or i >= card_stock.size():
@@ -300,6 +309,8 @@ func _on_buy_card(i: int) -> void:
 
 
 func _on_buy_relic(i: int) -> void:
+	if not can_interact():
+		return
 	if removing:
 		return
 	if i < 0 or i >= relic_stock.size():
@@ -337,6 +348,10 @@ func _potion_offer(i: int) -> Control:
 	if item["bought"]:
 		buy.text = "已购"
 		buy.disabled = true
+	elif not RunState.can_add_potion():
+		buy.text = "药水槽\n已满"
+		buy.tooltip_text = "药水槽已满，无法购买。请先使用或丢弃一瓶药水。"
+		buy.disabled = true
 	else:
 		buy.text = "%d 金" % item["price"]
 		buy.disabled = RunState.gold < item["price"]
@@ -348,27 +363,37 @@ func _potion_offer(i: int) -> Control:
 
 
 func _on_buy_potion(i: int) -> void:
+	if not can_interact() or _finished or _buying_potion:
+		return
 	if removing:
 		return
 	if i < 0 or i >= potion_stock.size():
 		return
 	var item: Dictionary = potion_stock[i]
-	if item["bought"] or RunState.gold < item["price"]:
+	if item["bought"]:
 		return
-	if not RunState.spend_gold(item["price"]):
-		return
-	if not RunState.add_potion(StringName(item["id"])):
-		RunState.add_gold(item["price"])
-		_log("药水背包已满，无法购买")
+	if not RunState.can_add_potion():
+		_purchase_status = "药水槽已满，无法购买。未扣除金币。"
 		_build_main()
+		return
+	_buying_potion = true
+	if not RunState.try_buy_potion(StringName(item["id"]), int(item["price"])):
+		_purchase_status = "购买失败，请检查金币和药水商品。未扣除金币。"
+		_build_main()
+		_buying_potion = false
 		return
 	item["bought"] = true
 	_persist_stock()
+	_purchase_status = "药水已购买。" if RunState.can_add_potion() else "药水已购买，药水槽已满。"
 	_log("购买药水：-%d 金" % item["price"])
 	_build_main()
+	_buying_potion = false
 
 
 func _on_refresh_pressed() -> void:
+	if not can_interact():
+		return
+	_purchase_status = ""
 	var request_id := ShopInventorySystem.request_refresh(shop_id)
 	_refresh_status = "广告播放中……" if not request_id.is_empty() else ShopInventorySystem.refresh_block_reason(shop_id)
 	_build_main()
@@ -411,6 +436,8 @@ func _on_card_acquisition_resolved(acquisition: Dictionary, result: StringName) 
 
 
 func _on_enchant_pressed(cost: int) -> void:
+	if not can_interact():
+		return
 	if removing:
 		return
 	if RunState.gold < cost or not RewardBuilder.can_any_card_enchant():
@@ -453,7 +480,7 @@ func _build_enchant(cost: int) -> void:
 	scroll.add_child(col)
 	for i in RunState.deck.size():
 		var entry: Dictionary = RunState.deck[i]
-		if not entry.get("enchants", []).is_empty():
+		if not RunState.can_receive_run_enchant(entry):
 			continue
 		var cd = GameData.get_card(StringName(entry["id"]))
 		if cd == null:
@@ -468,7 +495,7 @@ func _build_enchant(cost: int) -> void:
 		b.add_theme_color_override("font_color", TEXT)
 		b.text = "%s -> %s" % [cd.name, ename]
 		b.add_theme_font_size_override("font_size", 20)
-		b.pressed.connect(_on_enchant_card.bind(i, cost))
+		b.pressed.connect(_on_enchant_card.bind(i, cost, eid))
 		col.add_child(b)
 	var back := Button.new()
 	back.text = "返回"
@@ -478,7 +505,12 @@ func _build_enchant(cost: int) -> void:
 	v.add_child(back)
 
 
-func _on_enchant_card(i: int, cost: int) -> void:
+func _on_enchant_card(i: int, cost: int, eid: StringName) -> void:
+	if not can_interact():
+		return
+	CardMutation.confirm_run_replace(self, i, eid, _commit_enchant_card.bind(i, cost, eid))
+
+func _commit_enchant_card(i: int, cost: int, eid: StringName) -> void:
 	if i < 0 or i >= RunState.deck.size() or RunState.gold < cost:
 		_build_main()
 		return
@@ -487,7 +519,6 @@ func _on_enchant_card(i: int, cost: int) -> void:
 	if cd == null:
 		_build_main()
 		return
-	var eid: StringName = RewardBuilder.roll_enchant_for_card(cd)
 	if eid == &"":
 		_build_main()
 		return
@@ -505,6 +536,8 @@ func _on_enchant_card(i: int, cost: int) -> void:
 
 
 func _on_remove_pressed() -> void:
+	if not can_interact():
+		return
 	if removing or _finished or not is_inside_tree() or is_queued_for_deletion() or RunState.gold < remove_cost or not RunState.can_remove_card():
 		return
 	removing = true
@@ -528,6 +561,8 @@ func _build_remove() -> void:
 
 
 func _on_remove_card(i: int) -> void:
+	if not can_interact():
+		return
 	if removing and is_instance_valid(_remove_browser):
 		_remove_browser.select_card(i)
 
@@ -546,16 +581,12 @@ func _confirm_remove(i: int, snapshot: Dictionary) -> void:
 
 
 func _finish() -> void:
-	if _finished or removing or not is_inside_tree():
+	if not can_interact() or not is_inside_tree():
+		return
+	if _finished or removing:
 		return
 	_finished = true
-	var tree := get_tree()
-	if self == tree.current_scene:
-		RunState.pending_node_resolved = true
-		tree.change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
-	elif on_done.is_valid():
-		queue_free()
-		on_done.call()
+	_finish_transition(on_done)
 
 
 func _rarity_index(r: StringName) -> int:

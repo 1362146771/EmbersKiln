@@ -32,6 +32,11 @@ func check(title: String, ok: bool) -> void:
 func frames(count: int = 5) -> void:
 	for i in count:
 		await get_tree().process_frame
+	while TransitionManager.is_transitioning:
+		await get_tree().process_frame
+	# 关闭回调才重建地图；再等布局和延迟滚动定位，不能在解锁信号帧断言位置。
+	for i in 3:
+		await get_tree().process_frame
 
 
 func choose_path(floor_index: int) -> void:
@@ -129,6 +134,7 @@ func verify() -> void:
 	add_child(ui)
 	check("boss reward advances act", RunState.current_act == 1 and RunState.current_floor == 0)
 	var transition: Control = ui.get_child(ui.get_child_count() - 1)
+	await frames()
 	ui._on_enter_act(transition)
 	await frames()
 	check("entering next act focuses new starting floor", focused(ui) and ui.map_area.get_parent().scroll_vertical > 0)
@@ -178,7 +184,11 @@ func verify_combat_return() -> void:
 	if tree.current_scene.scene_file_path == "res://scenes/map/MapPlay.tscn":
 		await tree.scene_changed
 	var reward := tree.current_scene
+	await frames()
 	check("combat return reaches reward scene", reward.scene_file_path == "res://scenes/rewards/RewardUI.tscn")
+	if is_instance_valid(reward._overview):
+		reward._overview._on_continue()
+		await frames()
 	reward._on_skip()
 	await tree.scene_changed
 	var ui := tree.current_scene

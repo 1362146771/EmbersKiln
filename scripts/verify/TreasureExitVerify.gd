@@ -127,7 +127,8 @@ func verify(mode: String) -> void:
 	GameData.cards = cards
 	ui._continue_button.pressed.emit()
 	ui._finish()
-	check(mode + " continue callback exactly once", calls[0] == 1 and ui.is_queued_for_deletion())
+	while TransitionManager.is_transitioning: await get_tree().process_frame
+	check(mode + " continue callback exactly once", calls[0] == 1 and (not is_instance_valid(ui) or ui.is_queued_for_deletion()))
 	await get_tree().process_frame
 
 
@@ -180,4 +181,5 @@ func verify_map_return() -> void:
 	RunState.pre_run_preparation_resolved = true
 	ui._finish()
 	await get_tree().scene_changed
+	while TransitionManager.is_transitioning: await get_tree().process_frame
 	check("standalone returns to map", get_tree().current_scene.scene_file_path == "res://scenes/map/MapPlay.tscn" and not RunState.pending_node_resolved)

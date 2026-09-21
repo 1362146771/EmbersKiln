@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://scripts/ui/FormalMapBackdrop.gd" id="3_3he83"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bgIMG_stage.png" id="4_bnq2b"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_main_event.png" id="5_6ijwg"]
-[ext_resource type="Texture2D" path="res://art/ui/formal/btn_event_normal.png" id="6_budmw"]
+[ext_resource type="Texture2D" path="res://art/ui/main_menu/OptionSlate.tres" id="6_budmw"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="7_kef0w"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_blood.png" id="8_wtqsg"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_gold(需ai改.png" id="9_0e2wr"]
@@ -28,22 +28,23 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("6_budmw")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.4, 0.40784314, 0.4392157, 1)
+modulate_color = Color(0.65, 0.67, 0.7, 0.44)
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_x1bvl"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxTexture_x1bvl"]
 content_margin_left = 12.0
 content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
-texture = ExtResource("6_budmw")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.75)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jx5q3"]
 content_margin_left = 12.0
@@ -51,11 +52,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("6_budmw")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+modulate_color = Color(1.1, 1.1, 1.1, 0.72)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7mrj4"]
 content_margin_left = 12.0
@@ -63,10 +60,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("6_budmw")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+modulate_color = Color(1, 1, 1, 0.66)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_s620l"]
 content_margin_left = 12.0
@@ -74,11 +68,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("6_budmw")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.47058824, 0.50980395, 0.5529412, 1)
+modulate_color = Color(0.85, 0.85, 0.85, 0.76)
 
 [sub_resource type="Theme" id="Theme_t8nqo"]
 Button/colors/font_color = Color(1, 1, 1, 1)
@@ -190,7 +180,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
 text = "事件描述会根据当前 Run 数据显示在这里。"
-autowrap_mode = 2
+autowrap_mode = 3
 
 [node name="Options" type="VBoxContainer" parent="Dim/Center/MainPanel/Content" unique_id=1958259317]
 layout_mode = 2

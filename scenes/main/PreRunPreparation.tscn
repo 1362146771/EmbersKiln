@@ -6,6 +6,7 @@
 [ext_resource type="Theme" path="res://themes/formal/btn_event_normal.tres" id="2"]
 [ext_resource type="Texture2D" path="res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_1.png" id="3"]
 [ext_resource type="StyleBox" path="res://themes/formal/Town_detail.tres" id="4"]
+[ext_resource type="Theme" path="res://themes/formal/btn_hall_normal_small.tres" id="5_slate"]
 
 [node name="PreRunPreparation" type="Control"]
 layout_mode = 3
@@ -127,6 +128,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
+theme = ExtResource("5_slate")
 theme_override_font_sizes/font_size = 25
 text = "直接出发"
 

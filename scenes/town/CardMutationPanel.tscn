@@ -1,0 +1,106 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/meta/CardMutationPanel.gd" id="1"]
+
+[node name="CardMutationPanel" type="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+script = ExtResource("1")
+
+[node name="Hint" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 3
+
+[node name="Gallery" type="ScrollContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Cards" type="GridContainer" parent="Gallery"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 16
+
+[node name="Selection" type="HBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Back" type="Button" parent="Selection"]
+layout_mode = 2
+custom_minimum_size = Vector2(156, 48)
+text = "重新选牌"
+theme_override_font_sizes/font_size = 22
+
+[node name="Title" type="Label" parent="Selection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 3
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Body" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="Overview" type="HBoxContainer" parent="Scroll/Body"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Preview" type="VBoxContainer" parent="Scroll/Body/Overview"]
+layout_mode = 2
+custom_minimum_size = Vector2(156, 0)
+
+[node name="Base" type="Label" parent="Scroll/Body/Overview"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+
+[node name="Result" type="Label" parent="Scroll/Body"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.77, 0.42, 1)
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="Status" type="Label" parent="Scroll/Body"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+
+[node name="Directions" type="Label" parent="Scroll/Body"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+
+[node name="Actions" type="HBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Fire" type="Button" parent="Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 56)
+
+[node name="Accept" type="Button" parent="Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 56)
+text = "采用新附魔"
+
+[node name="Keep" type="Button" parent="Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 56)
+text = "保留原附魔"

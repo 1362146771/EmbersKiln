@@ -1,4 +1,4 @@
-extends Control
+extends "res://scripts/core/NodePanel.gd"
 ## 休息点：回血 或 升级一张卡（二选一）。done 回调交还控制权回地图。
 
 const CREAM := Color(0.984, 0.953, 0.894)
@@ -9,6 +9,7 @@ const PURPLE := Color(0.498, 0.467, 0.867)
 const BG_DARK := Color(0.12, 0.10, 0.09)
 
 var on_done: Callable = Callable()
+var _upgrade_picker: CanvasLayer
 
 func _solid_bg(color: Color) -> TextureRect:
 	var img := Image.create(4, 4, false, Image.FORMAT_RGBA8)
@@ -39,9 +40,11 @@ func _build_main() -> void:
 	if scene_panel != null:
 		var rest_button: Button = scene_panel.get_node("Content/RestButton")
 		rest_button.text = "休息（恢复 %d 生命）" % heal_amt
+		_apply_relic_restriction(rest_button, &"no_rest_heal", "长明炉芯：无法休息回血")
 		if not rest_button.pressed.is_connected(_on_rest.bind(heal_amt)):
 			rest_button.pressed.connect(_on_rest.bind(heal_amt))
 		var forge_button: Button = scene_panel.get_node("Content/ForgeButton")
+		_apply_relic_restriction(forge_button, &"no_rest_upgrade", "封釉重锤：无法锻造升级")
 		if not forge_button.pressed.is_connected(_on_forge):
 			forge_button.pressed.connect(_on_forge)
 		var leave_button: Button = scene_panel.get_node("Content/LeaveButton")
@@ -80,6 +83,7 @@ func _build_main() -> void:
 	rest_btn.custom_minimum_size = Vector2(560, 80)
 	rest_btn.add_theme_font_size_override("font_size", 26)
 	rest_btn.pressed.connect(_on_rest.bind(heal_amt))
+	_apply_relic_restriction(rest_btn, &"no_rest_heal", "长明炉芯：无法休息回血")
 	v.add_child(rest_btn)
 
 	var forge_btn := Button.new()
@@ -87,6 +91,7 @@ func _build_main() -> void:
 	forge_btn.custom_minimum_size = Vector2(560, 80)
 	forge_btn.add_theme_font_size_override("font_size", 26)
 	forge_btn.pressed.connect(_on_forge)
+	_apply_relic_restriction(forge_btn, &"no_rest_upgrade", "封釉重锤：无法锻造升级")
 	v.add_child(forge_btn)
 
 	var leave_btn := Button.new()
@@ -98,6 +103,8 @@ func _build_main() -> void:
 
 
 func _on_rest(heal_amt: int) -> void:
+	if not can_interact() or RunState.has_relic_drawback(&"no_rest_heal"):
+		return
 	RunState.heal(heal_amt)
 	# 补陶泥遗物：休息额外回血
 	for rid in RunState.relic_ids:
@@ -109,87 +116,38 @@ func _on_rest(heal_amt: int) -> void:
 
 
 func _on_forge() -> void:
+	if not can_interact() or RunState.has_relic_drawback(&"no_rest_upgrade"):
+		return
 	_build_forge()
 
 
 func _build_forge() -> void:
-	for c in get_children():
-		c.queue_free()
-
-	var dim := _solid_bg(BG_DARK)
-	add_child(dim)
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1080)
-	center.add_child(panel)
-
-	var v := VBoxContainer.new()
-	v.set_anchors_preset(Control.PRESET_FULL_RECT)
-	v.add_theme_constant_override("margin_left", 24)
-	v.add_theme_constant_override("margin_right", 24)
-	v.add_theme_constant_override("margin_top", 24)
-	v.add_theme_constant_override("margin_bottom", 24)
-	v.add_theme_constant_override("separation", 14)
-	panel.add_child(v)
-
-	v.add_child(_label("锻造台", 34, TEXT_COLOR))
-	v.add_child(_label("选择要强化的卡牌（灼热攻击可重复升级）", 20, TEXT_COLOR))
-
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	v.add_child(scroll)
-
-	var col := VBoxContainer.new()
-	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col.add_theme_constant_override("separation", 10)
-	scroll.add_child(col)
-
-	var upgradable := false
-	for i in RunState.deck.size():
-		var entry: Dictionary = RunState.deck[i]
-		var cd: CardData = GameData.get_card(StringName(entry["id"]))
-		var level := int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0))
-		if cd == null or level > 0 and not cd.repeatable_upgrade:
-			continue
-		upgradable = true
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(0, 64)
-		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		b.add_theme_color_override("font_color", TEXT_COLOR)
-		b.text = "%s%s → %s" % [cd.name, "+" + str(level) if level > 1 else "+" if level == 1 else "", cd.get_description(level + 1)]
-		b.add_theme_font_size_override("font_size", 20)
-		b.pressed.connect(_on_upgrade_card.bind(i))
-		col.add_child(b)
-
-	if not upgradable:
-		v.add_child(_label("（没有可升级的卡牌）", 22, RED))
-
-	var back := Button.new()
-	back.text = "返回"
-	back.custom_minimum_size = Vector2(300, 60)
-	back.add_theme_font_size_override("font_size", 22)
-	back.pressed.connect(_build_main)
-	v.add_child(back)
+	if not can_interact() or RunState.has_relic_drawback(&"no_rest_upgrade") or is_instance_valid(_upgrade_picker): return
+	_upgrade_picker = preload("res://scripts/ui/CardUpgradePicker.gd").new()
+	_upgrade_picker.confirmed.connect(_on_upgrade_card)
+	add_child(_upgrade_picker)
 
 
-func _on_upgrade_card(i: int) -> void:
+func _on_upgrade_card(i: int, snapshot: Dictionary = {}) -> void:
+	if not can_interact() or RunState.has_relic_drawback(&"no_rest_upgrade"):
+		return
+	if not snapshot.is_empty() and (i < 0 or i >= RunState.deck.size() or RunState.deck[i] != snapshot):
+		return
 	if RunState.upgrade_card_at(i):
 		_log("卡牌已升级")
-	_finish()
+		_finish()
 
 
 func _finish() -> void:
-	# 双模兼容：作为独立场景（生产）时置标记并切回地图；作为 verify 的 overlay 子节点时走 on_done 回调。
-	if self == get_tree().current_scene:
-		RunState.pending_node_resolved = true
-		get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
-	elif on_done.is_valid():
-		on_done.call()
+	if not can_interact() or not is_inside_tree():
+		return
+	_finish_transition(on_done)
+
+
+func _apply_relic_restriction(button: Button, kind: StringName, reason: String) -> void:
+	button.disabled = RunState.has_relic_drawback(kind)
+	button.tooltip_text = reason if button.disabled else ""
+	if button.disabled: button.text = reason
 
 
 func _log(msg: String) -> void:

@@ -1,7 +1,6 @@
 extends Node
 ## Autoload: PauseManager —— 全局暂停菜单 + 退出（P4 退出UI）。
-## 手机端竖屏：右上角常驻暂停按钮；暂停时弹出菜单（继续 / 保存并返回主菜单 / 保存并退出游戏）。
-## 全游戏只有一个玩法场景 MapPlay（战斗为其叠加层），故用全局 autoload 覆盖最省事。
+## 手机端竖屏：全局暂停菜单，支持保存退出与确认后放弃本局。
 
 const MAIN_MENU := "res://scenes/main/MainMenu.tscn"
 const CARD_COMPENDIUM := preload("res://scenes/ui/CardCompendium.tscn")
@@ -14,6 +13,7 @@ var _open := false
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_layer = CanvasLayer.new()
 	_layer.layer = 128
 	_layer.process_mode = Node.PROCESS_MODE_ALWAYS   # 暂停时菜单仍可用
@@ -36,6 +36,23 @@ func _ready() -> void:
 	_layer.add_child(_btn)
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		if TransitionManager.is_transitioning:
+			return
+		if is_instance_valid(_compendium):
+			_close_compendium()
+		elif _is_abandon_confirmation_open():
+			_on_cancel_abandon()
+		elif _open:
+			_on_resume()
+		elif is_instance_valid(_btn) and _btn.visible:
+			_open_pause()
+	elif what == NOTIFICATION_APPLICATION_PAUSED:
+		if is_instance_valid(_btn) and _btn.visible and not _open:
+			_open_pause()
+
+
 # ---------- 供场景调用 ----------
 func show_pause_button() -> void:
 	if _btn != null:
@@ -52,12 +69,12 @@ func hide_pause_button() -> void:
 
 # ---------- 暂停菜单 ----------
 func _open_pause() -> void:
-	if _open:
+	if _open or TransitionManager.is_transitioning:
 		return
 	_open = true
 	get_tree().paused = true
 	_overlay = _build_overlay()
-	_layer.add_child(_overlay)
+	TransitionManager.open_panel(_layer, _overlay, 0.12, 0.0)
 
 
 func _close_pause() -> void:
@@ -70,11 +87,58 @@ func _close_pause() -> void:
 
 func _build_overlay() -> Control:
 	var cover := (load("res://scenes/ui/PauseMenu.tscn") as PackedScene).instantiate() as Control
-	cover.find_child("ResumeButton", true, false).pressed.connect(_close_pause)
+	cover.find_child("ResumeButton", true, false).pressed.connect(_on_resume)
 	cover.find_child("CompendiumButton", true, false).pressed.connect(_open_compendium)
 	cover.find_child("MainMenuButton", true, false).pressed.connect(_on_save_to_menu)
 	cover.find_child("QuitButton", true, false).pressed.connect(_on_save_and_quit)
+	cover.find_child("AbandonButton", true, false).pressed.connect(_on_request_abandon)
+	cover.find_child("AbandonButton", true, false).disabled = not RunState.is_active
+	cover.find_child("CancelAbandonButton", true, false).pressed.connect(_on_cancel_abandon)
+	cover.find_child("ConfirmAbandonButton", true, false).pressed.connect(_on_confirm_abandon)
 	return cover
+
+
+func _is_abandon_confirmation_open() -> bool:
+	return is_instance_valid(_overlay) and _overlay.find_child("AbandonConfirmation", true, false).visible
+
+
+func _on_request_abandon() -> void:
+	if TransitionManager.is_transitioning or not _open or not RunState.is_active:
+		return
+	_overlay.find_child("Buttons", true, false).hide()
+	_overlay.find_child("AbandonConfirmation", true, false).show()
+	_overlay.find_child("AbandonError", true, false).hide()
+	_overlay.find_child("CancelAbandonButton", true, false).grab_focus()
+
+
+func _on_cancel_abandon() -> void:
+	if TransitionManager.is_transitioning or not _is_abandon_confirmation_open():
+		return
+	_overlay.find_child("AbandonConfirmation", true, false).hide()
+	_overlay.find_child("Buttons", true, false).show()
+	_overlay.find_child("AbandonButton", true, false).grab_focus()
+
+
+func _on_confirm_abandon() -> void:
+	if TransitionManager.is_transitioning or not _is_abandon_confirmation_open() or not RunState.is_active:
+		return
+	var error := TransitionManager.change_scene_to_file(MAIN_MENU, _prepare_abandon)
+	if error != OK:
+		_show_abandon_error()
+
+
+func _prepare_abandon() -> Error:
+	# 目标场景准备成功后才删档；删档失败保留本局与确认界面，允许重试。
+	if not SaveManager.delete_save():
+		_show_abandon_error()
+		return ERR_FILE_CANT_WRITE
+	RunState.abandon_run()
+	return OK
+
+
+func _show_abandon_error() -> void:
+	if _is_abandon_confirmation_open():
+		_overlay.find_child("AbandonError", true, false).show()
 
 
 func _open_compendium() -> void:
@@ -96,12 +160,19 @@ func _close_compendium() -> void:
 
 
 func _on_save_to_menu() -> void:
+	if TransitionManager.is_transitioning:
+		return
 	SaveManager.save_game()
-	_close_pause()
-	get_tree().change_scene_to_file(MAIN_MENU)
+	TransitionManager.change_scene_to_file(MAIN_MENU)
 
 
 func _on_save_and_quit() -> void:
+	if TransitionManager.is_transitioning:
+		return
 	SaveManager.save_game()
 	_close_pause()
 	get_tree().quit()
+
+func _on_resume() -> void:
+	if not TransitionManager.is_transitioning and _overlay != null:
+		TransitionManager.close_panel(_overlay, _close_pause, 0.10, 0.0)

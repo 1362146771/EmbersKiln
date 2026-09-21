@@ -1,4 +1,5 @@
-extends Control
+extends "res://scripts/core/NodePanel.gd"
+var _choice_made := false
 ## 附魔祭坛（免费附魔节点，方案B）。
 ## 玩家从牌组中选一张未附魔的卡牌，免费永久套用一个合法附魔。
 ## setup(done) 由 verify 直接调用（overlay 模式）；生产路径下本脚本作为独立场景被
@@ -48,7 +49,7 @@ func _build() -> void:
 			child.queue_free()
 		for i in RunState.deck.size():
 			var entry: Dictionary = RunState.deck[i]
-			if not entry.get("enchants", []).is_empty():
+			if not RunState.can_receive_run_enchant(entry):
 				continue
 			var card_data: CardData = GameData.get_card(StringName(entry["id"]))
 			if card_data == null:
@@ -106,7 +107,7 @@ func _build() -> void:
 	choices = []
 	for i in RunState.deck.size():
 		var entry: Dictionary = RunState.deck[i]
-		if not entry.get("enchants", []).is_empty():
+		if not RunState.can_receive_run_enchant(entry):
 			continue
 		var cd: CardData = GameData.get_card(StringName(entry["id"]))
 		if cd == null:
@@ -155,6 +156,14 @@ func _build() -> void:
 
 
 func _on_pick(ch: Dictionary) -> void:
+	if not can_interact() or _choice_made:
+		return
+	CardMutation.confirm_run_replace(self, int(ch["index"]), StringName(ch["eid"]), _commit_pick.bind(ch))
+
+func _commit_pick(ch: Dictionary) -> void:
+	if _choice_made or not can_interact():
+		return
+	_choice_made = true
 	var i: int = ch["index"]
 	var eid: StringName = ch["eid"]
 	if i < 0 or i >= RunState.deck.size():
@@ -216,11 +225,9 @@ func _show_result(ch: Dictionary, applied: bool) -> void:
 
 
 func _finish() -> void:
-	if self == get_tree().current_scene:
-		RunState.pending_node_resolved = true
-		get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
-	elif on_done.is_valid():
-		on_done.call()
+	if not can_interact() or not is_inside_tree():
+		return
+	_finish_transition(on_done)
 
 
 func _label(text: String, size: int, color: Color) -> Label:

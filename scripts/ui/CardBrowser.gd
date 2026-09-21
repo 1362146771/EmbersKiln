@@ -38,7 +38,7 @@ func setup(title: String, subtitle: String, cards: Array, allow_selection: bool 
 		require_selection: bool = false) -> void:
 	_title = title
 	_subtitle = subtitle
-	entries = cards.duplicate(true)
+	entries = cards.map(func(entry): return CardMutation.preview(entry))
 	selectable = allow_selection
 	_confirm_text = confirm_text
 	_warning = warning
@@ -250,9 +250,11 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 	panel.add_child(column)
 	var level := maxi(maxi(int(entry.get("upgrade_level", 0)), int(entry.get("combat_upgrade_level", 0))), 1 if bool(entry.get("upgraded", false)) else 0)
 	if cd != null:
-		column.add_child(FormalUI.card_visual({"id": cd.id, "display_name": card_name(entry), "cost": cd.resolved_cost(level)}))
-		column.add_child(label(GameData.card_taxonomy_name(&"rarities", cd.rarity), 18))
-		column.add_child(label(cd.get_description(level), 20 if _single_card else 22))
+		var visual_entry := entry.duplicate(true)
+		visual_entry.merge({"display_name":card_name(entry),"cost":cd.resolved_cost(level)}, true)
+		column.add_child(FormalUI.card_visual(visual_entry))
+		column.add_child(label(GameData.card_taxonomy_name(&"types", cd.type), 18))
+		column.add_child(label(CardMutation.summary(cd, entry), 20 if _single_card else 22))
 		if not cd.mechanics.is_empty():
 			var mechanic_names: Array[String] = []
 			for mechanic in cd.mechanics:
@@ -264,9 +266,8 @@ func _card_panel(entry: Dictionary, index: int, with_select: bool) -> PanelConta
 			column.add_child(label("能力：生效后移出本场抽弃循环", 20))
 	else:
 		column.add_child(label("卡牌资料暂不可用", 22))
-	for id in entry.get("enchants", []):
-		var enchant: EnchantData = GameData.get_enchant(StringName(id))
-		column.add_child(label("附魔 · %s\n%s" % [enchant.name if enchant != null else String(id), enchant.description if enchant != null else "资料暂不可用"], 20))
+	if not entry.get("enchants", []).is_empty():
+		column.add_child(label(CardMutation.note(entry), 20))
 	if _single_card:
 		_hint = label(_subtitle, 18)
 		column.add_child(_hint)

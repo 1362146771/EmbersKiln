@@ -16,6 +16,6 @@ func _notification(what: int) -> void:
 func _process(_delta: float) -> void:
 	set_process(false)
 	if fit_height_to_width and size.x > 0:
-		var height := size.x + 52.0
+		var height := size.x + 76.0
 		if not is_equal_approx(custom_minimum_size.y, height):
 			custom_minimum_size.y = height

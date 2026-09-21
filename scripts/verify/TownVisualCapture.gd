@@ -44,8 +44,12 @@ func _ready() -> void:
 			pulse.pause()
 			pulse.custom_step(0.14)
 			check("outline pulse", float(button.material.get_shader_parameter("highlight")) > 0.9)
+			var rest_scale: Vector2 = town.get("_facility_rest_scales")[button]
+			check("press shrinks around center", button.scale.x < rest_scale.x and button.pivot_offset.is_equal_approx(button.size * 0.5))
 			if id == "bellows_station" and level == 0:
 				await capture("town_integrated_outline")
+			pulse.custom_step(0.11)
+			check("press returns before courtyard", button.scale.is_equal_approx(rest_scale))
 			pulse.play()
 			await wait_detail()
 			check("%s courtyard %d" % [id, level], courtyard.texture != null and courtyard.texture.resource_path.ends_with("%s_interior_level_%d.png" % [id, level]))
@@ -55,6 +59,10 @@ func _ready() -> void:
 	# Later clicks win; close cancels pending opens.
 	town.call("_close_facility_details")
 	layer.get_node("Hearth").pressed.emit()
+	var repeated: Tween = town.get("_facility_tweens")[&"hearth"]
+	repeated.pause()
+	repeated.custom_step(0.08)
+	layer.get_node("Hearth").pressed.emit()
 	layer.get_node("BellowsStation").pressed.emit()
 	await wait_detail()
 	check("rapid click latest selection", courtyard.texture.resource_path.contains("bellows_station_interior"))
@@ -63,6 +71,7 @@ func _ready() -> void:
 	town.call("_close_facility_details")
 	await get_tree().create_timer(0.7).timeout
 	check("close cancels pending detail", not detail.visible and not courtyard.visible)
+	check("scale restored after close", layer.get_node("Hearth").scale.is_equal_approx(town.get("_facility_rest_scales")[layer.get_node("Hearth")]))
 	check("outline fades", is_zero_approx(float(layer.get_node("Hearth").material.get_shader_parameter("highlight"))))
 	# Real production costs/durations/grants; ready must not change art before claim.
 	ProfileState.reset_to_defaults()

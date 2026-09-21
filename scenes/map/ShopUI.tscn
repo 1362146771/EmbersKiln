@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="4_lqij4"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_shop_title.png" id="5_4ude5"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_zhanLiPin_card.png" id="6_igk5h"]
-[ext_resource type="Texture2D" path="res://art/ui/formal/btn_event_normal.png" id="7_yt8vq"]
+[ext_resource type="Texture2D" path="res://art/ui/main_menu/OptionSlate.tres" id="7_yt8vq"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_blood.png" id="8_exrnb"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_gold(需ai改.png" id="9_s1x1b"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_stair.png" id="10_6v6js"]
@@ -14,10 +14,10 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s81us"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_y54s8"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
 texture = ExtResource("5_4ude5")
 texture_margin_left = 10.0
 texture_margin_top = 10.0
@@ -69,10 +69,10 @@ texture_margin_right = 5.0
 texture_margin_bottom = 5.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_g48py"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
 texture = ExtResource("5_4ude5")
 texture_margin_left = 10.0
 texture_margin_top = 10.0
@@ -80,10 +80,10 @@ texture_margin_right = 10.0
 texture_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dqflc"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
 texture = ExtResource("5_4ude5")
 texture_margin_left = 10.0
 texture_margin_top = 10.0
@@ -96,22 +96,23 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("7_yt8vq")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.4, 0.40784314, 0.4392157, 1)
+modulate_color = Color(0.65, 0.67, 0.7, 0.44)
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_64vbj"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxTexture_64vbj"]
 content_margin_left = 12.0
 content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
-texture = ExtResource("7_yt8vq")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.75)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_k2r5g"]
 content_margin_left = 12.0
@@ -119,11 +120,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("7_yt8vq")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+modulate_color = Color(1.1, 1.1, 1.1, 0.72)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ob25r"]
 content_margin_left = 12.0
@@ -131,10 +128,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("7_yt8vq")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+modulate_color = Color(1, 1, 1, 0.66)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mrxkb"]
 content_margin_left = 12.0
@@ -142,11 +136,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("7_yt8vq")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.47058824, 0.50980395, 0.5529412, 1)
+modulate_color = Color(0.85, 0.85, 0.85, 0.76)
 
 [sub_resource type="Theme" id="Theme_480dc"]
 Button/colors/font_color = Color(1, 1, 1, 1)
@@ -260,7 +250,7 @@ theme_override_colors/font_color = Color(0.937, 0.624, 0.153, 1)
 text = "金币：0"
 
 [node name="CardTitle" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content" unique_id=1816762927]
-custom_minimum_size = Vector2(128, 49)
+custom_minimum_size = Vector2(150, 58)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_styles/normal = SubResource("StyleBoxTexture_y54s8")
@@ -468,7 +458,7 @@ layout_mode = 2
 text = "价格"
 
 [node name="RelicTitle" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content" unique_id=563744498]
-custom_minimum_size = Vector2(128, 49)
+custom_minimum_size = Vector2(150, 58)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_styles/normal = SubResource("StyleBoxTexture_g48py")
@@ -486,7 +476,7 @@ layout_mode = 2
 text = "遗物商品"
 
 [node name="PotionTitle" type="Label" parent="Dim/Center/MainPanel/ContentScroll/Content" unique_id=530057057]
-custom_minimum_size = Vector2(128, 49)
+custom_minimum_size = Vector2(150, 58)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_styles/normal = SubResource("StyleBoxTexture_dqflc")

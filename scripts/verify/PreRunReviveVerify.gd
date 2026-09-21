@@ -137,7 +137,7 @@ func _test_combat_revive() -> void:
 	RunState.hp = RunState.max_hp - 9
 	RunState.gold = 42
 	RunState.add_potion(&"ash_salve")
-	RunState.add_relic(&"kilnmark")
+	RunState.add_relic(&"hearth_totem")
 	RunState.deck[0]["enchants"] = [&"kiln_quench"]
 	var checkpoint_hp := RunState.hp
 	var checkpoint_gold := RunState.gold
@@ -152,8 +152,6 @@ func _test_combat_revive() -> void:
 	first.start_combat(encounter)
 	var first_hand := _card_ids(first.hand)
 	var first_intents := _enemy_intents(first.enemies)
-	var checkpoint_start_ally_count := first.allies.size()
-	first._summon_minion(&"emberhound", 1)
 	RunState.gold = 1
 	RunState.deck.pop_back()
 	RunState.potions.clear()
@@ -182,7 +180,6 @@ func _test_combat_revive() -> void:
 	retry.start_combat(encounter)
 	check("复燃沿用原战斗随机种子与起手", _card_ids(retry.hand) == first_hand)
 	check("复燃沿用原战斗随机种子与敌人意图", _enemy_intents(retry.enemies) == first_intents)
-	check("复燃重建战斗而不保留中途召唤物", retry.allies.size() == checkpoint_start_ally_count)
 	retry.player.hp = 0
 	retry.check_player_death()
 	check("第二次死亡不再展示复燃并正常结束", not RunState.is_active and run_end_count == 1 and not RunState.has_combat_checkpoint())

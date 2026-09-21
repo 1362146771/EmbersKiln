@@ -1,13 +1,14 @@
 [gd_scene format=3 uid="uid://b9r3wardx2k4"]
 
 [ext_resource type="Script" path="res://scripts/rewards/RewardUI.gd" id="1"]
+[ext_resource type="Texture2D" path="res://art/icons/rewards/ICO_UpgradeShard.png" id="upgrade_shard"]
 [ext_resource type="PackedScene" path="res://scenes/ui/CardVisual.tscn" id="shared_card"]
 [ext_resource type="Theme" path="res://themes/formal/btn_zhanLiPin_normal.tres" id="1_17e8e"]
 [ext_resource type="Script" path="res://scripts/ui/FormalMapBackdrop.gd" id="3_wqvi7"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bgIMG_stage.png" id="4_aamtm"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_main_zhanLiPin.png" id="5_m7m6i"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_zhanLiPin_card.png" id="6_35clp"]
-[ext_resource type="Texture2D" path="res://art/ui/formal/btn_event_normal.png" id="7_klejc"]
+[ext_resource type="Texture2D" path="res://art/ui/main_menu/OptionSlate.tres" id="7_klejc"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="8_3k3ip"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_blood.png" id="9_3phuj"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_gold(需ai改.png" id="10_15ts6"]
@@ -209,22 +210,23 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("7_klejc")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.4, 0.40784314, 0.4392157, 1)
+modulate_color = Color(0.65, 0.67, 0.7, 0.44)
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dqxoe"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxTexture_dqxoe"]
 content_margin_left = 12.0
 content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
-texture = ExtResource("7_klejc")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.75)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gg3uw"]
 content_margin_left = 12.0
@@ -232,11 +234,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("7_klejc")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+modulate_color = Color(1.1, 1.1, 1.1, 0.72)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_i868d"]
 content_margin_left = 12.0
@@ -244,10 +242,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("7_klejc")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+modulate_color = Color(1, 1, 1, 0.66)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jl3hn"]
 content_margin_left = 12.0
@@ -255,11 +250,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("7_klejc")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.47058824, 0.50980395, 0.5529412, 1)
+modulate_color = Color(0.85, 0.85, 0.85, 0.76)
 
 [sub_resource type="Theme" id="Theme_y8y7u"]
 Button/colors/font_color = Color(1, 1, 1, 1)
@@ -437,7 +428,10 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "升级一张已有卡牌"
+text = "收集升级碎片（已有：0）"
+icon = ExtResource("upgrade_shard")
+expand_icon = true
+theme_override_constants/icon_max_width = 48
 
 [node name="SkipButton" type="Button" parent="Dim/Center/MainPanel/Content/Actions" unique_id=198406209]
 custom_minimum_size = Vector2(0, 90)

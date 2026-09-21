@@ -1,4 +1,4 @@
-extends Control
+extends "res://scripts/core/NodePanel.gd"
 ## 点击木箱后随机领取一件奖励；动画与领取共用一次性锁。
 
 const OPEN_TEXTURE := preload("res://art/ui/formal/chest_open.png")
@@ -64,11 +64,15 @@ func _update_pivot() -> void:
 
 
 func _on_chest_down() -> void:
+	if not can_interact():
+		return
 	if not _claimed:
 		_scale_to(Vector2(1.06, 0.93), 0.10)
 
 
 func _on_chest_up() -> void:
+	if not can_interact():
+		return
 	if not _claimed:
 		_scale_to(Vector2.ONE, 0.16)
 
@@ -81,6 +85,8 @@ func _scale_to(value: Vector2, duration: float) -> void:
 
 
 func _on_open() -> void:
+	if not can_interact():
+		return
 	if _claimed or _finished or not is_inside_tree() or is_queued_for_deletion():
 		return
 	if GameData.balance.get("treasure", {}).get("reward_weights", {}).is_empty():
@@ -154,10 +160,9 @@ func _show_card_result() -> void:
 	_result_name.hide()
 	_result_card = FormalUI.card_visual({"id": card.id, "name": card.name,
 		"upgraded": upgraded, "cost": card.resolved_cost(1 if upgraded else 0)})
-	_result_card.custom_minimum_size = Vector2(224, 276)
+	_result_card.custom_minimum_size = Vector2(224, 300)
 	_result_card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_result_card.get_node("CardTitle").add_theme_font_size_override("font_size", 20)
-	_result_card.get_node("CardType").add_theme_font_size_override("font_size", 18)
 	_result_panel.add_child(_result_card)
 	_result_panel.move_child(_result_card, 1)
 	_chest.custom_minimum_size = Vector2(340, 340)
@@ -193,14 +198,9 @@ func _show_result(title: String, reward_name: String, description: String, icon:
 
 
 func _finish() -> void:
-	if _finished or not _reward_ready or not is_inside_tree():
+	if not can_interact() or not is_inside_tree():
+		return
+	if _finished or not _reward_ready:
 		return
 	_finished = true
-	_continue_button.disabled = true
-	if self == get_tree().current_scene:
-		RunState.pending_node_resolved = true
-		get_tree().change_scene_to_packed(load("res://scenes/map/MapPlay.tscn") as PackedScene)
-	else:
-		queue_free()
-		if on_done.is_valid():
-			on_done.call()
+	_finish_transition(on_done)

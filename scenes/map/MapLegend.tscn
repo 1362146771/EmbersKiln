@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="StyleBox" path="res://themes/formal/StoneLegend.tres" id="frame"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="frame_texture"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_Monster.png" id="combat"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_eliteMonster.png" id="elite"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_eliteMonster.png" id="boss"]
@@ -10,17 +10,28 @@
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_reward.png" id="treasure"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/icon_stage_intensify.png" id="altar"]
 
+[sub_resource type="StyleBoxTexture" id="LegendFrame"]
+texture = ExtResource("frame_texture")
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
+content_margin_left = 18.0
+content_margin_top = 22.0
+content_margin_right = 18.0
+content_margin_bottom = 22.0
+
 [node name="MapLegend" type="PanelContainer"]
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -190.0
-offset_right = -10.0
+offset_left = -215.0
+offset_right = 0.0
 offset_top = 144.0
-theme_override_styles/panel = ExtResource("frame")
+theme_override_styles/panel = SubResource("LegendFrame")
 
 [node name="Column" type="VBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Column"]
 layout_mode = 2
@@ -36,7 +47,7 @@ theme_override_constants/separation = 2
 layout_mode = 2
 [node name="Icon" type="TextureRect" parent="Column/combat/Heading"]
 layout_mode = 2
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(48, 48)
 texture = ExtResource("combat")
 expand_mode = 1
 stretch_mode = 5
@@ -52,6 +63,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
 text = "遭遇普通敌人"
 autowrap_mode = 2
+horizontal_alignment = 1
 
 [node name="elite" type="VBoxContainer" parent="Column"]
 layout_mode = 2
@@ -60,7 +72,7 @@ theme_override_constants/separation = 2
 layout_mode = 2
 [node name="Icon" type="TextureRect" parent="Column/elite/Heading"]
 layout_mode = 2
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(48, 48)
 texture = ExtResource("elite")
 expand_mode = 1
 stretch_mode = 5
@@ -76,6 +88,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
 text = "挑战强力敌人"
 autowrap_mode = 2
+horizontal_alignment = 1
 
 [node name="boss" type="VBoxContainer" parent="Column"]
 layout_mode = 2
@@ -84,7 +97,7 @@ theme_override_constants/separation = 2
 layout_mode = 2
 [node name="Icon" type="TextureRect" parent="Column/boss/Heading"]
 layout_mode = 2
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(48, 48)
 texture = ExtResource("boss")
 expand_mode = 1
 stretch_mode = 5
@@ -100,6 +113,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
 text = "本幕最终战斗"
 autowrap_mode = 2
+horizontal_alignment = 1
 
 [node name="event" type="VBoxContainer" parent="Column"]
 layout_mode = 2
@@ -108,7 +122,7 @@ theme_override_constants/separation = 2
 layout_mode = 2
 [node name="Icon" type="TextureRect" parent="Column/event/Heading"]
 layout_mode = 2
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(48, 48)
 texture = ExtResource("event")
 expand_mode = 1
 stretch_mode = 5
@@ -124,6 +138,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
 text = "遭遇随机事件"
 autowrap_mode = 2
+horizontal_alignment = 1
 
 [node name="shop" type="VBoxContainer" parent="Column"]
 layout_mode = 2
@@ -132,7 +147,7 @@ theme_override_constants/separation = 2
 layout_mode = 2
 [node name="Icon" type="TextureRect" parent="Column/shop/Heading"]
 layout_mode = 2
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(48, 48)
 texture = ExtResource("shop")
 expand_mode = 1
 stretch_mode = 5
@@ -148,6 +163,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
 text = "购买与调整卡组"
 autowrap_mode = 2
+horizontal_alignment = 1
 
 [node name="rest" type="VBoxContainer" parent="Column"]
 layout_mode = 2
@@ -156,7 +172,7 @@ theme_override_constants/separation = 2
 layout_mode = 2
 [node name="Icon" type="TextureRect" parent="Column/rest/Heading"]
 layout_mode = 2
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(48, 48)
 texture = ExtResource("rest")
 expand_mode = 1
 stretch_mode = 5
@@ -172,6 +188,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
 text = "休整或强化卡牌"
 autowrap_mode = 2
+horizontal_alignment = 1
 
 [node name="treasure" type="VBoxContainer" parent="Column"]
 layout_mode = 2
@@ -180,7 +197,7 @@ theme_override_constants/separation = 2
 layout_mode = 2
 [node name="Icon" type="TextureRect" parent="Column/treasure/Heading"]
 layout_mode = 2
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(48, 48)
 texture = ExtResource("treasure")
 expand_mode = 1
 stretch_mode = 5
@@ -196,6 +213,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
 text = "获取宝物"
 autowrap_mode = 2
+horizontal_alignment = 1
 
 [node name="altar" type="VBoxContainer" parent="Column"]
 layout_mode = 2
@@ -204,7 +222,7 @@ theme_override_constants/separation = 2
 layout_mode = 2
 [node name="Icon" type="TextureRect" parent="Column/altar/Heading"]
 layout_mode = 2
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(48, 48)
 texture = ExtResource("altar")
 expand_mode = 1
 stretch_mode = 5
@@ -220,10 +238,12 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
 text = "为卡牌免费附魔"
 autowrap_mode = 2
+horizontal_alignment = 1
 
 [node name="Note" type="Label" parent="Column"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.824, 0.784, 0.722, 1)
-text = "沿连线选择下一站"
+text = "沿连线选择\n下一站"
 autowrap_mode = 2
+horizontal_alignment = 1

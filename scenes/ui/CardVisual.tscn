@@ -5,12 +5,13 @@
 [ext_resource type="Texture2D" path="res://art/ui/cards/FRAME_Attack.png" id="type_frame"]
 [ext_resource type="PackedScene" path="res://scenes/ui/CardEnergyCost.tscn" id="energy_cost"]
 [ext_resource type="Script" path="res://scripts/ui/CardVisual.gd" id="visual_script"]
+[ext_resource type="Texture2D" path="res://art/ui/cards/rarity/common.tres" id="rarity_badge"]
 
 [sub_resource type="StyleBoxEmpty" id="SB_card"]
 
 [node name="CardVisual" type="Panel"]
 script = ExtResource("visual_script")
-custom_minimum_size = Vector2(136, 188)
+custom_minimum_size = Vector2(136, 212)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,6 +21,17 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("SB_card")
 
 
+[node name="CardBacking" type="ColorRect" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = -8.0
+mouse_filter = 2
+color = Color(0.30, 0.30, 0.29, 1)
+
 [node name="Art" type="TextureRect" parent="."]
 layout_mode = 1
 anchor_right = 1.0
@@ -27,7 +39,7 @@ anchor_bottom = 1.0
 offset_left = 12.0
 offset_top = 40.0
 offset_right = -12.0
-offset_bottom = -36.0
+offset_bottom = -60.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -89,22 +101,19 @@ patch_margin_bottom = 28
 
 [node name="CardEnergyCost" parent="." instance=ExtResource("energy_cost")]
 
-[node name="CardType" type="Label" parent="."]
+[node name="RarityBadge" type="TextureRect" parent="."]
+texture_filter = 4
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
-offset_top = -36.0
+offset_top = -60.0
 offset_right = -12.0
 offset_bottom = -12.0
 mouse_filter = 2
-text = "攻击"
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
-theme_override_colors/font_outline_color = Color(0.106, 0.086, 0.071, 1)
-theme_override_constants/outline_size = 3
+texture = ExtResource("rarity_badge")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="TitleDivider" type="ColorRect" parent="."]
 anchor_right = 1.0
@@ -115,13 +124,30 @@ offset_bottom = 40.0
 mouse_filter = 2
 color = Color(0.408, 0.4, 0.369, 1)
 
-[node name="TypeDivider" type="ColorRect" parent="."]
+[node name="RarityDivider" type="ColorRect" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
-offset_top = -36.0
+offset_top = -60.0
 offset_right = -12.0
-offset_bottom = -34.0
+offset_bottom = -58.0
 mouse_filter = 2
 color = Color(0.408, 0.4, 0.369, 1)
+
+[node name="EnchantBadge" type="Label" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -70.0
+offset_top = 40.0
+offset_right = -20.0
+offset_bottom = 65.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 0.83, 0.5, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.08, 0.06, 1)
+theme_override_constants/outline_size = 5
+horizontal_alignment = 2
+visible = false
+text = "附魔"

@@ -7,6 +7,7 @@ const MAIN_MENU := "res://scenes/main/MainMenu.tscn"
 @onready var _options: VBoxContainer = %BuffOptions
 @onready var _skip_button: Button = %SkipButton
 var _request_active := false
+var _transition_destination: PackedScene
 
 
 func _ready() -> void:
@@ -15,7 +16,7 @@ func _ready() -> void:
 	if PauseManager != null:
 		PauseManager.hide_pause_button()
 	if not RunState.is_active:
-		get_tree().call_deferred("change_scene_to_file", MAIN_MENU)
+		_route_scene(MAIN_MENU)
 		return
 	if not SignalBus.ad_reward_resolved.is_connected(_on_ad_reward_resolved):
 		SignalBus.ad_reward_resolved.connect(_on_ad_reward_resolved)
@@ -73,6 +74,8 @@ func _on_buff_pressed(buff_id: StringName) -> void:
 
 
 func _on_skip() -> void:
+	if TransitionManager.is_transitioning:
+		return
 	if PreRunBuffSystem.skip_preparation():
 		_go_map()
 
@@ -88,4 +91,15 @@ func _on_ad_reward_resolved(_transaction_id: String, placement_id: StringName, r
 
 
 func _go_map() -> void:
-	get_tree().change_scene_to_file(MAP_PLAY)
+	_route_scene(MAP_PLAY)
+
+func _route_scene(path: String) -> void:
+	if TransitionManager.is_transitioning:
+		_transition_destination = load(path) as PackedScene
+	else:
+		TransitionManager.change_scene_to_file.call_deferred(path)
+
+func take_transition_destination() -> PackedScene:
+	var next := _transition_destination
+	_transition_destination = null
+	return next

@@ -6,6 +6,8 @@ var visual := false
 var reward_claimed := false
 
 func _ready() -> void:
+	# End-of-run routing may replace current_scene; keep this suite alive like the entry-flow harness.
+	get_tree().current_scene = null
 	visual = OS.get_cmdline_user_args().has("--visual")
 	if visual:
 		get_tree().root.size = Vector2i(1080, 1920)
@@ -16,7 +18,7 @@ func _ready() -> void:
 	RunState.start_new_run()
 	RunState.pre_run_preparation_resolved = true
 	var menu := await show_scene("res://scenes/main/MainMenu.tscn", "home")
-	check(menu.get_node("MenuCenter/MenuColumn/PlayButton").get_theme_stylebox("normal") is StyleBoxTexture, "menu uses formal button")
+	check(menu.get_node("MenuCenter/MenuColumn/PlayButton/Surface").texture == load("res://art/ui/main_menu/OptionSlate.tres"), "menu uses shared translucent slate button")
 	await remove_screen(menu)
 	var map_ui := await show_scene("res://scenes/map/MapPlay.tscn", "map")
 	check(map_ui.has_node("FormalHeader"), "map header")
@@ -25,9 +27,13 @@ func _ready() -> void:
 	var legend: Control = map_ui.get_node("MapLegend")
 	check(map_ui.get_global_rect().encloses(legend.get_global_rect()), "entire legend stays in viewport")
 	check(legend.position.x >= map_ui.map_scroller.get_rect().end.x, "legend has a separate right column")
+	check(legend.size.x >= 215.0, "legend artwork has readable width")
+	var legend_inner: Rect2 = legend.get_global_rect().grow(-14.0)
+	check(legend_inner.encloses(legend.get_node("Column/Title").get_global_rect()), "legend title clears artwork edges")
 	for entry in FormalUI.MAP_LEGEND:
 		var row := legend.find_child(String(entry[0]), true, false)
 		check(row != null and row.get_node("Heading/Icon").texture != null, "legend icon: " + String(entry[0]))
+		check(row.get_node("Heading/Icon").size.x >= 48.0 and legend_inner.encloses(row.get_node("Description").get_global_rect()), "legend icon size and description inset: " + String(entry[0]))
 	var legend_position := legend.global_position
 	map_ui.map_scroller.scroll_vertical = 0
 	await capture("map_top")
@@ -52,6 +58,10 @@ func _ready() -> void:
 	RunState.gold = int(GameData.balance["shop"]["remove_card_cost"]) + int(GameData.balance["shop"]["enchant_cost"])
 	var shop := await show_scene("res://scenes/map/ShopUI.tscn", "shop")
 	var footer: Control = shop.get_node("Dim/Center/MainPanel/Footer")
+	for heading in ["CardTitle", "RelicTitle", "PotionTitle"]:
+		var label: Label = shop.get_node("Dim/Center/MainPanel/ContentScroll/Content/" + heading)
+		var frame: StyleBox = label.get_theme_stylebox("normal")
+		check(label.size.x >= 150.0 and label.size.y >= 58.0 and frame.get_content_margin(SIDE_LEFT) >= 18.0 and frame.get_content_margin(SIDE_TOP) >= 14.0, "shop artwork and title inset: " + heading)
 	check(footer.get_global_rect().end.y <= get_viewport().get_visible_rect().end.y, "shop footer stays in viewport")
 	check(shop.get_node("Dim/Center/MainPanel/ContentScroll/Content/CardScroll/CardRow").get_child_count() == shop.card_stock.size(), "all configured card offers shown")
 	shop._build_main()
@@ -90,9 +100,15 @@ func _ready() -> void:
 	await remove_screen(event)
 	RunState.pending_reward_data = {"tier": &"combat", "gold": 20, "cards": RewardBuilder.roll_card_choices(3, &"combat")}
 	var reward := await show_scene("res://scenes/rewards/RewardUI.tscn", "reward")
+	RunState.upgrade_shards = RunState.upgrade_shard_cost()
 	check(reward.get_node("Dim/Center/MainPanel/Content/CardScroll/Cards").get_child_count() == 3, "reward choices retained")
 	reward._build_upgrade()
 	await capture("upgrade")
+	# Upgrade selection is now a modal; close it before clicking the underlying reward.
+	var upgrade_picker: CanvasLayer = reward.get("_upgrade_picker")
+	if is_instance_valid(upgrade_picker):
+		upgrade_picker.close()
+		await get_tree().process_frame
 	reward._build_main()
 	await capture("reward_return")
 	check(reward.has_node("Dim/Center/MainPanel/Content/Actions"), "reward returns to formal layout")
@@ -108,9 +124,13 @@ func _ready() -> void:
 			click.pressed = pressed
 			Input.parse_input_event(click)
 			await get_tree().process_frame
+		while TransitionManager.is_transitioning:
+			await get_tree().process_frame
 		check(reward_claimed and RunState.deck.size() == before_count + 1, "card text overlay passes real pointer clicks to reward")
 	else:
 		first_card.pressed.emit()
+		while TransitionManager.is_transitioning:
+			await get_tree().process_frame
 		check(reward_claimed and RunState.deck.size() == before_count + 1, "reward callback acquires card")
 	await remove_screen(reward)
 	map_ui = await show_scene("res://scenes/map/MapPlay.tscn", "map_return")
@@ -136,7 +156,9 @@ func show_scene(path: String, screenshot: String) -> Node:
 	await capture(screenshot)
 	return screen
 
-func remove_screen(screen: Node) -> void:
+func remove_screen(screen) -> void:
+	if not is_instance_valid(screen):
+		return
 	remove_child(screen)
 	screen.queue_free()
 	await get_tree().process_frame

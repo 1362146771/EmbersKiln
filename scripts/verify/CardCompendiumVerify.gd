@@ -8,6 +8,7 @@ var original_autosave := true
 
 
 func _ready() -> void:
+	SaveManager.runtime_save_path = "res://Temp/rarity_compendium_verify_save.json"
 	await get_tree().process_frame
 	original_autosave = ProfileManager.autosave_enabled
 	ProfileManager.autosave_enabled = false
@@ -61,7 +62,11 @@ func _test_compendium_ui() -> void:
 	get_tree().paused = false
 	compendium._set_filter(CardCompendium.FILTER_UNDISCOVERED)
 	_check("未发现筛选不加载隐藏插画", grid.get_child_count() == CardCompendium.PAGE_SIZE
-		and grid.find_children("CardArt", "TextureRect", true, false).is_empty())
+		and compendium._requested_art.is_empty())
+	# 未发现卡共用 CardVisual，保留空的图片节点用于放置问号。
+	for panel in grid.get_children():
+		_check("未发现卡不显示插画或稀有度", panel.find_child("CardArt", true, false).texture == null
+			and not panel.find_child("RarityBadge", true, false).visible)
 	_check("图鉴在暂停状态仍可处理输入", compendium.process_mode == Node.PROCESS_MODE_ALWAYS)
 	compendium.close()
 	await get_tree().process_frame

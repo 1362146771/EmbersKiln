@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://mvofd0h3hb6e"]
 
+[ext_resource type="PackedScene" path="res://scenes/town/CardMutationPanel.tscn" id="mutation_panel"]
+
 [ext_resource type="Script" uid="uid://dc4st8uxxivrk" path="res://scripts/meta/TownUI.gd" id="1_town"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/town_progression/town_level_0_base_preview.png" id="2_bg"]
 [ext_resource type="Texture2D" path="res://art/ui/town/building_levels/bellows_station/bellows_station_level_0.png" id="bellows_station"]
@@ -20,6 +22,13 @@
 [ext_resource type="StyleBox" path="res://themes/formal/Town_field.tres" id="panel_field"]
 
 [ext_resource type="StyleBox" path="res://themes/formal/Town_detail.tres" id="panel_detail"]
+
+[ext_resource type="Shader" path="res://art/ui/town/DetailBackdrop.gdshader" id="detail_backdrop_shader"]
+
+[sub_resource type="ShaderMaterial" id="detail_backdrop_material"]
+shader = ExtResource("detail_backdrop_shader")
+shader_parameter/blur_lod = 3.0
+shader_parameter/dim_amount = 0.45
 
 [sub_resource type="ShaderMaterial" id="outline_material"]
 resource_local_to_scene = true
@@ -325,6 +334,18 @@ theme_override_font_sizes/font_size = 18
 text = "Lv.0"
 horizontal_alignment = 1
 
+[node name="DetailBackdrop" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+material = SubResource("detail_backdrop_material")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
 [node name="PageMargin" type="MarginContainer" parent="." unique_id=12814324]
 mouse_filter = 2
 layout_mode = 1
@@ -487,7 +508,33 @@ theme = ExtResource("return_theme")
 theme_override_font_sizes/font_size = 24
 text = "关闭"
 
+[node name="MutationTabs" type="HBoxContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ProjectTab" type="Button" parent="FacilityDetailPanel/DetailMargin/DetailColumn/MutationTabs"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 48)
+text = "工坊工程"
+
+[node name="MutationTab" type="Button" parent="FacilityDetailPanel/DetailMargin/DetailColumn/MutationTabs"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 48)
+text = "窑变附魔"
+
+[node name="CardMutationPanel" parent="FacilityDetailPanel/DetailMargin/DetailColumn" instance=ExtResource("mutation_panel")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
 [node name="DetailScroll" type="ScrollContainer" parent="FacilityDetailPanel/DetailMargin/DetailColumn" unique_id=1103019149]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0

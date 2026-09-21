@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://cxfpxjrywhns"]
 
-[ext_resource type="Texture2D" uid="uid://cqyqdt466nxkx" path="res://art/ui/formal/btn_event_normal.png" id="1_asmou"]
+[ext_resource type="Texture2D" path="res://art/ui/main_menu/OptionSlate.tres" id="1_asmou"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ebw72"]
 content_margin_left = 12.0
@@ -8,22 +8,23 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("1_asmou")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.4, 0.40784314, 0.4392157, 1)
+modulate_color = Color(0.65, 0.67, 0.7, 0.44)
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pjeh5"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxTexture_pjeh5"]
 content_margin_left = 12.0
 content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
-texture = ExtResource("1_asmou")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.75)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_a0qd8"]
 content_margin_left = 12.0
@@ -31,11 +32,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("1_asmou")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.72156864, 0.78431374, 0.84705883, 1)
+modulate_color = Color(1.1, 1.1, 1.1, 0.72)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_le7s4"]
 content_margin_left = 12.0
@@ -43,10 +40,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("1_asmou")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
+modulate_color = Color(1, 1, 1, 0.66)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_off5w"]
 content_margin_left = 12.0
@@ -54,11 +48,7 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 texture = ExtResource("1_asmou")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-modulate_color = Color(0.47058824, 0.50980395, 0.5529412, 1)
+modulate_color = Color(0.85, 0.85, 0.85, 0.76)
 
 [resource]
 Button/colors/font_color = Color(1, 1, 1, 1)
