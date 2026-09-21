@@ -12,9 +12,14 @@ Logs/
 Temp/
 PBV/
 gen/
+/outputs/
 *.log
 __pycache__/
 *.py[cod]
+
+# Rebuildable art delivery archives
+/art/ui/town/building_levels/*.zip
+/art/ui/town/interior_levels/*.zip
 
 # OS / editor noise
 .DS_Store
@@ -33,10 +38,20 @@ Thumbs.db
 
 # Local Godot AI editor tooling (not game source)
 /addons/godot_ai/
+/addons/.godot_ai_update/
 /godot-ai-LICENSE.txt
 # Keep project.godot tracked; exclude local plugin settings when staging it.
 project.godot~*.TMP
+*.import~*.TMP
 
 # Project AI Studio docs & agent rules (not game source)
 AGENTS.md
 AI_Studio/
+
+*.apk
+
+*.aab
+
+*.keystore
+
+*.jks
