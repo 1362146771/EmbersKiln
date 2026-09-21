@@ -13,7 +13,13 @@
         1536,
         1024
       ],
-      "sha256": "157026557187d3cf2f265501e6f3c4e958ec259e872f1ee911bd133ec7008f4a"
+      "sha256": "63276c34e4dab0714c75bd4eadd245280739ad8446110756514a2b51a5b2e165",
+      "runtime_path": "runtime/hearth/hearth_interior_level_0.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "61f7a5e2aa6b8e9a5ced5d803490212b28debdbde9e40ce07bceba449f4aade1"
     },
     {
       "id": "hearth",
@@ -24,7 +30,13 @@
         1536,
         1024
       ],
-      "sha256": "9668634e5c4fb92644b4ea0c4f0bb7dce529aff53c1aaf1c9b2846962e5de720"
+      "sha256": "15854a29956d6d0cc1defda83561ee4d67cf70ac649dd3c49096ef57d5dab629",
+      "runtime_path": "runtime/hearth/hearth_interior_level_1.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "9ea16701958a7c535805f3bd093f75891f2d458985d2f90a7f8a350394ee2c03"
     },
     {
       "id": "hearth",
@@ -35,7 +47,13 @@
         1536,
         1024
       ],
-      "sha256": "2db5494407fd74b032828f81e896f63538c04f8dce529b01acfe8c14001784b9"
+      "sha256": "f44057ff81741e38fde14d5048e69716fae044b046c25e4603c4ab2515667a8b",
+      "runtime_path": "runtime/hearth/hearth_interior_level_2.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "0892b4b1076054b2914567915cf45db56054ff0a80971fe6d7fdb96936793671"
     },
     {
       "id": "hearth",
@@ -46,7 +64,13 @@
         1536,
         1024
       ],
-      "sha256": "c4b80be9b98be23cc931df72cbb01c31ba89d53f57ace24db61199ebab99ee0c"
+      "sha256": "d6b6e2b2319873e7c98e2c1e333c5802e5ce0adcd240660af62e14f9d76c701a",
+      "runtime_path": "runtime/hearth/hearth_interior_level_3.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "fb07a8e4f5dd200faf79d4470b8ca90c5069fae3d87d19cbb2ddb37db69ea5bf"
     },
     {
       "id": "card_mold_workshop",
@@ -57,7 +81,13 @@
         1536,
         1024
       ],
-      "sha256": "c4a17b1880495e027670dd2a37be6044040261251e08790b3964c56df787fcea"
+      "sha256": "47355655b0f824bbec2431b4554e46d3552d5ba1b1fa99e9eb19f22217fb6f3c",
+      "runtime_path": "runtime/card_mold_workshop/card_mold_workshop_interior_level_0.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "005c84f5d2a9552da7f15946c1c2bda7c1616ed510cd18e1562f69da4beddb6f"
     },
     {
       "id": "card_mold_workshop",
@@ -68,7 +98,13 @@
         1536,
         1024
       ],
-      "sha256": "2596ff833ff704cfd074cdfb161481d6c2e19ee5860c522f92c5cc483b132186"
+      "sha256": "a8b7848026319c420e07b4a05d4ce0181ef446fe7b76062713866838ee472738",
+      "runtime_path": "runtime/card_mold_workshop/card_mold_workshop_interior_level_1.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "0fd05f7c00fdf15c660da3a0b4587bbe19639e1d335052ceb973823868912ddc"
     },
     {
       "id": "card_mold_workshop",
@@ -79,7 +115,13 @@
         1536,
         1024
       ],
-      "sha256": "04f0b83168d093babb417911f7157f49fc1ba5f90d28243f552281f99d66354b"
+      "sha256": "040ec00d0bd6bc44deac9316b42b1d07eefd8830c98b9969a8bf0922045271d8",
+      "runtime_path": "runtime/card_mold_workshop/card_mold_workshop_interior_level_2.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "f2e2203787997f4739319777a91284f1e53f073f6931253e98fea104945b5f30"
     },
     {
       "id": "card_mold_workshop",
@@ -90,7 +132,13 @@
         1536,
         1024
       ],
-      "sha256": "4f09a637672d3a8f625de19cc2fa820e5d4d916a72f756987b95a95da5eff8a4"
+      "sha256": "aebf23e15a5d6e33752bcc0b1e9926baf826dc8c82a83c679ada314ca5d8fd85",
+      "runtime_path": "runtime/card_mold_workshop/card_mold_workshop_interior_level_3.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "c5ecf43aa6f2b01c7f1c18402d3556b2b12023bb0ea61c9e9cb73fcf90a17f4b"
     },
     {
       "id": "relic_shelf",
@@ -101,7 +149,13 @@
         1536,
         1024
       ],
-      "sha256": "749591ed694640a6b9fd64171eba1c666fa1a94f6aae7ef9b3a60ec389ab6bb2"
+      "sha256": "b0855f54c0c41c40ae2ee71bc057b7e4aacf0706a876e38408d249e6c1b317ab",
+      "runtime_path": "runtime/relic_shelf/relic_shelf_interior_level_0.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "7968ffb57bb7a16ac48d83bbad7aef58b4dd350cc1f0ddce69999a1a894bcc8c"
     },
     {
       "id": "relic_shelf",
@@ -112,7 +166,13 @@
         1536,
         1024
       ],
-      "sha256": "a6abd0c081ed90261be5df904e33821712eb040faef8dcfca8b728f069db0971"
+      "sha256": "3911c218cbeff4a8dba0e9354608a85513b3b8cf171eab2e2d5bcb986040e39a",
+      "runtime_path": "runtime/relic_shelf/relic_shelf_interior_level_1.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "f2065aef75ded057caf0974d570d2cbdf5142a0354947140e699c2ec20849833"
     },
     {
       "id": "relic_shelf",
@@ -123,7 +183,13 @@
         1536,
         1024
       ],
-      "sha256": "ee4fe731d3c07777aa62650f138a331f1e82a1a6d396f0565895cb8e71bbb9ca"
+      "sha256": "d6153371b9d6b3b19d3ee4c5a208a0e420571a52df7f2f1d1bd07f9687a2c43b",
+      "runtime_path": "runtime/relic_shelf/relic_shelf_interior_level_2.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "9b76061a1a2ad36cadfc94903f4fdd8e5355573bd96f738d3eb877b8ef221f04"
     },
     {
       "id": "relic_shelf",
@@ -134,7 +200,13 @@
         1536,
         1024
       ],
-      "sha256": "356e5f8f05ab353d5ff088a080c13439eaf58d79e37ef10a29fb6164afcf4ff2"
+      "sha256": "0b72aea398cfff5bde9e96c36176e6695e4ade92ae6164bda09c087847c98716",
+      "runtime_path": "runtime/relic_shelf/relic_shelf_interior_level_3.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "2d35cc2a6f43446fba0b4c6806d71eae6971199c2910a837ddbf4a601413d3cf"
     },
     {
       "id": "glaze_apothecary",
@@ -145,7 +217,13 @@
         1536,
         1024
       ],
-      "sha256": "ebe8dda3632fa6d6c8e2de58d48fc318ead1e55171ec72874d6045d43a6668ab"
+      "sha256": "8a4bd8152fcaced4641d018cd742455b0e1bfaa4029a0da369164ac81be33d63",
+      "runtime_path": "runtime/glaze_apothecary/glaze_apothecary_interior_level_0.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "86bc017c501a87e2910250b760edc8b09bdf4bc11c31d61fcfefb8ccea5c5b34"
     },
     {
       "id": "glaze_apothecary",
@@ -156,7 +234,13 @@
         1536,
         1024
       ],
-      "sha256": "45765cd52484e8a6b2814c31d5c40da585d62a6a50dcb60014fabd83696adb16"
+      "sha256": "3c1143cf23dda7c9fedf6006dd7485367e819387e36d827974e1ba6bb6bd1f83",
+      "runtime_path": "runtime/glaze_apothecary/glaze_apothecary_interior_level_1.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "1056d0fda668767cae77691c3573c05c1d12e0c90c6ac8cd9ed25c42b56e374b"
     },
     {
       "id": "glaze_apothecary",
@@ -167,7 +251,13 @@
         1536,
         1024
       ],
-      "sha256": "72c77fa20b559cd65052c7c1ebf91b2eaadec5120e721053e2c54a76c236f5bf"
+      "sha256": "e5e7323e732f60d323c41164792a6270e96e063b9aca848bc546d49ded08eb54",
+      "runtime_path": "runtime/glaze_apothecary/glaze_apothecary_interior_level_2.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "ff742af0385ecbc54f15b822ae971208e343ae00bc902e2e3e3e46f34a0fdba5"
     },
     {
       "id": "glaze_apothecary",
@@ -178,7 +268,13 @@
         1536,
         1024
       ],
-      "sha256": "7527e6cb796b0351cb9125faebb02bac8b7c789f6065abee0ed58ec3e9d59a53"
+      "sha256": "414b222206be8a4c96fb3b161cc2c3f1968f21f768127b41353da7d56c5765d7",
+      "runtime_path": "runtime/glaze_apothecary/glaze_apothecary_interior_level_3.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "7f547660d9f33fc5693bd8467554c9f0101b9367883b82275add73618f005617"
     },
     {
       "id": "bellows_station",
@@ -189,7 +285,13 @@
         1536,
         1024
       ],
-      "sha256": "f83e347ecc82579c9eb4629e4c4b514fa800ce0adb012952ef13e08e7f5032be"
+      "sha256": "0b490240e838de40ac299b8de40249c109582b35c56f1dbc955b5e06188a6ac9",
+      "runtime_path": "runtime/bellows_station/bellows_station_interior_level_0.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "9331cfb1958902528d71b0bbf9b27811ff2024c7e24a08a4a0b6be1471f3f9f8"
     },
     {
       "id": "bellows_station",
@@ -200,7 +302,13 @@
         1536,
         1024
       ],
-      "sha256": "83bd3c19356fb78c2c894024c00b51591b95d0fd4a24284cda5dc7e981a1ab19"
+      "sha256": "0fe971e2012239465e0099bca564c228d6b3b7bf3cfac3876f53ae5718b1f2f3",
+      "runtime_path": "runtime/bellows_station/bellows_station_interior_level_1.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "4486a24af07d2af231556a28744f185646042c778d6185c65cffcfb6d5fdda78"
     },
     {
       "id": "bellows_station",
@@ -211,7 +319,13 @@
         1536,
         1024
       ],
-      "sha256": "1f591d294095fb0297f4d948f7c6cd50fff114e6248a73eaa50249594e32a2f2"
+      "sha256": "c395d1879c7a5bbfb10878c63a2e700624048da693471d9967a96d06401fb4ce",
+      "runtime_path": "runtime/bellows_station/bellows_station_interior_level_2.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "1abc3c25fc2165a01f749dfbf4a31dce50888fa07a4548db6025a0cca37c1162"
     },
     {
       "id": "bellows_station",
@@ -222,9 +336,14 @@
         1536,
         1024
       ],
-      "sha256": "618142474c068d927281cc1a5a41c4453f8489e35e6899b2134c426525dbbd3c"
+      "sha256": "1c113839b473df8467db7d5c1df5eda96c2b5dd4c20559b8d2caeb13ae7ae1f6",
+      "runtime_path": "runtime/bellows_station/bellows_station_interior_level_3.png",
+      "runtime_size": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "6a122e721b47a117a419ceaae0630537372055a48dbdcfd21d5c59151928ae54"
     }
   ],
-  "runtime_scene": "res://scenes/town/Town.tscn",
-  "runtime_config": "res://data/town_visuals.json"
+  "runtime_verification": "TownVisualCapture: PASS; all 20 courtyard mappings and 4 town stages"
 }

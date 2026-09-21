@@ -1,6 +1,6 @@
 """Copy image_gen art unchanged; verify files and compose review thumbnails."""
 from pathlib import Path
-import json, shutil, hashlib, zipfile
+import json, shutil, hashlib
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent
@@ -15,7 +15,12 @@ def main():
     for a in source['assets']:
         target = ROOT/a['id']/f"{a['id']}_interior_level_{a['level']}.png"
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(a['path'], target)
+        source_path = Path(a['path'])
+        if not source_path.is_absolute():
+            source_path = ROOT.parents[3] / source_path
+        # The editor may have the already-current texture mapped for import.
+        if not target.exists() or hashlib.sha256(source_path.read_bytes()).digest() != hashlib.sha256(target.read_bytes()).digest():
+            shutil.copy2(source_path, target)
         with Image.open(target) as check:
             check.verify()
         im = Image.open(target).convert('RGB')
@@ -40,21 +45,11 @@ def main():
             pair.paste(im.resize((768,512),Image.Resampling.LANCZOS),(px,py+40))
         pair.save(preview/f'{slug}_levels.jpg',quality=94)
     sheet.save(preview/'all_interior_levels.jpg',quality=94)
-    manifest = {'status':'candidate_art_not_runtime_integrated','generator':'built-in image_gen',
+    manifest = {'status':'runtime_integrated','generator':'built-in image_gen',
                 'scene':'courtyard_with_player_and_workers','source_manifest':'source_manifest.json',
                 'assets':records,'runtime_verification':'NOT VERIFIED'}
     (ROOT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
-    with zipfile.ZipFile(ROOT/'town_interiors_levels_0-3.zip','w',zipfile.ZIP_DEFLATED) as z:
-        for a in records:
-            z.write(ROOT/a['path'],a['path'])
-        for p in ['README.md','manifest.json','source_manifest.json']:
-            z.write(ROOT/p,p)
-        for p in preview.glob('*.jpg'):
-            z.write(p,p.relative_to(ROOT))
-    with zipfile.ZipFile(ROOT/'town_interiors_levels_0-3.zip') as z:
-        assert z.testzip() is None
-        assert len([p for p in z.namelist() if p.endswith('.png')]) == 20
-    print('Verified 20 original 1536x1024 PNGs; 6 review previews and ZIP exported.')
+    print('Verified 20 original 1536x1024 PNGs and rebuilt 6 review previews.')
 
 if __name__ == '__main__':
     main()

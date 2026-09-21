@@ -31,10 +31,8 @@
 - `preview/{建筑ID}_levels.jpg`：每栋 2×2 等级对照，左上 0、右上 1、左下 2、右下 3。
 - `preview/all_interior_levels.jpg`：五栋全套对照，按行排列建筑，按列排列等级 0–3。
 - `manifest.json`：当前文件、尺寸、哈希清单。
-- `source_manifest.json`：当前来源与内置 image_gen 提示词、参考图；被替代的室内/旁观构图不纳入交付。
-- `town_interiors_levels_0-3.zip`：整套原图、对照图与清单。
-
-`export_assets.py` 仅复制并校验原图、拼接预览和打包。全部创作由内置 image_gen 完成。本套美术等级不修改玩法等级或数值。
+- `source_manifest.json`：当前已批准手绘源图的项目内相对路径；不依赖生成工具缓存目录。源图位于 `art/backgrounds/candidates/handdrawn_cleanup/`。
+`export_assets.py` 仅复制并校验原图、拼接预览和更新清单，不生成重复的 ZIP 交付包。全部创作由内置 image_gen 完成。本套美术等级不修改玩法等级或数值。
 
 运行版本由 `python art/ui/town/interior_levels/build_runtime.py` 从高清原图重建。`data/town_visuals.json` 和局前准备场景均引用 `runtime/`；原图与来源清单保留。
 

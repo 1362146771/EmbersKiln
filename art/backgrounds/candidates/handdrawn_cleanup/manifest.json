@@ -1,0 +1,678 @@
+{
+  "schema_version": 1,
+  "status": "approved_integrated",
+  "processed_date": "2026-09-17",
+  "source_cutoff": "2026-09-17T00:00:00+08:00",
+  "tool": "built-in image_gen edit",
+  "images": [
+    {
+      "source": "art/backgrounds/BG_Combat_AshrindGallery.png",
+      "size": [
+        720,
+        1280
+      ],
+      "mode": "RGBA",
+      "status": "reference_updated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_Combat_AshrindGallery.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "338abfd2666c7fb395e219bcfaf5c7697155ae0fe1457a997dd262525e6e3d6a",
+      "sha256": "21182eac5395a818dc077b1cd799a9c9b3f5ceb2db68503919e66edc967575da",
+      "production": "art/backgrounds/BG_Combat_AshrindGallery.png"
+    },
+    {
+      "source": "art/backgrounds/BG_Combat_ColdKilnHeart.png",
+      "size": [
+        720,
+        1280
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_Combat_ColdKilnHeart.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "7621cf65909f4f47a54c91a8de01c218a833e1f57a88e6190fe38a716827c141",
+      "sha256": "acd766b5a7b9d2be0a41183cb850b29f93a5c0f1acfe7094062fb73b7d0f8e03",
+      "production": "art/backgrounds/BG_Combat_ColdKilnHeart.png"
+    },
+    {
+      "source": "art/backgrounds/BG_Combat_Fuelway.png",
+      "size": [
+        720,
+        1280
+      ],
+      "mode": "RGBA",
+      "status": "reference_updated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_Combat_Fuelway.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "dceb1e5b3fde195ef9e3ee65eddd15927285dc6bfb28263a3d067a0e45413341",
+      "sha256": "a5ded026bde22571ba709e673f3d6eec50fba85fbf1bf3c309eaa13d059afabd",
+      "production": "art/backgrounds/BG_Combat_Fuelway.png"
+    },
+    {
+      "source": "art/backgrounds/BG_Combat_GlazeHalls.png",
+      "size": [
+        720,
+        1280
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_Combat_GlazeHalls.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "7af6abca532dffc3f2f5f4bc6d04832b6c199290f493d6f4792eb6edff170aa9",
+      "sha256": "c77fe656c59e75e9269b5c2e7f84da398409535410d6f47a55644ab4eded52e3",
+      "production": "art/backgrounds/BG_Combat_GlazeHalls.png"
+    },
+    {
+      "source": "art/backgrounds/BG_Combat_KilnMouth.png",
+      "size": [
+        720,
+        1280
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_Combat_KilnMouth.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "f4a7042019ee33516da90e34a61ca5f7687f322fcb29dc354539abb4744579b8",
+      "sha256": "77fd0c1fe0318931bdc0d22da5921f3efcefb4c33acbe97d46f1541bb6015c36",
+      "production": "art/backgrounds/BG_Combat_KilnMouth.png"
+    },
+    {
+      "source": "art/backgrounds/BG_MainMenu_GreatKiln_v1.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "reference_updated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_MainMenu_GreatKiln_v1.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "08369fff33ef8e4ff555618dcef4e87b8905362e99b9aec91803e828a2cdf4d6",
+      "sha256": "374dfd7baec3dbc86b34c80b3db1d7a30457fa0904677865f0d70f9635ac3feb",
+      "production": "art/backgrounds/BG_MainMenu_GreatKiln_v1.png"
+    },
+    {
+      "source": "art/backgrounds/BG_MainMenu_KilnAscent_v1.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "reference_updated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_MainMenu_KilnAscent_v1.png",
+      "candidate_size": [
+        941,
+        1671
+      ],
+      "alpha_range": null,
+      "source_sha256": "7f99a7a1d4696873252c63841e7f910383f3ca3563f3399bdfc17eaa9590d6f1",
+      "sha256": "c8f584447447e4976ac5032c8a8ef049f32c341189114c8dcc299c2b76c369ab",
+      "production": "art/backgrounds/BG_MainMenu_KilnAscent_v1.png"
+    },
+    {
+      "source": "art/backgrounds/BG_MainMenu_KilnAscent_v2.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_MainMenu_KilnAscent_v2.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "3c396e78c5592deb62633e9ae1cea47af9742f5d4133cf53dbcf99620a56782f",
+      "sha256": "2d1baead85fa0b598d125cb93931bfbc4b7e5950a2bc871158c93e02eb2a8ef8",
+      "production": "art/backgrounds/BG_MainMenu_KilnAscent_v2.png"
+    },
+    {
+      "source": "art/backgrounds/BG_Town_KilnMouth.png",
+      "size": [
+        720,
+        1280
+      ],
+      "mode": "RGBA",
+      "status": "reference_updated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/BG_Town_KilnMouth.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "fc8013f2dd29672d55ce617cf55d5d9fb394cd748343738150699a31ca8725a7",
+      "sha256": "4a9a9d28a7a618d2d4e87cebdf677f7f28e13125568f2a7b6be2b16392768428",
+      "production": "art/backgrounds/BG_Town_KilnMouth.png"
+    },
+    {
+      "source": "art/backgrounds/town_progression/town_level_0_base_preview.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/town_level_0_base_preview.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "524e64ea23f4eae695a8b8dae6f8d978846bb3157ad9fdbb09315d0d8d15c08a",
+      "sha256": "b747b509352053bcd6d4feb8bbd2c442a0d74983b5c35887b67a3664577f06a2",
+      "production": "art/backgrounds/town_progression/town_level_0_base_preview.png"
+    },
+    {
+      "source": "art/backgrounds/town_progression/town_level_1.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "reference_updated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/town_level_1.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "7cee804c751be2b1529d396739e0f7812647ebc113b726a65431156b5303cd1e",
+      "sha256": "39ad0d51029902327633d7fd97fa19ddcacbb56ee39dbf7590485a5949f3ef42",
+      "production": "art/backgrounds/town_progression/town_level_1.png"
+    },
+    {
+      "source": "art/backgrounds/town_progression/town_level_1_base_preview.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/town_level_1_base_preview.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "b2e592df162ffc748d1125a70e5f2da7adda71c83417338916d44839533c980c",
+      "sha256": "871dd8fa2224055e2715dea1ea0d27d1cb4f2ca47e7145de56264350ce2ca2a1",
+      "production": "art/backgrounds/town_progression/town_level_1_base_preview.png"
+    },
+    {
+      "source": "art/backgrounds/town_progression/town_level_2_base_preview.png",
+      "size": [
+        941,
+        1671
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/town_level_2_base_preview.png",
+      "candidate_size": [
+        941,
+        1671
+      ],
+      "alpha_range": null,
+      "source_sha256": "1d96cf41686d9b92992caf83e76bc636988035536ea8e9915b9c5b56a8508ec1",
+      "sha256": "17f3bb51f2406d9deb1d5d8663afa7ffd6fd1a35cb33237d2847fbe33621a786",
+      "production": "art/backgrounds/town_progression/town_level_2_base_preview.png"
+    },
+    {
+      "source": "art/backgrounds/town_progression/town_level_2_preview.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "reference_updated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/town_level_2_preview.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "0759f1f0ea537af526c1cd3aaeb1ae440d8e0f47f73be1c7a94de9279e94f25e",
+      "sha256": "931f9e4747c0bbc889a61422fbf349f3ce075eab99c3a8927f5941cd3826ae65",
+      "production": "art/backgrounds/town_progression/town_level_2_preview.png"
+    },
+    {
+      "source": "art/backgrounds/town_progression/town_level_3_base_preview.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/town_level_3_base_preview.png",
+      "candidate_size": [
+        941,
+        1671
+      ],
+      "alpha_range": null,
+      "source_sha256": "e8f98a16ac4d03afc6e0c0ad20ec87b4e5b48a5298bff8dc1b7d86c7a79192fc",
+      "sha256": "9961f71e0ccc624e90e376dd32e473fcdbad9fb12d7751a14b90ff94b87c8909",
+      "production": "art/backgrounds/town_progression/town_level_3_base_preview.png"
+    },
+    {
+      "source": "art/backgrounds/town_progression/town_level_3_preview.png",
+      "size": [
+        941,
+        1672
+      ],
+      "mode": "RGB",
+      "status": "reference_updated",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/town_level_3_preview.png",
+      "candidate_size": [
+        941,
+        1672
+      ],
+      "alpha_range": null,
+      "source_sha256": "dd86f58744bfaee5c9347d62197aacdacffe0593c8ef75674459af8b6f99e4a4",
+      "sha256": "5284f5263fb217b9bff152eb118d1f82ae4ee910d2f93cbdff68fb41da6d6e46",
+      "production": "art/backgrounds/town_progression/town_level_3_preview.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/hearth/hearth_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/hearth_interior_level_0.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "157026557187d3cf2f265501e6f3c4e958ec259e872f1ee911bd133ec7008f4a",
+      "sha256": "63276c34e4dab0714c75bd4eadd245280739ad8446110756514a2b51a5b2e165",
+      "production": "art/ui/town/interior_levels/hearth/hearth_interior_level_0.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/hearth/hearth_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/hearth_interior_level_1.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "9668634e5c4fb92644b4ea0c4f0bb7dce529aff53c1aaf1c9b2846962e5de720",
+      "sha256": "15854a29956d6d0cc1defda83561ee4d67cf70ac649dd3c49096ef57d5dab629",
+      "production": "art/ui/town/interior_levels/hearth/hearth_interior_level_1.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/hearth/hearth_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/hearth_interior_level_2.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "2db5494407fd74b032828f81e896f63538c04f8dce529b01acfe8c14001784b9",
+      "sha256": "f44057ff81741e38fde14d5048e69716fae044b046c25e4603c4ab2515667a8b",
+      "production": "art/ui/town/interior_levels/hearth/hearth_interior_level_2.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/hearth/hearth_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/hearth_interior_level_3.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "c4b80be9b98be23cc931df72cbb01c31ba89d53f57ace24db61199ebab99ee0c",
+      "sha256": "d6b6e2b2319873e7c98e2c1e333c5802e5ce0adcd240660af62e14f9d76c701a",
+      "production": "art/ui/town/interior_levels/hearth/hearth_interior_level_3.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/card_mold_workshop/card_mold_workshop_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/card_mold_workshop_interior_level_0.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "c4a17b1880495e027670dd2a37be6044040261251e08790b3964c56df787fcea",
+      "sha256": "47355655b0f824bbec2431b4554e46d3552d5ba1b1fa99e9eb19f22217fb6f3c",
+      "production": "art/ui/town/interior_levels/card_mold_workshop/card_mold_workshop_interior_level_0.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/card_mold_workshop/card_mold_workshop_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/card_mold_workshop_interior_level_1.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "2596ff833ff704cfd074cdfb161481d6c2e19ee5860c522f92c5cc483b132186",
+      "sha256": "a8b7848026319c420e07b4a05d4ce0181ef446fe7b76062713866838ee472738",
+      "production": "art/ui/town/interior_levels/card_mold_workshop/card_mold_workshop_interior_level_1.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/card_mold_workshop/card_mold_workshop_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/card_mold_workshop_interior_level_2.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "04f0b83168d093babb417911f7157f49fc1ba5f90d28243f552281f99d66354b",
+      "sha256": "040ec00d0bd6bc44deac9316b42b1d07eefd8830c98b9969a8bf0922045271d8",
+      "production": "art/ui/town/interior_levels/card_mold_workshop/card_mold_workshop_interior_level_2.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/card_mold_workshop/card_mold_workshop_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/card_mold_workshop_interior_level_3.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "4f09a637672d3a8f625de19cc2fa820e5d4d916a72f756987b95a95da5eff8a4",
+      "sha256": "aebf23e15a5d6e33752bcc0b1e9926baf826dc8c82a83c679ada314ca5d8fd85",
+      "production": "art/ui/town/interior_levels/card_mold_workshop/card_mold_workshop_interior_level_3.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/relic_shelf/relic_shelf_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/relic_shelf_interior_level_0.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "749591ed694640a6b9fd64171eba1c666fa1a94f6aae7ef9b3a60ec389ab6bb2",
+      "sha256": "b0855f54c0c41c40ae2ee71bc057b7e4aacf0706a876e38408d249e6c1b317ab",
+      "production": "art/ui/town/interior_levels/relic_shelf/relic_shelf_interior_level_0.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/relic_shelf/relic_shelf_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/relic_shelf_interior_level_1.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "a6abd0c081ed90261be5df904e33821712eb040faef8dcfca8b728f069db0971",
+      "sha256": "3911c218cbeff4a8dba0e9354608a85513b3b8cf171eab2e2d5bcb986040e39a",
+      "production": "art/ui/town/interior_levels/relic_shelf/relic_shelf_interior_level_1.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/relic_shelf/relic_shelf_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/relic_shelf_interior_level_2.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "ee4fe731d3c07777aa62650f138a331f1e82a1a6d396f0565895cb8e71bbb9ca",
+      "sha256": "d6153371b9d6b3b19d3ee4c5a208a0e420571a52df7f2f1d1bd07f9687a2c43b",
+      "production": "art/ui/town/interior_levels/relic_shelf/relic_shelf_interior_level_2.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/relic_shelf/relic_shelf_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/relic_shelf_interior_level_3.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "356e5f8f05ab353d5ff088a080c13439eaf58d79e37ef10a29fb6164afcf4ff2",
+      "sha256": "0b72aea398cfff5bde9e96c36176e6695e4ade92ae6164bda09c087847c98716",
+      "production": "art/ui/town/interior_levels/relic_shelf/relic_shelf_interior_level_3.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/glaze_apothecary/glaze_apothecary_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/glaze_apothecary_interior_level_0.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "ebe8dda3632fa6d6c8e2de58d48fc318ead1e55171ec72874d6045d43a6668ab",
+      "sha256": "8a4bd8152fcaced4641d018cd742455b0e1bfaa4029a0da369164ac81be33d63",
+      "production": "art/ui/town/interior_levels/glaze_apothecary/glaze_apothecary_interior_level_0.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/glaze_apothecary/glaze_apothecary_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/glaze_apothecary_interior_level_1.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "45765cd52484e8a6b2814c31d5c40da585d62a6a50dcb60014fabd83696adb16",
+      "sha256": "3c1143cf23dda7c9fedf6006dd7485367e819387e36d827974e1ba6bb6bd1f83",
+      "production": "art/ui/town/interior_levels/glaze_apothecary/glaze_apothecary_interior_level_1.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/glaze_apothecary/glaze_apothecary_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/glaze_apothecary_interior_level_2.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "72c77fa20b559cd65052c7c1ebf91b2eaadec5120e721053e2c54a76c236f5bf",
+      "sha256": "e5e7323e732f60d323c41164792a6270e96e063b9aca848bc546d49ded08eb54",
+      "production": "art/ui/town/interior_levels/glaze_apothecary/glaze_apothecary_interior_level_2.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/glaze_apothecary/glaze_apothecary_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/glaze_apothecary_interior_level_3.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "7527e6cb796b0351cb9125faebb02bac8b7c789f6065abee0ed58ec3e9d59a53",
+      "sha256": "414b222206be8a4c96fb3b161cc2c3f1968f21f768127b41353da7d56c5765d7",
+      "production": "art/ui/town/interior_levels/glaze_apothecary/glaze_apothecary_interior_level_3.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/bellows_station/bellows_station_interior_level_0.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/bellows_station_interior_level_0.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "f83e347ecc82579c9eb4629e4c4b514fa800ce0adb012952ef13e08e7f5032be",
+      "sha256": "0b490240e838de40ac299b8de40249c109582b35c56f1dbc955b5e06188a6ac9",
+      "production": "art/ui/town/interior_levels/bellows_station/bellows_station_interior_level_0.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/bellows_station/bellows_station_interior_level_1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/bellows_station_interior_level_1.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "83bd3c19356fb78c2c894024c00b51591b95d0fd4a24284cda5dc7e981a1ab19",
+      "sha256": "0fe971e2012239465e0099bca564c228d6b3b7bf3cfac3876f53ae5718b1f2f3",
+      "production": "art/ui/town/interior_levels/bellows_station/bellows_station_interior_level_1.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/bellows_station/bellows_station_interior_level_2.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/bellows_station_interior_level_2.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "1f591d294095fb0297f4d948f7c6cd50fff114e6248a73eaa50249594e32a2f2",
+      "sha256": "c395d1879c7a5bbfb10878c63a2e700624048da693471d9967a96d06401fb4ce",
+      "production": "art/ui/town/interior_levels/bellows_station/bellows_station_interior_level_2.png"
+    },
+    {
+      "source": "art/ui/town/interior_levels/bellows_station/bellows_station_interior_level_3.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "status": "runtime_integrated",
+      "category": "courtyard",
+      "candidate": "art/backgrounds/candidates/handdrawn_cleanup/bellows_station_interior_level_3.png",
+      "candidate_size": [
+        1536,
+        1024
+      ],
+      "alpha_range": null,
+      "source_sha256": "618142474c068d927281cc1a5a41c4453f8489e35e6899b2134c426525dbbd3c",
+      "sha256": "1c113839b473df8467db7d5c1df5eda96c2b5dd4c20559b8d2caeb13ae7ae1f6",
+      "production": "art/ui/town/interior_levels/bellows_station/bellows_station_interior_level_3.png"
+    }
+  ],
+  "integrated_date": "2026-09-18"
+}

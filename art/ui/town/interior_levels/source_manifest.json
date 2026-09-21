@@ -1,223 +1,127 @@
 {
   "generator": "built-in image_gen",
-  "direction": "Courtyard close views; one masked player holding tools and working alongside two workers. 0 damaged repair, 1 timber, 2 white-gray masonry and black tiles without iron cladding, 3 iron reinforcements and improved equipment.",
-  "status": "candidate_art_not_runtime_integrated",
+  "direction": "Hand-drawn ink and gouache courtyard close views; preserve camera, palette, one masked working player and two workers, equipment and four building levels.",
+  "status": "runtime_integrated",
   "assets": [
     {
       "id": "hearth",
       "name": "炉心",
       "level": 0,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-3cc791b4-fcbb-4dec-906e-7b0862ba2a00.png",
-      "prompt": "Edit Image1 to LEVEL0 UNRESTORED version of the EXACT SAME courtyard. Lock 3:2 camera, entrance/wall outlines, tree positions, building footprint and main equipment locations. Basic warm timber building now weathered with missing roof PLANKS exposing rafters, cracked stone feet, chipped uneven yard paving with weeds, some broken boards and small debris. Structures recognizable and repairable, not total rubble. No whitewall/black-tile upgrade yet, no architectural iron armor. ONE same masked player with a clearly held practical tool and TWO same unmasked workers actively doing cleanup/repair, no productive crafting on broken equipment. Preserve player identity and worker clothes, occupy same general work stations. Cool gentle daylight, slightly subdued but readable; no fire, working forge, magic or UI/text. Same thin-outline faceted hand-painted art. Kiln dome cracked and cold dark fire mouth, player at left using shovel to clear rubble into basket, kiln worker brushing ash from cold opening, right worker repairing cracked pottery on table.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-b23adc35-9145-4597-a4a8-f7f228692d37.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/hearth_interior_level_0.png"
     },
     {
       "id": "hearth",
       "name": "炉心",
       "level": 1,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-b23adc35-9145-4597-a4a8-f7f228692d37.png",
-      "prompt": "Precisely edit ONLY the masked player's work action and immediate location in this courtyard scene. His current poker overlaps the nearby worker: fix this by moving player a few steps LEFT in front of the woodpile, visibly holding a short WOOD-HANDLED COAL SHOVEL angled DOWN into a small fuel basket on the ground. Both hands grasp shovel, clearly collecting fuel while other worker tends furnace. There must be clear space between the player's tool and all other people; tool must not point at a person or overlap bodies. Preserve player mask/clothing, two workers, all courtyard geometry, same camera and 3:2 canvas, same hand-painted style and level1 building. No new architecture, no text/UI.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-513d38c5-4a28-4cea-aee4-a721b81abdc7.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/hearth_interior_level_1.png"
     },
     {
       "id": "hearth",
       "name": "炉心",
       "level": 2,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-a8cab31f-2091-4906-a783-a5ab4d46f922.png",
-      "prompt": "Upgrade Image1 courtyard scene to LEVEL2. Image2 is exact current level2 exterior MATERIAL/EQUIPMENT reference; do not copy its isolated magenta background. Lock Image1 3:2 landscape camera, courtyard outline, entrance, trees, paths, main building footprint, all three characters' locations and labor poses. Keep ONE masked protagonist ACTIVELY HOLDING HIS TOOL and working with TWO unmasked adult workers, not observing. Change architecture to Jiangnan WHITE/PALE-GRAY brick walls, BLACK overlapping curved ceramic roof tiles with subtle blue-gray highlights, gray stone foundation; preserve warm exposed timber with plain WOOD joinery. NO iron cladding, riveted caps, metal wraps or reinforcing straps on building, furniture or bellows/vats; existing handheld tools, character bracers and actual displayed bronze bell/axe stay their original material. Restore courtyard wall and paving but preserve geometry and modest scale. Same thin-contour hand-painted faceted-color style and daylight, no glossy 3D, no new grand structures. No labels/text/UI. Hearth dome itself now clad in black ceramic tiles above pale brick body as Image2; no iron belt. Player still shoveling fuel at left, other worker tending fire.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-b23adc35-9145-4597-a4a8-f7f228692d37.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-d208f91a-4482-44b6-a729-1ab897a9cbf8.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/hearth_interior_level_2.png"
     },
     {
       "id": "hearth",
       "name": "炉心",
       "level": 3,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-9eadccd3-dbbd-43cf-9bbb-0068da29e6eb.png",
-      "prompt": "Upgrade Image1 LEVEL2 courtyard to LEVEL3. Image2 is matching level3 EXTERIOR identity/material/equipment reference only. Preserve exact 3:2 landscape camera, courtyard entrance/wall locations, building footprint, ONE masked protagonist actively holding his existing tool and TWO unmasked workers' labor positions. Keep BLACK curved roof tiles, pale white/gray brick walls and warm wood. Add measured riveted dark IRON SHEET corner caps and reinforcing straps on timber beams, worktables and equipment, refined gray dressed-stone piers/lintels, finished tiled ridge and endcaps. Improve practical equipment according to Image2. Courtyard paving now neat and maintained, restrained potted greenery and one ceramic lamp; no palace/large additions. Same thin hand-painted contour and broad color planes, no gloss/photorealism. No text/UI/magenta background. Add riveted dark iron caps to wooden braces and bench/table joints, an iron support belt under black tiles, fitted vented iron hearth door with simple flame emblem, patterned ceramic chimney collar and one attached ceramic lamp. Preserve the room footprint and layout.Furnace worker may tend the small open lower vent safely with tool, player continues shoveling coal left of kiln, keep all tools clear of bodies.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-a8cab31f-2091-4906-a783-a5ab4d46f922.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-9cef7757-b23b-49ec-8c91-5ba8b15a243e.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/hearth_interior_level_3.png"
     },
     {
       "id": "card_mold_workshop",
       "name": "牌模工坊",
       "level": 0,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-35a72cd4-fdc7-4b64-b60d-90af97df33d1.png",
-      "prompt": "Edit Image1 to LEVEL0 UNRESTORED version of the EXACT SAME courtyard. Lock 3:2 camera, entrance/wall outlines, tree positions, building footprint and main equipment locations. Basic warm timber building now weathered with missing roof PLANKS exposing rafters, cracked stone feet, chipped uneven yard paving with weeds, some broken boards and small debris. Structures recognizable and repairable, not total rubble. No whitewall/black-tile upgrade yet, no architectural iron armor. ONE same masked player with a clearly held practical tool and TWO same unmasked workers actively doing cleanup/repair, no productive crafting on broken equipment. Preserve player identity and worker clothes, occupy same general work stations. Cool gentle daylight, slightly subdued but readable; no fire, working forge, magic or UI/text. Same thin-outline faceted hand-painted art. Press crooked and unusable, mold rack dusty, several cracked molds. Masked player at same foreground bench uses small wood-handled hammer to repair bench joint, worker behind clears cracked molds into tray, right worker adjusts the broken press crossbar with a hand tool. Clearly restoring workshop.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-f9fadcc1-ccc0-437b-8b92-d0c6c9d68c01.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/card_mold_workshop_interior_level_0.png"
     },
     {
       "id": "card_mold_workshop",
       "name": "牌模工坊",
       "level": 1,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-f9fadcc1-ccc0-437b-8b92-d0c6c9d68c01.png",
-      "prompt": "Precise edit of Image1 courtyard game scene. User changed direction: masked protagonist must ACTIVELY WORK TOGETHER WITH WORKERS, holding a clearly visible tool. Replace his idle observing pose with purposeful labor as described below. Image2 locks protagonist identity/clothing/mask. Keep same 3:2 landscape camera, entire courtyard composition, building architecture, level1 timber materials, thin hand-painted outlines, warm daylight, workers and rest of scenery. Keep ONE masked player and two unmasked workers, similar human proportions. No text/UI. Move the masked player to the foreground-left courtyard workbench, holding a WOODEN CLAY SCRAPER in his right hand, scraping/smoothing a rectangular clay card mold resting on the bench, left hand supports the mold. Add only this modest waist-high workbench if needed. Two workers continue pressing molds and carrying drying trays.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-1db6edf7-9269-4a6e-8fd7-363cd8db980d.png",
-        "C:/Users/Administrator/.codex/visualizations/2026/09/10/01a088fe-ce0f-7992-99ff-36f26f5db525/player_reference.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/card_mold_workshop_interior_level_1.png"
     },
     {
       "id": "card_mold_workshop",
       "name": "牌模工坊",
       "level": 2,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-4ea6688a-8a64-4c81-8819-ca7525579118.png",
-      "prompt": "Upgrade Image1 courtyard scene to LEVEL2. Image2 is exact current level2 exterior MATERIAL/EQUIPMENT reference; do not copy its isolated magenta background. Lock Image1 3:2 landscape camera, courtyard outline, entrance, trees, paths, main building footprint, all three characters' locations and labor poses. Keep ONE masked protagonist ACTIVELY HOLDING HIS TOOL and working with TWO unmasked adult workers, not observing. Change architecture to Jiangnan WHITE/PALE-GRAY brick walls, BLACK overlapping curved ceramic roof tiles with subtle blue-gray highlights, gray stone foundation; preserve warm exposed timber with plain WOOD joinery. NO iron cladding, riveted caps, metal wraps or reinforcing straps on building, furniture or bellows/vats; existing handheld tools, character bracers and actual displayed bronze bell/axe stay their original material. Restore courtyard wall and paving but preserve geometry and modest scale. Same thin-contour hand-painted faceted-color style and daylight, no glossy 3D, no new grand structures. No labels/text/UI. ",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-f9fadcc1-ccc0-437b-8b92-d0c6c9d68c01.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-247af36e-e0d3-4d47-9185-75b0ad15d970.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/card_mold_workshop_interior_level_2.png"
     },
     {
       "id": "card_mold_workshop",
       "name": "牌模工坊",
       "level": 3,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-d4ac8abd-78a6-43dd-b1e9-755244683db1.png",
-      "prompt": "Upgrade Image1 LEVEL2 courtyard to LEVEL3. Image2 is matching level3 EXTERIOR identity/material/equipment reference only. Preserve exact 3:2 landscape camera, courtyard entrance/wall locations, building footprint, ONE masked protagonist actively holding his existing tool and TWO unmasked workers' labor positions. Keep BLACK curved roof tiles, pale white/gray brick walls and warm wood. Add measured riveted dark IRON SHEET corner caps and reinforcing straps on timber beams, worktables and equipment, refined gray dressed-stone piers/lintels, finished tiled ridge and endcaps. Improve practical equipment according to Image2. Courtyard paving now neat and maintained, restrained potted greenery and one ceramic lamp; no palace/large additions. Same thin hand-painted contour and broad color planes, no gloss/photorealism. No text/UI/magenta background. Add fitted riveted dark iron straps and corner plates on beams/press/table; more robust double-braced screw press, three-tier organized card-mold cabinet and small ceramic mold emblem. Same room and unchanged principal equipment locations.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-4ea6688a-8a64-4c81-8819-ca7525579118.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-10b8da24-e303-40b1-a400-ac2d67686942.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/card_mold_workshop_interior_level_3.png"
     },
     {
       "id": "relic_shelf",
       "name": "遗珍架",
       "level": 0,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-429398e2-b12c-4fab-b67d-63436029ed34.png",
-      "prompt": "Edit Image1 to LEVEL0 UNRESTORED version of the EXACT SAME courtyard. Lock 3:2 camera, entrance/wall outlines, tree positions, building footprint and main equipment locations. Basic warm timber building now weathered with missing roof PLANKS exposing rafters, cracked stone feet, chipped uneven yard paving with weeds, some broken boards and small debris. Structures recognizable and repairable, not total rubble. No whitewall/black-tile upgrade yet, no architectural iron armor. ONE same masked player with a clearly held practical tool and TWO same unmasked workers actively doing cleanup/repair, no productive crafting on broken equipment. Preserve player identity and worker clothes, occupy same general work stations. Cool gentle daylight, slightly subdued but readable; no fire, working forge, magic or UI/text. Same thin-outline faceted hand-painted art. Pavilion roof missing planks, shelves splintered and mostly empty, damaged vase and covered old relic. Player with soft brush carefully cleans recovered broken pottery at same left table, nearby worker sorts fragments, pavilion worker repairs shelf with small hammer; torn cloth banner.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-76b9b6bf-1b86-4e48-ba80-05bf144db10b.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/relic_shelf_interior_level_0.png"
     },
     {
       "id": "relic_shelf",
       "name": "遗珍架",
       "level": 1,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-76b9b6bf-1b86-4e48-ba80-05bf144db10b.png",
-      "prompt": "Precise edit of Image1 courtyard game scene. User changed direction: masked protagonist must ACTIVELY WORK TOGETHER WITH WORKERS, holding a clearly visible tool. Replace his idle observing pose with purposeful labor as described below. Image2 locks protagonist identity/clothing/mask. Keep same 3:2 landscape camera, entire courtyard composition, building architecture, level1 timber materials, thin hand-painted outlines, warm daylight, workers and rest of scenery. Keep ONE masked player and two unmasked workers, similar human proportions. No text/UI. Move masked player to left courtyard restoration table, holding a small SOFT BRUSH in right hand and gently brushing a clay relic on the table, pale left hand steadies vessel. Worker beside him wipes another object and other worker arranges shelf. Make brush clearly visible.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-bb544658-8ef6-453e-8b0a-0f058792cd75.png",
-        "C:/Users/Administrator/.codex/visualizations/2026/09/10/01a088fe-ce0f-7992-99ff-36f26f5db525/player_reference.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/relic_shelf_interior_level_1.png"
     },
     {
       "id": "relic_shelf",
       "name": "遗珍架",
       "level": 2,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-5e09db4f-f93e-4fd2-85a8-879d22455992.png",
-      "prompt": "Upgrade Image1 courtyard scene to LEVEL2. Image2 is exact current level2 exterior MATERIAL/EQUIPMENT reference; do not copy its isolated magenta background. Lock Image1 3:2 landscape camera, courtyard outline, entrance, trees, paths, main building footprint, all three characters' locations and labor poses. Keep ONE masked protagonist ACTIVELY HOLDING HIS TOOL and working with TWO unmasked adult workers, not observing. Change architecture to Jiangnan WHITE/PALE-GRAY brick walls, BLACK overlapping curved ceramic roof tiles with subtle blue-gray highlights, gray stone foundation; preserve warm exposed timber with plain WOOD joinery. NO iron cladding, riveted caps, metal wraps or reinforcing straps on building, furniture or bellows/vats; existing handheld tools, character bracers and actual displayed bronze bell/axe stay their original material. Restore courtyard wall and paving but preserve geometry and modest scale. Same thin-contour hand-painted faceted-color style and daylight, no glossy 3D, no new grand structures. No labels/text/UI. ",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-76b9b6bf-1b86-4e48-ba80-05bf144db10b.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-14a4f302-b0d0-4207-a5bd-02a93e292a7b.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/relic_shelf_interior_level_2.png"
     },
     {
       "id": "relic_shelf",
       "name": "遗珍架",
       "level": 3,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-26a7551c-d252-444b-9fff-c73eef5f900e.png",
-      "prompt": "Upgrade Image1 LEVEL2 courtyard to LEVEL3. Image2 is matching level3 EXTERIOR identity/material/equipment reference only. Preserve exact 3:2 landscape camera, courtyard entrance/wall locations, building footprint, ONE masked protagonist actively holding his existing tool and TWO unmasked workers' labor positions. Keep BLACK curved roof tiles, pale white/gray brick walls and warm wood. Add measured riveted dark IRON SHEET corner caps and reinforcing straps on timber beams, worktables and equipment, refined gray dressed-stone piers/lintels, finished tiled ridge and endcaps. Improve practical equipment according to Image2. Courtyard paving now neat and maintained, restrained potted greenery and one ceramic lamp; no palace/large additions. Same thin hand-painted contour and broad color planes, no gloss/photorealism. No text/UI/magenta background. Add dressed-stone corner piers/lintel and iron corner caps on timber, three neat display tiers with patterned vase, bronze bell, axe and ceramic relics, a modest warm ceramic hanging lamp and simple vase motif. No magic aura. Same alcove and shelf/player positions.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-5e09db4f-f93e-4fd2-85a8-879d22455992.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-a77d18e7-3240-4704-8780-1d8c2cecd991.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/relic_shelf_interior_level_3.png"
     },
     {
       "id": "glaze_apothecary",
       "name": "药釉坊",
       "level": 0,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-091fd831-e04a-4af1-9557-d74163a67782.png",
-      "prompt": "Edit Image1 to LEVEL0 UNRESTORED version of the EXACT SAME courtyard. Lock 3:2 camera, entrance/wall outlines, tree positions, building footprint and main equipment locations. Basic warm timber building now weathered with missing roof PLANKS exposing rafters, cracked stone feet, chipped uneven yard paving with weeds, some broken boards and small debris. Structures recognizable and repairable, not total rubble. No whitewall/black-tile upgrade yet, no architectural iron armor. ONE same masked player with a clearly held practical tool and TWO same unmasked workers actively doing cleanup/repair, no productive crafting on broken equipment. Preserve player identity and worker clothes, occupy same general work stations. Cool gentle daylight, slightly subdued but readable; no fire, working forge, magic or UI/text. Same thin-outline faceted hand-painted art. First vat chipped/cracked and empty, second covered with old board, jar rack mostly empty and dusty. Player holds wooden scraper against empty vat to clean old residue, left worker brushes dust/debris off worktable, right worker repairs damaged shelf. No liquid production or steam.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-a3f3baa3-c2d8-448e-9fb5-21dcf05e1d22.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/glaze_apothecary_interior_level_0.png"
     },
     {
       "id": "glaze_apothecary",
       "name": "药釉坊",
       "level": 1,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-a3f3baa3-c2d8-448e-9fb5-21dcf05e1d22.png",
-      "prompt": "Create ONE full-bleed LANDSCAPE 3:2 game scene (1536x1024 intended). Image1 is the functional building identity/material reference, image2 is exact protagonist identity. User wants BUILDING WITH ITS OWN COURTYARD, viewed from a slightly elevated oblique angle just inside the courtyard gate. Show a coherent human-scale small courtyard occupying foreground/middle and the full recognizable building at rear/right, open-front workshop interior visible under its roof; low enclosing courtyard walls, entry path, modest plants. Composition must feel like visiting this particular facility, not an isolated asset, not town panorama, not a camera enclosed inside the workshop. Player is actively working with two workers, holding a visible tool appropriate to the facility, face in three-quarter profile so mask readable. Player about 24% of image height, not a giant foreground portrait. Use dark tousled hair, white pointed ceramic mask, gray sleeveless wrap tunic, navy apron, brown boots/tool belt, bracers and pale left hand from ref. Two adult town workers in simple muted linen workwear, no masks, naturally working at different stations, similar human proportions, no duplicate player. One worker performs primary craft and the other assists. Warm simplified hand-painted game art: clear broad faceted color planes and brushwork matching building, THIN restrained dark-brown contours, readable shapes, no photorealism or plastic 3D. Daylight with localized warm furnace glow if relevant. Opaque full scene, no magenta/checkerboard, no text/UI/frames. LEVEL1: repaired basic timber structure with golden WOOD-PLANK roof, sandstone foundations, modest slightly uneven courtyard paving, simple functional equipment. No architectural metal plate wraps. Glaze workshop courtyard. Open-front timber building at rear-right, chimney behind right, two blue-gray ceramic mixing vats at workshop edge, rear ingredient jars. One worker stirs a vat with wood paddle while second measures ingredients from a jar at side counter. Courtyard clear and two vats visible, no fantasy smoke.Masked player at courtyard side of the left blue-gray mixing vat, both hands gripping long WOODEN STIRRING PADDLE dipping into glaze; an adult worker next to him measures powder and second arranges jars. Three-quarter profile mask visible. Shared production, not observation. Image3 locks the desired courtyard composition/art style and protagonist labor concept from another facility, not its equipment. Ensure all roof and chimney inside frame.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-6181ee49-faa0-4ec3-a763-abafa88af252.png",
-        "C:/Users/Administrator/.codex/visualizations/2026/09/10/01a088fe-ce0f-7992-99ff-36f26f5db525/player_reference.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-f9fadcc1-ccc0-437b-8b92-d0c6c9d68c01.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/glaze_apothecary_interior_level_1.png"
     },
     {
       "id": "glaze_apothecary",
       "name": "药釉坊",
       "level": 2,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-1f81ee6c-d5e2-47b9-9eb7-6e33a171e068.png",
-      "prompt": "Upgrade Image1 courtyard scene to LEVEL2. Image2 is exact current level2 exterior MATERIAL/EQUIPMENT reference; do not copy its isolated magenta background. Lock Image1 3:2 landscape camera, courtyard outline, entrance, trees, paths, main building footprint, all three characters' locations and labor poses. Keep ONE masked protagonist ACTIVELY HOLDING HIS TOOL and working with TWO unmasked adult workers, not observing. Change architecture to Jiangnan WHITE/PALE-GRAY brick walls, BLACK overlapping curved ceramic roof tiles with subtle blue-gray highlights, gray stone foundation; preserve warm exposed timber with plain WOOD joinery. NO iron cladding, riveted caps, metal wraps or reinforcing straps on building, furniture or bellows/vats; existing handheld tools, character bracers and actual displayed bronze bell/axe stay their original material. Restore courtyard wall and paving but preserve geometry and modest scale. Same thin-contour hand-painted faceted-color style and daylight, no glossy 3D, no new grand structures. No labels/text/UI. ",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-a3f3baa3-c2d8-448e-9fb5-21dcf05e1d22.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-aa7e4d3c-d49a-4c6d-ab37-659cdc67dbd1.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/glaze_apothecary_interior_level_2.png"
     },
     {
       "id": "glaze_apothecary",
       "name": "药釉坊",
       "level": 3,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-da8ab1aa-6313-4abf-8fa2-2fe474a66ac9.png",
-      "prompt": "Upgrade Image1 LEVEL2 courtyard to LEVEL3. Image2 is matching level3 EXTERIOR identity/material/equipment reference only. Preserve exact 3:2 landscape camera, courtyard entrance/wall locations, building footprint, ONE masked protagonist actively holding his existing tool and TWO unmasked workers' labor positions. Keep BLACK curved roof tiles, pale white/gray brick walls and warm wood. Add measured riveted dark IRON SHEET corner caps and reinforcing straps on timber beams, worktables and equipment, refined gray dressed-stone piers/lintels, finished tiled ridge and endcaps. Improve practical equipment according to Image2. Courtyard paving now neat and maintained, restrained potted greenery and one ceramic lamp; no palace/large additions. Same thin hand-painted contour and broad color planes, no gloss/photorealism. No text/UI/magenta background. Riveted dark iron caps and joint plates on warm beams/wood rack, iron support hoops on vats, a compact copper distillation coil/ceramic receiver at right, better organized ingredient shelves and drop-shaped ceramic emblem. Same room and two vats in same positions.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-1f81ee6c-d5e2-47b9-9eb7-6e33a171e068.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-18e54fe3-1c6b-4b7a-ae09-0c20ec7ac047.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/glaze_apothecary_interior_level_3.png"
     },
     {
       "id": "bellows_station",
       "name": "风箱台",
       "level": 0,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-3ae9129e-f8b5-4d49-8ffd-3bb9815dcc10.png",
-      "prompt": "Edit Image1 to LEVEL0 UNRESTORED version of the EXACT SAME courtyard. Lock 3:2 camera, entrance/wall outlines, tree positions, building footprint and main equipment locations. Basic warm timber building now weathered with missing roof PLANKS exposing rafters, cracked stone feet, chipped uneven yard paving with weeds, some broken boards and small debris. Structures recognizable and repairable, not total rubble. No whitewall/black-tile upgrade yet, no architectural iron armor. ONE same masked player with a clearly held practical tool and TWO same unmasked workers actively doing cleanup/repair, no productive crafting on broken equipment. Preserve player identity and worker clothes, occupy same general work stations. Cool gentle daylight, slightly subdued but readable; no fire, working forge, magic or UI/text. Same thin-outline faceted hand-painted art. Bellows leather torn and sagging, wooden lever broken, canopy holes, cold cracked furnace. Player at same left station holding wooden mallet repairing bellows linkage, right worker brushes cold furnace arch, left worker clears broken planks by woodpile. No fire.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-adc0a5ea-f819-46c3-9a06-c086c0d1b3dd.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/bellows_station_interior_level_0.png"
     },
     {
       "id": "bellows_station",
       "name": "风箱台",
       "level": 1,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-adc0a5ea-f819-46c3-9a06-c086c0d1b3dd.png",
-      "prompt": "Create ONE full-bleed LANDSCAPE 3:2 game scene (1536x1024 intended). Image1 is the functional building identity/material reference, image2 is exact protagonist identity. User wants BUILDING WITH ITS OWN COURTYARD, viewed from a slightly elevated oblique angle just inside the courtyard gate. Show a coherent human-scale small courtyard occupying foreground/middle and the full recognizable building at rear/right, open-front workshop interior visible under its roof; low enclosing courtyard walls, entry path, modest plants. Composition must feel like visiting this particular facility, not an isolated asset, not town panorama, not a camera enclosed inside the workshop. Player is actively working with two workers, holding a visible tool appropriate to the facility, face in three-quarter profile so mask readable. Player about 24% of image height, not a giant foreground portrait. Use dark tousled hair, white pointed ceramic mask, gray sleeveless wrap tunic, navy apron, brown boots/tool belt, bracers and pale left hand from ref. Two adult town workers in simple muted linen workwear, no masks, naturally working at different stations, similar human proportions, no duplicate player. One worker performs primary craft and the other assists. Warm simplified hand-painted game art: clear broad faceted color planes and brushwork matching building, THIN restrained dark-brown contours, readable shapes, no photorealism or plastic 3D. Daylight with localized warm furnace glow if relevant. Opaque full scene, no magenta/checkerboard, no text/UI/frames. LEVEL1: repaired basic timber structure with golden WOOD-PLANK roof, sandstone foundations, modest slightly uneven courtyard paving, simple functional equipment. No architectural metal plate wraps. Bellows furnace courtyard. Large wedge-shaped wooden/leather bellows LEFT beneath small timber canopy, squat stone furnace with amber arched opening and narrow chimney RIGHT, connected lever on wood platform. One worker operates bellows lever while second tends furnace with tongs from safe side. Clear foreground courtyard and a modest woodpile tucked at edge.Masked player standing on left of bellows operating platform, hands actively gripping and pushing its LONG WOODEN LEVER with a natural bent-elbow work pose; worker at right tends furnace with tongs and another stacks fuel. Hands visibly grip the tool. No combat weapons. Image3 locks the desired courtyard composition/art style and protagonist labor concept from another facility, not its equipment. Ensure all roof and chimney inside frame.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-485ba11b-9c3c-4684-bf67-8745385cc5d4.png",
-        "C:/Users/Administrator/.codex/visualizations/2026/09/10/01a088fe-ce0f-7992-99ff-36f26f5db525/player_reference.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-f9fadcc1-ccc0-437b-8b92-d0c6c9d68c01.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/bellows_station_interior_level_1.png"
     },
     {
       "id": "bellows_station",
       "name": "风箱台",
       "level": 2,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-5a3479a2-7b2b-4f00-bf74-4f5c1ae01b71.png",
-      "prompt": "Upgrade Image1 courtyard scene to LEVEL2. Image2 is exact current level2 exterior MATERIAL/EQUIPMENT reference; do not copy its isolated magenta background. Lock Image1 3:2 landscape camera, courtyard outline, entrance, trees, paths, main building footprint, all three characters' locations and labor poses. Keep ONE masked protagonist ACTIVELY HOLDING HIS TOOL and working with TWO unmasked adult workers, not observing. Change architecture to Jiangnan WHITE/PALE-GRAY brick walls, BLACK overlapping curved ceramic roof tiles with subtle blue-gray highlights, gray stone foundation; preserve warm exposed timber with plain WOOD joinery. NO iron cladding, riveted caps, metal wraps or reinforcing straps on building, furniture or bellows/vats; existing handheld tools, character bracers and actual displayed bronze bell/axe stay their original material. Restore courtyard wall and paving but preserve geometry and modest scale. Same thin-contour hand-painted faceted-color style and daylight, no glossy 3D, no new grand structures. No labels/text/UI. ",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-adc0a5ea-f819-46c3-9a06-c086c0d1b3dd.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-4ee6faa3-3228-4578-9ce4-bfae099b6c04.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/bellows_station_interior_level_2.png"
     },
     {
       "id": "bellows_station",
       "name": "风箱台",
       "level": 3,
-      "path": "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-f1d446b6-25ca-4ee8-b829-ecb8444da731.png",
-      "prompt": "Upgrade Image1 LEVEL2 courtyard to LEVEL3. Image2 is matching level3 EXTERIOR identity/material/equipment reference only. Preserve exact 3:2 landscape camera, courtyard entrance/wall locations, building footprint, ONE masked protagonist actively holding his existing tool and TWO unmasked workers' labor positions. Keep BLACK curved roof tiles, pale white/gray brick walls and warm wood. Add measured riveted dark IRON SHEET corner caps and reinforcing straps on timber beams, worktables and equipment, refined gray dressed-stone piers/lintels, finished tiled ridge and endcaps. Improve practical equipment according to Image2. Courtyard paving now neat and maintained, restrained potted greenery and one ceramic lamp; no palace/large additions. Same thin hand-painted contour and broad color planes, no gloss/photorealism. No text/UI/magenta background. Add riveted dark iron straps along bellows ribs and timber joints, fitted furnace hardware, small pressure dial and glove/tool rack beside chimney, a compact fuel box under platform. Same working bay, main equipment and player pose.",
-      "references": [
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-5a3479a2-7b2b-4f00-bf74-4f5c1ae01b71.png",
-        "C:\\Users\\Administrator\\.codex\\generated_images\\01a088fe-ce0f-7992-99ff-36f26f5db525\\exec-719d82fb-9fee-4fbf-bf41-b1861b027413.png"
-      ]
+      "path": "art/backgrounds/candidates/handdrawn_cleanup/bellows_station_interior_level_3.png"
     }
   ]
 }
