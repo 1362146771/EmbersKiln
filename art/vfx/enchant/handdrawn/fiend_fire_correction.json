@@ -1,0 +1,5 @@
+{
+  "prompt": "Edit this VFX spritesheet. Keep the SIX flame/charcoal shapes and progression, exactly 1536x1024, 3 columns x 2 rows of 512x512 cells. Remove ALL background glows, halos, soft shadows and colored haze. Background must be UNIFORM SOLID #FF00FF MAGENTA (not transparency, not black). Only retain the hard-edged ink outlined painted flame and charcoal sprite forms. Each cell's entire sprite including every fragment must fit INSIDE a 50 pixel empty magenta margin on all four sides of its own 512x512 cell. Shrink each entire cell artwork uniformly about its own cell center if necessary. Do not shift fragments between cells. The first cell is a small curling fire spiral, second larger spiral, third bursting curl, fourth detached tongues, fifth scattering flames, sixth tiny ash. No glow of any kind. No text, gridlines or border.",
+  "raw": "exec-e85f962b-caeb-4c16-b8ad-a3b8757b82ed.png",
+  "processing": "Magenta cleanup; shared scale 0.9, centered 512 cells; output sheet-transparent.png. Output edge-touch/empty/clamped counts all zero."
+}
