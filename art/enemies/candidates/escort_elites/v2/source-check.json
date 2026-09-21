@@ -1,0 +1,42 @@
+[
+  {
+    "id": "escort_commander",
+    "identical": true
+  },
+  {
+    "id": "escort_assault",
+    "identical": true
+  },
+  {
+    "id": "escort_vanguard",
+    "identical": true
+  },
+  {
+    "id": "escort_guard",
+    "identical": true
+  },
+  {
+    "id": "escort_disruptor",
+    "identical": true
+  },
+  {
+    "id": "escort_deployer",
+    "identical": true
+  },
+  {
+    "id": "escort_bomb",
+    "identical": true
+  },
+  {
+    "id": "escort_overseer",
+    "identical": true
+  },
+  {
+    "id": "escort_skill_observer",
+    "identical": true
+  },
+  {
+    "id": "escort_power_observer",
+    "identical": true
+  }
+]

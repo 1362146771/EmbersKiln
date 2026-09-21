@@ -1,0 +1,18 @@
+{
+  "source_directory": "art/enemies/candidates/escort_elites/v2",
+  "approval": "用户2026-09-17确认实装v2，主敌人与随从立绘面积约3:2",
+  "area_weights": {"leader": 3, "escort": 2},
+  "area_measure": "nontransparent_bounding_rectangle",
+  "canvas_size": [1254, 1254],
+  "safe_margin": 24,
+  "matte_rgb": [255, 0, 255],
+  "key_threshold": 100,
+  "edge_threshold": 150,
+  "fringe_radius": 3,
+  "groups": {
+    "escort_commander": ["escort_assault", "escort_assault"],
+    "escort_vanguard": ["escort_guard", "escort_disruptor"],
+    "escort_deployer": ["escort_bomb", "escort_bomb"],
+    "escort_overseer": ["escort_skill_observer", "escort_power_observer"]
+  }
+}

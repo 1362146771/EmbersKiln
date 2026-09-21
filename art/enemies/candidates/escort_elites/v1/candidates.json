@@ -1,0 +1,107 @@
+{
+  "status": "awaiting_art_approval",
+  "generated_with": "image_gen built-in",
+  "runtime_installed": false,
+  "images": [
+    {
+      "id": "escort_commander",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. A commanding tall veteran with an asymmetrical silhouette, short dark desaturated burgundy military cape, dark slate armor and large angular off-white ceramic shoulder plate. Distinct broad face behind a broken jaw visor, NOT cylindrical bucket helmet. One hand raises a stout short command baton; the other holds a vertical banner-pole close to body bearing a small forked slate-blue swallowtail flag above one shoulder, no emblem or text. Firm authoritative stance. Flag, baton and broad shoulders instantly communicate rallying a squad. Worn utilitarian armor, no crown or excessive details.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_KilnCaptain.png",
+      "number": 1,
+      "name": "指挥官",
+      "role": "全队强化 · 补兵",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-03afc7d9-81f1-43ab-89f4-9babb2883046.png",
+      "file": "escort_commander.png"
+    },
+    {
+      "id": "escort_assault",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. A fast wiry assault soldier, hunched forward ready to rush, muted brick-red padded vest with sparse chipped cream ceramic plates, charcoal trousers, face hidden by a narrow wedge-shaped visor. One chunky short curved cleaver in each hand, both weapons pointed down close beside thighs, NOT axes on long poles. Lean triangular attacking silhouette, angular wrapped boots, red cloth wrist ties kept close. Clearly distinct from a heavy guard or commander.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_KilnCaptain.png",
+      "number": 2,
+      "name": "突击兵",
+      "role": "双刀突击",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-b88497b5-af26-47e3-b0dd-d813b0c82c4f.png",
+      "file": "escort_assault.png"
+    },
+    {
+      "id": "escort_vanguard",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. A brutal broad-shouldered main attacker, heavily built human fighter in desaturated moss-green and charcoal armor with pale ceramic knuckle guards. Carries one enormous rectangular execution blade diagonally low across the body, blade entirely visible inside canvas; free fist tight at waist. Exposed scarred stern lower face and a low angular brow helmet, no bucket helmet, no shield, no flag. Wide planted feet, compact powerful silhouette. This is an elite melee damage dealer protected by another unit.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_KilnCaptain.png",
+      "number": 3,
+      "name": "主攻手",
+      "role": "重型输出",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-44508efd-3bc6-4833-a369-0b326154b21d.png",
+      "file": "escort_vanguard.png"
+    },
+    {
+      "id": "escort_guard",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. A squat broad defensive guardian with a huge asymmetrical arched tower shield covering one full side of the torso. The shield is dull slate-blue ceramic with thick off-white rim, one large repaired diagonal crack, no lettering; visually the dominant feature. Other hand grips a short blunt mace close to body. Heavy dark padded coat, small deep-set helmeted head, chunky boots, pale ceramic shoulder cap. Deliberately broad defensive silhouette, distinct from the sword-wielding main attacker. No flag.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_KilnCaptain.png",
+      "number": 4,
+      "name": "护卫",
+      "role": "护主减伤",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-78a346f5-e608-4938-9f07-d3d37fe770b6.png",
+      "file": "escort_guard.png"
+    },
+    {
+      "id": "escort_disruptor",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. A crooked masked saboteur, lean human figure wearing a desaturated mustard-ochre ragged short coat, dark olive scarf, and an off-white beak-like ceramic dust respirator, NOT a hooded wizard. Carries a small perforated censer in one hand and a bundle of large jagged dull ceramic shards tucked under the other arm, hinting at weakening smoke and deck contamination. A few thick dark smoke curls stay tightly connected to the censer and within the silhouette. No loose particles. Uneven bent-knee posture, two visible boots, small pale blue shoulder patch.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_Ashcantor.png",
+      "number": 5,
+      "name": "干扰兵",
+      "role": "虚弱 · 牌库干扰",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-28650050-c3b7-4eda-b663-593b16351a3d.png",
+      "file": "escort_disruptor.png"
+    },
+    {
+      "id": "escort_deployer",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. A hulking four-legged ceramic-and-iron deployment beast, its heavy round torso a pale desaturated teal cargo kiln with a hinged open rack on its back holding TWO visibly inert spherical ordnance shells, not living characters. Broad squat animal head with short wedge muzzle and narrow amber eyes, four sturdy planted articulated legs. A short mechanical loading cradle extends from one side, tucked within body width. Dark plum joint material and cream ceramic rim. One dim warm-orange furnace vent, controlled flat light, no bloom. Reads as a walking ordnance dispenser, clearly NOT a humanoid with a backpack.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_EmberEater.png",
+      "number": 6,
+      "name": "投放者",
+      "role": "周期投放",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-661229b1-42a2-4ef6-a6fe-41cf0689b94b.png",
+      "file": "escort_deployer.png"
+    },
+    {
+      "id": "escort_bomb",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. A small autonomous countdown bomb creature: one spherical cracked dark rust-red ceramic pressure vessel as the entire torso, supported on two short bent iron legs with splayed feet; two tiny hooked arms tucked close to body. An oversized attached mechanical hourglass on top, enclosed by a sturdy cream ceramic arch, with clearly visible amber sand above and below but no numeral or text. A bright small narrow furnace slit in the front resembles a tense eye. Bold simple toy-like but menacing silhouette, no additional bombs or figures, no explosion yet, no loose fuse particles. Matte low-saturation rust and pale ceramic, charcoal limbs.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_EmberEater.png",
+      "number": 7,
+      "name": "倒计时随从",
+      "role": "限时自爆",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-42e78b10-6718-4fa1-b7e1-66e376230f31.png",
+      "file": "escort_bomb.png"
+    },
+    {
+      "id": "escort_overseer",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. A tall austere elite overseer fighter, desaturated deep indigo split long coat over off-white angular ceramic breastplate, slender armored legs, a distinctive broad blindfold-like opaque visor covering eyes but exposed grim mouth. Holds a compact two-handed twin-pronged poleblade vertically beside body, not above or outside frame. A large broken crescent ceramic collar frames the head and links visually to two observers without showing other figures. Severe straight posture, one hand poised to issue an order. Broad clear coat planes, no flag or shield, no crown, no tiny ornaments.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_KilnCaptain.png",
+      "number": 8,
+      "name": "监视主攻手",
+      "role": "连击 · 持续成长",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-ca5dae07-5a3c-4fc0-b987-b359ba433126.png",
+      "file": "escort_overseer.png"
+    },
+    {
+      "id": "escort_skill_observer",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. An uncanny lanky nonhuman skill observer, a tilted angular off-white ceramic single-eye head on a thin segmented neck, charcoal articulated arms and long digit-like feet. Hunched cloakless body has a broad desaturated moss-green short mantle and a visible mechanical abacus-like rib cage of THREE large sliding blocks, no numbers. Holds one stout pair of oversized calipers open at chest height as if measuring the player's moves, hands and calipers distinct. Its one narrow pale amber eye is embedded in a geometric faceplate, no human face. A compact stooping analytical silhouette, not a hooded mage.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_Ashcantor.png",
+      "number": 9,
+      "name": "技能监视者",
+      "role": "技能反制",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-0d35c687-d612-43dc-ad01-7bf7d9def058.png",
+      "file": "escort_skill_observer.png"
+    },
+    {
+      "id": "escort_power_observer",
+      "prompt": "Create ONE new full-body enemy character portrait for a 2D deckbuilding roguelike. Use the provided reference only as an ART STYLE reference, do NOT duplicate its character. Hand-drawn dark fantasy anime comic illustration, bold uneven black contour ink, simplified angular low-poly-like painted volumes, hard-edged cel shadows, broad readable color blocks, sparse chips and cracks, muted yet distinguishable colors. NOT pixel art, NOT realistic rendering, NOT 3D, NOT tiny intricate ornament. Three-quarter view facing slightly toward viewer's left, entire body and all held gear visible, grounded battle-ready neutral pose, centered in a SQUARE image, generous empty margin all around, feet at roughly 88% canvas height, full silhouette occupies about 78% height. One character only, no other figures, no scenery, no floor, no cast ground shadow, no letters/numbers/symbolic text, no UI or border. Absolutely uniform solid flat #FF00FF magenta background, including all gaps between limbs/accessories; no magenta on character. Keep each silhouette compact and readable at 230 pixels display. An uncanny power observer: a tall fully cloaked figure in muted smoky violet with a broad bell-shaped lower robe and two visible clawed ceramic feet, its head an off-white angular mask bearing ONE large circular dim amber lens, not two eyes. A broken ceramic ring mounted vertically behind the shoulders, entirely attached to the body, and a small three-pronged tuning fork held inward between both long hands at chest height. Two thick dark translucent energy ribbons curl close to the fork, no scattered motes or big halos. Deliberately upright radial silhouette, visibly distinct from the hunched green measuring observer. Restrained glow and simplified cloth folds.",
+      "ref": "F:\\WorkingFiles\\AI Studio\\杀戮尖塔\\art\\enemies\\SPR_Enemy_Ashcantor.png",
+      "number": 10,
+      "name": "能力监视者",
+      "role": "能力反制",
+      "source": "C:\\Users\\Administrator\\.codex\\generated_images\\01a0ad11-f06b-73d3-85d2-9035e5bd176e\\exec-8c8da855-3c96-49e0-8926-3497a4d30942.png",
+      "file": "escort_power_observer.png"
+    }
+  ]
+}

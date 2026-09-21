@@ -1,0 +1,122 @@
+[
+  {
+    "id": "escort_commander",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_assault",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_vanguard",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_guard",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_disruptor",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      255,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_deployer",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      255,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_bomb",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_overseer",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_skill_observer",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      255,
+      255
+    ],
+    "identical_to_generated": true
+  },
+  {
+    "id": "escort_power_observer",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha": [
+      255,
+      255
+    ],
+    "identical_to_generated": true
+  }
+]

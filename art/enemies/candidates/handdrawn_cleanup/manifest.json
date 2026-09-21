@@ -1,0 +1,556 @@
+{
+  "schema_version": 1,
+  "status": "approved_integrated",
+  "processed_date": "2026-09-17",
+  "source_cutoff": "2026-09-17T00:00:00+08:00",
+  "tool": "built-in image_gen edit",
+  "images": [
+    {
+      "source": "art/enemies/SPR_Enemy_Ashcantor.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Ashcantor.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "774553ce8093df3a203b66fa2a6f70384858b1c9fb9a6b99ae6f97eebbdd86e5",
+      "sha256": "a3ef1306170354c2c028e5306aa0da88653732476b80b86a44736fb041a718a4",
+      "production": "art/enemies/SPR_Enemy_Ashcantor.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_ChiTheFirst.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_ChiTheFirst.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "ac674964ee76098db08ac3aa66faf5777e089758a7729bfcf1ab97f77a6cdb77",
+      "sha256": "b0f2523e9aefdb8bc16b27f2fd67d8666cd5262bdc5acba15032439d147dbf3c",
+      "production": "art/enemies/SPR_Enemy_ChiTheFirst.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Cinderfiend.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Cinderfiend.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "44bf7ded3e4891a735cac93d16800e60c86086cb57f856e64ebde260ec9a2151",
+      "sha256": "f1e52c33025d94e552435559013a812aa6a57c67f6b74bda42d8d03123fd7aea",
+      "production": "art/enemies/SPR_Enemy_Cinderfiend.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Cindermoth.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Cindermoth.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "59f286b7f5177d018b666025b3579136a1a04cfc43a320efc39e968dba7727e2",
+      "sha256": "e33ec6698a727776d05adabd7767c49e05d0ff1ef687c5e584e7335f89537a79",
+      "production": "art/enemies/SPR_Enemy_Cindermoth.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Claylump.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Claylump.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "93b928c07f3812ad6535294b94d305415394d17d50f57fd006dbc3f69ccf0ef5",
+      "sha256": "8f9ea1d27871ffe592d7a7248939f839d6107fa6861918dcca55250e392e4a98",
+      "production": "art/enemies/SPR_Enemy_Claylump.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Coalseer.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Coalseer.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "85d9b206c624b4e9936f2b97e66b42e9263c5d46c53681cfcfa883af9e6794e3",
+      "sha256": "7d522ff28c0dd9b38ea7a23744daa66526258f29a6e2de3374d42261c93cff44",
+      "production": "art/enemies/SPR_Enemy_Coalseer.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_EmberEater.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_EmberEater.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "4ed120f71c64d4b0f81d8dc7c12bd171b1982795f22e8d062b9079b12a5ff34f",
+      "sha256": "0cac739291bb706e02ce92332924fa69e99bae02e5a6e5e188c0b6ad7e77ff67",
+      "production": "art/enemies/SPR_Enemy_EmberEater.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Embermoth.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "source_sha256": "73599fcd70fa1a8497324e3eac376550888596d0e7f93e5af6d3a7d4d33decb9",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Embermoth.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "sha256": "bd98f57c2450b352f278cecdc0c3747e69f60e2c8e6b6b908e4a16da6631717a",
+      "processed_date": "2026-09-18",
+      "production": "art/enemies/SPR_Enemy_Embermoth.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Glazemaw.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "original_approved",
+      "source_sha256": "16eef4ce72096d9e5ffc88f4f1335026ff7925f89ea9167110337e1e9c60df84"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Glazetick.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Glazetick.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "3fada79a6f27adcef3f013ed3eba52f2328d88e0b2e2db00a6b6b36431d84813",
+      "sha256": "74be332c37ac75eee3a611d6abd386a626aae23f4dac9c3d7c5aa7e35622c599",
+      "production": "art/enemies/SPR_Enemy_Glazetick.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_KilnCaptain.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_KilnCaptain.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "14af0f9b448df93470eef2a84a080958414ffc189a9c8bce94d556e5b034f808",
+      "sha256": "fd0f9375503e0b912f369cfcd0130c5217196c9b9a5c4e221863b5db29f8d2db",
+      "production": "art/enemies/SPR_Enemy_KilnCaptain.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_KilnheartEmber.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_KilnheartEmber.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "46e89c6355662fa177e41480e35444d0110f7c2ddda04d7e05b7bcf7b315c08e",
+      "sha256": "3bbac46dac7257c8d62ef4810e212285de14cdf7f15f8d539af9200b8629665f",
+      "production": "art/enemies/SPR_Enemy_KilnheartEmber.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Kilnstatue.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Kilnstatue.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "78b5aa37da3e88110e4561c2cba094703a3dc398e481b8c7a5ca5ed93ff6da81",
+      "sha256": "42b5448d7862f47adee9cc7ae65a3f344cb30e0e40efc5bb53c2a08c5bbee1fc",
+      "production": "art/enemies/SPR_Enemy_Kilnstatue.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Kilnward.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Kilnward.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "5b4076bbb9c0910f5577c741de1e51fe2db77fcd4b7873c7ac7d36fdd105db7b",
+      "sha256": "f5cc4a1012cfff0cc5eb3fe8cea4a74a7ec413c997f41d6375b4e2d705c643cb",
+      "production": "art/enemies/SPR_Enemy_Kilnward.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Kilnwarden.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Kilnwarden.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "8857f803e9d13c5710bd6a1bd34e323d1edf242c088babaea3c4de248c1bcd59",
+      "sha256": "8ad173ad7e21a155e5206b515d8da73dfba5c557fb33aa0990934645b7396b4d",
+      "production": "art/enemies/SPR_Enemy_Kilnwarden.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Magmawhelp.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "original_approved",
+      "source_sha256": "a6a9d03755686468d30b7a02a3f67f73a70d943e81085334bb474343a6e0ecf3"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Meltgolem.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Meltgolem.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "de2be5a2e0dcbf92f550239c8686737d2c8c27852e89d45d3fb748742b87ec3b",
+      "sha256": "007eac6fe55102042460cb269f66a2d7ea64bcd3c2eebcac103c389ccb5a3455",
+      "production": "art/enemies/SPR_Enemy_Meltgolem.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Potsherd.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Potsherd.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "7acb0bd85cfb3b629a044c0f8690315e2c4548aa4acb561f39f5c5d731df987b",
+      "sha256": "cfe543b6d5e9b08c4dae83767613762c3f4bea32ac307b6a4fdb14e0dbcfcfc2",
+      "production": "art/enemies/SPR_Enemy_Potsherd.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Robber.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Robber.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "6b5fdc310e7d4b29a473a701d8d55bbdec68b0d69ba4c81e73cfd75ca1301477",
+      "sha256": "906375377b408668759249869832764f79b011a32af2d4ab6bd201e62e11ab39",
+      "production": "art/enemies/SPR_Enemy_Robber.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_SaggerMatron.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_SaggerMatron.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "dc1fc0de1f640285ea7d3f3d79f79eea46c4649143b3f20e1c9dd55d289479d5",
+      "sha256": "2d1d113a662a8cd76a2a099b0c2a59d40088abd031f5741fcb07143c484da506",
+      "production": "art/enemies/SPR_Enemy_SaggerMatron.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Slagbeast.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Slagbeast.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "3df708b9f7f3d3bb90ff4f76afe7a0e7940a1f7581f385ff6262181acbe62ffe",
+      "sha256": "ef0edc16abb640cef2a94addb00fb2f00e36032d084af3f9a8f748d34f36dd41",
+      "production": "art/enemies/SPR_Enemy_Slagbeast.png"
+    },
+    {
+      "source": "art/enemies/SPR_Enemy_Sootling.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_Enemy_Sootling.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "6ddc040d9851af04c7995131473abf3683c5c52ac66a9e3f37b4f691d42de853",
+      "sha256": "59aaee72d50369e23c21ccf147d4f4c03ee0b5dc1b12a816d7808a139b71456d",
+      "production": "art/enemies/SPR_Enemy_Sootling.png"
+    },
+    {
+      "source": "art/enemies/sagger_matron/SPR_SaggerMatron_Bar.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_SaggerMatron_Bar.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "1e5892cc30dcbd12aee11356fd2086a8da295db7299cca320ad8a18777438f07",
+      "sha256": "1f9c000427eae9a04b48bd7bff79fbd3aab1f50e2142c5e692592f6127b99c1c",
+      "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Bar.png"
+    },
+    {
+      "source": "art/enemies/sagger_matron/SPR_SaggerMatron_Cool.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_SaggerMatron_Cool.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "68d70e4983d4d53fba6e5dba4a85707f4ead61eb9743401f81e4472ba8546414",
+      "sha256": "597978025aa699a472ce59ccfa54ce8bdd653a24ecb12cdf520434f1c5d693d3",
+      "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Cool.png"
+    },
+    {
+      "source": "art/enemies/sagger_matron/SPR_SaggerMatron_Fire.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_SaggerMatron_Fire.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "0416f25d407b737f9c9990423fa2cda28c6bd55db27cf02e59c55260827ce1c0",
+      "sha256": "fef15d8f0229c4f54e705b0128868b36875ee087d4d7740fc5a010ffae489baf",
+      "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Fire.png"
+    },
+    {
+      "source": "art/enemies/sagger_matron/SPR_SaggerMatron_Seal.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_SaggerMatron_Seal.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "2786746aef2d36dcc5be003d90a02cfebc05fb78d26aa3640d5b4ec2691a5577",
+      "sha256": "efd75f0c1db29a9cec7765c84e1bdaa96e98e745376ffc303d4ea61aa03e6f5e",
+      "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Seal.png"
+    },
+    {
+      "source": "art/enemies/sagger_matron/SPR_SaggerMatron_Vent.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "runtime_integrated",
+      "candidate": "art/enemies/candidates/handdrawn_cleanup/SPR_SaggerMatron_Vent.png",
+      "candidate_size": [
+        1254,
+        1254
+      ],
+      "alpha_range": [
+        0,
+        255
+      ],
+      "source_sha256": "c548be148de2ad7aa447d21433ef10f5cad851a25465b509fbc69da5f61a89a3",
+      "sha256": "66ffb72310cc37babb73152687ebc361eca32301588302e203b38a94a8b15bb0",
+      "production": "art/enemies/sagger_matron/SPR_SaggerMatron_Vent.png"
+    }
+  ],
+  "integrated_date": "2026-09-18"
+}
