@@ -1,0 +1,91 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/MainMenuAtmosphere.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/ui/main_menu/Ember.svg" id="2_ember"]
+
+[sub_resource type="Gradient" id="Gradient_ember"]
+offsets = PackedFloat32Array(0, 0.16, 0.7, 1)
+colors = PackedColorArray(1, 0.52, 0.13, 0, 1, 0.72, 0.3, 0.85, 0.8, 0.29, 0.06, 0.65, 0.4, 0.09, 0.025, 0)
+
+[sub_resource type="GradientTexture1D" id="Ramp_ember"]
+gradient = SubResource("Gradient_ember")
+
+[sub_resource type="ParticleProcessMaterial" id="Particles_ember"]
+resource_local_to_scene = true
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(396, 704, 0)
+direction = Vector3(0.18, -1, 0)
+spread = 22.0
+initial_velocity_min = 20.0
+initial_velocity_max = 43.0
+gravity = Vector3(2, -3, 0)
+angular_velocity_min = -40.0
+angular_velocity_max = 40.0
+scale_min = 0.10
+scale_max = 0.23
+color_ramp = SubResource("Ramp_ember")
+
+[sub_resource type="CanvasItemMaterial" id="Material_ember"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_ash"]
+offsets = PackedFloat32Array(0, 0.2, 0.7, 1)
+colors = PackedColorArray(0.6, 0.59, 0.56, 0, 0.67, 0.65, 0.61, 0.35, 0.46, 0.46, 0.44, 0.3, 0.35, 0.34, 0.32, 0)
+
+[sub_resource type="GradientTexture1D" id="Ramp_ash"]
+gradient = SubResource("Gradient_ash")
+
+[sub_resource type="ParticleProcessMaterial" id="Particles_ash"]
+resource_local_to_scene = true
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(396, 704, 0)
+direction = Vector3(0.7, -0.5, 0)
+spread = 35.0
+initial_velocity_min = 8.0
+initial_velocity_max = 18.0
+gravity = Vector3(0, -0.3, 0)
+angular_velocity_min = -30.0
+angular_velocity_max = 30.0
+scale_min = 0.08
+scale_max = 0.18
+color_ramp = SubResource("Ramp_ash")
+
+[sub_resource type="CanvasItemMaterial" id="Material_ash"]
+light_mode = 1
+
+[node name="Atmosphere" type="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+clip_contents = true
+script = ExtResource("1_script")
+
+[node name="Ash" type="GPUParticles2D" parent="."]
+position = Vector2(360, 640)
+material = SubResource("Material_ash")
+amount = 28
+lifetime = 15.0
+preprocess = 15.0
+randomness = 0.6
+visibility_rect = Rect2(-540, -960, 1080, 1920)
+local_coords = true
+process_material = SubResource("Particles_ash")
+texture = ExtResource("2_ember")
+
+[node name="Embers" type="GPUParticles2D" parent="."]
+position = Vector2(360, 640)
+material = SubResource("Material_ember")
+amount = 18
+lifetime = 9.0
+preprocess = 9.0
+randomness = 0.5
+visibility_rect = Rect2(-540, -960, 1080, 1920)
+local_coords = true
+process_material = SubResource("Particles_ember")
+texture = ExtResource("2_ember")

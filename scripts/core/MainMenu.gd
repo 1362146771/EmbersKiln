@@ -7,22 +7,41 @@ const COMBAT_SCENE := "res://scenes/combat/CombatPlay.tscn"
 const CARD_COMPENDIUM := preload("res://scenes/ui/CardCompendium.tscn")
 
 @onready var play_button: Button = %PlayButton
+var _menu_busy := false
 
 
 func _ready() -> void:
 	if PauseManager != null:
 		PauseManager.hide_pause_button()
 	play_button.text = "继续游戏" if SaveManager.has_active_save() else "开始游戏"
-	play_button.pressed.connect(_on_play)
-	%CompendiumButton.pressed.connect(_on_compendium)
-	%QuitButton.pressed.connect(_on_quit)
+	play_button.pressed.connect(_activate_option.bind(play_button, _on_play))
+	%CompendiumButton.pressed.connect(_activate_option.bind(%CompendiumButton, _on_compendium))
+	%QuitButton.pressed.connect(_activate_option.bind(%QuitButton, _on_quit))
+
+
+func _activate_option(button: Button, action: Callable) -> void:
+	if _menu_busy:
+		return
+	_menu_busy = true
+	for option in [play_button, %CompendiumButton, %QuitButton]:
+		option.feedback_locked = true
+	await button.confirm_feedback().finished
+	action.call()
+	# Keep navigation locked until the scene is replaced; the compendium stays here.
+	if TransitionManager.is_transitioning:
+		await TransitionManager.transition_finished
+	if not is_inside_tree():
+		return
+	_menu_busy = false
+	for option in [play_button, %CompendiumButton, %QuitButton]:
+		option.reset_feedback()
 
 
 func _on_play() -> void:
-	# 点击时重新检查，避免菜单打开后存档状态变化导致覆盖有效进度。
-	var destination := _continue_destination() if SaveManager.has_active_save() else _start_destination()
-	if not destination.is_empty():
-		get_tree().change_scene_to_file(destination)
+	TransitionManager.change_scene_resolved(_resolve_play_destination)
+
+func _resolve_play_destination() -> String:
+	return _continue_destination() if SaveManager.has_active_save() else _start_destination()
 
 
 func _start_destination() -> String:
@@ -60,6 +79,10 @@ func _continue_destination() -> String:
 			if RunState.restore_combat_checkpoint():
 				SaveManager.save_game()
 				return COMBAT_SCENE
+		if RunState.pending_post_reward:
+			return "res://scenes/map/MapPlay.tscn"
+		if not RunState.pending_reward_data.is_empty():
+			return "res://scenes/rewards/RewardUI.tscn"
 		return TOWN_SCENE
 	# 仅有永久档案（例如刚战败）也能继续回镇；坏档不自动创建新局。
 	RunState.is_active = false
