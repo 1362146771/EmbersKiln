@@ -1,6 +1,9 @@
 {
   "fps": 30,
-  "duration_seconds": 1,
+  "duration_seconds": {
+    "attack": 1.4,
+    "hurt": 1
+  },
   "cell_size": [
     768,
     768
@@ -13,39 +16,51 @@
   "loop": false,
   "actions": {
     "attack": {
-      "frame_count": 5,
+      "frame_count": 8,
       "grid": [
         2,
-        3
+        4
       ],
-      "frame_duration_ticks": 6,
+      "frame_duration_ticks": [
+        3,
+        8,
+        2,
+        5,
+        6,
+        6,
+        6,
+        6
+      ],
       "sheet": "attack/sheet-transparent.png",
       "atlases": [
-        "attack/atlas-5.png"
+        "attack/atlas-8.png"
       ],
       "frames": [
         "attack/attack-1.png",
         "attack/attack-2.png",
         "attack/attack-3.png",
         "attack/attack-4.png",
-        "attack/attack-5.png"
+        "attack/attack-5.png",
+        "attack/attack-6.png",
+        "attack/attack-7.png",
+        "attack/attack-8.png"
       ],
       "qc": {
         "frames": [
           {
             "frame": 1,
             "right_foot": [
-              240.5,
+              240.0,
               700.0
             ],
-            "anchor_error_px": 0.5,
+            "anchor_error_px": 0.0,
             "shared_scale": 1.1401673640167365,
             "weapon_angle_degrees": -166,
             "weapon_scale": 0.166,
             "bbox": [
-              163,
+              162,
               149,
-              473,
+              472,
               702
             ]
           },
@@ -60,9 +75,9 @@
             "weapon_angle_degrees": -48,
             "weapon_scale": 0.166,
             "bbox": [
-              158,
+              159,
               130,
-              559,
+              560,
               702
             ]
           },
@@ -74,34 +89,88 @@
             ],
             "anchor_error_px": 0.0,
             "shared_scale": 1.1401673640167365,
-            "weapon_angle_degrees": -118,
+            "weapon_angle_degrees": -65,
             "weapon_scale": 0.166,
             "bbox": [
-              207,
-              210,
-              650,
+              208,
+              193,
+              705,
               703
             ]
           },
           {
             "frame": 4,
             "right_foot": [
-              239.5,
+              240.5,
               700.0
             ],
             "anchor_error_px": 0.5,
             "shared_scale": 1.1401673640167365,
-            "weapon_angle_degrees": -108,
+            "weapon_angle_degrees": -75,
             "weapon_scale": 0.166,
             "bbox": [
-              188,
-              239,
-              657,
+              209,
+              194,
+              700,
               703
             ]
           },
           {
-            "frame": 5,
+            "source": "attack5_source/recovery-upright-raw.png",
+            "source_cell": 0,
+            "shared_scale": 0.9396551724137931,
+            "right_foot": [
+              240.5,
+              700.0
+            ],
+            "anchor_error_px": 0.5,
+            "weapon_angle_degrees": -92,
+            "bbox": [
+              205,
+              213,
+              640,
+              702
+            ],
+            "frame": 5
+          },
+          {
+            "source": "attack5_source/recovery-upright-raw.png",
+            "source_cell": 1,
+            "shared_scale": 0.9396551724137931,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "weapon_angle_degrees": -115,
+            "bbox": [
+              204,
+              223,
+              619,
+              702
+            ],
+            "frame": 6
+          },
+          {
+            "source": "attack5_source/recovery-upright-raw.png",
+            "source_cell": 2,
+            "shared_scale": 0.9396551724137931,
+            "right_foot": [
+              240.0,
+              700.0
+            ],
+            "anchor_error_px": 0.0,
+            "weapon_angle_degrees": -142,
+            "bbox": [
+              205,
+              154,
+              457,
+              703
+            ],
+            "frame": 7
+          },
+          {
+            "frame": 8,
             "right_foot": [
               240.0,
               700.0
@@ -111,14 +180,14 @@
             "weapon_angle_degrees": -167,
             "weapon_scale": 0.166,
             "bbox": [
-              154,
+              153,
               141,
               463,
               703
             ]
           }
         ],
-        "frame_count": 5,
+        "frame_count": 8,
         "empty_frames": [],
         "edge_touch_frames": [],
         "paste_clamped_frames": [],

@@ -1,4 +1,4 @@
-"""Rebuild the accepted five-pose attack, retaining the accepted hurt assets."""
+"""Rebuild attack and recolor the accepted hurt poses to the shipped portrait."""
 from pathlib import Path
 import subprocess
 import sys

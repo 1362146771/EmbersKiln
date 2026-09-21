@@ -4,10 +4,10 @@
 
 ## 当前资源
 
-- `attack`：5 个全身关键姿势（待机、蓄力、下劈、随势、回收），每个姿势持有 6 个时间单位，总长 1 秒。运行图集为 `attack/atlas-5.png`（1536×2304）。
+- `attack`：8 个全身姿势，30 fps 时间轴持帧为 3 / 8 / 2 / 5 / 6 / 6 / 6 / 6，总长 1.4 秒。运行图集为 `attack/atlas-8.png`（1536×3072）。
 - `hurt`：4 个关键姿势通过 30 帧持帧组成后仰、停顿和回正，总长 1 秒。运行图集为 `hurt/atlas-hd-1.png` 与 `hurt/atlas-hd-2.png`。
 - 动态与静态角色按右靴鞋底对齐，导出锚点为 `(240, 700)`，站立主体基准高度为 545 像素。
-- `PortraitTone.gdshader` 只调整动画中间调；静态正式立绘不调色。
+- `portrait_palette.py` 在导出时将攻击与受击材质配色匹配正式立绘；`PlayerCombatPortrait` 不再叠加 `PortraitTone.gdshader`，避免二次偏色。静态正式立绘不调色。
 
 ## 接入
 
@@ -15,7 +15,7 @@
 
 ## 重建
 
-- 攻击源位于 `attack5_source/`，使用 `export_bundle.py` / `build_attack5.py` 重建。五个姿势采用同一整体缩放比例；斧头共用同一份素材，只允许旋转和平移。
-- 受击源位于 `hd_source/`，使用 `process_hd.py` 与 `assemble_hd.py` 重建。
+- 使用 `export_bundle.py` / `build_attack5.py` 重建攻击与受击的最终配色。攻击姿势源位于 `attack5_source/`，斧头共用同一份素材，只允许旋转和平移。
+- 受击已验收的四张透明姿势保存在 `palette_source/`，按原持帧序列导出三十帧；`hd_source/` 保留生成来源。校色每次从未校色姿势开始，不累计叠加。
 - `manifest.json` 与各目录的 `pipeline-meta.json` 保存帧顺序、几何和处理参数；`index.html` 用于逐帧预览。
-- 重建后检查透明背景、洋红残边、画布裁切、脚底锚点和一秒播放时长。
+- 重建后检查透明背景、洋红残边、画布裁切、脚底锚点、攻击 1.4 秒 / 受击 1 秒时长，并核对正式立绘配色。
