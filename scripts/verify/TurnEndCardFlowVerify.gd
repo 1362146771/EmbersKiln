@@ -133,7 +133,7 @@ func verify_combat_ui_sync() -> void:
 	check("turn-ended signal clears hand visuals immediately", ui.controller.hand.is_empty()
 		and ui.hand_container.get_child_count() == 0)
 	check("turn-ended signal refreshes discard counter",
-		ui.discard_pile_view.get_node("Content/Labels/Count").text == "弃牌堆\n3")
+		ui.discard_pile_view.get_node("Content/Labels/Count").text == "3")
 	if visual:
 		await capture("enemy_phase_empty_hand")
 	ui.controller.enemy_phase_done()

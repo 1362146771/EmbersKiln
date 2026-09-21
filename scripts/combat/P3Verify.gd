@@ -89,21 +89,27 @@ func _test_boss_phase3() -> void:
 	# 清掉战斗开局可能抽到的蓄力(charge_next)，避免强制释放招式掩盖阶段计算
 	boss.charge_next = &""
 	cc._roll_enemy_intent(boss)
+	check("跨阶段先预告觉醒，不提前强化", boss.get_status(&"heat") == 0 and boss.intent.get("intent") == "buff")
+	var preparation_hp := cc.player.hp
+	cc._execute_enemy_intent(boss)
+	cc._roll_enemy_intent(boss)
+	cc._execute_enemy_intent(boss)
+	cc._roll_enemy_intent(boss)
+	check("跨两阶段分别用回合觉醒，不攻击", cc.player.hp == preparation_hp)
 
-	check("进入觉醒阶段(on_enter 自身+3力量)", boss.has_status(&"heat") and boss.get_status(&"heat") >= 3,
+	check("跨两阶段各+6力量，共12力量", boss.get_status(&"heat") == 12,
 		"heat=%d" % boss.get_status(&"heat"))
-	check("觉醒阶段意图=aoe_debuff", String(boss.intent.get("intent", "")) == "aoe_debuff",
+	check("觉醒阶段预告暗焰爆发", boss.intent.get("id", "") == "echo_last" and String(boss.intent.get("intent", "")) == "attack",
 		"intent=%s" % str(boss.intent.get("intent", "")))
 
 	var p_hp_before: int = boss.hp   # not used; track player
 	var player_hp_before: int = cc.player.hp
 	cc._execute_enemy_intent(boss)
 	var expected := int(boss.intent.get("value", 0)) + boss.get_status(&"heat")
-	check("觉醒 AOE 命中玩家（含力量加成=%d）" % expected,
+	check("觉醒爆发命中玩家（含力量加成=%d）" % expected,
 		cc.player.hp == player_hp_before - expected,
 		"player %d -> %d" % [player_hp_before, cc.player.hp])
-	check("觉醒施加玩家 2 层易伤", cc.player.has_status(&"crazed") and cc.player.get_status(&"crazed") >= 2,
-		"crazed=%d" % cc.player.get_status(&"crazed"))
+	check("阶段强化仅触发一次", boss.get_status(&"heat") == 12)
 
 	cc.queue_free()
 
@@ -123,6 +129,8 @@ func _test_encounter_generation() -> void:
 	var enemy_data_ok := true
 	for enemy in GameData.enemies.values():
 		var expected: Array = _expected_encounter_rule(enemy.encounter_class)
+		if enemy.effective_stats:
+			expected = [0, 0, 0, 2 if enemy.id in [&"escort_assault", &"escort_bomb"] else 1]
 		if expected.is_empty():
 			enemy_data_ok = false
 			continue
@@ -165,7 +173,7 @@ func _test_encounter_generation() -> void:
 							triple_seen_after[act_index] = true
 					elif (node.type == &"elite" or node.type == &"boss") and node.enemy_ids.size() != 1:
 						maps_ok = false
-	check("600 张地图：人数门控、强怪上限、精英/Boss 单体均合法", maps_ok)
+	check("600 张地图：人数门控、强怪上限、精英/Boss 主怪ID均合法", maps_ok)
 	check("三幕解锁后均实际生成过三敌战", triple_seen_after.all(func(v: bool) -> bool: return v), str(triple_seen_after))
 
 

@@ -681,26 +681,63 @@
       "name": "窑心·烬",
       "tier": "boss",
       "encounter_class": "solo_only",
-      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "encounter_weights": {
+        "1": 10,
+        "2": 0,
+        "3": 0
+      },
       "max_copies_per_encounter": 1,
-      "hp": 200,
-      "ai": "scripted_phases",
+      "hp": 402,
+      "ai": "phased_cycle",
       "phases": [
         {
           "hp_threshold": 1.0,
           "moves": [
             {
-              "id": "ember_claw",
+              "id": "claw",
+              "name": "烬爪",
               "intent": "attack",
-              "value": 14,
-              "chance": 0.5
+              "value": 16,
+              "times": 1
             },
             {
-              "id": "cinder_wave",
+              "id": "ward",
+              "name": "护炉",
+              "intent": "defend",
+              "value": 15,
+              "effective_stats": true
+            },
+            {
+              "id": "scald_opening",
+              "name": "灼面",
               "intent": "attack",
               "value": 12,
-              "aoe": true,
-              "chance": 0.5
+              "times": 1,
+              "after_effects": [
+                {
+                  "kind": "status",
+                  "status": "damp",
+                  "value": 2
+                },
+                {
+                  "kind": "status",
+                  "status": "crazed",
+                  "value": 2
+                },
+                {
+                  "kind": "add_card",
+                  "card_id": "wound",
+                  "pile": "discard",
+                  "count": 2
+                }
+              ]
+            },
+            {
+              "id": "stoke",
+              "name": "炽焰蓄势",
+              "intent": "buff",
+              "status": "heat",
+              "value": 3
             }
           ]
         },
@@ -708,64 +745,138 @@
           "hp_threshold": 0.5,
           "moves": [
             {
-              "id": "pyre_fist",
+              "id": "execute_enraged",
+              "name": "双重处决",
               "intent": "attack",
-              "value": 22,
-              "chance": 0.35
+              "value": 10,
+              "times": 2
             },
             {
-              "id": "smolder",
-              "intent": "debuff",
-              "status": "ashrot",
-              "value": 2,
-              "chance": 0.15
+              "id": "ward_enraged",
+              "name": "护炉",
+              "intent": "defend",
+              "value": 15,
+              "effective_stats": true
             },
             {
-              "id": "stoke",
+              "id": "scald_enraged",
+              "name": "灼面",
+              "intent": "attack",
+              "value": 12,
+              "times": 1,
+              "after_effects": [
+                {
+                  "kind": "status",
+                  "status": "damp",
+                  "value": 2
+                },
+                {
+                  "kind": "status",
+                  "status": "crazed",
+                  "value": 2
+                },
+                {
+                  "kind": "add_card",
+                  "card_id": "wound",
+                  "pile": "discard",
+                  "count": 2
+                }
+              ]
+            },
+            {
+              "id": "stoke_enraged",
+              "name": "炽焰蓄势",
               "intent": "buff",
               "status": "heat",
-              "value": 3,
-              "chance": 0.1
+              "value": 3
             },
             {
-              "id": "cinder_shell",
-              "intent": "defend",
-              "value": 16,
-              "chance": 0.15
-            },
-            {
-              "id": "gathering",
-              "intent": "charge",
-              "value": 0,
-              "next": "kilnburst",
-              "chance": 0.25
-            },
-            {
-              "id": "kilnburst",
+              "id": "burst_enraged",
+              "name": "炉心爆裂",
               "intent": "attack",
-              "value": 32,
-              "chance": 0.0
+              "value": 45,
+              "times": 1
             }
-          ]
+          ],
+          "entry_move": {
+            "id": "phase_entry_1",
+            "name": "怒焰强化",
+            "intent": "buff",
+            "status": "heat",
+            "value": 6,
+            "cleanse": true
+          }
         },
         {
           "hp_threshold": 0.25,
-          "on_enter": [
-            {"status": "heat", "value": 3}
-          ],
           "moves": [
             {
-              "id": "final_gasp",
-              "intent": "aoe_debuff",
+              "id": "execute_last",
+              "name": "双重处决",
+              "intent": "attack",
+              "value": 10,
+              "times": 2
+            },
+            {
+              "id": "ward_last",
+              "name": "护炉",
+              "intent": "defend",
+              "value": 15,
+              "effective_stats": true
+            },
+            {
+              "id": "scald_last",
+              "name": "灼面",
+              "intent": "attack",
               "value": 12,
-              "status": "crazed",
-              "status_value": 2,
-              "chance": 1.0
+              "times": 1,
+              "after_effects": [
+                {
+                  "kind": "status",
+                  "status": "damp",
+                  "value": 2
+                },
+                {
+                  "kind": "status",
+                  "status": "crazed",
+                  "value": 2
+                },
+                {
+                  "kind": "add_card",
+                  "card_id": "wound",
+                  "pile": "discard",
+                  "count": 2
+                }
+              ]
+            },
+            {
+              "id": "stoke_last",
+              "name": "炽焰蓄势",
+              "intent": "buff",
+              "status": "heat",
+              "value": 3
+            },
+            {
+              "id": "burst_last",
+              "name": "炉心爆裂",
+              "intent": "attack",
+              "value": 45,
+              "times": 1
             }
-          ]
+          ],
+          "entry_move": {
+            "id": "phase_entry_2",
+            "name": "怒焰强化",
+            "intent": "buff",
+            "status": "heat",
+            "value": 6,
+            "cleanse": true
+          }
         }
       ],
-      "sprite": "SPR_Enemy_KilnheartEmber"
+      "sprite": "SPR_Enemy_KilnheartEmber",
+      "boss_rules": {},
+      "combat_hint": "护炉与蓄势各占一回合，分别获得15格挡、3力量，不攻击。半血与四分之一血各用一回合净化并+6力量，之后预告处决；跨两阈值依次强化。灼面施加虚弱、易伤并塞伤口；后期周期释放炉心爆裂。"
     },
     {
       "id": "sagger_matron",
@@ -775,7 +886,7 @@
       "encounter_class": "solo_only",
       "encounter_weights": {"1": 10, "2": 0, "3": 0},
       "max_copies_per_encounter": 1,
-      "hp": 180,
+      "hp": 240,
       "ai": "scripted_cycle",
       "first_move": "bar",
       "description": "她记得护坯，忘了开匣。",
@@ -802,91 +913,585 @@
       "name": "窑主·熾",
       "tier": "boss",
       "encounter_class": "solo_only",
-      "encounter_weights": {"1": 10, "2": 0, "3": 0},
+      "encounter_weights": {
+        "1": 10,
+        "2": 0,
+        "3": 0
+      },
       "max_copies_per_encounter": 1,
-      "hp": 190,
-      "ai": "scripted_phases",
+      "hp": 508,
+      "ai": "phased_cycle",
       "phases": [
         {
           "hp_threshold": 1.0,
           "moves": [
             {
-              "id": "swipe",
+              "id": "slash_a",
+              "name": "焰斩",
               "intent": "attack",
-              "value": 13,
-              "chance": 0.5
+              "value": 20,
+              "times": 1
             },
             {
-              "id": "quake",
+              "id": "soul",
+              "name": "四重灵击",
               "intent": "attack",
-              "value": 11,
-              "aoe": true,
-              "chance": 0.5
+              "value": 6,
+              "times": 4
+            },
+            {
+              "id": "slash_b",
+              "name": "焰斩",
+              "intent": "attack",
+              "value": 20,
+              "times": 1
             }
-          ]
+          ],
+          "power_reactive": true
         },
         {
           "hp_threshold": 0.5,
           "moves": [
             {
-              "id": "crush",
+              "id": "echo_awakened",
+              "name": "暗焰爆发",
               "intent": "attack",
-              "value": 24,
-              "chance": 0.35
+              "value": 40,
+              "times": 1
             },
             {
-              "id": "curse",
-              "intent": "debuff",
-              "status": "crazed",
-              "value": 2,
-              "chance": 0.15
+              "id": "pounce_awakened",
+              "name": "三重扑击",
+              "intent": "attack",
+              "value": 10,
+              "times": 3
             },
             {
-              "id": "rage",
-              "intent": "buff",
-              "status": "heat",
-              "value": 3,
-              "chance": 0.1
-            },
-            {
-              "id": "bone_ward",
-              "intent": "defend",
+              "id": "sludge_awakened",
+              "name": "灰浆侵蚀",
+              "intent": "attack",
               "value": 18,
-              "chance": 0.15
-            },
-            {
-              "id": "seethe",
-              "intent": "charge",
-              "value": 0,
-              "next": "inferno",
-              "chance": 0.25
-            },
-            {
-              "id": "inferno",
-              "intent": "attack",
-              "value": 32,
-              "chance": 0.0
+              "times": 1,
+              "after_effects": [
+                {
+                  "kind": "add_card",
+                  "card_id": "wound",
+                  "pile": "discard",
+                  "count": 2
+                }
+              ]
             }
-          ]
+          ],
+          "entry_move": {
+            "id": "phase_entry_1",
+            "name": "觉醒",
+            "intent": "buff",
+            "status": "heat",
+            "value": 6,
+            "cleanse": true
+          },
+          "power_reactive": false
         },
         {
           "hp_threshold": 0.25,
-          "on_enter": [
-            {"status": "heat", "value": 3}
-          ],
           "moves": [
             {
-              "id": "awaken_blast",
-              "intent": "aoe_debuff",
-              "value": 14,
-              "status": "crazed",
-              "status_value": 2,
-              "chance": 1.0
+              "id": "echo_last",
+              "name": "暗焰爆发",
+              "intent": "attack",
+              "value": 40,
+              "times": 1
+            },
+            {
+              "id": "pounce_last",
+              "name": "三重扑击",
+              "intent": "attack",
+              "value": 10,
+              "times": 3
+            },
+            {
+              "id": "sludge_last",
+              "name": "灰浆侵蚀",
+              "intent": "attack",
+              "value": 18,
+              "times": 1,
+              "after_effects": [
+                {
+                  "kind": "add_card",
+                  "card_id": "wound",
+                  "pile": "discard",
+                  "count": 2
+                }
+              ]
             }
-          ]
+          ],
+          "entry_move": {
+            "id": "phase_entry_2",
+            "name": "觉醒",
+            "intent": "buff",
+            "status": "heat",
+            "value": 6,
+            "cleanse": true
+          },
+          "power_reactive": false
         }
       ],
-      "sprite": "SPR_Enemy_ChiTheFirst"
+      "sprite": "SPR_Enemy_ChiTheFirst",
+      "boss_rules": {
+        "regeneration": 10,
+        "power_strength": 2
+      },
+      "combat_hint": "行动前回复10生命；仅第一阶段，你每打出能力牌使其+2力量。半血与四分之一血各用一回合觉醒：不攻击，净化并+6力量，之后预告暗焰爆发；跨两阈值依次觉醒。灰浆塞入伤口。"
+    },
+    {
+      "id": "escort_commander",
+      "name": "指挥官",
+      "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 1,
+      "hp": 165,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "rally",
+      "moves": [
+        {
+          "id": "rally",
+          "name": "全队强化",
+          "intent": "unknown",
+          "value": 0,
+          "after_effects": [
+            {
+              "kind": "rally",
+              "strength": 3,
+              "escort_block": 6
+            }
+          ],
+          "next": "flurry"
+        },
+        {
+          "id": "flurry",
+          "name": "连击",
+          "intent": "attack",
+          "value": 7,
+          "times": 3,
+          "next": "deploy"
+        },
+        {
+          "id": "deploy",
+          "name": "满员攻击",
+          "intent": "attack",
+          "value": 18,
+          "times": 1,
+          "if_missing": {
+            "name": "补充随从",
+            "intent": "unknown",
+            "value": 0,
+            "after_effects": [
+              {
+                "kind": "recruit"
+              },
+              {
+                "kind": "block",
+                "value": 12
+              }
+            ]
+          },
+          "next": "rally"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortCommander",
+      "combat_hint": "全队+3力量、随从+6格挡→7×3→缺员补兵并+12格挡，否则18攻击。主怪死亡后随从继续战斗，全部敌人死亡才胜利。",
+      "escort_ids": [
+        "escort_assault",
+        "escort_assault"
+      ]
+    },
+    {
+      "id": "escort_assault",
+      "name": "突击兵",
+      "tier": "minion",
+      "encounter_class": "escort",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 2,
+      "hp": 35,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "hit",
+      "moves": [
+        {
+          "id": "hit",
+          "name": "攻击",
+          "intent": "attack",
+          "value": 7,
+          "times": 1,
+          "next": "hit"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortAssault",
+      "combat_hint": "每回合攻击；新补充的随从下回合开始行动。主怪死亡后继续战斗，无永久生命击杀收益。"
+    },
+    {
+      "id": "escort_vanguard",
+      "name": "主攻手",
+      "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 1,
+      "hp": 150,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "hit",
+      "moves": [
+        {
+          "id": "hit",
+          "name": "攻击",
+          "intent": "attack",
+          "value": 18,
+          "times": 1,
+          "next": "flurry"
+        },
+        {
+          "id": "flurry",
+          "name": "连击",
+          "intent": "attack",
+          "value": 10,
+          "times": 2,
+          "next": "heavy"
+        },
+        {
+          "id": "heavy",
+          "name": "重击",
+          "intent": "attack",
+          "value": 24,
+          "times": 1,
+          "next": "hit"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortVanguard",
+      "combat_hint": "18→10×2→24，每3次行动+2力量；护卫存活时受到的攻击减半。主怪死亡后随从继续战斗，全部敌人死亡才胜利。",
+      "escort_ids": [
+        "escort_guard",
+        "escort_disruptor"
+      ],
+      "boss_rules": {
+        "growth_every": 3,
+        "growth_strength": 2
+      }
+    },
+    {
+      "id": "escort_guard",
+      "name": "护卫",
+      "tier": "minion",
+      "encounter_class": "escort",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 1,
+      "hp": 50,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "hit",
+      "moves": [
+        {
+          "id": "hit",
+          "name": "攻击",
+          "intent": "attack",
+          "value": 8,
+          "times": 1,
+          "after_effects": [
+            {
+              "kind": "block",
+              "value": 10
+            }
+          ],
+          "next": "hit"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortGuard",
+      "combat_hint": "护卫存活：主怪受到攻击伤害减半，向下取整，先减伤后扣格挡；不影响直接伤害或失血。攻击后自身+10格挡。",
+      "escort_rules": {
+        "protect_leader_attack_mult": 0.5
+      }
+    },
+    {
+      "id": "escort_disruptor",
+      "name": "干扰兵",
+      "tier": "minion",
+      "encounter_class": "escort",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 1,
+      "hp": 38,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "weaken",
+      "moves": [
+        {
+          "id": "weaken",
+          "name": "施加虚弱",
+          "intent": "debuff",
+          "status": "damp",
+          "value": 2,
+          "next": "poke"
+        },
+        {
+          "id": "poke",
+          "name": "干扰攻击",
+          "intent": "attack",
+          "value": 6,
+          "times": 1,
+          "after_effects": [
+            {
+              "kind": "add_card",
+              "card_id": "wound",
+              "count": 2,
+              "pile": "discard"
+            }
+          ],
+          "next": "weaken"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortDisruptor",
+      "combat_hint": "2虚弱→6攻击并向弃牌堆加入2伤口，循环。主怪死亡后继续战斗。"
+    },
+    {
+      "id": "escort_deployer",
+      "name": "投放者",
+      "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 1,
+      "hp": 210,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "hit",
+      "moves": [
+        {
+          "id": "hit",
+          "name": "攻击",
+          "intent": "attack",
+          "value": 22,
+          "times": 1,
+          "next": "flurry"
+        },
+        {
+          "id": "flurry",
+          "name": "连击",
+          "intent": "attack",
+          "value": 12,
+          "times": 2,
+          "next": "deploy"
+        },
+        {
+          "id": "deploy",
+          "name": "满员攻击",
+          "intent": "attack",
+          "value": 22,
+          "times": 1,
+          "if_missing": {
+            "name": "补充随从",
+            "intent": "unknown",
+            "value": 0,
+            "after_effects": [
+              {
+                "kind": "recruit"
+              }
+            ]
+          },
+          "next": "hit"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortDeployer",
+      "combat_hint": "22→12×2→缺员补兵，否则22。每3次行动+2力量。新随从下回合行动；击败主怪可取消全部自爆。",
+      "escort_ids": [
+        "escort_bomb",
+        "escort_bomb"
+      ],
+      "boss_rules": {
+        "growth_every": 3,
+        "growth_strength": 2
+      }
+    },
+    {
+      "id": "escort_bomb",
+      "name": "倒计时随从",
+      "tier": "minion",
+      "encounter_class": "escort",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 2,
+      "hp": 28,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "poke",
+      "moves": [
+        {
+          "id": "poke",
+          "name": "干扰攻击",
+          "intent": "attack",
+          "value": 8,
+          "times": 1,
+          "after_effects": [
+            {
+              "kind": "add_card",
+              "card_id": "wound",
+              "count": 1,
+              "pile": "discard"
+            }
+          ],
+          "next": "detonate"
+        },
+        {
+          "id": "detonate",
+          "name": "自爆",
+          "intent": "attack",
+          "value": 28,
+          "times": 1,
+          "after_effects": [
+            {
+              "kind": "self_destruct"
+            }
+          ],
+          "next": "poke"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortBomb",
+      "combat_hint": "首次行动8攻击+1伤口；第二次行动28攻击后自毁。攻击可格挡；提前击杀不会爆炸。"
+    },
+    {
+      "id": "escort_overseer",
+      "name": "监视主攻手",
+      "tier": "elite",
+      "encounter_class": "solo_only",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 1,
+      "hp": 220,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "hit",
+      "moves": [
+        {
+          "id": "hit",
+          "name": "攻击",
+          "intent": "attack",
+          "value": 20,
+          "times": 1,
+          "next": "flurry"
+        },
+        {
+          "id": "flurry",
+          "name": "连击",
+          "intent": "attack",
+          "value": 8,
+          "times": 3,
+          "next": "hit"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortOverseer",
+      "combat_hint": "20→8×3，每2次行动+2力量。击败对应监视者会停止后续出牌反制，已获得的力量保留。",
+      "escort_ids": [
+        "escort_skill_observer",
+        "escort_power_observer"
+      ],
+      "boss_rules": {
+        "growth_every": 2,
+        "growth_strength": 2
+      }
+    },
+    {
+      "id": "escort_skill_observer",
+      "name": "技能监视者",
+      "tier": "minion",
+      "encounter_class": "escort",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 1,
+      "hp": 42,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "hit",
+      "moves": [
+        {
+          "id": "hit",
+          "name": "攻击",
+          "intent": "attack",
+          "value": 6,
+          "times": 1,
+          "next": "hit"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortSkillObserver",
+      "combat_hint": "每实际打出技能牌，自身+1力量；包括自动出牌。死亡后停止反制。",
+      "escort_rules": {
+        "react_card_type": "skill",
+        "react_target": "self",
+        "react_strength": 1
+      }
+    },
+    {
+      "id": "escort_power_observer",
+      "name": "能力监视者",
+      "tier": "minion",
+      "encounter_class": "escort",
+      "encounter_weights": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "max_copies_per_encounter": 1,
+      "hp": 42,
+      "effective_stats": true,
+      "ai": "scripted_cycle",
+      "first_move": "hit",
+      "moves": [
+        {
+          "id": "hit",
+          "name": "攻击",
+          "intent": "attack",
+          "value": 6,
+          "times": 1,
+          "next": "hit"
+        }
+      ],
+      "sprite": "SPR_Enemy_EscortPowerObserver",
+      "combat_hint": "每实际打出能力牌，主怪+2力量；包括自动出牌。死亡后停止反制，主怪已有力量保留。",
+      "escort_rules": {
+        "react_card_type": "power",
+        "react_target": "leader",
+        "react_strength": 2
+      }
     }
   ]
 }

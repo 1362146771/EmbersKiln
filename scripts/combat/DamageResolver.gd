@@ -10,7 +10,7 @@ func attach(controller: CombatController) -> void:
 	ctrl = controller
 
 ## 计算从 attacker 对 target 的最终伤害：含力量加成、虚弱削弱、易伤增伤。
-func compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int) -> int:
+func compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int, include_guard: bool = true) -> int:
 	var dmg := base
 	dmg += attacker.get_status(&"heat")
 	if attacker.has_status(&"damp"):
@@ -20,6 +20,8 @@ func compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int) -> in
 		dmg = int(floor(dmg * (1.5 + ctrl.vulnerable_bonus_damage_for(attacker))))
 	# 巨像只处理攻击伤害路径，不影响直接失血与状态伤害。
 	dmg = int(floor(dmg * ctrl.incoming_attack_multiplier_for(attacker, target)))
+	if include_guard:
+		dmg = int(floor(dmg * ctrl._escorts.attack_multiplier(target)))
 	return maxi(0, dmg)
 
 func deal_to_unit(unit: CombatUnit, final_dmg: int) -> void:
@@ -60,8 +62,6 @@ func add_block(unit: CombatUnit, amount: int) -> void:
 	unit.add_block(real)
 	if unit.is_player:
 		SignalBus.player_block_changed.emit(ctrl.player.block)
-	else:
-		SignalBus.ally_block_changed.emit(ctrl._intent.index_of_ally(unit), unit.block)
 	if unit.is_player and unit.block > before:
 		ctrl.on_player_block_gained()
 
@@ -72,14 +72,10 @@ func enemy_attack_hit(e: CombatUnit, dmg: int) -> void:
 		deal_to_unit(e, ctrl._temporary_thorns)
 	ctrl._tick_sherd_vest(e)   # 遗物：受击反伤（陶片背心）
 
-## AOE 伤害 + 对玩家施加 debuff（如易伤）；友方随从同步受击（Q2）。
+## AOE 伤害 + 对玩家施加 debuff（如易伤）。
 func enemy_aoe_hit(e: CombatUnit, dmg: int, mv: Dictionary) -> void:
 	deal_to_player(dmg)
 	ctrl._tick_sherd_vest(e)
-	for a in ctrl.allies:
-		if a.is_alive():
-			var ad := compute_outgoing(e, a, int(mv.get("value", 0)))
-			ctrl._intent.deal_to_ally(a, ad)
 	var sid := StringName(mv.get("status", ""))
 	var sval := int(mv.get("status_value", 0))
 	if sid != &"" and sval != 0:

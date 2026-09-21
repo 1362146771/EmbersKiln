@@ -9,20 +9,25 @@ extends Node
 ## 跨子系统调用统一走 ctrl 转发，避免 preload 环路）：
 ##   - DamageResolver  : 伤害/格挡/窑变结算
 ##   - StatusEngine    : 状态/回合始末结算/玩家 Power
-##   - IntentRoller    : 敌人&随从意图滚动与行动、召唤系统
+##   - IntentRoller    : 敌人意图滚动与行动
 ## 本文件保留编排骨架、公开 API（被 BattleDirector / CombatUI / 各 verify 直接调用）与状态字段。
 
 enum Phase { NONE, PLAYER, ENEMY, ENDED }
 
 ## Presentation-only receipt: actual energy paid and unique direct attack targets.
 signal attack_feedback(paid_energy: int, target_indices: Array[int])
+## Ordered presentation receipts; gameplay still resolves synchronously.
+var attack_hits: Array[Dictionary] = []
+var collecting_attack_hits := false
+var attack_receipts_pending := false
+var presenting_direct_hit := false
+var attack_targets_all := false
 
 ## 玩家持久 Power：kind(StringName) -> 数值
 const POWER_START_TURN_BLOCK := &"power_start_turn_block"
 const POWER_START_TURN_STRENGTH := &"power_start_turn_strength"
 const POWER_END_TURN_AOE := &"power_end_turn_aoe"
 const POWER_ON_ATTACK_STRENGTH := &"power_on_attack_strength"
-const POWER_ON_SUMMON_COMMAND := &"power_on_summon_command"
 const POWER_RETAIN_BLOCK := &"power_retain_block"
 const POWER_VULNERABLE_BONUS_DAMAGE := &"power_vulnerable_bonus_damage"
 const POWER_START_TURN_ENERGY := &"power_start_turn_energy"
@@ -39,7 +44,6 @@ const POWER_ON_CARD_HP_LOSS_STRENGTH := &"power_on_card_hp_loss_strength"
 
 var player: CombatUnit
 var enemies: Array[CombatUnit] = []
-var allies: Array[CombatUnit] = []   # 友方随从（召唤物）
 
 var draw_pile: Array = []      # [{id:StringName, upgraded:bool}]
 var hand: Array = []
@@ -49,6 +53,8 @@ var removed_pile: Array = []    # 已生效能力牌；不计作消耗，不能�
 
 var energy: int = 0
 var max_energy: int = 0
+var cards_played_this_turn: int = 0
+var turn_card_limit: int = 0
 var turn: int = 0
 var phase: int = Phase.NONE
 
@@ -77,11 +83,13 @@ var _temporary_attack_block := 0
 var _double_tap_charges := 0
 var _resolving_block_trigger := false
 var pending_card_choice: Dictionary = {}
+var _mutation_energy_uses: Dictionary = {}
 
 ## 助手类实例（P4 拆分，经 attach 持有本门面引用）
 var _dmg: DamageResolver
 var _status: StatusEngine
 var _intent: IntentRoller
+var _escorts: EscortEncounter
 
 
 func _ready() -> void:
@@ -95,6 +103,8 @@ func _init_helpers() -> void:
 	_dmg = DamageResolver.new()
 	_status = StatusEngine.new()
 	_intent = IntentRoller.new()
+	_escorts = EscortEncounter.new()
+	_escorts.attach(self)
 	_dmg.attach(self)
 	_status.attach(self)
 	_intent.attach(self)
@@ -120,16 +130,14 @@ func start_combat(enemy_ids: Array) -> void:
 
 	# 敌人单元（难度系数在构造时施加）
 	enemies.clear()
-	allies.clear()
 	for eid in enemy_ids:
 		var ed: EnemyData = GameData.get_enemy(StringName(eid))
 		if ed == null:
 			push_error("[CombatController] 未知敌人: %s" % eid)
 			continue
-		var u := CombatUnit.new()
-		u.setup(false, ed.id, ed.name, GameData.scaled_enemy_hp(ed.base_hp), ed.sprite)
-		u.data = ed
+		var u := _escorts.make_unit(ed)
 		enemies.append(u)
+	_escorts.setup_formation()
 
 	# 牌堆
 	draw_pile.clear()
@@ -137,8 +145,13 @@ func start_combat(enemy_ids: Array) -> void:
 	discard_pile.clear()
 	exhaust_pile.clear()
 	removed_pile.clear()
+	RunState.normalize_enchant_selection()
 	for entry in RunState.deck:
-		draw_pile.append(entry.duplicate(true))
+		var battle_card := entry.duplicate(true)
+		battle_card["enchant_active"] = RunState.selected_enchant_instance_ids.has(String(entry["instance_id"]))
+		draw_pile.append(battle_card)
+	for relic in RunState.relics_with_drawback(&"combat_start_cards"):
+		_add_generated_card(relic.drawback_card, "draw", relic.drawback_value, false)
 	_shuffle(draw_pile)
 	# 固有牌必须进入初始手牌；把它们稳定移到抽牌堆前端。
 	var innate_cards: Array = []
@@ -153,7 +166,8 @@ func start_combat(enemy_ids: Array) -> void:
 
 	# 能量
 	var pc: Dictionary = GameData.player_config()
-	max_energy = int(pc.get("energy_per_turn", 3))
+	max_energy = int(pc.get("energy_per_turn", 3)) + RunState.relic_energy_bonus()
+	turn_card_limit = RunState.relic_card_limit()
 
 	powers.clear()
 	_vulnerable_enemy_damage_multiplier = 1.0
@@ -191,7 +205,9 @@ func start_combat(enemy_ids: Array) -> void:
 func _start_player_turn() -> void:
 	if not _combat_active:
 		return
+	_mutation_energy_uses.clear()
 	turn += 1
+	cards_played_this_turn = 0
 	phase = Phase.PLAYER
 	energy = max_energy
 	# 巨像持续覆盖紧随玩家回合之后的敌方阶段，在下个玩家回合开始时失效。
@@ -243,7 +259,7 @@ func end_player_turn() -> void:
 			_resolve_effects(cd.end_turn_effects, player, player)
 		if not _combat_active:
 			return
-		if cd != null and cd.is_ethereal(_card_upgrade_state(card)):
+		if cd != null and card_is_ethereal(card, cd):
 			_exhaust_card(card)
 		else:
 			cards_to_discard.append(card)
@@ -275,23 +291,38 @@ func end_player_turn() -> void:
 ## 敌方回合开始：清旧格挡 + 回合开始状态（燃烧 ashrot 等可能致死 → _post_enemy_death）。
 ## 返回行动后是否仍存活。
 func enemy_pre(e: CombatUnit) -> bool:
-	# 随从已在此前行动，破封窗口到此关闭；自然清盾不得取消尚未被打断的喷火。
+	if not e.is_alive() or e.can_act_from_turn > turn:
+		return false
+	# 敌人开始行动，破封窗口到此关闭；自然清盾不得取消尚未被打断的喷火。
 	e.block_break_next = &""
 	e.gold_steal_resolved = false
-	e.block = 0
+	e.block = e.pending_ally_block
+	e.pending_ally_block = 0
+	e.last_action_turn = turn
 	_status.process_turn_start_statuses(e)
+	_intent.before_enemy_action(e)
 	return e.is_alive()
 
 
 ## 敌方回合结束：状态衰减 + 滚动下一手意图。
 func enemy_post(e: CombatUnit) -> void:
+	if not e.is_alive():
+		return
+	_intent.apply_move_effects(e)
+	if not e.is_alive():
+		return
 	_status.decay_statuses_at_turn_end(e)
+	_intent.after_enemy_action(e)
 	_intent.roll_enemy_intent(e)
 
 
 ## 计算敌人 outgoing（含力量加成等，不含格挡——格挡在 apply_damage 内结算）。
 func enemy_outgoing(e: CombatUnit, base: int) -> int:
 	return _dmg.compute_outgoing(e, player, base)
+
+## 预览计入本轮先行动主怪已经公开的全队强化，实际结算仍只用已生效力量。
+func enemy_preview_outgoing(e: CombatUnit, base: int) -> int:
+	return _dmg.compute_outgoing(e, player, base + _escorts.announced_rally_strength(e))
 
 
 ## 单次攻击命中结算（供碰撞卡撞击点回调）。
@@ -315,7 +346,7 @@ func enemy_attack_done(e: CombatUnit, mv: Dictionary) -> void:
 	_log("敌人 %s 抢走 %d 金币" % [e.unit_name, lost])
 
 
-## AOE 伤害 + 对玩家施加 debuff（如易伤）；友方随从同步受击。
+## AOE 伤害 + 对玩家施加 debuff（如易伤）。
 func enemy_aoe_hit(e: CombatUnit, dmg: int, mv: Dictionary) -> void:
 	_dmg.enemy_aoe_hit(e, dmg, mv)
 
@@ -351,6 +382,8 @@ func check_player_death() -> void:
 # 出牌
 # =====================================================================
 func play_card(hand_index: int, target_index: int = -1) -> bool:
+	if not can_play_more_cards():
+		return false
 	if phase != Phase.PLAYER or not pending_card_choice.is_empty():
 		return false
 	if hand_index < 0 or hand_index >= hand.size():
@@ -365,6 +398,8 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 	if paid_cost >= 0 and energy < paid_cost:
 		return false
 
+	# Count before resolving effects so nested automatic plays share this turn limit.
+	cards_played_this_turn += 1
 	var x_spent := energy if paid_cost < 0 else 0
 	energy = 0 if paid_cost < 0 else energy - paid_cost
 	SignalBus.energy_changed.emit(energy, max_energy)
@@ -384,7 +419,7 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 		&"none":
 			primary = player
 
-	var effects: Array = cd.get_effects(_card_upgrade_state(card))
+	var effects: Array = cd.get_effects(_card_upgrade_state(card)).duplicate(true)
 	var combat_damage_bonus := int(card.get("combat_damage_bonus", 0))
 	if combat_damage_bonus != 0:
 		for effect in effects:
@@ -392,27 +427,42 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 				effect["value"] = int(effect.get("value", 0)) + combat_damage_bonus
 				break
 	# 附魔结算（升级覆盖 → 附魔加法 → 状态结算）：先叠附魔加成，再走既有结算
-	effects = _apply_enchant_mods(effects, cd, card.get("enchants", []))
+	effects = _apply_enchant_mods(effects, cd, CardMutation.effective_ids(card))
 	# 遗物：本场第一张攻击牌额外伤害（劈薪斧）
 	if cd.type == &"attack":
 		effects = _apply_first_attack_bonus(effects)
 	# 先离手，选择类效果看到的手牌不包含正在打出的牌。
 	hand.remove_at(hand_index)
+	_intent.on_player_card_played(cd)
 	card["_x_spent"] = x_spent
 	card["_active_card_id"] = cd.id
 	var repeats := 2 if cd.type == &"attack" and _double_tap_charges > 0 else 1
 	if repeats == 2:
 		_double_tap_charges -= 1
 	var struck_targets: Array[int] = []
-	var collect_hit := func(_source: bool, index: int, _amount: int) -> void:
+	attack_hits.clear()
+	attack_targets_all = effects.any(func(effect: Dictionary) -> bool: return String(effect.get("kind", "")) in ["aoe_damage", "x_aoe_damage", "heal_unblocked_aoe"])
+	var collect_hit := func(_source: bool, index: int, amount: int) -> void:
+		if index >= 0 and presenting_direct_hit:
+			attack_hits.append({"target": index, "amount": amount})
 		if index >= 0 and not struck_targets.has(index):
 			struck_targets.append(index)
 	if cd.type == &"attack":
+		attack_receipts_pending = true
+		collecting_attack_hits = true
 		SignalBus.damage_dealt.connect(collect_hit)
+	var mutation := CardMutation.town_enchant(card)
 	for repeat_index in repeats:
+		if not _mutation_can_continue(): break
+		card["_mutation_exhausted"] = 0
+		if mutation != null:
+			_resolve_mutation_effects(mutation.mods.get("prefix_effects", []), primary, card)
+		if not _mutation_can_continue(): break
 		_resolve_effects(effects, player, primary, false, card)
+		if mutation != null: _resolve_mutation_after(mutation, cd, card, primary, paid_cost)
 	if cd.type == &"attack":
 		SignalBus.damage_dealt.disconnect(collect_hit)
+		collecting_attack_hits = false
 
 	# Power：每次打出攻击牌获得力量
 	if cd.type == &"attack":
@@ -446,6 +496,7 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 
 	SignalBus.card_played.emit(cd.id, target_index)
 	if cd.type == &"attack":
+		attack_receipts_pending = false
 		attack_feedback.emit(x_spent if paid_cost < 0 else paid_cost, struck_targets)
 	_log("出牌：%s（耗能 %s，剩余能量 %d）" % [cd.name, "X=%d" % x_spent if paid_cost < 0 else str(paid_cost), energy])
 	_check_combat_end()
@@ -467,10 +518,10 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 				for i in times:
 					if primary == null or not primary.is_alive():
 						break
-					var dmg := _dmg.compute_outgoing(source, primary, value)
+					var dmg := _dmg.compute_outgoing(source, primary, value, false)
 					if source.is_player and source.has_status(&"stoke"):
 						dmg += source.get_status(&"stoke")
-					_dmg.deal_to_unit(primary, dmg)
+					_deal_attack_hit(primary, dmg)
 					_tick_heat_siphon(source)
 			"aoe_damage":
 				for e in enemies:
@@ -479,10 +530,10 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 					for i in times:
 						if not e.is_alive():
 							break
-						var dmg := _dmg.compute_outgoing(source, e, value)
+						var dmg := _dmg.compute_outgoing(source, e, value, false)
 						if source.is_player and source.has_status(&"stoke"):
 							dmg += source.get_status(&"stoke")
-						_dmg.deal_to_unit(e, dmg)
+						_deal_attack_hit(e, dmg)
 						_tick_heat_siphon(source)
 			"scaled_damage":
 				if primary != null and primary.is_alive():
@@ -490,10 +541,10 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 					var per: int = int(eff.get("per_card", eff.get("per", 0)))
 					var count := _count_cards_with_tag(StringName(eff.get("tag", "")), active_card) if eff.has("tag") else _scaled_damage_count(String(eff.get("source", "")), primary, eff)
 					var scaled: int = base + count * per
-					var dmg := _dmg.compute_outgoing(source, primary, scaled)
+					var dmg := _dmg.compute_outgoing(source, primary, scaled, false)
 					if source.is_player and source.has_status(&"stoke"):
 						dmg += source.get_status(&"stoke")
-					_dmg.deal_to_unit(primary, dmg)
+					_deal_attack_hit(primary, dmg)
 					_tick_heat_siphon(source)
 			"strength_scaled_damage":
 				if primary != null and primary.is_alive():
@@ -516,7 +567,7 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 			"fatal_damage":
 				if primary != null and primary.is_alive():
 					_deal_attack_value(source, primary, value)
-					if not primary.is_alive():
+					if not primary.is_alive() and primary.leader_index < 0:
 						RunState.increase_max_hp(int(eff.get("max_hp", 0)))
 						player.max_hp = RunState.max_hp
 						player.hp = RunState.hp
@@ -593,7 +644,7 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 			"upgrade_hand", "exhaust_hand_and_draw", "copy_hand_card", "return_discard_to_draw_top", "recover_exhausted_card", "topdeck_hand":
 				_handle_hand_choice(eff, active_card)
 			"copy_self_to_discard":
-				var copy := active_card.duplicate(true)
+				var copy := CardMutation.strip_copy(active_card)
 				copy.erase("_x_spent")
 				copy.erase("_active_card_id")
 				discard_pile.append(copy)
@@ -619,19 +670,24 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 				_play_top_draw_card_exhausted()
 			"exhaust_non_attack_hand":
 				var exhausted_count := _exhaust_non_attack_hand()
+				active_card["_mutation_exhausted"] = int(active_card.get("_mutation_exhausted", 0)) + exhausted_count
 				if eff.has("block_per_card"):
 					_dmg.add_block(player, exhausted_count * int(eff.get("block_per_card", 0)))
 			"exhaust_hand_damage":
-				var exhausted_cards := hand.size()
-				while not hand.is_empty():
-					_exhaust_card(hand.pop_back())
+				var exhausted_cards := 0
+				var original_hand := hand.duplicate()
+				for entry in original_hand:
+					var index := hand.find(entry)
+					if index >= 0:
+						_exhaust_card(hand.pop_at(index))
+						exhausted_cards += 1
 				for hit in exhausted_cards:
 					if primary == null or not primary.is_alive():
 						break
 					_deal_attack_value(source, primary, value)
 			"increment_card_damage":
 				active_card["combat_damage_bonus"] = int(active_card.get("combat_damage_bonus", 0)) + value
-			"power_start_turn_block", "power_start_turn_strength", "power_end_turn_aoe", "power_on_attack_strength", "power_on_summon_command", "power_start_turn_energy", "power_on_exhaust_draw", "power_on_exhaust_block", "power_on_draw_status", "power_on_draw_status_aoe", "power_end_turn_block", "power_on_block_damage", "power_on_card_hp_loss_strength":
+			"power_start_turn_block", "power_start_turn_strength", "power_end_turn_aoe", "power_on_attack_strength", "power_start_turn_energy", "power_on_exhaust_draw", "power_on_exhaust_block", "power_on_draw_status", "power_on_draw_status_aoe", "power_end_turn_block", "power_on_block_damage", "power_on_card_hp_loss_strength":
 				_register_power(StringName(kind), value)
 			"power_start_turn_hp_draw", "power_end_turn_self_hp_aoe":
 				_register_structured_power(StringName(kind), eff)
@@ -651,12 +707,39 @@ func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, p
 				kiln_heat += value
 				SignalBus.kiln_heat_changed.emit(kiln_heat, _kiln_threshold())
 				_dmg.check_kiln_resonance()
-			"summon":
-				var mid: StringName = StringName(eff.get("minion_id", ""))
-				var cnt: int = int(eff.get("count", 1))
-				_intent.summon_minion(mid, cnt)
 			_:
 				push_warning("[CombatController] 未识别的 effect_kind: %s" % kind)
+
+func card_is_ethereal(card: Dictionary, cd: CardData) -> bool:
+	var mutation := CardMutation.town_enchant(card)
+	return cd.is_ethereal(_card_upgrade_state(card)) and not (mutation != null and mutation.mods.get("remove_ethereal", false))
+
+func _mutation_can_continue() -> bool:
+	return _combat_active and player_alive() and _first_alive_enemy() != null
+
+func _resolve_mutation_effects(effects: Array, primary: CombatUnit, card: Dictionary) -> void:
+	for effect in effects:
+		if not _mutation_can_continue(): return
+		if String(effect.get("target", "")) == "enemy" and (primary == null or not primary.is_alive()): continue
+		_resolve_effects([effect], player, primary, false, card)
+
+func _resolve_mutation_after(ed: EnchantData, cd: CardData, card: Dictionary, primary: CombatUnit, paid_cost: int) -> void:
+	if not _mutation_can_continue(): return
+	if ed.mods.has("splash_damage"):
+		for enemy in enemies:
+			if not _mutation_can_continue(): return
+			if enemy != primary and enemy.is_alive(): _deal_attack_value(player, enemy, int(ed.mods["splash_damage"]))
+	if ed.mods.has("block_per_exhausted") and _mutation_can_continue():
+		var value := mini(int(card.get("_mutation_exhausted", 0)) * int(ed.mods["block_per_exhausted"]), int(ed.mods["exhaust_block_cap"]))
+		if value > 0: _dmg.add_block(player, value)
+	for effect in ed.mods.get("extra_effects", []):
+		if not _mutation_can_continue(): return
+		if String(effect.get("kind", "")) == "energy":
+			if paid_cost < int(ed.condition["min_paid_cost"]): continue
+			var used := int(_mutation_energy_uses.get(cd.id, 0))
+			if used >= int(ed.condition["max_per_card_per_turn"]): continue
+			_mutation_energy_uses[cd.id] = used + 1
+		_resolve_mutation_effects([effect], primary, card)
 
 func _resolve_status_target(target: Variant, primary: CombatUnit) -> CombatUnit:
 	var t: String = String(target)
@@ -671,8 +754,6 @@ func _resolve_status_target(target: Variant, primary: CombatUnit) -> CombatUnit:
 
 func _scaled_damage_count(source_name: String, primary: CombatUnit, eff: Dictionary) -> int:
 	match source_name:
-		"ally_count":
-			return allies.size()
 		"target_status":
 			return primary.get_status(StringName(eff.get("status", ""))) if primary != null else 0
 		"player_block":
@@ -718,7 +799,12 @@ func card_cost(card: Dictionary, cd: CardData = null) -> int:
 	return result
 
 
+func can_play_more_cards(reserved: int = 0) -> bool:
+	return turn_card_limit <= 0 or cards_played_this_turn + reserved < turn_card_limit
+
+
 func can_play_card(hand_index: int) -> bool:
+	if not can_play_more_cards(): return false
 	if phase != Phase.PLAYER or not pending_card_choice.is_empty() or hand_index < 0 or hand_index >= hand.size():
 		return false
 	var data: CardData = GameData.get_card(StringName(hand[hand_index].get("id", "")))
@@ -743,11 +829,18 @@ func _card_condition_met(cd: CardData, hand_index: int) -> bool:
 func _deal_attack_value(source: CombatUnit, target: CombatUnit, base: int) -> void:
 	if target == null or not target.is_alive():
 		return
-	var damage := _dmg.compute_outgoing(source, target, base)
+	var damage := _dmg.compute_outgoing(source, target, base, false)
 	if source.is_player and source.has_status(&"stoke"):
 		damage += source.get_status(&"stoke")
-	_dmg.deal_to_unit(target, damage)
+	_deal_attack_hit(target, damage)
 	_tick_heat_siphon(source)
+
+
+func _deal_attack_hit(target: CombatUnit, damage: int) -> void:
+	# Only direct card strikes replay attack poses, not power/relic damage procs.
+	presenting_direct_hit = true
+	_dmg.deal_to_unit(target, int(floor(damage * _escorts.attack_multiplier(target))))
+	presenting_direct_hit = false
 
 
 func _deal_direct_aoe(amount: int) -> void:
@@ -793,9 +886,9 @@ func _add_generated_card(card_id: StringName, pile_name: String, count: int, shu
 		"hand": target_pile = hand
 	for index in maxi(0, count):
 		if target_pile == hand and hand.size() >= int(GameData.player_config().get("hand_max", 10)):
-			discard_pile.append({"id":card_id,"upgraded":false,"upgrade_level":0,"enchants":[]})
+			discard_pile.append({"id":card_id,"upgraded":false,"upgrade_level":0,"enchants":[],"enchant_active":false})
 		else:
-			target_pile.append({"id":card_id,"upgraded":false,"upgrade_level":0,"enchants":[]})
+			target_pile.append({"id":card_id,"upgraded":false,"upgrade_level":0,"enchants":[],"enchant_active":false})
 	if shuffle_after and target_pile == draw_pile:
 		_shuffle(draw_pile)
 
@@ -808,7 +901,7 @@ func _add_random_attack_to_hand(temporary_cost: int) -> void:
 	if pool.is_empty():
 		return
 	var picked: CardData = pool[randi() % pool.size()]
-	var entry := {"id":picked.id,"upgraded":false,"upgrade_level":0,"enchants":[],"temporary_cost":temporary_cost}
+	var entry := {"id":picked.id,"upgraded":false,"upgrade_level":0,"enchants":[],"enchant_active":false,"temporary_cost":temporary_cost}
 	if hand.size() < int(GameData.player_config().get("hand_max", 10)):
 		hand.append(entry)
 	else:
@@ -832,12 +925,17 @@ func _play_top_draw_card_exhausted() -> void:
 			if discard_index >= 0:
 				_exhaust_card(discard_pile.pop_at(discard_index))
 			return
+	var failed_index := hand.find(entry)
+	if failed_index >= 0: hand.remove_at(failed_index)
 	_exhaust_card(entry)
 
 
 func _exhaust_non_attack_hand() -> int:
 	var count := 0
-	for index in range(hand.size() - 1, -1, -1):
+	var original_hand := hand.duplicate()
+	for original_entry in original_hand:
+		var index := hand.find(original_entry)
+		if index < 0: continue
 		var data: CardData = GameData.get_card(StringName(hand[index].get("id", "")))
 		if data == null or data.type != &"attack":
 			var entry: Dictionary = hand.pop_at(index)
@@ -923,7 +1021,7 @@ func _apply_card_choice(kind: String, selected: Dictionary, effect: Dictionary) 
 			for copy_index in int(effect.get("count", 1)):
 				if hand.size() >= int(GameData.player_config().get("hand_max", 10)):
 					break
-				hand.append(selected.duplicate(true))
+				hand.append(CardMutation.strip_copy(selected))
 		"return_discard_to_draw_top":
 			var discard_index := discard_pile.find(selected)
 			if discard_index >= 0:
@@ -957,9 +1055,9 @@ func _choice_title(kind: String) -> String:
 		_: return "选择一张牌"
 
 
-## 残酷：只为玩家阵营（玩家与随从）提供易伤承伤倍率的额外加成。
+## 残酷：只为玩家提供易伤承伤倍率的额外加成。
 func vulnerable_bonus_damage_for(attacker: CombatUnit) -> float:
-	if attacker == player or allies.has(attacker):
+	if attacker == player:
 		return float(powers.get(POWER_VULNERABLE_BONUS_DAMAGE, 0.0))
 	return 0.0
 
@@ -997,6 +1095,9 @@ func _apply_enchant_mods(effects: Array, cd: CardData, enchants: Array) -> Array
 		if not ed.matches_card(cd):
 			continue
 		if not ed.meets_condition(cd.cost):
+			continue
+		if ed.acquisition_scope == "town_only":
+			ed.apply_value_mods(out)
 			continue
 		var m: Dictionary = ed.mods
 		var db: int = int(m.get("damage_bonus", 0))
@@ -1127,27 +1228,6 @@ func _roll_enemy_intent(e: CombatUnit) -> void:
 	_intent.roll_enemy_intent(e)
 
 
-## 召唤随从（转发到 IntentRoller）。被 SummonVerify / SummonTurnVerify 直接调用。
-func _summon_minion(mid: StringName, count: int) -> void:
-	_intent.summon_minion(mid, count)
-
-
-## 成功召唤进入场上后触发群窑共鸣；被上限拒绝的召唤不会调用此钩子。
-func _on_minion_summoned() -> void:
-	if powers.has(POWER_ON_SUMMON_COMMAND):
-		_status.apply_status(player, &"command", int(powers[POWER_ON_SUMMON_COMMAND]))
-
-
-## 随从阶段（转发到 IntentRoller）。被 SummonVerify / SummonTurnVerify 直接调用。
-func _summon_phase() -> void:
-	_intent.summon_phase()
-
-
-## 友方随从受击（转发到 IntentRoller）。被 SummonVerify 直接调用。
-func _deal_to_ally(ally: CombatUnit, final_dmg: int) -> void:
-	_intent.deal_to_ally(ally, final_dmg)
-
-
 # =====================================================================
 # 牌堆
 # =====================================================================
@@ -1158,22 +1238,6 @@ func _discard_at_turn_end(card: Dictionary) -> void:
 	card.erase("_active_card_id")
 	discard_pile.append(card)
 	SignalBus.card_discarded.emit(StringName(card.get("id", "")))
-
-
-## 手动弃牌不是出牌：仅移动原条目，不耗能、不结算效果、不补牌。
-## 没有回合次数限制；升级、附魔及其他实例字段随条目保留。
-func discard_card(hand_index: int) -> bool:
-	if not _combat_active or phase != Phase.PLAYER or not player_alive():
-		return false
-	if hand_index < 0 or hand_index >= hand.size():
-		return false
-	var card: Dictionary = hand[hand_index]
-	hand.remove_at(hand_index)
-	discard_pile.append(card)
-	SignalBus.card_discarded.emit(StringName(card["id"]))
-	var cd: CardData = GameData.get_card(StringName(card["id"]))
-	_log("弃牌：%s" % (cd.name if cd != null else String(card["id"])))
-	return true
 
 
 func _draw_cards(n: int) -> void:
@@ -1285,10 +1349,14 @@ func finalize_player_death() -> void:
 
 
 func _post_enemy_death(e: CombatUnit) -> void:
-	if e.is_alive():
+	if e.is_alive() or e.death_resolved:
 		return
+	e.death_resolved = true
 	SignalBus.unit_died.emit(false, _index_of(e))
-	RunState.defeated.append(e.id)
+	# 随从仍触发本场死亡事件，但不增加按击杀数计算的局外火种，避免补兵刷取。
+	if e.leader_index < 0:
+		RunState.defeated.append(e.id)
+	_escorts.refresh_conditional_intents()
 	_log("敌人 %s 被击败" % e.unit_name)
 	_check_combat_end()
 
@@ -1305,8 +1373,6 @@ func _apply_relics_combat_start() -> void:
 				_draw_cards(int(r.value))
 			&"hearth_totem":
 				_dmg.add_block(player, int(r.value))
-			&"kilnmark":
-				_intent.summon_minion(&"emberhound", int(r.value))
 
 
 func _apply_relics_first_turn() -> void:
@@ -1357,25 +1423,6 @@ func _apply_relics_after_combat() -> void:
 
 
 # =====================================================================
-# 随从 / 召唤（异步演出薄包装，供 BattleDirector.run_summon_turn 驱动）
-# =====================================================================
-func ally_pre(a: CombatUnit) -> bool:
-	return _intent.ally_pre(a)
-
-func ally_outgoing(a: CombatUnit, target: CombatUnit, base: int) -> int:
-	return _intent.ally_outgoing(a, target, base)
-
-func ally_attack_hit(a: CombatUnit, target: CombatUnit, dmg: int) -> void:
-	_intent.ally_attack_hit(a, target, dmg)
-
-func ally_act(a: CombatUnit) -> void:
-	_intent.ally_act(a)
-
-func ally_post(a: CombatUnit) -> void:
-	_intent.ally_post(a)
-
-
-# =====================================================================
 # 工具
 # =====================================================================
 func _first_alive_enemy() -> CombatUnit:
@@ -1384,9 +1431,6 @@ func _first_alive_enemy() -> CombatUnit:
 			return e
 	return null
 
-## 首个存活敌人（公开包装，供 BattleDirector.run_summon_turn 取攻击目标）。
-func first_alive_enemy() -> CombatUnit:
-	return _first_alive_enemy()
 
 
 func _index_of(unit: CombatUnit) -> int:

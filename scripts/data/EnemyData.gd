@@ -4,17 +4,18 @@ extends Resource
 
 @export var id: StringName = &""
 @export var name: String = ""
-@export var tier: StringName = &"normal"   # normal / elite / boss
+@export var tier: StringName = &"normal"   # normal / elite / boss / minion
 @export var base_hp: int = 10
 @export var ai: StringName = &"weighted_random"
 @export var sprite: String = ""
 ## 可选：招式 id -> 完整立绘路径；未配置的状态回退到默认 sprite。
 @export var state_sprites: Dictionary = {}
 var _sprite_cache: Dictionary = {}
+var _cropped_sprite_cache: Dictionary = {}
 @export var map_icon: String = ""
 @export var description: String = ""
 @export var combat_hint: String = ""
-## 普通战组队元数据：strong / medium / weak；精英与 Boss 为 solo_only。
+## 普通战组队元数据：strong / medium / weak；精英/Boss主怪为 solo_only，固定随从为 escort。
 @export var encounter_class: StringName = &""
 ## 目标敌人数 -> 被选入该规模战斗的权重。键使用 JSON 字符串 "1" / "2" / "3"。
 var encounter_weights: Dictionary = {}
@@ -28,6 +29,12 @@ var encounter_weights: Dictionary = {}
 var moves: Array = []
 ## phases: Boss 分阶段脚本（可空）
 var phases: Array = []
+## 可选 Boss 被动；玩法数值全部来自敌人配置。
+var boss_rules: Dictionary = {}
+## 固定精英编队使用已确认的局内值；旧敌人继续沿用幕倍率。
+var effective_stats := false
+var escort_ids: Array = []
+var escort_rules: Dictionary = {}
 
 
 static func from_dict(d: Dictionary) -> EnemyData:
@@ -48,6 +55,10 @@ static func from_dict(d: Dictionary) -> EnemyData:
 	e.first_move = StringName(d.get("first_move", ""))
 	e.moves = d.get("moves", [])
 	e.phases = d.get("phases", [])
+	e.boss_rules = d.get("boss_rules", {}).duplicate(true)
+	e.effective_stats = bool(d.get("effective_stats", false))
+	e.escort_ids = d.get("escort_ids", []).duplicate()
+	e.escort_rules = d.get("escort_rules", {}).duplicate(true)
 	return e
 
 
@@ -57,6 +68,12 @@ func is_boss() -> bool:
 
 func is_elite() -> bool:
 	return tier == &"elite"
+
+
+func power_response_strength(phase_index: int) -> int:
+	if phase_index >= 0 and phase_index < phases.size() and not bool(phases[phase_index].get("power_reactive", true)):
+		return 0
+	return int(boss_rules.get("power_strength", 0))
 
 
 func encounter_weight(enemy_count: int) -> float:
@@ -85,6 +102,20 @@ func sprite_texture(move_id: StringName = &"") -> Texture2D:
 	return t as Texture2D
 
 
+## Cached view of the visible portrait; never rewrites the approved source PNG.
+func cropped_sprite_texture(move_id: StringName = &"") -> AtlasTexture:
+	var source := sprite_texture(move_id)
+	if source == null:
+		return null
+	if not _cropped_sprite_cache.has(source):
+		var cropped := AtlasTexture.new()
+		cropped.atlas = source
+		cropped.region = Rect2(source.get_image().get_used_rect())
+		cropped.filter_clip = true
+		_cropped_sprite_cache[source] = cropped
+	return _cropped_sprite_cache[source]
+
+
 ## 在 moves 与所有 phases 的 moves 中按 id 查找 move。
 ## charge/telegraph 的「释放招式」用 next 指向它；UI 也要据此显示预告。
 func find_move(mid: StringName) -> Dictionary:
@@ -92,6 +123,9 @@ func find_move(mid: StringName) -> Dictionary:
 		if StringName(m.get("id", "")) == mid:
 			return m
 	for ph in phases:
+		var entry: Dictionary = ph.get("entry_move", {})
+		if not entry.is_empty() and StringName(entry.get("id", "")) == mid:
+			return entry
 		for m in ph.get("moves", []):
 			if StringName(m.get("id", "")) == mid:
 				return m

@@ -21,6 +21,8 @@ const HILITE := Color(1.0, 0.92, 0.65)
 @onready var _status_bar = $Inner/StatusBar
 
 var _index: int = -1
+signal portrait_layout_changed
+var portrait_area := Rect2()
 
 
 ## 填充动态内容。enemy_count 用于收紧多怪时的血条字号，避免窄栏裁切数值。
@@ -32,18 +34,28 @@ func build(e: CombatUnit, index: int, selected: bool, enemy_count: int, controll
 		var tex := ed.sprite_texture(StringName(e.intent.get("id", "")))
 		if tex != null:
 			_sprite.texture = tex
+		_sprite.configure(ed.id)
 	_sprite.custom_minimum_size = Vector2.ZERO
 	var hp_text: Label = $Inner/HpText
-	hp_text.text = "HP %d/%d" % [e.hp, e.max_hp]
+	update_vitals(e.hp, e.max_hp, e.block)
 	hp_text.add_theme_font_size_override("font_size", 21 if enemy_count <= 1 else (18 if enemy_count == 2 else 16))
 	_name_l.text = e.unit_name + ("  ◀" if selected else "")
-	_hp_bar.max_value = e.max_hp
-	_hp_bar.value = e.hp
-	_block_l.text = "%d" % e.block
+	_name_l.tooltip_text = ed.combat_hint if ed != null else ""
+	if ed != null and ed.ai == &"phased_cycle":
+		_name_l.text += " · 阶段%d" % (e.phase_index + 1)
+		_name_l.tooltip_text = ed.combat_hint
 	_status_bar.set_unit(e)
 	_layout_statuses()
 	_layout_statuses.call_deferred()
 	self_modulate = HILITE if selected else Color.WHITE
+
+
+## 仅更新数值，不重排节点、不重置立绘/受击动画；演出锁内也可安全调用。
+func update_vitals(hp: int, max_hp: int, block: int) -> void:
+	$Inner/HpText.text = "HP %d/%d" % [hp, max_hp]
+	_hp_bar.max_value = max_hp
+	_hp_bar.value = hp
+	_block_l.text = str(block)
 
 
 func _format_intent(e: CombatUnit, controller: CombatController = null) -> String:
@@ -61,7 +73,7 @@ func _format_intent(e: CombatUnit, controller: CombatController = null) -> Strin
 		if rel.get("intent", "") in ["attack", "aoe_debuff"] and e.data != null:
 			rel_val = GameData.scaled_enemy_damage(rel_val, e.data.tier)
 			if controller != null:
-				rel_val = controller.enemy_outgoing(e, rel_val)
+				rel_val = controller.enemy_preview_outgoing(e, rel_val)
 		var rel_times: int = int(rel.get("times", 1))
 		var t := "蓄力→%s %d" % [rel_kind, rel_val]
 		if rel_times > 1:
@@ -69,9 +81,12 @@ func _format_intent(e: CombatUnit, controller: CombatController = null) -> Strin
 		return t
 	var val: int = int(e.intent.get("value", 0))
 	if kind in ["attack", "aoe_debuff"] and controller != null:
-		val = controller.enemy_outgoing(e, val)
+		val = controller.enemy_preview_outgoing(e, val)
 	var times: int = int(e.intent.get("times", 1))
-	var t := "%s %d" % [_intent_cn(kind), val]
+	var title := _intent_cn(kind)
+	if e.data != null and e.data.ai == &"phased_cycle":
+		title = String(e.intent.get("name", title))
+	var t := "%s %d" % [title, val]
 	if times > 1:
 		t += " ×%d" % times
 	var gold_steal := int(e.intent.get("gold_steal", 0))
@@ -92,13 +107,15 @@ static func format_scripted_intent(e: CombatUnit, controller: CombatController =
 		var release := ed.find_move(StringName(mv.get("next", "")))
 		var value := GameData.scaled_enemy_damage(int(release.get("value", 0)), ed.tier)
 		if controller != null:
-			value = controller.enemy_outgoing(e, value)
+			value = controller.enemy_preview_outgoing(e, value)
 		return "%s 格挡 %d\n下回合喷火 %d" % [title, int(mv.get("value", 0)), value]
 	if kind == "attack":
 		var value := int(mv.get("value", 0))
 		if controller != null:
-			value = controller.enemy_outgoing(e, value)
+			value = controller.enemy_preview_outgoing(e, value)
 		var text := "%s %d" % [title, value]
+		if int(mv.get("times", 1)) > 1:
+			text += " ×%d" % int(mv.times)
 		if e.block_break_next != &"":
 			text += "\n打掉格挡可打断"
 		return text
@@ -122,8 +139,35 @@ func _ready() -> void:
 func _layout_statuses() -> void:
 	if not is_instance_valid(_status_bar):
 		return
+	_sprite.begin_layout()
+	_sprite.anchor_left = 0.0
+	_sprite.anchor_right = 1.0
+	_sprite.offset_left = 8.0
+	_sprite.offset_right = -8.0
 	var status_height: float = _status_bar.content_height(maxf(1.0, size.x - 16.0)) if _status_bar.visible else 0.0
 	_status_bar.offset_top = 568.0 - status_height
 	_status_bar.offset_bottom = 568.0
 	_sprite.offset_bottom = _status_bar.offset_top - 6.0 if status_height > 0.0 else 574.0
 	_sprite.offset_top = maxf(202.0, _intent_bar.offset_top + _intent_bar.size.y + 6.0)
+	# get_rect() includes the active hit transform; layout must use the rest size.
+	portrait_area = Rect2(_sprite.position, _sprite.size)
+	_sprite.end_layout()
+	portrait_layout_changed.emit()
+
+
+func portrait_top_limit() -> float:
+	return _intent_bar.offset_top + _intent_bar.size.y + 6.0
+
+
+func fit_portrait(cropped: AtlasTexture, fit: float, baseline: float) -> void:
+	_sprite.begin_layout()
+	_sprite.texture = cropped
+	_sprite.sync_hit_texture()
+	_sprite.anchor_right = 0.0
+	_sprite.size = cropped.get_size() * fit
+	_sprite.position = Vector2(portrait_area.get_center().x - _sprite.size.x / 2.0, baseline - _sprite.size.y)
+	# Enlarged formations may cross their slots, but remain inside the battlefield.
+	var viewport := get_viewport_rect()
+	var edge := portrait_area.position.x
+	_sprite.position.x = clampf(_sprite.position.x, viewport.position.x + edge - global_position.x, viewport.end.x - edge - global_position.x - _sprite.size.x)
+	_sprite.end_layout()

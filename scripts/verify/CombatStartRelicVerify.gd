@@ -1,12 +1,9 @@
 extends Node
-## Regression for combat_start hooks. Uses real summon/enemy phase drivers,
-## data-defined relic/minion values and isolated saves. No UI is required.
+## Combat-start relic timing and retired-content save migration regression.
 
 var passed := 0
 var failed := 0
 var controller: CombatController
-var hound_data: MinionData
-var summon_count := 0
 
 
 func _ready() -> void:
@@ -16,55 +13,40 @@ func _ready() -> void:
 		get_tree().quit(2)
 		return
 	await get_tree().process_frame
-	RunState.start_new_run()
-	RunState.add_relic(&"kilnmark")
-	hound_data = GameData.get_minion(&"emberhound")
-	summon_count = GameData.get_relic(&"kilnmark").value
+	ProfileManager.autosave_enabled = false
 	controller = CombatController.new()
 	add_child(controller)
-	controller.start_combat([&"kilnstatue"])
-	check("first turn summons configured hound count", controller.allies.size() == summon_count)
-	var original_hounds := controller.allies.duplicate()
-	for round_index in range(hound_data.lifetime + 1):
-		await advance_round()
-		var remaining := maxi(0, hound_data.lifetime - round_index - 1)
-		check("round %d: no replacement hounds" % controller.turn,
-			controller.allies.size() == (summon_count if remaining > 0 else 0))
-		for ally in controller.allies:
-			check("survivor is original hound with decreasing lifetime",
-				original_hounds.has(ally) and ally.lifetime == remaining)
-	check("expiry does not refresh combat-start summon", controller.allies.is_empty())
-
-	# Reuse the same controller in a new battle; the existing turn reset must
-	# naturally make combat-start effects eligible again (no run-global latch).
-	controller.start_combat([&"kilnstatue"])
-	check("next combat summons again", controller.turn == 1 and controller.allies.size() == summon_count)
-	for ally in controller.allies.duplicate():
-		check("next combat gets a fresh hound", not original_hounds.has(ally) and ally.lifetime == hound_data.lifetime)
-		controller._intent.deal_to_ally(ally, ally.hp + ally.block)
-	check("dead hounds removed", controller.allies.is_empty())
-	await advance_round()
-	check("death does not cause next-turn replacement", controller.allies.is_empty())
-
-	# Load a save retaining the owned relic, then start a new battle.
-	var owned_save := RunState.to_save_dict()
-	RunState.start_new_run()
-	check("saved relic still loads", RunState.from_save_dict(owned_save) and RunState.has_relic(&"kilnmark"))
-	controller.start_combat([&"kilnstatue"])
-	check("loaded run gets combat-start summon", controller.allies.size() == summon_count)
-	await advance_round()
-	check("loaded run does not summon every turn", controller.allies.size() == summon_count)
-
-	RunState.start_new_run()
-	controller.start_combat([&"kilnstatue"])
-	check("no relic means no free hound", controller.allies.is_empty())
-	await advance_round()
-	check("no relic stays empty next turn", controller.allies.is_empty())
+	test_retired_content_saves()
 	await test_other_start_relics()
 	controller.queue_free()
 	await get_tree().process_frame
 	print("COMBAT_START_RELIC_RESULT:%s %d PASS / %d FAIL" % ["PASS" if failed == 0 else "FAIL", passed, failed])
 	get_tree().quit(0 if failed == 0 else 1)
+
+
+func test_retired_content_saves() -> void:
+	RunState.start_new_run()
+	check("retired relic cannot be awarded", not RunState.add_relic(&"kilnmark"))
+	check("retired status and effect kinds absent", GameData.get_status(&"command") == null
+		and not GameData.effect_kinds.has("summon") and not GameData.effect_kinds.has("power_on_summon_command"))
+	check("data validates without retired content", GameData.load_errors.is_empty())
+	RunState.add_relic(&"hearth_totem")
+	RunState.create_combat_checkpoint([&"kilnstatue"])
+	var old_save := RunState.to_save_dict()
+	old_save["relic_ids"].append("kilnmark")
+	old_save["combat_checkpoint"]["relic_ids"].append("kilnmark")
+	var valid_stock := {"id": "hearth_totem", "price": 100, "bought": true}
+	old_save["shop_states"] = {"verify": {"relic_stock": [valid_stock, {"id": "kilnmark", "price": 100, "bought": false}], "refresh_count": 1}}
+	check("old run still loads", RunState.from_save_dict(old_save))
+	check("owned retired relic removed, valid relic retained", not RunState.has_relic(&"kilnmark") and RunState.has_relic(&"hearth_totem"))
+	check("checkpoint no longer persists retired relic", not RunState.combat_checkpoint["relic_ids"].has("kilnmark"))
+	check("old shop keeps valid stock and refresh count", RunState.shop_states["verify"]["relic_stock"] == [valid_stock] and RunState.shop_states["verify"]["refresh_count"] == 1)
+	check("checkpoint restores successfully", RunState.restore_combat_checkpoint())
+	check("restore cannot reintroduce retired relic", not RunState.has_relic(&"kilnmark") and RunState.has_relic(&"hearth_totem"))
+	var profile := ProfileState.to_save_dict()
+	profile["unlocked_relic_ids"] = ["kilnmark", "hearth_totem"]
+	check("old permanent profile loads", ProfileState.from_save_dict(profile))
+	check("permanent unlocks keep only valid relics", ProfileState.unlocked_relic_ids == [&"hearth_totem"])
 
 
 func test_other_start_relics() -> void:
@@ -97,7 +79,6 @@ func advance_round() -> void:
 			break
 	controller.end_player_turn()
 	var get_panel := func(_unit): return null
-	await BattleDirector.run_summon_turn(controller, null, get_panel, get_panel)
 	await BattleDirector.run_enemy_turn(controller, null, get_panel)
 	check("real phase driver returns to live player turn",
 		controller.combat_active() and controller.phase == CombatController.Phase.PLAYER and not BattleDirector.input_locked)

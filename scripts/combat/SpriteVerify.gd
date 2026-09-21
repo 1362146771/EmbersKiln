@@ -71,36 +71,7 @@ func run() -> void:
 	check("Boss 窑心·烬 sprite 可加载（地图图标来源）",
 		ed2 != null and ed2.sprite_texture() != null, "ed2=%s" % (ed2.name if ed2 else "null"))
 
-	# 4) AllyPanel（可视化子场景）加载并 build 成功（含固定血条节点；有 sprite 时含 TextureRect）
-	var ctrl2 := CombatController.new()
-	add_child(ctrl2)
-	ctrl2.start_combat(["claylump"])
-	ctrl2._summon_minion(&"emberhound", 1)
-	var ally: CombatUnit = null
-	for a in ctrl2.allies:
-		if a.id == &"emberhound":
-			ally = a
-	var ap_scene = preload("res://scenes/combat/AllyPanel.tscn")
-	var ap = ap_scene.instantiate()
-	add_child(ap)
-	if ally != null:
-		ap.build(ally, 0)
-	var ap_nodes_ok := false
-	var ap_has_tex := false
-	if ally != null:
-		for c in ap.get_node("Inner").get_children():
-			if c is ProgressBar:
-				ap_nodes_ok = true
-			if c is TextureRect:
-				ap_has_tex = true
-	check("AllyPanel 加载并 build 成功（含血条）", ally != null and ap_nodes_ok,
-		"ally=%s" % (ally.unit_name if ally else "null"))
-	if ally != null and ally.data != null:
-		var md := ally.data as MinionData
-		if md != null and md.sprite_texture() != null:
-			check("AllyPanel 为带头像随从生成 TextureRect", ap_has_tex, "ally=%s" % ally.unit_name)
-
-	# 5) CardView（可视化子场景）build_visual 填充 Body 文本（取真实手牌，经 GameData.get_card 转 CardData）
+	# 4) CardView（可视化子场景）build_visual 填充 Body 文本（取真实手牌，经 GameData.get_card 转 CardData）
 	var cd5 = null
 	if controller.hand.size() > 0:
 		var h0: Dictionary = controller.hand[0]

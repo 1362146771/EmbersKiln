@@ -5,6 +5,8 @@
 
 [ext_resource type="Script" path="res://scripts/combat/EnemyPanel.gd" id="1_ep"]
 
+[ext_resource type="Script" path="res://scripts/combat/EnemyCombatPortrait.gd" id="hit_portrait"]
+
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_battle_hpJinDu_monster.png" id="hp"]
 
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_battle_shuXinJinDu.png" id="barbg"]
@@ -79,6 +81,7 @@ offset_right = -8.0
 offset_bottom = 183.0
 
 [node name="SpriteRect" type="TextureRect" parent="Inner"]
+script = ExtResource("hit_portrait")
 clip_contents = true
 layout_mode = 0
 expand_mode = 1

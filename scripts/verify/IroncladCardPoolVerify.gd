@@ -88,11 +88,11 @@ func _test_save_migration() -> void:
 		{"id":"summon_hound","upgraded":false,"enchants":[]}
 	]
 	var loaded := RunState.from_save_dict(saved)
-	_check("v5 旧卡池存档迁移到 v6：可映射牌保留、其余旧牌删除",
+	_check("v5 旧卡池存档迁移到当前版本：可映射牌保留、其余旧牌删除",
 		loaded and RunState.deck.size() == 1
 		and RunState.deck[0].get("id") == &"heavy_blade"
 		and int(RunState.deck[0].get("upgrade_level", 0)) == 1
-		and int(RunState.to_save_dict().get("version", 0)) == 6,
+		and int(RunState.to_save_dict().get("version", 0)) == RunState.SAVE_VERSION,
 		str(RunState.deck))
 
 
@@ -151,7 +151,7 @@ func _test_combat_mechanics() -> void:
 	_set_hand([_entry(&"power_through")], 1)
 	var power_ok := controller.play_card(0, -1)
 	_check("硬撑生成 2 张伤口并获得 15 格挡",
-		power_ok and controller.hand.count(_entry(&"wound")) == 2 and controller.player.block >= 15,
+		power_ok and controller.hand.filter(func(entry): return StringName(entry.get("id", "")) == &"wound").size() == 2 and controller.player.block >= 15,
 		"hand=%s block=%d" % [controller.hand, controller.player.block])
 
 	_set_hand([_entry(&"burn")], 0)

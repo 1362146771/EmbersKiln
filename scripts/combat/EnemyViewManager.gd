@@ -4,6 +4,8 @@ extends RefCounted
 ## 通过 ui 引用门面 CombatUI 的节点字段与共享 helper。零 preload。
 
 var ui: CombatUI
+var _portrait_layout_queued := false
+var _formation_fits: Dictionary = {}
 
 func attach(ui_ref: CombatUI) -> void:
 	ui = ui_ref
@@ -23,10 +25,17 @@ func refresh_enemy() -> void:
 			create_enemy_panel(e, i)
 		else:
 			update_enemy_panel(e, i)
+	# 补兵后恢复固定槽位顺序，避免后创建的左翼被排到右翼后方。
+	var order := 0
+	for e in ui.controller.enemies:
+		if e.is_alive() and ui.unit_panels.has(e):
+			ui.enemy_area.move_child(ui.unit_panels[e].get_parent(), order)
+			order += 1
 
 
 func create_enemy_panel(e: CombatUnit, index: int) -> void:
 	var p = ui.EnemyPanelScene.instantiate()
+	p.portrait_layout_changed.connect(_queue_portrait_layout)
 	p.custom_minimum_size = enemy_size()
 	p.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	p.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -43,6 +52,74 @@ func create_enemy_panel(e: CombatUnit, index: int) -> void:
 	ui._prev_ehp[e] = e.hp
 	var sel := (index == ui.selected_target)
 	p.build(e, index, sel, ui.controller.enemies.size(), ui.controller)
+	_queue_portrait_layout()
+
+
+func _queue_portrait_layout() -> void:
+	if _portrait_layout_queued:
+		return
+	_portrait_layout_queued = true
+	_fit_portraits.call_deferred()
+
+
+func _fit_portraits() -> void:
+	_portrait_layout_queued = false
+	if not is_instance_valid(ui) or ui.is_queued_for_deletion():
+		return
+	var multi_scale := float(GameData.vfx["enemy_portrait"]["multi_enemy_scale"])
+	# All static enemies use visible content, not the transparent source canvas.
+	# State portraits retain their shared canvas registration (Sagger's five poses).
+	for unit in ui.controller.enemies:
+		var data := unit.data as EnemyData
+		if not unit.is_alive() or data == null or unit.leader_index >= 0 or not data.escort_ids.is_empty() or not data.state_sprites.is_empty():
+			continue
+		var panel: EnemyPanel = ui.unit_panels.get(unit)
+		if panel == null or panel.portrait_area.size.x <= 0.0:
+			continue
+		var cropped := data.cropped_sprite_texture(StringName(unit.intent.get("id", "")))
+		if cropped == null:
+			continue
+		var room := panel.portrait_area
+		var width := room.size.x * (multi_scale if ui.controller.enemies.size() > 1 else 1.0)
+		var fit := minf(width / cropped.get_width(), room.size.y / cropped.get_height())
+		panel.fit_portrait(cropped, fit, room.end.y)
+	for leader in ui.controller.enemies:
+		var ed := leader.data as EnemyData
+		if ed == null or ed.escort_ids.is_empty():
+			continue
+		# Include the original formation even after a death, so survivors do not grow.
+		var largest := ed.cropped_sprite_texture().get_size()
+		for id in ed.escort_ids:
+			largest = largest.max(GameData.get_enemy(StringName(id)).cropped_sprite_texture().get_size())
+		var panels: Array[EnemyPanel] = []
+		var textures: Array[AtlasTexture] = []
+		var available_width := INF
+		var top := -INF
+		var baseline := INF
+		var leader_index := ui.controller.enemies.find(leader)
+		for unit in ui.controller.enemies:
+			if not unit.is_alive() or (unit != leader and unit.leader_index != leader_index):
+				continue
+			var panel: EnemyPanel = ui.unit_panels.get(unit)
+			if panel == null or panel.portrait_area.size.x <= 0.0:
+				continue
+			panels.append(panel)
+			textures.append(unit.data.cropped_sprite_texture(StringName(unit.intent.get("id", ""))))
+			available_width = minf(available_width, panel.portrait_area.size.x)
+			top = maxf(top, panel.portrait_area.position.y)
+			baseline = minf(baseline, panel.portrait_area.end.y)
+		var fit := minf(available_width / largest.x, (baseline - top) / largest.y)
+		fit *= multi_scale
+		# Keep a single formation scale, limited by each member's own intent height.
+		for index in panels.size():
+			fit = minf(fit, (baseline - panels[index].portrait_top_limit()) / textures[index].get_height())
+		if leader.is_alive():
+			_formation_fits[leader] = fit
+		elif _formation_fits.has(leader):
+			# Removing the leader must not enlarge the surviving portraits.
+			fit = minf(fit, float(_formation_fits[leader]))
+		for index in panels.size():
+			panels[index].fit_portrait(textures[index], fit, baseline)
 
 
 func update_enemy_panel(e: CombatUnit, index: int) -> void:
@@ -116,6 +193,9 @@ func on_ehp(index: int, cur: int, maxv: int) -> void:
 	refresh_enemy()
 	if index >= 0 and index < ui.controller.enemies.size():
 		var e: CombatUnit = ui.controller.enemies[index]
+		var panel: EnemyPanel = ui.unit_panels.get(e)
+		if is_instance_valid(panel):
+			panel.update_vitals(cur, maxv, e.block)
 		var prev: int = ui._prev_ehp.get(e, -1)
 		if prev >= 0 and cur > prev:
 			var p: Panel = ui.unit_panels.get(e)
@@ -125,10 +205,12 @@ func on_ehp(index: int, cur: int, maxv: int) -> void:
 
 
 func on_eintent(index: int, intent: StringName, value: int) -> void:
-	# 破封可能发生在出牌或随从动画期间；不等待全局重绘解锁才更新威胁提示。
+	# 破封可能发生在出牌动画期间；不等待全局重绘解锁才更新威胁提示。
 	if index >= 0 and index < ui.controller.enemies.size():
 		var e: CombatUnit = ui.controller.enemies[index]
 		var ed := e.data as EnemyData
+		if e.is_alive() and e.leader_index >= 0 and not ui.unit_panels.has(e):
+			create_enemy_panel(e, index)
 		if e.is_alive() and ed != null and ed.ai == &"scripted_cycle" and ui.unit_panels.has(e):
 			update_enemy_panel(e, index)
 	refresh_enemy()

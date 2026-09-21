@@ -172,14 +172,15 @@ static func roll_gold(tier: StringName) -> int:
 	return randi_range(int(rng.get("min", 10)), int(rng.get("max", 20)))
 
 
-## 遗物：elite/boss 随机给一个未拥有的非 starter 遗物；其余 tier 不给。
+## 普通遗物：精英与终幕Boss自动发放；前两幕Boss由独立选择池替代。
 static func roll_relic(tier: StringName) -> StringName:
+	if tier == &"boss" and not RunState.is_last_act(): return &""
 	if tier != &"elite" and tier != &"boss":
 		return &""
 	var owned := RunState.relic_ids
 	var candidates: Array = []
 	for r in GameData.relics.values():
-		if r.rarity == &"starter":
+		if r.rarity in [&"starter", &"boss", &"shop", &"special"]:
 			continue
 		if not GameData.is_relic_unlocked(r.id):
 			continue
@@ -261,12 +262,12 @@ static func _weighted_item(pool: Array, weights: Dictionary) -> StringName:
 	return candidates[randi_range(0, candidates.size() - 1)].id
 
 
-## 随机一个未拥有的非 starter 遗物（商店/宝箱/事件用）。
+## 普通随机池：排除初始、首领与专属类别（商店/事件用）。
 static func roll_shop_relic() -> StringName:
 	var owned := RunState.relic_ids
 	var candidates: Array = []
 	for r in GameData.relics.values():
-		if r.rarity == &"starter":
+		if r.rarity in [&"starter", &"boss", &"shop", &"special"]:
 			continue
 		if not GameData.is_relic_unlocked(r.id):
 			continue
@@ -281,7 +282,7 @@ static func roll_shop_relic() -> StringName:
 static func roll_shop_relic_excluding(excluded_ids: Array) -> StringName:
 	var candidates: Array = []
 	for r in GameData.relics.values():
-		if r.rarity == &"starter" or RunState.relic_ids.has(r.id):
+		if r.rarity in [&"starter", &"boss", &"shop", &"special"] or RunState.relic_ids.has(r.id):
 			continue
 		if not GameData.is_relic_unlocked(r.id):
 			continue
@@ -336,9 +337,20 @@ static func can_any_card_enchant() -> bool:
 		var cd: CardData = GameData.get_card(StringName(entry["id"]))
 		if cd == null:
 			continue
-		if not entry.get("enchants", []).is_empty():
+		if not RunState.can_receive_run_enchant(entry):
 			continue
 		if roll_enchant_for_card(cd) != &"":
 			return true
 	return false
 
+
+
+## Candidates are rolled once by MapUI and persisted with the reward transaction.
+static func roll_boss_relic_choices() -> Array:
+	var pool: Array = []
+	if RunState.is_last_act(): return pool
+	for relic in GameData.relics.values():
+		if relic.rarity == &"boss" and not RunState.has_relic(relic.id) and GameData.is_relic_unlocked(relic.id):
+			pool.append(String(relic.id))
+	pool.shuffle()
+	return pool.slice(0, int(GameData.balance.get("rewards", {}).get("boss_relic_choice_count", 0)))

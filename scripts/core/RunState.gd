@@ -5,6 +5,59 @@ extends Node
 
 ## 牌组条目：{ "id": StringName, "upgraded": bool, "enchants": Array[StringName] }
 var deck: Array[Dictionary] = []
+var mutation_patterns_snapshot: Dictionary = {}
+var selected_enchant_instance_ids: Array[String] = []
+var next_card_serial := 0
+var pending_enchant_review := false
+
+func enchant_limit() -> int:
+	return int(CardMutation.config().get("battle_enchant_limit", 0))
+
+func _new_card_entry(card_id: StringName, upgraded: bool = false) -> Dictionary:
+	next_card_serial += 1
+	var eid := String(mutation_patterns_snapshot.get(String(card_id), ""))
+	return {"id":card_id,"upgraded":upgraded,"upgrade_level":1 if upgraded else 0,
+		"instance_id":"%s:%d" % [run_id, next_card_serial], "enchants":[eid] if eid != "" else [],
+		"enchant_origin":"town" if eid != "" else ""}
+
+func normalize_enchant_selection(fill_slots: bool = false) -> void:
+	var available: Array[String] = []
+	var seen: Array[String] = []
+	for entry in deck:
+		var iid := String(entry.get("instance_id", ""))
+		if iid == "" or seen.has(iid):
+			next_card_serial += 1
+			iid = "%s:%d" % [run_id, next_card_serial]
+			entry["instance_id"] = iid
+		seen.append(iid)
+		if not entry.get("enchants", []).is_empty(): available.append(iid)
+	var chosen: Array[String] = []
+	for iid in selected_enchant_instance_ids:
+		if available.has(iid) and not chosen.has(iid) and chosen.size() < enchant_limit(): chosen.append(iid)
+	if fill_slots:
+		for iid in available:
+			if chosen.size() < enchant_limit() and not chosen.has(iid): chosen.append(iid)
+	selected_enchant_instance_ids = chosen
+
+func set_enchant_selected(instance_id: String, enabled: bool) -> bool:
+	if has_combat_checkpoint(): return false
+	normalize_enchant_selection()
+	if enabled:
+		if selected_enchant_instance_ids.has(instance_id): return true
+		if selected_enchant_instance_ids.size() >= enchant_limit(): return false
+		var matching := deck.filter(func(entry): return String(entry.get("instance_id", "")) == instance_id and not entry.get("enchants", []).is_empty())
+		if matching.is_empty(): return false
+		selected_enchant_instance_ids.append(instance_id)
+	else: selected_enchant_instance_ids.erase(instance_id)
+	SignalBus.deck_changed.emit()
+	SaveManager.save_game()
+	return true
+
+func can_receive_run_enchant(entry: Dictionary) -> bool:
+	if entry.get("enchants", []).is_empty(): return true
+	var old := GameData.get_enchant(StringName(entry["enchants"][0]))
+	return old != null and old.acquisition_scope == "town_only"
+
 ## 携带药水（仅战斗中可用，Free Action 消耗）。上限由 balance.potions.max_carry 控制，兜底 3。
 var potions: Array[StringName] = []
 const POTION_CAP := 3
@@ -13,6 +66,8 @@ var relic_ids: Array[StringName] = []
 var max_hp: int = 0
 var hp: int = 0
 var gold: int = 0
+## 本局战后收集，随单局存档保存；只有确认升级成功才消费。
+var upgrade_shards: int = 0
 var _removing_card := false
 
 var current_floor: int = 0
@@ -89,12 +144,17 @@ func start_new_run() -> bool:
 	max_hp = int(pc.get("max_hp", 80)) + int(progression_bonuses.get("max_hp_bonus", 0))
 	hp = max_hp
 	gold = int(progression_bonuses.get("starting_gold_bonus", 0))
+	upgrade_shards = 0
 	current_floor = 0
 	current_node_type = &""
 	card_rare_offset = int(GameData.balance.get("card_rewards", {}).get("rare_pity", {}).get("initial_offset", 0))
 	victory = false
 	defeated.clear()
 	run_id = _new_run_id()
+	mutation_patterns_snapshot = CardMutation.valid_patterns(ProfileState.mutation_data.get("patterns", {}))
+	selected_enchant_instance_ids.clear()
+	next_card_serial = 0
+	pending_enchant_review = false
 	base_run_deck_capacity = -1
 	run_ad_deck_capacity_bonus = 0
 	deck_capacity_ad_uses = 0
@@ -124,7 +184,7 @@ func start_new_run() -> bool:
 	deck.clear()
 	potions.clear()
 	for cid in GameData.balance.get("starting_deck", []):
-		deck.append({"id": StringName(cid), "upgraded": false, "upgrade_level": 0, "enchants": []})
+		deck.append(_new_card_entry(StringName(cid)))
 	_record_deck_discoveries()
 	base_run_deck_capacity = _resolved_profile_deck_capacity()
 	if base_run_deck_capacity >= 0 and base_run_deck_capacity < deck.size():
@@ -183,6 +243,22 @@ func end_run(is_victory: bool) -> void:
 	is_active = false
 	victory = is_victory
 	SignalBus.run_ended.emit(is_victory)
+
+
+## 主动放弃：停用本局并清除恢复/结算入口，不发 run_ended，避免触发胜败奖励。
+## 调用方须先成功删除单局存档；永久档案不受影响。
+func abandon_run() -> void:
+	is_active = false
+	victory = false
+	clear_combat_checkpoint()
+	pending_combat_enemy_ids.clear()
+	last_combat_victory = false
+	pending_post_combat = false
+	pending_node_resolved = false
+	pending_post_reward = false
+	pending_reward_data.clear()
+	pending_card_acquisition.clear()
+	pending_enchant_review = false
 
 
 # ---------- HP ----------
@@ -257,7 +333,13 @@ func restore_lost_gold(amount: int) -> int:
 func add_card(card_id: StringName, upgraded: bool = false) -> bool:
 	if card_id == &"" or GameData.get_card(card_id) == null or not can_add_permanent_card():
 		return false
-	deck.append({"id": card_id, "upgraded": upgraded, "upgrade_level":1 if upgraded else 0, "enchants": []})
+	deck.append(_new_card_entry(card_id, upgraded))
+	normalize_enchant_selection()
+	var new_entry: Dictionary = deck.back()
+	if not new_entry.get("enchants", []).is_empty() and selected_enchant_instance_ids.size() < enchant_limit():
+		selected_enchant_instance_ids.append(String(new_entry["instance_id"]))
+	elif not new_entry.get("enchants", []).is_empty():
+		pending_enchant_review = true
 	ProfileState.discover_card(card_id)
 	SignalBus.deck_changed.emit()
 	return true
@@ -322,6 +404,7 @@ func resolve_current_floor() -> bool:
 func create_combat_checkpoint(enemy_ids: Array) -> bool:
 	if not is_active or enemy_ids.is_empty():
 		return false
+	normalize_enchant_selection()
 	var checkpoint_deck: Array = []
 	for entry in deck:
 		checkpoint_deck.append({
@@ -329,6 +412,8 @@ func create_combat_checkpoint(enemy_ids: Array) -> bool:
 			"upgraded": bool(entry.get("upgraded", false)),
 			"upgrade_level": int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0)),
 			"enchants": entry.get("enchants", []).duplicate(),
+			"instance_id": String(entry.get("instance_id", "")),
+			"enchant_origin": String(entry.get("enchant_origin", "")),
 		})
 	var checkpoint_potions: Array = []
 	for potion_id in potions:
@@ -347,6 +432,7 @@ func create_combat_checkpoint(enemy_ids: Array) -> bool:
 		"max_hp": max_hp,
 		"gold": gold,
 		"deck": checkpoint_deck,
+		"selected_enchant_instance_ids": selected_enchant_instance_ids.duplicate(),
 		"potions": checkpoint_potions,
 		"relic_ids": checkpoint_relics,
 		"defeated": checkpoint_defeated,
@@ -396,13 +482,18 @@ func restore_combat_checkpoint() -> bool:
 			"upgraded": bool(entry.get("upgraded", false)),
 			"upgrade_level": int(entry.get("upgrade_level", 1 if bool(entry.get("upgraded", false)) else 0)),
 			"enchants": entry.get("enchants", []).duplicate(),
+			"instance_id": String(entry.get("instance_id", "")),
+			"enchant_origin": String(entry.get("enchant_origin", "")),
 		})
+	selected_enchant_instance_ids.assign(checkpoint.get("selected_enchant_instance_ids", []))
+	normalize_enchant_selection(not checkpoint.has("selected_enchant_instance_ids"))
 	potions.clear()
 	for potion_id in checkpoint.get("potions", []):
 		potions.append(StringName(String(potion_id)))
 	relic_ids.clear()
 	for relic_id in checkpoint.get("relic_ids", []):
-		relic_ids.append(StringName(String(relic_id)))
+		if GameData.get_relic(StringName(String(relic_id))) != null:
+			relic_ids.append(StringName(String(relic_id)))
 	defeated.clear()
 	for enemy_id in checkpoint.get("defeated", []):
 		defeated.append(StringName(String(enemy_id)))
@@ -475,6 +566,33 @@ func try_remove_card(index: int, expected_entry: Dictionary, cost: int) -> bool:
 	return true
 
 
+func upgrade_shard_cost() -> int:
+	return int(GameData.balance.get("rewards", {}).get("upgrade_shard_cost", 0))
+
+
+func can_spend_upgrade_shards() -> bool:
+	var cost := upgrade_shard_cost()
+	return cost > 0 and upgrade_shards >= cost
+
+
+func collect_upgrade_shards() -> int:
+	var amount := maxi(0, int(GameData.balance.get("rewards", {}).get("upgrade_shards_per_reward", 0)))
+	upgrade_shards += amount
+	return amount
+
+
+func upgrade_card_with_shards_at(index: int) -> bool:
+	if not can_spend_upgrade_shards():
+		return false
+	var cost := upgrade_shard_cost()
+	# 先扣除，确保 deck_changed 监听者看到的卡牌与余额一致；失败则返还。
+	upgrade_shards -= cost
+	if not upgrade_card_at(index):
+		upgrade_shards += cost
+		return false
+	return true
+
+
 func upgrade_card_at(index: int) -> bool:
 	if index < 0 or index >= deck.size():
 		return false
@@ -492,7 +610,7 @@ func upgrade_card_at(index: int) -> bool:
 
 # ---------- 遗物 ----------
 func add_relic(relic_id: StringName) -> bool:
-	if relic_ids.has(relic_id):
+	if GameData.get_relic(relic_id) == null or relic_ids.has(relic_id):
 		return false
 	relic_ids.append(relic_id)
 	SignalBus.relic_gained.emit(relic_id)
@@ -513,13 +631,56 @@ func relics_with_trigger(trigger: StringName) -> Array[RelicData]:
 	return out
 
 
+func relic_energy_bonus() -> int:
+	var bonus := 0
+	for rid in relic_ids:
+		var relic := GameData.get_relic(rid)
+		if relic != null: bonus += relic.energy_bonus
+	return bonus
+
+
+func relics_with_drawback(kind: StringName) -> Array[RelicData]:
+	var result: Array[RelicData] = []
+	for rid in relic_ids:
+		var relic := GameData.get_relic(rid)
+		if relic != null and relic.drawback == kind: result.append(relic)
+	return result
+
+
+func has_relic_drawback(kind: StringName) -> bool:
+	return not relics_with_drawback(kind).is_empty()
+
+
+func relic_card_limit() -> int:
+	var limit := 0
+	for relic in relics_with_drawback(&"turn_card_limit"):
+		if relic.drawback_value > 0:
+			limit = relic.drawback_value if limit == 0 else mini(limit, relic.drawback_value)
+	return limit
+
+
 # ---------- 药水库存 ----------
 func _potion_cap() -> int:
 	return int(GameData.balance.get("potions", {}).get("max_carry", POTION_CAP))
 
+func can_add_potion() -> bool:
+	return potions.size() < _potion_cap()
+
+
+## 商店交易：全部校验通过后一起更新，失败不扣款、不退款、不触发金币奖励加成。
+func try_buy_potion(id: StringName, price: int) -> bool:
+	if price < 0 or gold < price or not can_add_potion() or GameData.get_potion(id) == null:
+		return false
+	gold -= price
+	potions.append(id)
+	SignalBus.gold_changed.emit(gold)
+	SignalBus.deck_changed.emit()
+	return true
+
+
 ## 获得一瓶药水；背包已满返回 false。
 func add_potion(id: StringName) -> bool:
-	if potions.size() >= _potion_cap():
+	if not can_add_potion():
 		return false
 	potions.append(id)
 	SignalBus.deck_changed.emit()
@@ -544,10 +705,10 @@ func can_enchant_card_at(index: int, enchant_id: StringName) -> bool:
 	if index < 0 or index >= deck.size():
 		return false
 	var entry: Dictionary = deck[index]
-	if entry.get("enchants", []).size() >= 1:
+	if not can_receive_run_enchant(entry):
 		return false
 	var ed: EnchantData = GameData.get_enchant(enchant_id)
-	if ed == null:
+	if ed == null or ed.acquisition_scope == "town_only":
 		return false
 	if entry.get("enchants", []).has(enchant_id):
 		return false
@@ -561,10 +722,15 @@ func add_enchant_to_card_at(index: int, enchant_id: StringName) -> bool:
 	if not can_enchant_card_at(index, enchant_id):
 		return false
 	var entry: Dictionary = deck[index]
-	var list: Array = entry.get("enchants", [])
-	list.append(enchant_id)
+	var list: Array = [enchant_id]
+	entry["enchant_origin"] = "run"
 	entry["enchants"] = list
 	deck[index] = entry
+	normalize_enchant_selection()
+	if selected_enchant_instance_ids.size() < enchant_limit() and not selected_enchant_instance_ids.has(String(entry["instance_id"])):
+		selected_enchant_instance_ids.append(String(entry["instance_id"]))
+	elif not selected_enchant_instance_ids.has(String(entry["instance_id"])):
+		pending_enchant_review = true
 	SignalBus.deck_changed.emit()
 	return true
 
@@ -600,12 +766,13 @@ func is_boss_floor() -> bool:
 
 
 # ---------- 存档（P4 落盘；P-A 升 v2 多幕） ----------
-const SAVE_VERSION := 6
-const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6]
+const SAVE_VERSION := 7
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6, 7]
 
 ## 将运行态序列化为可 JSON 化的 Dictionary。
 ## 所有 StringName 必须转 String，否则 JSON.stringify 会丢失类型。
 func to_save_dict() -> Dictionary:
+	normalize_enchant_selection()
 	var act_maps_data: Array = []
 	for am in act_maps:
 		var floor_arrs: Array = []
@@ -630,7 +797,7 @@ func to_save_dict() -> Dictionary:
 
 	var deck_data: Array = []
 	for c in deck:
-		deck_data.append({"id": String(c["id"]), "upgraded": bool(c.get("upgraded", false)), "upgrade_level":int(c.get("upgrade_level", 1 if bool(c.get("upgraded", false)) else 0)), "enchants": c.get("enchants", [])})
+		deck_data.append({"id": String(c["id"]), "upgraded": bool(c.get("upgraded", false)), "upgrade_level":int(c.get("upgrade_level", 1 if bool(c.get("upgraded", false)) else 0)), "enchants": c.get("enchants", []), "instance_id":String(c.get("instance_id", "")), "enchant_origin":String(c.get("enchant_origin", ""))})
 
 	var potion_data: Array = []
 	for p in potions:
@@ -646,12 +813,17 @@ func to_save_dict() -> Dictionary:
 
 	return {
 		"version": SAVE_VERSION,
+		"mutation_patterns_snapshot": mutation_patterns_snapshot.duplicate(true),
+		"selected_enchant_instance_ids": selected_enchant_instance_ids.duplicate(),
+		"next_card_serial": next_card_serial,
+		"pending_enchant_review": pending_enchant_review,
 		"deck": deck_data,
 		"potions": potion_data,
 		"relic_ids": relic_data,
 		"max_hp": max_hp,
 		"hp": hp,
 		"gold": gold,
+		"upgrade_shards": upgrade_shards,
 		"current_floor": current_floor,
 		"current_node_type": String(current_node_type),
 		"card_rare_offset": card_rare_offset,
@@ -665,6 +837,8 @@ func to_save_dict() -> Dictionary:
 		"base_run_deck_capacity": base_run_deck_capacity,
 		"run_ad_deck_capacity_bonus": run_ad_deck_capacity_bonus,
 		"deck_capacity_ad_uses": deck_capacity_ad_uses,
+		"pending_reward_data": pending_reward_data.duplicate(true),
+		"pending_post_reward": pending_post_reward,
 		"pending_card_acquisition": pending_card_acquisition.duplicate(true),
 		"shop_states": shop_states.duplicate(true),
 		"ad_reward_transaction_ids": ad_reward_transaction_ids.duplicate(),
@@ -699,7 +873,7 @@ func from_save_dict(d: Dictionary) -> bool:
 		if GameData.get_card(loaded_id) == null:
 			continue
 		var loaded_level := int(c.get("upgrade_level", 1 if bool(c.get("upgraded", false)) else 0))
-		deck.append({"id":loaded_id,"upgraded":loaded_level > 0,"upgrade_level":loaded_level,"enchants":c.get("enchants", [])})
+		deck.append({"id":loaded_id,"upgraded":loaded_level > 0,"upgrade_level":loaded_level,"enchants":c.get("enchants", []),"instance_id":String(c.get("instance_id", "")),"enchant_origin":String(c.get("enchant_origin", ""))})
 	if deck.is_empty():
 		for starter_id in GameData.balance.get("starting_deck", []):
 			deck.append({"id":StringName(starter_id),"upgraded":false,"upgrade_level":0,"enchants":[]})
@@ -710,11 +884,13 @@ func from_save_dict(d: Dictionary) -> bool:
 
 	relic_ids.clear()
 	for r in d.get("relic_ids", []):
-		relic_ids.append(StringName(r))
+		if GameData.get_relic(StringName(r)) != null:
+			relic_ids.append(StringName(r))
 
 	max_hp = int(d.get("max_hp", 80))
 	hp = int(d.get("hp", max_hp))
 	gold = int(d.get("gold", 0))
+	upgrade_shards = maxi(0, int(d.get("upgrade_shards", 0)))
 	current_floor = int(d.get("current_floor", 0))
 	current_node_type = StringName(d.get("current_node_type", ""))
 	var pity: Dictionary = GameData.balance.get("card_rewards", {}).get("rare_pity", {})
@@ -737,11 +913,21 @@ func from_save_dict(d: Dictionary) -> bool:
 	run_id = String(d.get("run_id", ""))
 	if run_id.is_empty():
 		run_id = _new_run_id()
+	mutation_patterns_snapshot = CardMutation.valid_patterns(d.get("mutation_patterns_snapshot", {}))
+	selected_enchant_instance_ids.assign(d.get("selected_enchant_instance_ids", []))
+	next_card_serial = maxi(int(d.get("next_card_serial", 0)), deck.size())
+	pending_enchant_review = bool(d.get("pending_enchant_review", false))
+	normalize_enchant_selection(source_version < 7)
 	base_run_deck_capacity = int(d.get("base_run_deck_capacity", -1))
 	run_ad_deck_capacity_bonus = maxi(0, int(d.get("run_ad_deck_capacity_bonus", 0)))
 	deck_capacity_ad_uses = maxi(0, int(d.get("deck_capacity_ad_uses", 0)))
 	pending_card_acquisition = d.get("pending_card_acquisition", {}).duplicate(true)
 	shop_states = d.get("shop_states", {}).duplicate(true)
+	# 退役内容不再出现在旧商店中；保留有效库存、价格与购买记录。
+	for shop_id in shop_states:
+		var stock: Array = shop_states[shop_id].get("relic_stock", [])
+		shop_states[shop_id]["relic_stock"] = stock.filter(func(item):
+			return GameData.get_relic(StringName(String(item.get("id", "")))) != null)
 	if source_version < 6:
 		# 旧商店/满库事务可能引用已删除卡牌；换池后重新生成，避免悬空引用。
 		pending_card_acquisition.clear()
@@ -769,6 +955,10 @@ func from_save_dict(d: Dictionary) -> bool:
 		if not clean_floor_key.is_empty() and not resolved_floor_keys.has(clean_floor_key):
 			resolved_floor_keys.append(clean_floor_key)
 	combat_checkpoint = d.get("combat_checkpoint", {}).duplicate(true) if d.get("combat_checkpoint", {}) is Dictionary else {}
+	if combat_checkpoint.has("relic_ids"):
+		var checkpoint_relics: Array = combat_checkpoint.get("relic_ids", [])
+		combat_checkpoint["relic_ids"] = checkpoint_relics.filter(func(id):
+			return GameData.get_relic(StringName(String(id))) != null)
 	if combat_checkpoint.has("deck"):
 		var migrated_checkpoint_deck: Array = []
 		for checkpoint_card in combat_checkpoint.get("deck", []):
@@ -780,7 +970,8 @@ func from_save_dict(d: Dictionary) -> bool:
 			var checkpoint_level := int(checkpoint_card.get("upgrade_level", 1 if bool(checkpoint_card.get("upgraded", false)) else 0))
 			migrated_checkpoint_deck.append({
 				"id":String(checkpoint_id), "upgraded":checkpoint_level > 0,
-				"upgrade_level":checkpoint_level, "enchants":checkpoint_card.get("enchants", []).duplicate()
+				"upgrade_level":checkpoint_level, "enchants":checkpoint_card.get("enchants", []).duplicate(),
+				"instance_id":String(checkpoint_card.get("instance_id", "")),"enchant_origin":String(checkpoint_card.get("enchant_origin", ""))
 			})
 		combat_checkpoint["deck"] = migrated_checkpoint_deck
 	combat_death_pending = bool(d.get("combat_death_pending", false)) and not combat_checkpoint.is_empty()
@@ -815,9 +1006,9 @@ func from_save_dict(d: Dictionary) -> bool:
 
 	pending_combat_enemy_ids.clear()
 	pending_post_combat = false
-	pending_post_reward = false
 	pending_node_resolved = false
-	pending_reward_data.clear()
+	pending_reward_data = d.get("pending_reward_data", {}).duplicate(true)
+	pending_post_reward = bool(d.get("pending_post_reward", false)) or String(pending_reward_data.get("stage", "")) == "complete"
 	_record_deck_discoveries()
 	SignalBus.player_hp_changed.emit(hp, max_hp)
 	SignalBus.gold_changed.emit(gold)

@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/combat/DrawPile.tscn" id="5_draw"]
 [ext_resource type="Texture2D" uid="uid://c6abox28t7283" path="res://art/ui/formal/bd_battle_shuXinJinDu.png" id="barbg"]
 [ext_resource type="Texture2D" uid="uid://b0i4w6lkhicfw" path="res://art/ui/formal/bgIMG_battle.png" id="battle"]
+[ext_resource type="PackedScene" path="res://scenes/combat/EnchantAttackFX.tscn" id="enchant_fx"]
 [ext_resource type="Texture2D" uid="uid://bgmf5bpmlvxwx" path="res://art/ui/formal/btn_battle_jieShuNormal.png" id="end"]
 [ext_resource type="Texture2D" uid="uid://chhupvtj4jp0o" path="res://art/ui/formal/btn_battle_jieShuDown.png" id="enddown"]
 [ext_resource type="Texture2D" uid="uid://dbtkkdbuedjiu" path="res://art/ui/formal/icon_battle_energy_hex.png" id="energy_badge"]
@@ -53,6 +54,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_cui")
+
+[node name="EnchantAttackFX" parent="." unique_id=1130561126 instance=ExtResource("enchant_fx")]
 
 [node name="FormalBackground" type="TextureRect" parent="." unique_id=1526822220]
 modulate = Color(0.85, 0.85, 0.85, 1)
@@ -138,16 +141,27 @@ offset_top = -453.0
 offset_right = 104.0
 offset_bottom = -357.0
 
+[node name="DiscardPile" parent="Safe/Layout/HandArea/EnergyRow" unique_id=1922890882 instance=ExtResource("4_discard")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 600.0
+offset_top = 328.0
+offset_right = 696.0
+offset_bottom = 428.0
+
 [node name="EnergyBadge" type="TextureRect" parent="Safe/Layout/HandArea/EnergyRow" unique_id=895141832]
 layout_mode = 0
-offset_right = 96.0
-offset_bottom = 96.0
+offset_left = -6.0
+offset_top = 15.0
+offset_right = 90.0
+offset_bottom = 111.0
 mouse_filter = 2
 texture = ExtResource("energy_badge")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PlayerEnergy" type="Label" parent="Safe/Layout/HandArea/EnergyRow" unique_id=1718488726]
+[node name="PlayerEnergy" type="Label" parent="Safe/Layout/HandArea/EnergyRow/EnergyBadge" unique_id=1718488726]
+unique_name_in_owner = true
 z_index = 1
 layout_mode = 0
 offset_right = 96.0
@@ -163,10 +177,10 @@ vertical_alignment = 1
 [node name="DrawPile" parent="Safe/Layout/HandArea/EnergyRow" unique_id=556937954 instance=ExtResource("5_draw")]
 custom_minimum_size = Vector2(0, 0)
 layout_mode = 0
-offset_left = 566.0
-offset_top = 413.0
-offset_right = 708.0
-offset_bottom = 451.0
+offset_left = 600.0
+offset_top = 216.0
+offset_right = 696.0
+offset_bottom = 316.0
 
 [node name="HandRow" type="HBoxContainer" parent="Safe/Layout/HandArea" unique_id=1793446182]
 layout_mode = 0
@@ -175,20 +189,24 @@ offset_bottom = 195.0
 size_flags_vertical = 0
 theme_override_constants/separation = 10
 
-[node name="HandScroll" type="ScrollContainer" parent="Safe/Layout/HandArea/HandRow" unique_id=1504433313]
+[node name="CardHeightMargin" type="MarginContainer" parent="Safe/Layout/HandArea/HandRow" unique_id=441838833]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/margin_top = -24
+
+[node name="HandScroll" type="ScrollContainer" parent="Safe/Layout/HandArea/HandRow/CardHeightMargin" unique_id=1504433313]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 vertical_scroll_mode = 0
 
-[node name="HandContainer" type="HBoxContainer" parent="Safe/Layout/HandArea/HandRow/HandScroll" unique_id=1593778907]
+[node name="HandContainer" type="HBoxContainer" parent="Safe/Layout/HandArea/HandRow/CardHeightMargin/HandScroll" unique_id=1593778907]
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/separation = 4
 alignment = 1
-
-[node name="DiscardPile" parent="Safe/Layout/HandArea/HandRow" unique_id=1922890882 instance=ExtResource("4_discard")]
-layout_mode = 2
 
 [node name="PotionBar" type="HBoxContainer" parent="Safe/Layout" unique_id=98016797]
 layout_mode = 0
@@ -359,32 +377,6 @@ sprite_frames = ExtResource("player_animation_frames")
 animation = &"attack"
 centered = false
 
-[node name="ResultLabel" type="Label" parent="." unique_id=1062058977]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 86
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="ToastLabel" type="Label" parent="." unique_id=1116986311]
-visible = false
-modulate = Color(1, 1, 1, 0)
-z_index = 200
-layout_mode = 1
-offset_left = 20.0
-offset_top = 12.0
-offset_right = 700.0
-offset_bottom = 56.0
-theme_override_colors/font_color = Color(0.941, 0.6, 0.482, 1)
-theme_override_font_sizes/font_size = 26
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="BattleGradient" type="TextureRect" parent="." unique_id=780654691]
 z_index = -100
 layout_mode = 0
@@ -462,3 +454,15 @@ horizontal_alignment = 1
 
 [node name="PotionDetails" parent="." unique_id=775479005 instance=ExtResource("potion_details")]
 anchors_preset = 0
+
+[node name="DamageNumbers" type="CanvasLayer" parent="." unique_id=1233760162]
+layer = 30
+
+[node name="Root" type="Control" parent="DamageNumbers" unique_id=82121519]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

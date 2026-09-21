@@ -2,19 +2,60 @@
   "version": 1,
   "currency_id": "fireseed",
   "facilities": [
-    {"id": "hearth", "name": "炉心", "description": "守住镇中余火，也为每一次远征添一分底气。"},
-    {"id": "card_mold_workshop", "name": "牌模工坊", "description": "翻新旧牌模，为往后的远征备下更多招式与行囊余地。"},
-    {"id": "relic_shelf", "name": "遗珍架", "description": "拂去旧物上的窑灰，让沉睡的遗珍重现于远征途中。"},
-    {"id": "glaze_apothecary", "name": "药釉坊", "description": "调和药釉与火候，让新的药水和附魔重见天日。"},
-    {"id": "bellows_station", "name": "风箱台", "description": "整备风箱与护具，为登塔之人送上护窑余温。"},
-    {"id": "town_restoration", "name": "镇貌修复", "description": "点亮陶灯，重开窑道，让镇上的人声与旧日记忆慢慢归来。"}
+    {
+      "id": "hearth",
+      "name": "炉心",
+      "description": "守住镇中余火，也为每一次远征添一分底气。"
+    },
+    {
+      "id": "card_mold_workshop",
+      "name": "牌模工坊",
+      "description": "翻新旧牌模，为往后的远征备下更多招式与行囊余地。"
+    },
+    {
+      "id": "relic_shelf",
+      "name": "遗珍架",
+      "description": "拂去旧物上的窑灰，让沉睡的遗珍重现于远征途中。"
+    },
+    {
+      "id": "glaze_apothecary",
+      "name": "药釉坊",
+      "description": "调和药釉与火候，让新的药水和附魔重见天日。"
+    },
+    {
+      "id": "bellows_station",
+      "name": "风箱台",
+      "description": "整备风箱与护具，为登塔之人送上护窑余温。"
+    },
+    {
+      "id": "town_restoration",
+      "name": "镇貌修复",
+      "description": "点亮陶灯，重开窑道，让镇上的人声与旧日记忆慢慢归来。"
+    }
   ],
-  "workshop": {"queue_capacity": 2},
+  "workshop": {
+    "queue_capacity": 2
+  },
   "base_run_deck_capacity": 18,
   "run_start_bonus_tiers": [
-    {"facility_id": "hearth", "required_level": 1, "max_hp_bonus": 2, "starting_gold_bonus": 0},
-    {"facility_id": "hearth", "required_level": 2, "max_hp_bonus": 4, "starting_gold_bonus": 20},
-    {"facility_id": "hearth", "required_level": 3, "max_hp_bonus": 7, "starting_gold_bonus": 40}
+    {
+      "facility_id": "hearth",
+      "required_level": 1,
+      "max_hp_bonus": 2,
+      "starting_gold_bonus": 0
+    },
+    {
+      "facility_id": "hearth",
+      "required_level": 2,
+      "max_hp_bonus": 4,
+      "starting_gold_bonus": 20
+    },
+    {
+      "facility_id": "hearth",
+      "required_level": 3,
+      "max_hp_bonus": 7,
+      "starting_gold_bonus": 40
+    }
   ],
   "run_end_rewards": {
     "floor_index_offset": 1,
@@ -25,161 +66,605 @@
   },
   "initial_unlocks": {
     "card_ids": [
-      "anger", "armaments", "body_slam", "clash", "cleave", "clothesline", "flex", "havoc",
-      "headbutt", "heavy_blade", "iron_wave", "perfected_strike", "pommel_strike", "shrug_it_off",
-      "sword_boomerang", "thunderclap", "true_grit", "twin_strike", "warcry", "wild_strike",
-      "evolve", "flame_barrier", "inflame"
+      "anger",
+      "armaments",
+      "body_slam",
+      "clash",
+      "cleave",
+      "clothesline",
+      "flex",
+      "havoc",
+      "headbutt",
+      "heavy_blade",
+      "iron_wave",
+      "perfected_strike",
+      "pommel_strike",
+      "shrug_it_off",
+      "sword_boomerang",
+      "thunderclap",
+      "true_grit",
+      "twin_strike",
+      "warcry",
+      "wild_strike",
+      "evolve",
+      "flame_barrier",
+      "inflame"
     ],
     "relic_ids": [
-      "bellows_glove", "charcoal_chit", "sherd_vest", "keeper_apron", "mending_slip", "hearth_totem", "kilnmark"
+      "bellows_glove",
+      "charcoal_chit",
+      "sherd_vest",
+      "keeper_apron",
+      "mending_slip",
+      "hearth_totem",
+      "everlit_core",
+      "sealed_hammer",
+      "cracked_seal",
+      "firebound_collar"
     ],
-    "potion_ids": ["ash_salve", "kiln_plaster", "tinder_oil", "waking_clay", "mud_bolt", "craze_dust"],
-    "enchant_ids": ["kiln_quench", "glaze_seal", "ember_return", "anneal_glow"]
+    "potion_ids": [
+      "ash_salve",
+      "kiln_plaster",
+      "tinder_oil",
+      "waking_clay",
+      "mud_bolt",
+      "craze_dust"
+    ],
+    "enchant_ids": [
+      "kiln_quench",
+      "glaze_seal",
+      "ember_return",
+      "anneal_glow"
+    ]
   },
   "pre_run_buffs": [
     {
       "id": "kiln_guard",
       "name": "护窑余温",
       "description": "前 10 层每场战斗开始时获得 6 点格挡。",
-      "effects": [{"kind": "combat_start_block", "value": 6}]
+      "effects": [
+        {
+          "kind": "combat_start_block",
+          "value": 6
+        }
+      ]
     }
   ],
   "projects": [
     {
-      "id": "hearth_rekindle_1", "name": "重燃炉心 I", "description": "炉心添上新薪，往后的守窑人最大生命提高 2 点。",
-      "facility_id": "hearth", "fireseed_cost": 15, "duration_seconds": 60,
-      "prerequisite_project_ids": [], "grants": {"facility_levels": {"hearth": 1}}
-    },
-    {
-      "id": "bellows_repair_1", "name": "修复风箱台", "description": "风箱重新鼓动，启程时可带上“护窑余温”。",
-      "facility_id": "bellows_station", "fireseed_cost": 25, "duration_seconds": 180,
-      "prerequisite_project_ids": ["hearth_rekindle_1"],
-      "grants": {"facility_levels": {"bellows_station": 1}, "unlocked_pre_run_buff_ids": ["kiln_guard"]}
-    },
-    {
-      "id": "card_mold_capacity_1", "name": "扩建牌模架 I", "description": "增设牌模位，往后的远征可携带 21 张卡牌。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 40, "duration_seconds": 600,
-      "prerequisite_project_ids": ["hearth_rekindle_1"],
-      "grants": {"facility_levels": {"card_mold_workshop": 1}, "base_run_deck_capacity": 21}
-    },
-    {
-      "id": "hearth_rekindle_2", "name": "重燃炉心 II", "description": "炉火渐旺，往后的守窑人最大生命累计提高 4 点，并带上 20 炭票。",
-      "facility_id": "hearth", "fireseed_cost": 60, "duration_seconds": 1800,
-      "prerequisite_project_ids": ["hearth_rekindle_1"], "grants": {"facility_levels": {"hearth": 2}}
-    },
-    {
-      "id": "town_restore_1", "name": "修复镇口陶灯", "description": "镇口陶灯重新亮起，长夜归途有了温暖灯火。",
-      "facility_id": "town_restoration", "fireseed_cost": 75, "duration_seconds": 3600,
-      "prerequisite_project_ids": ["hearth_rekindle_1"],
-      "grants": {"facility_levels": {"town_restoration": 1}, "town_visual_stage": 1}
-    },
-    {
-      "id": "card_pack_berserk_1", "name": "浴血配方", "description": "解锁以血还血、放血、御血术、撕裂、祭品与残暴。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
-      "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["blood_for_blood", "bloodletting", "hemokinesis", "rupture", "offering", "brutality"]}
-    },
-    {
-      "id": "card_pack_ironwall_1", "name": "铁壁配方 I", "description": "解锁巩固、无惧疼痛、挡钳、定型、硬撑与末薪。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
-      "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["entrench", "feel_no_pain", "ghostly_armor", "metallicize", "power_through", "impervious"]}
-    },
-    {
-      "id": "card_pack_control_1", "name": "控场配方 I", "description": "解锁战斗专注、缴械、泼水、震荡波、观察弱点与上勾拳。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
-      "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["battle_trance", "disarm", "intimidate", "shockwave", "spot_weakness", "uppercut"]}
-    },
-    {
-      "id": "card_pack_burning_1", "name": "燃烧配方 I", "description": "解锁炽心、火焰吐息、燔祭、残杀与地狱之刃。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
-      "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["combust", "fire_breathing", "immolate", "carnage", "infernal_blade"]}
-    },
-    {
-      "id": "card_pack_summon_1", "name": "消耗配方", "description": "解锁燃烧契约、黑暗之拥、重振精神、断魂斩、腐化与恶魔之焰。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 80, "duration_seconds": 3600,
-      "prerequisite_project_ids": ["bellows_repair_1"],
-      "grants": {"unlocked_card_ids": ["burning_pact", "dark_embrace", "second_wind", "sever_soul", "corruption", "fiend_fire"]}
-    },
-    {
-      "id": "card_mold_capacity_2", "name": "扩建牌模架 II", "description": "牌模架再添新位，往后的远征可携带 24 张卡牌。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 100, "duration_seconds": 7200,
-      "prerequisite_project_ids": ["card_mold_capacity_1", "hearth_rekindle_2"],
-      "grants": {"facility_levels": {"card_mold_workshop": 2}, "base_run_deck_capacity": 24}
-    },
-    {
-      "id": "apothecary_research_1", "name": "药釉研究 I", "description": "复原五种药水与五种附魔的古老配方。",
-      "facility_id": "glaze_apothecary", "fireseed_cost": 120, "duration_seconds": 14400,
-      "prerequisite_project_ids": ["bellows_repair_1"],
+      "id": "hearth_rekindle_1",
+      "name": "重燃炉心 I",
+      "description": "炉心添上新薪，往后的守窑人最大生命提高 2 点。",
+      "facility_id": "hearth",
+      "fireseed_cost": 15,
+      "duration_seconds": 60,
+      "prerequisite_project_ids": [],
       "grants": {
-        "facility_levels": {"glaze_apothecary": 1},
-        "unlocked_potion_ids": ["warmth_vial", "kiln_fire_oil", "ashrot_vial", "stoke_brew", "temper_paste"],
-        "unlocked_enchant_ids": ["wind_lead", "heat_trace", "ember_craze", "kiln_warmth", "temper_bind"]
+        "facility_levels": {
+          "hearth": 1
+        }
       }
     },
     {
-      "id": "hearth_rekindle_3", "name": "重燃炉心 III", "description": "炉心烧至鼎盛，往后的守窑人最大生命累计提高 7 点，并带上 40 炭票。",
-      "facility_id": "hearth", "fireseed_cost": 140, "duration_seconds": 14400,
-      "prerequisite_project_ids": ["hearth_rekindle_2"], "grants": {"facility_levels": {"hearth": 3}}
-    },
-    {
-      "id": "relic_shelf_research_1", "name": "遗珍架研究", "description": "拂去“抽风口”“汲热钳”“劈薪斧”上的窑灰，让它们重回远征之路。",
-      "facility_id": "relic_shelf", "fireseed_cost": 160, "duration_seconds": 14400,
-      "prerequisite_project_ids": ["hearth_rekindle_2"],
-      "grants": {"facility_levels": {"relic_shelf": 1}, "unlocked_relic_ids": ["draft_flue", "heat_siphon", "firewood_axe"]}
-    },
-    {
-      "id": "town_restore_2", "name": "重开镇中窑道", "description": "尘封窑道再度通行，火光与人声重新流过镇中。",
-      "facility_id": "town_restoration", "fireseed_cost": 180, "duration_seconds": 28800,
-      "prerequisite_project_ids": ["town_restore_1", "hearth_rekindle_2"],
-      "grants": {"facility_levels": {"town_restoration": 2}, "town_visual_stage": 2}
-    },
-    {
-      "id": "card_pack_ironwall_2", "name": "铁壁配方 II", "description": "解锁固釉不坠、势不可当与死亡收割。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 180, "duration_seconds": 28800,
-      "prerequisite_project_ids": ["card_pack_ironwall_1", "hearth_rekindle_2"],
-      "grants": {"unlocked_card_ids": ["barricade", "juggernaut", "reaper"]}
-    },
-    {
-      "id": "card_pack_control_2", "name": "牌技配方", "description": "解锁双发、双持与发掘。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 180, "duration_seconds": 28800,
-      "prerequisite_project_ids": ["card_pack_control_1", "hearth_rekindle_2"],
-      "grants": {"unlocked_card_ids": ["double_tap", "dual_wield", "exhume"]}
-    },
-    {
-      "id": "card_pack_berserk_2", "name": "力量配方", "description": "解锁熔身、突破极限、狂暴、巨窑一击与连续拳。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 220, "duration_seconds": 28800,
-      "prerequisite_project_ids": ["card_pack_berserk_1", "hearth_rekindle_2"],
-      "grants": {"unlocked_card_ids": ["demon_form", "limit_break", "berserk", "bludgeon", "pummel"]}
-    },
-    {
-      "id": "card_pack_burning_2", "name": "战意配方", "description": "解锁飞身踢、狂怒、暴走、无谋冲锋、灼热攻击、盛怒、哨卫、卷灰与狂宴。",
-      "facility_id": "card_mold_workshop", "fireseed_cost": 220, "duration_seconds": 28800,
-      "prerequisite_project_ids": ["card_pack_burning_1", "hearth_rekindle_2"],
-      "grants": {"unlocked_card_ids": ["dropkick", "rage", "rampage", "reckless_charge", "searing_blow", "seeing_red", "sentinel", "whirlwind", "feed"]}
-    },
-    {
-      "id": "apothecary_research_2", "name": "药釉研究 II", "description": "炼成两种稀有药水，并复原稀有附魔“燃烧”。",
-      "facility_id": "glaze_apothecary", "fireseed_cost": 260, "duration_seconds": 43200,
-      "prerequisite_project_ids": ["apothecary_research_1", "hearth_rekindle_3"],
+      "id": "bellows_repair_1",
+      "name": "修复风箱台",
+      "description": "风箱重新鼓动，启程时可带上“护窑余温”。",
+      "facility_id": "bellows_station",
+      "fireseed_cost": 25,
+      "duration_seconds": 180,
+      "prerequisite_project_ids": [
+        "hearth_rekindle_1"
+      ],
       "grants": {
-        "facility_levels": {"glaze_apothecary": 2},
-        "unlocked_potion_ids": ["ember_heart", "titan_anoint"],
-        "unlocked_enchant_ids": ["ash_bite"]
+        "facility_levels": {
+          "bellows_station": 1
+        },
+        "unlocked_pre_run_buff_ids": [
+          "kiln_guard"
+        ]
       }
     },
     {
-      "id": "town_restore_3", "name": "复明窑口镇", "description": "陶灯连成火路，作坊重闻锤响，窑口镇迎来新生。",
-      "facility_id": "town_restoration", "fireseed_cost": 360, "duration_seconds": 86400,
-      "prerequisite_project_ids": ["town_restore_2", "hearth_rekindle_3"],
-      "grants": {"facility_levels": {"town_restoration": 3}, "town_visual_stage": 3}
+      "id": "card_mold_capacity_1",
+      "name": "扩建牌模架 I",
+      "description": "增设牌模位，往后的远征可携带 21 张卡牌。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 40,
+      "duration_seconds": 600,
+      "prerequisite_project_ids": [
+        "hearth_rekindle_1"
+      ],
+      "grants": {
+        "facility_levels": {
+          "card_mold_workshop": 1
+        },
+        "base_run_deck_capacity": 21
+      }
+    },
+    {
+      "id": "hearth_rekindle_2",
+      "name": "重燃炉心 II",
+      "description": "炉火渐旺，往后的守窑人最大生命累计提高 4 点，并带上 20 炭票。",
+      "facility_id": "hearth",
+      "fireseed_cost": 60,
+      "duration_seconds": 1800,
+      "prerequisite_project_ids": [
+        "hearth_rekindle_1"
+      ],
+      "grants": {
+        "facility_levels": {
+          "hearth": 2
+        }
+      }
+    },
+    {
+      "id": "town_restore_1",
+      "name": "修复镇口陶灯",
+      "description": "镇口陶灯重新亮起，长夜归途有了温暖灯火。",
+      "facility_id": "town_restoration",
+      "fireseed_cost": 75,
+      "duration_seconds": 3600,
+      "prerequisite_project_ids": [
+        "hearth_rekindle_1"
+      ],
+      "grants": {
+        "facility_levels": {
+          "town_restoration": 1
+        },
+        "town_visual_stage": 1
+      }
+    },
+    {
+      "id": "card_pack_berserk_1",
+      "name": "浴血配方",
+      "description": "解锁以血还血、放血、御血术、撕裂、祭品与残暴。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 80,
+      "duration_seconds": 3600,
+      "prerequisite_project_ids": [
+        "bellows_repair_1"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "blood_for_blood",
+          "bloodletting",
+          "hemokinesis",
+          "rupture",
+          "offering",
+          "brutality"
+        ]
+      }
+    },
+    {
+      "id": "card_pack_ironwall_1",
+      "name": "铁壁配方 I",
+      "description": "解锁巩固、无惧疼痛、挡钳、定型、硬撑与末薪。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 80,
+      "duration_seconds": 3600,
+      "prerequisite_project_ids": [
+        "bellows_repair_1"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "entrench",
+          "feel_no_pain",
+          "ghostly_armor",
+          "metallicize",
+          "power_through",
+          "impervious"
+        ]
+      }
+    },
+    {
+      "id": "card_pack_control_1",
+      "name": "控场配方 I",
+      "description": "解锁战斗专注、缴械、泼水、震荡波、观察弱点与上勾拳。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 80,
+      "duration_seconds": 3600,
+      "prerequisite_project_ids": [
+        "bellows_repair_1"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "battle_trance",
+          "disarm",
+          "intimidate",
+          "shockwave",
+          "spot_weakness",
+          "uppercut"
+        ]
+      }
+    },
+    {
+      "id": "card_pack_burning_1",
+      "name": "燃烧配方 I",
+      "description": "解锁炽心、火焰吐息、燔祭、残杀与地狱之刃。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 80,
+      "duration_seconds": 3600,
+      "prerequisite_project_ids": [
+        "bellows_repair_1"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "combust",
+          "fire_breathing",
+          "immolate",
+          "carnage",
+          "infernal_blade"
+        ]
+      }
+    },
+    {
+      "id": "card_pack_summon_1",
+      "name": "消耗配方",
+      "description": "解锁燃烧契约、黑暗之拥、重振精神、断魂斩、腐化与恶魔之焰。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 80,
+      "duration_seconds": 3600,
+      "prerequisite_project_ids": [
+        "bellows_repair_1"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "burning_pact",
+          "dark_embrace",
+          "second_wind",
+          "sever_soul",
+          "corruption",
+          "fiend_fire"
+        ]
+      }
+    },
+    {
+      "id": "card_mold_capacity_2",
+      "name": "扩建牌模架 II",
+      "description": "牌模架再添新位，往后的远征可携带 24 张卡牌。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 100,
+      "duration_seconds": 7200,
+      "prerequisite_project_ids": [
+        "card_mold_capacity_1",
+        "hearth_rekindle_2"
+      ],
+      "grants": {
+        "facility_levels": {
+          "card_mold_workshop": 2
+        },
+        "base_run_deck_capacity": 24
+      }
+    },
+    {
+      "id": "apothecary_research_1",
+      "name": "药釉研究 I",
+      "description": "复原五种药水与五种附魔的古老配方。",
+      "facility_id": "glaze_apothecary",
+      "fireseed_cost": 120,
+      "duration_seconds": 14400,
+      "prerequisite_project_ids": [
+        "bellows_repair_1"
+      ],
+      "grants": {
+        "facility_levels": {
+          "glaze_apothecary": 1
+        },
+        "unlocked_potion_ids": [
+          "warmth_vial",
+          "kiln_fire_oil",
+          "ashrot_vial",
+          "stoke_brew",
+          "temper_paste"
+        ],
+        "unlocked_enchant_ids": [
+          "wind_lead",
+          "heat_trace",
+          "ember_craze",
+          "kiln_warmth",
+          "temper_bind"
+        ]
+      }
+    },
+    {
+      "id": "hearth_rekindle_3",
+      "name": "重燃炉心 III",
+      "description": "炉心烧至鼎盛，往后的守窑人最大生命累计提高 7 点，并带上 40 炭票。",
+      "facility_id": "hearth",
+      "fireseed_cost": 140,
+      "duration_seconds": 14400,
+      "prerequisite_project_ids": [
+        "hearth_rekindle_2"
+      ],
+      "grants": {
+        "facility_levels": {
+          "hearth": 3
+        }
+      }
+    },
+    {
+      "id": "relic_shelf_research_1",
+      "name": "遗珍架研究",
+      "description": "拂去“抽风口”“汲热钳”“劈薪斧”上的窑灰，让它们重回远征之路。",
+      "facility_id": "relic_shelf",
+      "fireseed_cost": 160,
+      "duration_seconds": 14400,
+      "prerequisite_project_ids": [
+        "hearth_rekindle_2"
+      ],
+      "grants": {
+        "facility_levels": {
+          "relic_shelf": 1
+        },
+        "unlocked_relic_ids": [
+          "draft_flue",
+          "heat_siphon",
+          "firewood_axe"
+        ]
+      }
+    },
+    {
+      "id": "town_restore_2",
+      "name": "重开镇中窑道",
+      "description": "尘封窑道再度通行，火光与人声重新流过镇中。",
+      "facility_id": "town_restoration",
+      "fireseed_cost": 180,
+      "duration_seconds": 28800,
+      "prerequisite_project_ids": [
+        "town_restore_1",
+        "hearth_rekindle_2"
+      ],
+      "grants": {
+        "facility_levels": {
+          "town_restoration": 2
+        },
+        "town_visual_stage": 2
+      }
+    },
+    {
+      "id": "card_pack_ironwall_2",
+      "name": "铁壁配方 II",
+      "description": "解锁固釉不坠、势不可当与死亡收割。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 180,
+      "duration_seconds": 28800,
+      "prerequisite_project_ids": [
+        "card_pack_ironwall_1",
+        "hearth_rekindle_2"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "barricade",
+          "juggernaut",
+          "reaper"
+        ]
+      }
+    },
+    {
+      "id": "card_pack_control_2",
+      "name": "牌技配方",
+      "description": "解锁双发、双持与发掘。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 180,
+      "duration_seconds": 28800,
+      "prerequisite_project_ids": [
+        "card_pack_control_1",
+        "hearth_rekindle_2"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "double_tap",
+          "dual_wield",
+          "exhume"
+        ]
+      }
+    },
+    {
+      "id": "card_pack_berserk_2",
+      "name": "力量配方",
+      "description": "解锁熔身、突破极限、狂暴、巨窑一击与连续拳。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 220,
+      "duration_seconds": 28800,
+      "prerequisite_project_ids": [
+        "card_pack_berserk_1",
+        "hearth_rekindle_2"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "demon_form",
+          "limit_break",
+          "berserk",
+          "bludgeon",
+          "pummel"
+        ]
+      }
+    },
+    {
+      "id": "card_pack_burning_2",
+      "name": "战意配方",
+      "description": "解锁飞身踢、狂怒、暴走、无谋冲锋、灼热攻击、盛怒、哨卫、卷灰与狂宴。",
+      "facility_id": "card_mold_workshop",
+      "fireseed_cost": 220,
+      "duration_seconds": 28800,
+      "prerequisite_project_ids": [
+        "card_pack_burning_1",
+        "hearth_rekindle_2"
+      ],
+      "grants": {
+        "unlocked_card_ids": [
+          "dropkick",
+          "rage",
+          "rampage",
+          "reckless_charge",
+          "searing_blow",
+          "seeing_red",
+          "sentinel",
+          "whirlwind",
+          "feed"
+        ]
+      }
+    },
+    {
+      "id": "apothecary_research_2",
+      "name": "药釉研究 II",
+      "description": "炼成两种稀有药水，并复原稀有附魔“燃烧”。",
+      "facility_id": "glaze_apothecary",
+      "fireseed_cost": 260,
+      "duration_seconds": 43200,
+      "prerequisite_project_ids": [
+        "apothecary_research_1",
+        "hearth_rekindle_3"
+      ],
+      "grants": {
+        "facility_levels": {
+          "glaze_apothecary": 2
+        },
+        "unlocked_potion_ids": [
+          "ember_heart",
+          "titan_anoint"
+        ],
+        "unlocked_enchant_ids": [
+          "ash_bite"
+        ]
+      }
+    },
+    {
+      "id": "town_restore_3",
+      "name": "复明窑口镇",
+      "description": "陶灯连成火路，作坊重闻锤响，窑口镇迎来新生。",
+      "facility_id": "town_restoration",
+      "fireseed_cost": 360,
+      "duration_seconds": 86400,
+      "prerequisite_project_ids": [
+        "town_restore_2",
+        "hearth_rekindle_3"
+      ],
+      "grants": {
+        "facility_levels": {
+          "town_restoration": 3
+        },
+        "town_visual_stage": 3
+      }
     }
   ],
   "town_visual_stages": [
-    {"stage": 1, "name": "陶灯复明"},
-    {"stage": 2, "name": "窑道重开"},
-    {"stage": 3, "name": "炽窑新生"}
-  ]
+    {
+      "stage": 1,
+      "name": "陶灯复明"
+    },
+    {
+      "stage": 2,
+      "name": "窑道重开"
+    },
+    {
+      "stage": 3,
+      "name": "炽窑新生"
+    }
+  ],
+  "card_mutation": {
+    "required_project": "apothecary_research_1",
+    "initial_cost": 60,
+    "reroll_cost": 30,
+    "battle_enchant_limit": 3,
+    "per_card_limit": 1,
+    "direction_count": 3,
+    "min_base_cost": 2,
+    "eligible_rarities": [
+      "uncommon",
+      "rare"
+    ],
+    "card_directions": {
+      "bludgeon": [
+        "town_bludgeon_1",
+        "town_bludgeon_2",
+        "town_bludgeon_3"
+      ],
+      "immolate": [
+        "town_immolate_1",
+        "town_immolate_2",
+        "town_immolate_3"
+      ],
+      "demon_form": [
+        "town_demon_form_1",
+        "town_demon_form_2",
+        "town_demon_form_3"
+      ],
+      "barricade": [
+        "town_barricade_1",
+        "town_barricade_2",
+        "town_barricade_3"
+      ],
+      "impervious": [
+        "town_impervious_1",
+        "town_impervious_2",
+        "town_impervious_3"
+      ],
+      "fiend_fire": [
+        "town_fiend_fire_1",
+        "town_fiend_fire_2",
+        "town_fiend_fire_3"
+      ],
+      "corruption": [
+        "town_corruption_1",
+        "town_corruption_2",
+        "town_corruption_3"
+      ],
+      "juggernaut": [
+        "town_juggernaut_1",
+        "town_juggernaut_2",
+        "town_juggernaut_3"
+      ],
+      "blood_for_blood": [
+        "town_blood_for_blood_1",
+        "town_blood_for_blood_2",
+        "town_blood_for_blood_3"
+      ],
+      "carnage": [
+        "town_carnage_1",
+        "town_carnage_2",
+        "town_carnage_3"
+      ],
+      "dark_embrace": [
+        "town_dark_embrace_1",
+        "town_dark_embrace_2",
+        "town_dark_embrace_3"
+      ],
+      "entrench": [
+        "town_entrench_1",
+        "town_entrench_2",
+        "town_entrench_3"
+      ],
+      "flame_barrier": [
+        "town_flame_barrier_1",
+        "town_flame_barrier_2",
+        "town_flame_barrier_3"
+      ],
+      "searing_blow": [
+        "town_searing_blow_1",
+        "town_searing_blow_2",
+        "town_searing_blow_3"
+      ],
+      "sever_soul": [
+        "town_sever_soul_1",
+        "town_sever_soul_2",
+        "town_sever_soul_3"
+      ],
+      "shockwave": [
+        "town_shockwave_1",
+        "town_shockwave_2",
+        "town_shockwave_3"
+      ],
+      "uppercut": [
+        "town_uppercut_1",
+        "town_uppercut_2",
+        "town_uppercut_3"
+      ],
+      "reaper": [
+        "town_reaper_1",
+        "town_reaper_2",
+        "town_reaper_3"
+      ]
+    }
+  }
 }

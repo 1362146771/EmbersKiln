@@ -12,10 +12,6 @@ func attach(controller: CombatController) -> void:
 func apply_status(unit: CombatUnit, status_id: StringName, amount: int) -> void:
 	if status_id == &"":
 		return
-	if ctrl.allies.has(unit):
-		unit.add_status(status_id, amount)
-		SignalBus.ally_status_applied.emit(ctrl._intent.index_of_ally(unit), status_id, unit.get_status(status_id))
-		return
 	unit.add_status(status_id, amount)
 	if unit.is_player:
 		SignalBus.status_applied.emit(true, -1, status_id, unit.get_status(status_id))

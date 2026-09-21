@@ -146,6 +146,7 @@ func _test_act_scaling_and_pools() -> void:
 	check("Act2 非Boss攻防完全保持", GameData.scaled_enemy_damage(20, &"normal") == 23 and GameData.scaled_enemy_defense(10, &"elite") == 10)
 	_check_pool_isolation(1)
 	check("Act2 Boss=窑心·烬", _act_boss_id(1) == "kilnheart_ember", "boss=%s" % _act_boss_id(1))
+	check("BH-01 Act2 Boss局内HP=462", GameData.scaled_enemy_hp(GameData.get_enemy(&"kilnheart_ember").base_hp) == 462)
 
 	RunState.advance_act()   # → Act3（×1.30）
 	check("Act3 HP 缩放×1.30", GameData.scaled_enemy_hp(100) == 130, "scaled=%d" % GameData.scaled_enemy_hp(100))
@@ -154,6 +155,7 @@ func _test_act_scaling_and_pools() -> void:
 	check("Act3 Boss保留完整幕倍率", GameData.scaled_enemy_damage(10, &"boss") == 13 and GameData.scaled_enemy_defense(10, &"boss") == 10)
 	_check_pool_isolation(2)
 	check("Act3 Boss=窑主·熾", _act_boss_id(2) == "chi_the_first", "boss=%s" % _act_boss_id(2))
+	check("BH-02 Act3 Boss局内HP=660", GameData.scaled_enemy_hp(GameData.get_enemy(&"chi_the_first").base_hp) == 660)
 
 
 ## 校验指定幕地图内所有 combat/elite 节点的敌人都落在该幕 enemy_pool 内。

@@ -11,6 +11,7 @@ class_name CardView
 signal drag_started(view: CardView)
 signal drag_moved(view: CardView, global_pos: Vector2)
 signal drag_ended(view: CardView, global_pos: Vector2)
+signal drag_canceled(view: CardView)
 signal tapped(view: CardView)
 
 const DRAG_THRESHOLD := 14.0
@@ -18,6 +19,7 @@ const DRAG_THRESHOLD := 14.0
 var card_index: int = -1
 var card_data: CardData
 var enchants: Array = []
+var entry_snapshot: Dictionary = {}
 var upgraded := false
 var resolved_cost := 0
 
@@ -45,15 +47,17 @@ func _ready() -> void:
 
 
 ## 由 CombatUI 调用，填充卡面视觉与索引。ghost 卡传 idx=-1。
-func build_visual(cd: CardData, idx: int, ench: Array, is_upgraded: bool = false, cost_override: int = -999) -> void:
+func build_visual(cd: CardData, idx: int, ench: Array, is_upgraded: bool = false, cost_override: int = -999, entry: Dictionary = {}) -> void:
 	card_data = cd
 	card_index = idx
 	enchants = ench
 	upgraded = is_upgraded
 	resolved_cost = cd.cost if cost_override == -999 else cost_override
-	custom_minimum_size = Vector2(136, 188)
+	custom_minimum_size = Vector2(136, 212)
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	FormalUI.fill_card_visual(self, {"id": cd.id, "name": cd.name, "upgraded": upgraded, "cost": resolved_cost})
+	entry_snapshot = entry.duplicate(true)
+	entry_snapshot.merge({"id":cd.id,"name":cd.name,"upgraded":upgraded,"cost":resolved_cost,"enchants":ench}, true)
+	FormalUI.fill_card_visual(self, entry_snapshot)
 
 func set_ghost(v: bool) -> void:
 	_ghost = v
@@ -76,10 +80,10 @@ func set_enabled(v: bool) -> void:
 		_dragging = false
 
 
-## 能量不足只禁出牌，不能禁拖拽弃牌。
+## 不可出牌时仍允许点击详情；拖拽到任何落点都回弹。
 func set_playable(v: bool) -> void:
 	_playable = v
-	tooltip_text = "" if v else "能量不足，仍可拖到弃牌堆弃置"
+	tooltip_text = "" if v else "当前无法打出，点击查看详情"
 	set_enabled(_enabled)
 
 
@@ -95,8 +99,10 @@ func _input(ev: InputEvent) -> void:
 	elif _dragging and ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and not ev.pressed:
 		_pressing = false
 		_dragging = false
-		drag_ended.emit(self, get_canvas_transform().affine_inverse() * ev.position)
+		# Submission can synchronously remove this card from the scene tree.
+		# Consume the event while its viewport is still available.
 		get_viewport().set_input_as_handled()
+		drag_ended.emit(self, get_canvas_transform().affine_inverse() * ev.position)
 
 
 func _on_gui_input(ev: InputEvent) -> void:
@@ -114,12 +120,21 @@ func _on_gui_input(ev: InputEvent) -> void:
 		else:
 			if _pressing:
 				_pressing = false
+				get_viewport().set_input_as_handled()
 				if _dragging:
 					_dragging = false
 					drag_ended.emit(self, get_global_transform() * mb.position)
 				else:
 					tapped.emit(self)
-				get_viewport().set_input_as_handled()
+
+
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_PAUSED]:
+		var was_dragging := _dragging
+		_pressing = false
+		_dragging = false
+		if was_dragging:
+			drag_canceled.emit(self)
 
 
 func _update_drag_position(g: Vector2) -> void:

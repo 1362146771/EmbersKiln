@@ -1,0 +1,132 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/EnchantAttackLab.gd" id="script"]
+[ext_resource type="Texture2D" path="res://art/ui/formal/bd_stone_framed.png" id="frame"]
+
+[sub_resource type="StyleBoxTexture" id="PanelStyle"]
+texture = ExtResource("frame")
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+
+[sub_resource type="Theme" id="LabTheme"]
+default_font_size = 20
+
+[node name="EnchantAttackLab" type="Node"]
+process_mode = 3
+script = ExtResource("script")
+
+[node name="Battle" type="Node" parent="."]
+process_mode = 1
+
+[node name="PreviewInput" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Shield" type="Control" parent="PreviewInput"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Tools" type="CanvasLayer" parent="."]
+layer = 130
+
+[node name="Panel" type="PanelContainer" parent="Tools"]
+offset_left = 270.0
+offset_top = 778.0
+offset_right = 712.0
+offset_bottom = 1046.0
+theme = SubResource("LabTheme")
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="Body" type="VBoxContainer" parent="Tools/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleRow" type="HBoxContainer" parent="Tools/Panel/Body"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Tools/Panel/Body/TitleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.949, 0.910, 0.835, 1)
+theme_override_font_sizes/font_size = 24
+text = "窑变特效 · 测试场"
+
+[node name="Collapse" type="Button" parent="Tools/Panel/Body/TitleRow"]
+layout_mode = 2
+text = "收起"
+
+[node name="Selection" type="HBoxContainer" parent="Tools/Panel/Body"]
+layout_mode = 2
+
+[node name="Card" type="OptionButton" parent="Tools/Panel/Body/Selection"]
+custom_minimum_size = Vector2(230, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Target" type="OptionButton" parent="Tools/Panel/Body/Selection"]
+custom_minimum_size = Vector2(132, 38)
+layout_mode = 2
+item_count = 3
+selected = 1
+popup/item_0/text = "左侧目标"
+popup/item_0/id = 0
+popup/item_1/text = "中间目标"
+popup/item_1/id = 1
+popup/item_2/text = "右侧目标"
+popup/item_2/id = 2
+
+[node name="Actions" type="HBoxContainer" parent="Tools/Panel/Body"]
+layout_mode = 2
+
+[node name="Play" type="Button" parent="Tools/Panel/Body/Actions"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "播放"
+
+[node name="Pause" type="Button" parent="Tools/Panel/Body/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "暂停"
+
+[node name="Reset" type="Button" parent="Tools/Panel/Body/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "重置"
+
+[node name="Playback" type="HBoxContainer" parent="Tools/Panel/Body"]
+layout_mode = 2
+
+[node name="SpeedLabel" type="Label" parent="Tools/Panel/Body/Playback"]
+layout_mode = 2
+text = "速度"
+
+[node name="Speed" type="OptionButton" parent="Tools/Panel/Body/Playback"]
+custom_minimum_size = Vector2(105, 34)
+layout_mode = 2
+
+[node name="Repeat" type="CheckButton" parent="Tools/Panel/Body/Playback"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "循环播放"
+
+[node name="State" type="Label" parent="Tools/Panel/Body"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "选择卡牌后播放；时间轴可查看关键帧"
+
+[node name="Timeline" type="HSlider" parent="Tools/Panel/Body"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+max_value = 1.0
+step = 0.001
+tooltip_text = "拖动查看蓄势、命中和收尾；播放按钮重新出牌"

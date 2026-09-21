@@ -27,6 +27,8 @@
 	"note": "难度归位（2026-08-17）：系数回调至正式值 1.0，单场敌人最多 3 个。前期开发期折扣（伤害 0.65 / HP 0.8 / 上限 2）已撤销。"
   },
   "rewards": {
+	"upgrade_shard_cost": 4,
+	"upgrade_shards_per_reward": 1,
 	"card_choice_count": 3,
 	"combat_gold": {
 	  "min": 10,
@@ -39,7 +41,8 @@
 	"boss_gold": {
 	  "min": 50,
 	  "max": 80
-	}
+	},
+	"boss_relic_choice_count": 3
   },
   "shop": {
 	"card_cost": [
@@ -124,38 +127,62 @@
 	"probability_scale": 100,
 	"sources": {
 	  "combat": {
-		"rarity_percent": {"common": 60, "uncommon": 37, "rare": 3},
+		"rarity_percent": {
+		  "common": 60,
+		  "uncommon": 37,
+		  "rare": 3
+		},
 		"uses_rare_pity": true,
 		"updates_rare_pity": true,
 		"random_upgrade": true
 	  },
 	  "elite": {
-		"rarity_percent": {"common": 50, "uncommon": 40, "rare": 10},
+		"rarity_percent": {
+		  "common": 50,
+		  "uncommon": 40,
+		  "rare": 10
+		},
 		"uses_rare_pity": true,
 		"updates_rare_pity": true,
 		"random_upgrade": true
 	  },
 	  "boss": {
-		"rarity_percent": {"common": 0, "uncommon": 0, "rare": 100},
+		"rarity_percent": {
+		  "common": 0,
+		  "uncommon": 0,
+		  "rare": 100
+		},
 		"forced_rarity": "rare",
 		"uses_rare_pity": false,
 		"updates_rare_pity": true,
 		"random_upgrade": false
 	  },
 	  "shop": {
-		"rarity_percent": {"common": 54, "uncommon": 37, "rare": 9},
+		"rarity_percent": {
+		  "common": 54,
+		  "uncommon": 37,
+		  "rare": 9
+		},
 		"uses_rare_pity": true,
 		"updates_rare_pity": false,
 		"random_upgrade": false
 	  },
 	  "treasure": {
-		"rarity_percent": {"common": 60, "uncommon": 37, "rare": 3},
+		"rarity_percent": {
+		  "common": 60,
+		  "uncommon": 37,
+		  "rare": 3
+		},
 		"uses_rare_pity": true,
 		"updates_rare_pity": true,
 		"random_upgrade": true
 	  },
 	  "misc": {
-		"rarity_percent": {"common": 60, "uncommon": 32, "rare": 8},
+		"rarity_percent": {
+		  "common": 60,
+		  "uncommon": 32,
+		  "rare": 8
+		},
 		"uses_rare_pity": false,
 		"updates_rare_pity": false,
 		"random_upgrade": false
@@ -167,7 +194,11 @@
 	  "rare_reset_offset": -5,
 	  "max_offset": 40
 	},
-	"upgrade_chance_by_act": [0.0, 0.25, 0.5]
+	"upgrade_chance_by_act": [
+	  0.0,
+	  0.25,
+	  0.5
+	]
   },
   "kiln_temperature": {
 	"threshold": 5,
@@ -182,9 +213,5 @@
 	  "chest": 1.0,
 	  "shop_stock": 2
 	}
-  },
-  "summon": {
-	"max_summons": 3,
-	"max_minion_attack": 7
   }
 }

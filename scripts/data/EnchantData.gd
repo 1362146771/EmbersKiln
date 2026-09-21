@@ -8,6 +8,7 @@ extends Resource
 @export var rarity: StringName = &"common"      # common / uncommon / rare
 @export var description: String = ""
 @export var icon: String = ""
+@export var acquisition_scope: String = "run"
 
 ## restriction / mods / condition 保持 Dictionary：结构由 JSON 定义，结算管线按字段读取。
 var restriction: Dictionary = {}   # { card_type: [attack/skill/power] }，空=任意
@@ -22,6 +23,7 @@ static func from_dict(d: Dictionary) -> EnchantData:
 	e.rarity = StringName(d.get("rarity", "common"))
 	e.description = d.get("description", "")
 	e.icon = d.get("icon", "")
+	e.acquisition_scope = d.get("acquisition_scope", "run")
 	e.restriction = d.get("restriction", {})
 	e.mods = d.get("mods", {})
 	e.condition = d.get("condition", {})
@@ -30,6 +32,8 @@ static func from_dict(d: Dictionary) -> EnchantData:
 
 ## 该附魔能否贴到这张卡（restriction.card_type 为空=任意卡型）。
 func matches_card(cd: CardData) -> bool:
+	if cd == null: return false
+	if restriction.has("card_ids") and not restriction["card_ids"].has(String(cd.id)): return false
 	var types: Array = restriction.get("card_type", [])
 	if types.is_empty():
 		return true
@@ -40,3 +44,14 @@ func matches_card(cd: CardData) -> bool:
 func meets_condition(card_cost: int) -> bool:
 	var mc: int = int(condition.get("min_cost", 0))
 	return card_cost >= mc
+
+
+func apply_value_mods(effects: Array) -> void:
+	for eff in effects:
+		var kind := String(eff.get("kind", ""))
+		var delta := int(mods.get("value_bonuses", {}).get(kind, 0))
+		if kind == "apply_status": delta += int(mods.get("status_bonuses", {}).get(String(eff.get("status", "")), 0))
+		if kind in ["damage", "aoe_damage", "exhaust_hand_damage", "heal_unblocked_aoe"]: delta += int(mods.get("damage_bonus", 0))
+		if kind in ["aoe_damage", "heal_unblocked_aoe"]: delta += int(mods.get("aoe_damage_bonus", 0))
+		if kind == "block": delta += int(mods.get("block_bonus", 0))
+		if delta != 0: eff["value"] = int(eff.get("value", 0)) + delta

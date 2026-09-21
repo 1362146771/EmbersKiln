@@ -1,17 +1,13 @@
 class_name IntentRoller
 extends RefCounted
-## 敌人 & 随从意图滚动与行动、召唤系统（P4 从 CombatController 拆出）。
+## 敌人意图滚动与行动（P4 从 CombatController 拆出）。
 ## 通过 attach(ctrl) 持有战斗门面引用；跨子系统调用统一走 ctrl 转发，避免 preload 环路。
-## 本文件零 preload：所有外部类型（CombatController / CombatUnit / EnemyData / MinionData / EnemyAI / SignalBus / GameData 等）均为全局 class_name。
+## 本文件零 preload：所有外部类型（CombatController / CombatUnit / EnemyData / EnemyAI / SignalBus / GameData 等）均为全局 class_name。
 
 var ctrl: CombatController
 
 func attach(controller: CombatController) -> void:
 	ctrl = controller
-
-## 友方索引：随从在 allies 中的位置（供 SignalBus 广播）。
-func index_of_ally(a: CombatUnit) -> int:
-	return ctrl.allies.find(a)
 
 # =====================================================================
 # 敌人意图
@@ -20,11 +16,18 @@ func index_of_ally(a: CombatUnit) -> int:
 ## 若上一回合处于蓄力（charge_next 非空），则跳过随机、直接强制打出释放招式。
 func roll_enemy_intent(e: CombatUnit) -> void:
 	var ed: EnemyData = e.data
+	# 已预告的转阶段行动必须先执行，重复请求意图不能跳过准备回合。
+	if bool(e.intent.get("phase_entry", false)) and not e.move_effects_resolved:
+		return
+	e.move_effects_resolved = false
+	if ed != null and ed.ai == &"phased_cycle":
+		roll_phase_cycle(e, ed)
+		return
 	if ed != null and ed.ai == &"scripted_cycle":
 		var nx: StringName = ed.first_move if e.intent.is_empty() else StringName(e.intent.get("next", ""))
 		# 当前意图可能已被破封分支替换，必须从替换后的 next 继续，不能随机选招。
 		e.charge_next = &""
-		e.intent = scale_intent_damage(ed.find_move(nx), ed.tier)
+		e.intent = scale_intent_damage(ctrl._escorts.resolve_conditional_intent(e, ed.find_move(nx)), ed.tier, ed.effective_stats)
 		SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
 		return
 	if e.charge_next != &"":
@@ -35,7 +38,7 @@ func roll_enemy_intent(e: CombatUnit) -> void:
 		if forced.is_empty() and ed != null:
 			# 释放招式不存在时回退到正常选择（不卡死）
 			forced = EnemyAI.choose_intent(ed, float(e.hp) / float(e.max_hp) if e.max_hp > 0 else 1.0)
-		e.intent = scale_intent_damage(forced, ed.tier if ed != null else &"")
+		e.intent = scale_intent_damage(forced, ed.tier if ed != null else &"", ed.effective_stats if ed != null else false)
 		SignalBus.enemy_intent_changed.emit(
 			ctrl._index_of(e),
 			StringName(e.intent.get("intent", "unknown")),
@@ -52,12 +55,107 @@ func roll_enemy_intent(e: CombatUnit) -> void:
 		if pidx > e.phase_index:
 			apply_phase_on_enter(e, ed.phases[pidx])
 		e.phase_index = pidx
-	e.intent = scale_intent_damage(EnemyAI.choose_intent(ed, ratio), ed.tier)
+	e.intent = scale_intent_damage(EnemyAI.choose_intent(ed, ratio), ed.tier, ed.effective_stats)
 	SignalBus.enemy_intent_changed.emit(
 		ctrl._index_of(e),
 		StringName(e.intent.get("intent", "unknown")),
 		int(e.intent.get("value", 0))
 	)
+
+
+## 确定性阶段循环。只在下一手意图公布时转阶段；回血不退阶段。
+func roll_phase_cycle(e: CombatUnit, ed: EnemyData) -> void:
+	if ed.phases.is_empty():
+		e.intent = {}
+		return
+	var ratio := float(e.hp) / float(e.max_hp) if e.max_hp > 0 else 1.0
+	e.reached_phase_index = maxi(e.reached_phase_index, EnemyAI.phase_index_for(ed, ratio))
+	var next_phase := maxi(maxi(e.phase_index, e.reached_phase_index), EnemyAI.phase_index_for(ed, ratio))
+	if next_phase > e.phase_index:
+		for idx in range(e.phase_index + 1, next_phase + 1):
+			var phase: Dictionary = ed.phases[idx]
+			var entry: Dictionary = phase.get("entry_move", {})
+			if not entry.is_empty():
+				e.phase_index = idx
+				e.phase_move_index = -1
+				e.intent = scale_intent_damage(entry, ed.tier, ed.effective_stats).duplicate(true)
+				e.intent["phase_entry"] = true
+				SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
+				return
+			if bool(phase.get("cleanse", false)):
+				cleanse_debuffs(e)
+			apply_phase_on_enter(e, phase)
+		e.phase_index = next_phase
+		e.phase_move_index = 0
+	else:
+		e.phase_move_index += 1
+	var moves: Array = ed.phases[e.phase_index].get("moves", [])
+	if moves.is_empty():
+		e.intent = {}
+		return
+	e.phase_move_index %= moves.size()
+	e.intent = scale_intent_damage(moves[e.phase_move_index], ed.tier, ed.effective_stats)
+	SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
+
+
+func cleanse_debuffs(e: CombatUnit) -> void:
+	for sid in e.status_ids():
+		var sd := GameData.get_status(sid)
+		var amount := e.get_status(sid)
+		if (sd != null and sd.is_debuff()) or amount < 0:
+			ctrl._apply_status(e, sid, -amount)
+
+
+func before_enemy_action(e: CombatUnit) -> void:
+	var ed := e.data as EnemyData
+	if ed == null or not e.is_alive():
+		return
+	if ed.ai == &"phased_cycle":
+		# 回复之前记录已跨过的阈值；不能靠本回合回血取消已触发的阶段。
+		e.reached_phase_index = maxi(e.reached_phase_index, EnemyAI.phase_index_for(ed, float(e.hp) / float(e.max_hp)))
+	var healing := int(ed.boss_rules.get("regeneration", 0))
+	if healing > 0 and e.heal(healing) > 0:
+		SignalBus.enemy_hp_changed.emit(ctrl._index_of(e), e.hp, e.max_hp)
+
+
+func after_enemy_action(e: CombatUnit) -> void:
+	var ed := e.data as EnemyData
+	if ed == null or not e.is_alive():
+		return
+	e.enemy_actions += 1
+	var interval := int(ed.boss_rules.get("growth_every", 0))
+	if interval > 0 and e.enemy_actions % interval == 0:
+		ctrl._apply_status(e, &"heat", int(ed.boss_rules.get("growth_strength", 0)))
+
+
+func on_player_card_played(cd: CardData) -> void:
+	ctrl._escorts.on_card_played(cd)
+	if cd.type != &"power":
+		return
+	for e in ctrl.enemies:
+		var ed := e.data as EnemyData
+		if e.is_alive() and ed != null:
+			var gain := ed.power_response_strength(e.phase_index)
+			if gain > 0:
+				ctrl._apply_status(e, &"heat", gain)
+
+
+## 每个攻击行动末尾执行一次；图形演出与直接模拟共用此入口。
+func apply_move_effects(e: CombatUnit) -> void:
+	if e.move_effects_resolved or not e.is_alive() or not ctrl.player_alive():
+		return
+	e.move_effects_resolved = true
+	for effect in e.intent.get("after_effects", []):
+		if not e.is_alive(): break
+		ctrl._escorts.apply_effect(e, effect)
+		match String(effect.get("kind", "")):
+			"status":
+				var target := e if effect.get("target", "player") == "self" else ctrl.player
+				ctrl._apply_status(target, StringName(effect.get("status", "")), int(effect.get("value", 0)))
+			"block":
+				e.add_block(int(effect.get("value", 0)))
+			"add_card":
+				ctrl._add_generated_card(StringName(effect.get("card_id", "")), String(effect.get("pile", "discard")), int(effect.get("count", 0)), bool(effect.get("shuffle", false)))
 
 
 ## 只从 DamageResolver 的真实扣盾路径调用；死亡与自然清盾不换意图。
@@ -72,13 +170,15 @@ func interrupt_on_block_break(e: CombatUnit, block_before: int) -> void:
 		return
 	e.block_break_next = &""
 	e.charge_next = &""
-	e.intent = scale_intent_damage(replacement, ed.tier)
+	e.intent = scale_intent_damage(replacement, ed.tier, ed.effective_stats)
 	ctrl._log("%s 封匣破裂 → %s" % [e.unit_name, replacement.get("name", "泄压")])
 	SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
 
 ## 攻击按难度/幕倍率缩放；第一、三幕非 Boss 的攻击、主动格挡再吃约 30% 削弱。
 ## 注意：choose_intent 返回的是 EnemyData.moves 内部字典的引用，必须 duplicate 后再改。
-func scale_intent_damage(intent: Dictionary, tier: StringName = &"") -> Dictionary:
+func scale_intent_damage(intent: Dictionary, tier: StringName = &"", effective_stats: bool = false) -> Dictionary:
+	if effective_stats or bool(intent.get("effective_stats", false)):
+		return intent.duplicate(true)
 	if intent.is_empty():
 		return intent
 	var kind: String = intent.get("intent", "")
@@ -109,10 +209,12 @@ func execute_enemy_intent(e: CombatUnit) -> void:
 	var kind: String = mv.get("intent", "unknown")
 	var value: int = int(mv.get("value", 0))
 	var times: int = int(mv.get("times", 1))
+	if bool(mv.get("cleanse", false)):
+		cleanse_debuffs(e)
 	match kind:
 		"attack":
 			for i in times:
-				if not ctrl.player.is_alive():
+				if not ctrl.player.is_alive() or not e.is_alive():
 					break
 				var dmg := ctrl._dmg.compute_outgoing(e, ctrl.player, value)
 				ctrl.enemy_attack_hit(e, dmg)
@@ -141,169 +243,5 @@ func execute_enemy_intent(e: CombatUnit) -> void:
 		"aoe_debuff":
 			var dmg := ctrl._dmg.compute_outgoing(e, ctrl.player, value)
 			ctrl._dmg.enemy_aoe_hit(e, dmg, mv)
+	apply_move_effects(e)
 	ctrl._log("敌人 %s 行动：%s" % [e.unit_name, kind])
-
-# =====================================================================
-# 随从 / 召唤（Summon System）
-# =====================================================================
-## 召唤随从：受上场上限约束；满场则广播 summon_rejected 并停止。
-func summon_minion(mid: StringName, count: int) -> void:
-	var md: MinionData = GameData.get_minion(mid)
-	if md == null:
-		push_warning("[Combat] 未知随从: %s" % mid)
-		return
-	var cap: int = int(GameData.balance.get("summon", {}).get("max_summons", 3))
-	for n in count:
-		if ctrl.allies.size() >= cap:
-			SignalBus.summon_rejected.emit(cap)
-			ctrl._log("召唤栏已满（上限 %d），无法继续召唤" % cap)
-			break
-		var a := CombatUnit.new()
-		a.setup(false, md.id, md.name, md.hp, md.sprite)
-		a.block = md.block
-		a.lifetime = md.lifetime
-		a.data = md
-		a.move_cursor = 0
-		ctrl.allies.append(a)
-		ctrl._on_minion_summoned()
-		roll_minion_intent(a)
-		SignalBus.ally_hp_changed.emit(index_of_ally(a), a.hp, a.max_hp)
-		SignalBus.ally_block_changed.emit(index_of_ally(a), a.block)
-		ctrl._log("召唤随从 %s（%d/%d）" % [md.name, ctrl.allies.size(), cap])
-	SignalBus.allies_changed.emit()
-
-## 随从阶段：清旧格挡 → turn_start 状态 → 行动 → 寿命-1/到期消失。
-func summon_phase() -> void:
-	if not ctrl._combat_active:
-		return
-	for a in ctrl.allies.duplicate():
-		if not is_instance_valid(a):
-			continue
-		a.block = 0
-		ctrl._status.process_turn_start_statuses(a, post_ally_death)
-		if not a.is_alive():
-			continue
-		execute_minion_intent(a)
-		if not ctrl._combat_active:
-			return
-		ctrl._status.decay_statuses_at_turn_end(a)
-		a.lifetime -= 1
-		SignalBus.ally_lifetime_changed.emit(index_of_ally(a), a.lifetime)
-		if a.lifetime <= 0:
-			post_ally_death(a)
-
-## 随从按意图行动（attack/defend/buff/debuff）。领袖气质(command) 给攻击/格挡加成。
-func execute_minion_intent(a: CombatUnit) -> void:
-	var mv: Dictionary = a.intent
-	if mv.is_empty():
-		return
-	SignalBus.ally_action_start.emit(index_of_ally(a))
-	var kind: String = mv.get("intent", "unknown")
-	var value: int = int(mv.get("value", 0))
-	var times: int = int(mv.get("times", 1))
-	match kind:
-		"attack":
-			for i in times:
-				var tgt: CombatUnit = ctrl.first_alive_enemy()
-				if tgt == null:
-					break
-				var dmg := ally_outgoing(a, tgt, value)
-				ctrl._dmg.deal_to_unit(tgt, dmg)
-		"defend", "buff", "debuff", "unknown":
-			execute_minion_non_attack(a)
-	roll_minion_intent(a)   # 滚动下一意图（fixed：循环 moves）
-	SignalBus.ally_action_end.emit(index_of_ally(a))
-
-## 随从非攻击意图结算（defend/buff/debuff/unknown）。
-func execute_minion_non_attack(a: CombatUnit) -> void:
-	var mv: Dictionary = a.intent
-	if mv.is_empty():
-		return
-	var kind: String = mv.get("intent", "unknown")
-	var value: int = int(mv.get("value", 0))
-	var cmd: int = ctrl.player.get_status(&"command") if ctrl.player.has_status(&"command") else 0
-	match kind:
-		"defend":
-			ctrl._dmg.add_block(a, value + cmd)
-		"buff":
-			var sid := StringName(mv.get("status", ""))
-			if sid != &"":
-				ctrl._apply_status(a, sid, value)
-		"debuff":
-			var sid := StringName(mv.get("status", ""))
-			if sid != &"":
-				ctrl._apply_status(ctrl.player, sid, value)
-		"unknown":
-			pass
-
-## 随从意图：fixed AI 循环 moves（复用敌人意图 schema，随从无难度缩放）。
-func roll_minion_intent(a: CombatUnit) -> void:
-	var md: MinionData = a.data as MinionData
-	if md == null or md.moves.is_empty():
-		a.intent = {}
-		return
-	var atk_cap: int = int(GameData.balance.get("summon", {}).get("max_minion_attack", 7))
-	var idx: int = int(a.move_cursor) % md.moves.size()
-	var mv: Dictionary = md.moves[idx].duplicate()
-	if String(mv.get("intent", "")) == "attack":
-		mv["value"] = mini(int(mv.get("value", 0)), atk_cap)
-	a.intent = mv
-	a.move_cursor = (idx + 1) % md.moves.size()
-	SignalBus.ally_intent_changed.emit(index_of_ally(a), StringName(mv.get("intent", "unknown")), int(mv.get("value", 0)))
-
-## 友方随从受击（AoE 敌人用）：扣血 → 广播 → 死亡清理。
-func deal_to_ally(a: CombatUnit, final_dmg: int) -> void:
-	a.apply_damage(final_dmg)
-	SignalBus.ally_hp_changed.emit(index_of_ally(a), a.hp, a.max_hp)
-	if not a.is_alive():
-		post_ally_death(a)
-
-func post_ally_death(a: CombatUnit) -> void:
-	# 寿命到期时 HP 仍 > 0（is_alive 为真），故不能按 is_alive 判定，只能按"是否还在友方列表"防重复移除。
-	if not ctrl.allies.has(a):
-		return
-	var idx: int = index_of_ally(a)
-	SignalBus.ally_died.emit(idx)
-	ctrl.allies.erase(a)
-	ctrl._log("随从 %s 消失" % a.unit_name)
-
-# =====================================================================
-# 随从 / 召唤（异步演出薄包装，供 BattleDirector.run_summon_turn 驱动）
-# =====================================================================
-## 友方回合开始：清旧格挡 + 回合开始状态（ashrot 等可能致死 → post_ally_death）。
-func ally_pre(a: CombatUnit) -> bool:
-	a.block = 0
-	ctrl._status.process_turn_start_statuses(a, post_ally_death)
-	if not a.is_alive():
-		return false
-	SignalBus.ally_action_start.emit(index_of_ally(a))
-	return true
-
-## 友方攻击 outgoing（含领袖气质加成、力量/虚弱/易伤等，不含格挡）。
-func ally_outgoing(a: CombatUnit, target: CombatUnit, base: int) -> int:
-	var dmg := ctrl._dmg.compute_outgoing(a, target, base)
-	var cmd: int = ctrl.player.get_status(&"command") if ctrl.player.has_status(&"command") else 0
-	return dmg + cmd
-
-## 单次攻击命中结算（供光弹撞击点回调）。目标已亡则改打首个存活敌人。
-func ally_attack_hit(a: CombatUnit, target: CombatUnit, dmg: int) -> void:
-	if target == null or not target.is_alive():
-		target = ctrl.first_alive_enemy()
-	if target == null:
-		return
-	ctrl._dmg.deal_to_unit(target, dmg)
-
-## 非攻击意图整体结算（自身出牌演出后回调）。
-func ally_act(a: CombatUnit) -> void:
-	execute_minion_non_attack(a)
-
-## 友方行动结束：状态衰减 + 寿命-1/到期消失 + 滚动下一意图。
-func ally_post(a: CombatUnit) -> void:
-	ctrl._status.decay_statuses_at_turn_end(a)
-	a.lifetime -= 1
-	SignalBus.ally_lifetime_changed.emit(index_of_ally(a), a.lifetime)
-	if a.lifetime <= 0:
-		post_ally_death(a)
-	else:
-		roll_minion_intent(a)
-	SignalBus.ally_action_end.emit(index_of_ally(a))

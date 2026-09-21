@@ -17,8 +17,12 @@ var _peers: Array = []
 var _pending_waits: Array = []
 
 func _ready() -> void:
+	# Exported APKs (including debug APKs) must never expose the testing server.
+	if not OS.has_feature("editor"):
+		set_process(false)
+		return
 	_server = TCPServer.new()
-	var err = _server.listen(PORT)
+	var err = _server.listen(PORT, "127.0.0.1")
 	if err != OK:
 		push_error("[TestBridge] Failed to listen on port %d: %s" % [PORT, error_string(err)])
 		return

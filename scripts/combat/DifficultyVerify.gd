@@ -65,7 +65,7 @@ func _test_coefficients() -> void:
 # =====================================================================
 func _test_enemy_roster() -> void:
 	var elites: Array = GameData.get_enemies_by_tier(&"elite")
-	check("精英敌=5（P-D 新增窑卫长/烬噬）", elites.size() == 5, "elites=%d" % elites.size())
+	check("精英敌=9（ES 新增四种随从编队主怪）", elites.size() == 9, "elites=%d" % elites.size())
 	var elite_ids := ""
 	for e in elites:
 		elite_ids += e.id + " "
@@ -73,14 +73,14 @@ func _test_enemy_roster() -> void:
 	var sagger := GameData.get_enemy(&"sagger_matron")
 	var kilnheart := GameData.get_enemy(&"kilnheart_ember")
 	var chi := GameData.get_enemy(&"chi_the_first")
-	check("三Boss基础耐久按本作牌值折算为180/200/190",
-		sagger.base_hp == 180 and kilnheart.base_hp == 200 and chi.base_hp == 190)
+	check("三Boss基础耐久240/402/508（BH-01/BH-02/BH-03）",
+		sagger.base_hp == 240 and kilnheart.base_hp == 402 and chi.base_hp == 508)
 	check("匣母循环提升为16攻/18格挡/32蓄力释放",
 		int(sagger.find_move(&"bar").value) == 16 and int(sagger.find_move(&"seal").value) == 18 and int(sagger.find_move(&"fire").value) == 32)
-	check("窑心后段具备16格挡与32蓄力释放",
-		int(kilnheart.phases[1].moves[3].value) == 16 and int(kilnheart.phases[1].moves[5].value) == 32 and int(kilnheart.phases[2].moves[0].value) == 12)
-	check("窑主后段具备18格挡与32蓄力释放",
-		int(chi.phases[1].moves[3].value) == 18 and int(chi.phases[1].moves[5].value) == 32 and int(chi.phases[2].moves[0].value) == 14)
+	check("BP 窑心后段固定双段处决与45爆发",
+		kilnheart.ai == &"phased_cycle" and int(kilnheart.find_move(&"execute_enraged").times) == 2 and int(kilnheart.find_move(&"burst_enraged").value) == 45)
+	check("BP 窑主后段固定40爆发并反制能力牌",
+		chi.ai == &"phased_cycle" and int(chi.phases[1].moves[0].value) == 40 and int(chi.boss_rules.power_strength) == 2)
 
 	var elite_w: float = float(GameData.map_config.get("type_weights", {}).get("elite", 0.0))
 	check("精英节点频率>=0.15（0.1→0.18）", elite_w >= 0.15, "weight=%f" % elite_w)

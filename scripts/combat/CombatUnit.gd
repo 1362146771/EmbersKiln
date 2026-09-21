@@ -30,16 +30,21 @@ var block_break_next: StringName = &""
 ## 当前所处阶段索引（仅 Boss 等 scripted_phases 敌人使用，-1 表示尚未初始化）。
 ## 用于检测阶段切换并触发该阶段的 on_enter（如觉醒自身加力量）。
 var phase_index: int = -1
+var phase_move_index: int = -1
+var reached_phase_index: int = 0
+var enemy_actions: int = 0
+var move_effects_resolved := false
+## 只保存索引，避免 RefCounted 主从引用环。补兵复用原槽位。
+var leader_index := -1
+var can_act_from_turn := 0
+var last_action_turn := -1
+var pending_ally_block := 0
+var death_resolved := false
 
 ## 本场战斗中由该敌人实际偷走、尚待胜利结算的金币。
 var stolen_gold: int = 0
 ## 当前攻击意图的偷金是否已结算，确保多段攻击只偷一次。
 var gold_steal_resolved: bool = false
-
-## 随从（召唤物）专用字段。
-var lifetime: int = 0            # 存活剩余回合（玩家回合开始时 -1，≤0 消失）
-var move_cursor: int = 0         # fixed AI 循环 moves 的游标（随从意图用）
-
 
 func setup(p_is_player: bool, p_id: StringName, p_name: String, p_hp: int, p_sprite: String = "") -> void:
 	is_player = p_is_player
@@ -54,6 +59,16 @@ func setup(p_is_player: bool, p_id: StringName, p_name: String, p_hp: int, p_spr
 	intent = {}
 	charge_next = &""
 	block_break_next = &""
+	phase_index = -1
+	phase_move_index = -1
+	reached_phase_index = 0
+	enemy_actions = 0
+	move_effects_resolved = false
+	leader_index = -1
+	can_act_from_turn = 0
+	last_action_turn = -1
+	pending_ally_block = 0
+	death_resolved = false
 	stolen_gold = 0
 	gold_steal_resolved = false
 

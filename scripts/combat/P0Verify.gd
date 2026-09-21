@@ -118,10 +118,16 @@ func verify_relic_bar(cu: CombatUI, path: String) -> void:
 	check("遗物栏 %s: 获得后实时刷新" % path, bar.slots.get_child_count() == RunState.relic_ids.size())
 	RunState.add_relic(&"emberheart")
 	check("遗物栏 %s: 重复获得不增槽" % path, bar.slots.get_child_count() == GameData.relics.size())
-	var missing: Button = bar.slots.get_node("kilnmark")
-	check("遗物栏 %s: 缺图显示名称占位" % path, missing.text.replace("\n", "") == GameData.get_relic(&"kilnmark").name)
+	# 使用现行遗物临时模拟缺图，验证占位路径不依赖退役内容。
+	var fixture: RelicData = GameData.get_relic(RunState.relic_ids.back())
+	var original_icon := fixture.icon
+	fixture.icon = "ICO_Relic_MissingForVerify"
+	bar.refresh()
+	var missing: Button = bar.slots.get_node(String(fixture.id))
+	check("遗物栏 %s: 缺图显示名称占位" % path, missing.text.replace("\n", "") == fixture.name)
 	missing.pressed.emit()
-	check("遗物栏 %s: 缺图仍可查看完整说明" % path, bar.details.visible and not bar.detail_icon.visible and bar.detail_description.text == GameData.get_relic(&"kilnmark").description)
+	check("遗物栏 %s: 缺图仍可查看完整说明" % path, bar.details.visible and not bar.detail_icon.visible and bar.detail_description.text == fixture.description)
+	fixture.icon = original_icon
 	bar.hide_details()
 	await get_tree().process_frame
 	await get_tree().process_frame

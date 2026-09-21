@@ -15,7 +15,6 @@ const FILES := {
 	"events": "events.json",
 	"potions": "potions.json",
 	"enchants": "enchants.json",
-	"minions": "minions.json",
 	"meta_progression": "meta_progression.json",
 	"ad_economy": "ad_economy.json",
 	"vfx": "vfx.json",
@@ -25,7 +24,6 @@ var cards: Dictionary = {}      # StringName -> CardData
 var enemies: Dictionary = {}    # StringName -> EnemyData
 var statuses: Dictionary = {}   # StringName -> StatusData
 var relics: Dictionary = {}     # StringName -> RelicData
-var minions: Dictionary = {}      # StringName -> MinionData
 var potions: Dictionary = {}     # StringName -> PotionData
 var enchants: Dictionary = {}    # StringName -> EnchantData
 var effect_kinds: Array = []     # cards.json 顶层 effect_kinds（用于交叉校验）
@@ -57,7 +55,6 @@ func load_all() -> bool:
 	enemies.clear()
 	statuses.clear()
 	relics.clear()
-	minions.clear()
 	potions.clear()
 	enchants.clear()
 	effect_kinds.clear()
@@ -97,10 +94,6 @@ func load_all() -> bool:
 	for d in raw["relics"].get("relics", []):
 		var r := RelicData.from_dict(d)
 		relics[r.id] = r
-	for d in raw["minions"].get("minions", []):
-		var m := MinionData.from_dict(d)
-		minions[m.id] = m
-
 	effect_kinds = raw["cards"].get("effect_kinds", [])
 	card_taxonomy = raw["cards"].get("taxonomy", {})
 	legacy_card_id_map = raw["cards"].get("legacy_card_id_map", {}).duplicate(true)
@@ -142,12 +135,13 @@ func load_all() -> bool:
 
 	_validate()
 	_validate_meta_progression()
+	_validate_card_mutation()
 	_validate_ad_economy()
 
 	if load_errors.is_empty():
 		is_loaded = true
 		SignalBus.data_loaded.emit()
-	print("[GameData] 加载完成 — 卡牌 %d / 敌人 %d / 状态 %d / 遗物 %d / 随从 %d / 药水 %d / 附魔 %d" % [cards.size(), enemies.size(), statuses.size(), relics.size(), minions.size(), potions.size(), enchants.size()])
+	print("[GameData] 加载完成 — 卡牌 %d / 敌人 %d / 状态 %d / 遗物 %d / 药水 %d / 附魔 %d" % [cards.size(), enemies.size(), statuses.size(), relics.size(), potions.size(), enchants.size()])
 	return true
 
 	is_loaded = false
@@ -199,10 +193,6 @@ func _validate() -> void:
 				var sid := StringName(eff["status"])
 				if not statuses.has(sid):
 					load_errors.append("卡牌 %s 引用了不存在的状态 %s" % [cid, sid])
-			if eff is Dictionary and eff.get("kind", "") == "summon" and eff.has("minion_id"):
-				var mid := StringName(eff["minion_id"])
-				if not minions.has(mid):
-					load_errors.append("卡牌 %s 引用了不存在的随从 %s" % [cid, mid])
 
 	for eid in enemies:
 		var e: EnemyData = enemies[eid]
@@ -260,8 +250,17 @@ func _validate() -> void:
 				load_errors.append("敌人 %s 缺少或含负的 %d 人战权重" % [eid, enemy_count])
 		if encounter_enemy.tier == &"normal" and not normal_classes.has(encounter_enemy.encounter_class):
 			load_errors.append("普通敌人 %s 的 encounter_class 无效：%s" % [eid, encounter_enemy.encounter_class])
-		if encounter_enemy.tier != &"normal" and encounter_enemy.encounter_class != &"solo_only":
+		if encounter_enemy.tier not in [&"normal", &"minion"] and encounter_enemy.encounter_class != &"solo_only":
 			load_errors.append("精英/Boss %s 必须标记为 solo_only" % eid)
+		if encounter_enemy.tier == &"minion" and encounter_enemy.encounter_class != &"escort":
+			load_errors.append("随从 %s 必须标记为 escort" % eid)
+		if not encounter_enemy.escort_ids.is_empty():
+			if encounter_enemy.tier != &"elite" or encounter_enemy.escort_ids.size() + 1 > max_en:
+				load_errors.append("固定精英编队 %s 层级或容量无效" % eid)
+			for escort_id in encounter_enemy.escort_ids:
+				var escort: EnemyData = enemies.get(StringName(escort_id))
+				if escort == null or escort.tier != &"minion":
+					load_errors.append("精英 %s 引用了无效随从 %s" % [eid, escort_id])
 
 	if not enemies.values().any(func(e: EnemyData) -> bool: return e.is_boss()):
 		load_errors.append("敌人表中没有 boss 层级的敌人")
@@ -681,10 +680,6 @@ func get_relic(id: StringName) -> RelicData:
 	return relics.get(id)
 
 
-func get_minion(id: StringName) -> MinionData:
-	return minions.get(id)
-
-
 func get_potion(id: StringName) -> PotionData:
 	return potions.get(id)
 
@@ -739,7 +734,29 @@ func is_potion_unlocked(id: StringName) -> bool:
 
 
 func is_enchant_unlocked(id: StringName) -> bool:
+	var enchant := get_enchant(id)
+	if enchant == null or enchant.acquisition_scope == "town_only": return false
 	return _is_meta_content_unlocked("enchant_ids", id, ProfileState.unlocked_enchant_ids)
+
+func _validate_card_mutation() -> void:
+	var config: Dictionary = meta_progression.get("card_mutation", {})
+	for field in ["initial_cost", "reroll_cost", "battle_enchant_limit", "per_card_limit", "direction_count", "min_base_cost"]:
+		_validate_positive_number(config.get(field), "card_mutation." + field)
+	var definitions: Dictionary = config.get("card_directions", {})
+	var seen := {}
+	for card in cards.values():
+		var eligible: bool = card.cost >= int(config.get("min_base_cost", 0)) and config.get("eligible_rarities", []).has(String(card.rarity))
+		if eligible != definitions.has(String(card.id)):
+			load_errors.append("窑变卡池覆盖不符：%s" % card.id)
+	for cid in definitions:
+		var directions: Array = definitions[cid]
+		if directions.size() != int(config.get("direction_count", 0)):
+			load_errors.append("窑变方向数量不符：%s" % cid)
+		for eid in directions:
+			var ed := get_enchant(StringName(eid))
+			if seen.has(eid) or ed == null or ed.acquisition_scope != "town_only" or not ed.matches_card(get_card(StringName(cid))):
+				load_errors.append("窑变方向配置错误：%s" % eid)
+			seen[eid] = true
 
 
 func profile_run_start_bonuses() -> Dictionary:

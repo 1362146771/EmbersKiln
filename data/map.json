@@ -63,7 +63,7 @@
       "mid_treasure_floor": 7,
       "enemy_pool": {
         "normal": ["kilnwarden", "cindermoth", "meltgolem", "embermoth", "ashcantor"],
-        "elite": ["kiln_captain", "slagbeast"]
+        "elite": ["kiln_captain", "slagbeast", "escort_commander", "escort_vanguard"]
       },
       "fixed_rows": {
         "0": "combat",
@@ -97,7 +97,7 @@
       "mid_treasure_floor": 7,
       "enemy_pool": {
         "normal": ["cinderfiend", "magmawhelp", "coalseer", "kilnstatue", "glazetick"],
-        "elite": ["ember_eater", "glazemaw"]
+        "elite": ["ember_eater", "glazemaw", "escort_deployer", "escort_overseer"]
       },
       "fixed_rows": {
         "0": "combat",

@@ -4,14 +4,15 @@ extends Node
 ## 运行时数据全部来自 RunState，本脚本不持有任何玩法数值。
 
 const SAVE_PATH := "user://save.json"
-const SAVE_VERSION := 6
-const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6]
+const SAVE_VERSION := 7
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6, 7]
 
 ## 测试可临时改写到隔离路径；生产环境始终使用默认 SAVE_PATH。
 var runtime_save_path := SAVE_PATH
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if SignalBus != null:
 		# 进入新一层 / 战斗结束：增量自动存档
 		SignalBus.floor_entered.connect(_on_floor_entered)
@@ -28,7 +29,13 @@ func _ready() -> void:
 
 # ---------- 窗口关闭强存档 ----------
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+	if what == NOTIFICATION_APPLICATION_PAUSED:
+		# Android can kill a background process without a window-close notification.
+		# RunState keeps the existing start-of-combat checkpoint semantics.
+		save_game()
+		if ProfileManager != null and ProfileManager.is_loaded:
+			ProfileManager.save_profile()
+	elif what == NOTIFICATION_WM_CLOSE_REQUEST:
 		if RunState != null and RunState.is_active:
 			save_game()
 		get_tree().quit()
@@ -91,11 +98,13 @@ func has_save() -> bool:
 	return FileAccess.file_exists(runtime_save_path)
 
 
-func delete_save() -> void:
+func delete_save() -> bool:
 	if has_save():
 		var err := _remove_user_file()
 		if err != OK:
 			push_error("[SaveManager] 删档失败：%d" % err)
+			return false
+	return true
 
 
 ## 清理与当前 SAVE_VERSION 不匹配的旧版存档（P-A：v1 单幕存档拒绝并删除）。
@@ -122,12 +131,23 @@ func save_to_file(path: String) -> bool:
 		return false
 	var data := RunState.to_save_dict()
 	var json := JSON.stringify(data)
-	var f := FileAccess.open(path, FileAccess.WRITE)
+	# Write next to the destination so the final rename stays on the same filesystem.
+	var temp_path := path + ".tmp"
+	var f := FileAccess.open(temp_path, FileAccess.WRITE)
 	if f == null:
 		push_error("[SaveManager] 无法写入 %s：%d" % [path, FileAccess.get_open_error()])
 		return false
 	f.store_line(json)
+	f.flush()
+	var write_error := f.get_error()
 	f.close()
+	if write_error != OK:
+		push_error("[SaveManager] 临时存档写入失败：%d" % write_error)
+		return false
+	var replace_error := DirAccess.rename_absolute(temp_path, path)
+	if replace_error != OK:
+		push_error("[SaveManager] 存档替换失败，保留原文件：%d" % replace_error)
+		return false
 	return true
 
 

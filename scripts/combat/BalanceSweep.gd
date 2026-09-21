@@ -273,8 +273,7 @@ func _auto_battle(cc: CombatController) -> void:
 		if cc.phase == CombatController.Phase.ENDED:
 			break
 		cc.end_player_turn()
-		# CombatController 只负责锁定回合；随从与敌方行动由 BattleDirector 异步编排。
-		await BattleDirector.run_summon_turn(cc, null, get_panel, get_panel)
+		# CombatController 只负责锁定回合；敌方行动由 BattleDirector 异步编排。
 		await BattleDirector.run_enemy_turn(cc, null, get_panel)
 
 

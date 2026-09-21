@@ -1,0 +1,252 @@
+{
+  "note": "Diagnostic fixtures authorized by 2026-09-20 user balance-test request; no production balance changes. 20 paired seeds and limits inherited from balance_sweep.json. 18 cards: existing 10 starters + 8 archetype additions. Strong fixture upgrades additions and uses one existing energy relic; weak fixture has neither. Not representative human win rates.",
+  "sim": {
+    "attempts_per_match": 20,
+    "seed_base": 20260920,
+    "max_turns": 40,
+    "max_card_plays": 80
+  },
+  "profiles": [
+    {
+      "id": "developing",
+      "relics": [],
+      "upgrade_additions": false
+    },
+    {
+      "id": "developed",
+      "relics": [
+        "everlit_core"
+      ],
+      "upgrade_additions": true
+    },
+    {
+      "id": "optimized",
+      "relics": [
+        "everlit_core"
+      ],
+      "upgrade_additions": true,
+      "starter_cards": [
+        "strike",
+        "strike",
+        "defend",
+        "defend"
+      ],
+      "policies": [
+        "leader_first",
+        "adds_first",
+        "tactical"
+      ]
+    }
+  ],
+  "builds": [
+    {
+      "id": "mixed",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "pommel_strike",
+        "shrug_it_off",
+        "flame_barrier",
+        "uppercut",
+        "cleave",
+        "disarm",
+        "anger",
+        "battle_trance"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "strength",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "inflame",
+        "spot_weakness",
+        "heavy_blade",
+        "twin_strike",
+        "whirlwind",
+        "shrug_it_off",
+        "uppercut",
+        "limit_break"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "aoe",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "cleave",
+        "cleave",
+        "immolate",
+        "whirlwind",
+        "offering",
+        "battle_trance",
+        "shrug_it_off",
+        "shockwave"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "defense",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "shrug_it_off",
+        "shrug_it_off",
+        "flame_barrier",
+        "body_slam",
+        "body_slam",
+        "entrench",
+        "barricade",
+        "disarm"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "control",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "disarm",
+        "shockwave",
+        "uppercut",
+        "dropkick",
+        "dropkick",
+        "shrug_it_off",
+        "pommel_strike",
+        "whirlwind"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "exhaust",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "true_grit",
+        "burning_pact",
+        "feel_no_pain",
+        "corruption",
+        "dark_embrace",
+        "fiend_fire",
+        "second_wind",
+        "shrug_it_off"
+      ],
+      "starter_count": 10
+    }
+  ],
+  "encounters": [
+    {
+      "id": "escort_commander",
+      "act": 1,
+      "escort": true
+    },
+    {
+      "id": "escort_vanguard",
+      "act": 1,
+      "escort": true
+    },
+    {
+      "id": "escort_deployer",
+      "act": 2,
+      "escort": true
+    },
+    {
+      "id": "escort_overseer",
+      "act": 2,
+      "escort": true
+    },
+    {
+      "id": "kiln_captain",
+      "act": 1,
+      "escort": false
+    },
+    {
+      "id": "slagbeast",
+      "act": 1,
+      "escort": false
+    },
+    {
+      "id": "ember_eater",
+      "act": 2,
+      "escort": false
+    },
+    {
+      "id": "glazemaw",
+      "act": 2,
+      "escort": false
+    }
+  ],
+  "policies": [
+    "leader_first",
+    "adds_first"
+  ],
+  "ai": {
+    "setup_turns": 3,
+    "setup_priority": 45,
+    "setup_late_priority": 12,
+    "draw_priority": 10,
+    "energy_priority": 20,
+    "debuff_priority": 20,
+    "kill_priority": 60,
+    "block_weight": 1.5,
+    "damage_weight": 1.0,
+    "setup_skills": [
+      "inflame",
+      "spot_weakness",
+      "limit_break",
+      "disarm",
+      "shockwave"
+    ],
+    "finisher_priority": 2
+  }
+}

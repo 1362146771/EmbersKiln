@@ -103,14 +103,60 @@
       "icon": "ICO_Relic_HearthTotem"
     },
     {
-      "id": "kilnmark",
-      "name": "窑主印记",
-      "rarity": "common",
-      "trigger": "combat_start",
-      "effect": "summon",
+      "id": "everlit_core",
+      "name": "长明炉芯",
+      "drawback": "no_rest_heal",
+      "drawback_value": 0,
+      "drawback_card": "",
+      "icon": "ICO_Relic_EverlitCore",
+      "description": "每回合额外获得 1 点能量。无法在休息点休息回血；其他回血方式不受影响。",
+      "rarity": "boss",
+      "trigger": "passive",
+      "effect": "energy_per_turn",
       "value": 1,
-      "description": "战斗开始时召唤 1 只 窑犬。",
-      "icon": "ICO_Relic_Kilnmark"
+      "energy_bonus": 1
+    },
+    {
+      "id": "sealed_hammer",
+      "name": "封釉重锤",
+      "drawback": "no_rest_upgrade",
+      "drawback_value": 0,
+      "drawback_card": "",
+      "icon": "ICO_Relic_SealedHammer",
+      "description": "每回合额外获得 1 点能量。无法在休息点锻造升级；其他升级方式不受影响。",
+      "rarity": "boss",
+      "trigger": "passive",
+      "effect": "energy_per_turn",
+      "value": 1,
+      "energy_bonus": 1
+    },
+    {
+      "id": "cracked_seal",
+      "name": "裂坯烙印",
+      "drawback": "combat_start_cards",
+      "drawback_value": 2,
+      "drawback_card": "wound",
+      "icon": "ICO_Relic_CrackedSeal",
+      "description": "每回合额外获得 1 点能量。每场战斗开始时，将 2 张伤口洗入抽牌堆；不会加入永久牌库。",
+      "rarity": "boss",
+      "trigger": "passive",
+      "effect": "energy_per_turn",
+      "value": 1,
+      "energy_bonus": 1
+    },
+    {
+      "id": "firebound_collar",
+      "name": "束火颈环",
+      "drawback": "turn_card_limit",
+      "drawback_value": 6,
+      "drawback_card": "",
+      "icon": "ICO_Relic_FireboundCollar",
+      "description": "每回合额外获得 1 点能量。每回合最多打出 6 张牌（含自动打出）；弃牌与药水不计入。",
+      "rarity": "boss",
+      "trigger": "passive",
+      "effect": "energy_per_turn",
+      "value": 1,
+      "energy_bonus": 1
     }
   ]
 }

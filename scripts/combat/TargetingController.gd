@@ -34,7 +34,7 @@ func on_card_tapped(view: CardView) -> void:
 func on_card_drag_started(view: CardView) -> void:
 	if ui.card_browser_open():
 		return
-	if ui._casting or ui._drag_active or BattleDirector.input_locked or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
+	if ui._casting or ui._drag_active or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
 		return
 	ui._drag_active = true
 	ui._drag_card = view
@@ -44,7 +44,7 @@ func on_card_drag_started(view: CardView) -> void:
 	var gr := view.get_global_rect()
 	ui._ghost = ui.CardViewScene.instantiate()
 	ui._ghost.set_ghost(true)
-	ui._ghost.build_visual(view.card_data, -1, view.enchants, view.upgraded, view.resolved_cost)
+	ui._ghost.build_visual(view.card_data, -1, view.enchants, view.upgraded, view.resolved_cost, view.entry_snapshot)
 	ui._ghost.custom_minimum_size = gr.size
 	ui.drag_layer.add_child(ui._ghost)
 	ui._ghost.global_position = gr.position
@@ -59,39 +59,42 @@ func on_card_drag_moved(view: CardView, gpos: Vector2) -> void:
 	ui._ghost.global_position = gpos - ui._ghost.size * 0.5 - Vector2(0, ui._ghost.size.y * 0.25)
 	ui.drop_layer.hover_update(gpos)
 	ui.drop_layer.set_arrow(view.get_global_rect().get_center(), gpos)
-	var over_discard := ui.drop_layer.hit_test(gpos) == DropLayer.DISCARD_TARGET
-	ui._hand.set_discard_hover(over_discard)
-	if over_discard:
-		# 提起卡牌，完整露出图标、数量和“松手弃牌”提示。
-		ui._ghost.global_position.y = ui.discard_pile_view.global_position.y - ui._ghost.size.y - 12.0
+
+
+func on_card_drag_canceled(view: CardView) -> void:
+	if view != ui._drag_card or not ui._drag_active:
+		return
+	if is_instance_valid(ui._ghost):
+		ui._ghost.queue_free()
+	ui._ghost = null
+	ui._drag_card = null
+	ui._drag_active = false
+	ui.drop_layer.clear()
+	view.set_playable(ui._play_queue.can_submit(view.get_meta("hand_entry", {})))
+	ui._hand.refresh_hand()
 
 
 func on_card_drag_ended(view: CardView, gpos: Vector2) -> void:
 	if not ui._drag_active or ui._ghost == null or view != ui._drag_card:
 		return
-	if ui._casting or BattleDirector.input_locked or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
+	if ui._casting or ui.card_browser_open() or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
 		snap_back(view)
 		return
 	var idx := ui.drop_layer.hit_test(gpos)
-	if idx == DropLayer.DISCARD_TARGET:
-		discard_card(view)
-		return
 	if idx == -2:
 		snap_back(view)
 		return
-	if not ui.controller.can_play_card(view.card_index):
-		ui._log("能量不足，可拖到弃牌堆弃置")
+	if not ui._play_queue.can_submit(view.get_meta("hand_entry", {})):
+		ui._log("当前无法打出这张牌")
 		snap_back(view)
 		return
 	cast_card(view, idx)
 
 
 ## 注入本次拖拽的合法落点：玩家面板（self/none）+ 各存活敌人面板（enemy/all_enemies）。
-func build_drop_targets(include_discard: bool = true) -> void:
+func build_drop_targets(check_card_playability: bool = true) -> void:
 	var targets := []
-	if include_discard and ui.discard_pile_view != null and ui._drag_card != null:
-		targets.append({"node": ui.discard_pile_view, "types": [ui._drag_card.card_data.target], "index": DropLayer.DISCARD_TARGET})
-	if include_discard and ui._drag_card != null and not ui.controller.can_play_card(ui._drag_card.card_index):
+	if check_card_playability and ui._drag_card != null and not ui._play_queue.can_submit(ui._drag_card.get_meta("hand_entry", {})):
 		ui.drop_layer.set_targets(targets)
 		return
 	var player_outline: Control = ui.player_sprite if ui.player_sprite != null and ui.player_sprite.is_visible_in_tree() else ui.player_panel
@@ -107,63 +110,24 @@ func build_drop_targets(include_discard: bool = true) -> void:
 	ui.drop_layer.set_targets(targets)
 
 
-## 弃牌独立于 BattleDirector.play_card_cast，绝不触发卡牌效果或攻击演出。
-func discard_card(view: CardView) -> void:
-	ui._casting = true
-	if not ui.controller.discard_card(view.card_index):
-		snap_back(view)
-		return
-	ui._drag_active = false
-	ui.drop_layer.clear()
-	ui._hand.set_discard_hover(false)
-	var ghost := ui._ghost
-	view.modulate.a = 0.0
-	var destination := ui.discard_pile_view.get_global_rect().get_center() - ghost.size * 0.1
-	var tw := ui.create_tween().set_parallel(true)
-	tw.tween_property(ghost, "global_position", destination, 0.18).set_ease(Tween.EASE_IN)
-	tw.tween_property(ghost, "scale", Vector2(0.2, 0.2), 0.18)
-	tw.tween_property(ghost, "modulate:a", 0.0, 0.18)
-	await tw.finished
-	if is_instance_valid(ghost):
-		ghost.queue_free()
-	ui._ghost = null
-	ui._drag_card = null
-	finish_cast_refresh()
-
-
 ## 施放演出：幽灵卡飞向目标，到达瞬间才真正结算（play_card），既有飘字/血条 VFX 自然接管。
-## 飞行 + 到达结算 + 元素爆发 + 缓冲统一交给 BattleDirector.play_card_cast（await 编排）；
+## 提交后手牌视图立即移除，由 CardPlayQueue 顺序调用 BattleDirector；收牌飞行独立进行。
 ## 必须来自当前拖拽，不再保留点击施放或无拖拽直接施放路径。
 func cast_card(view: CardView, target_index: int) -> void:
 	if not ui._drag_active or ui._drag_card != view or ui._ghost == null:
 		return
-	ui._hand.set_discard_hover(false)
-	ui._casting = true
+	var ghost: Control = ui._ghost
+	ghost.set_meta("discard_target", weakref(ui.discard_pile_view))
+	if not ui._play_queue.submit(view.get_meta("hand_entry", {}), target_index, ghost):
+		snap_back(view)
+		return
+	# Detach the pointer gesture before rebuilding; the queue owns this ghost now.
 	ui._drag_active = false
-	ui.drop_layer.clear()
-	var idx: int = view.card_index
-	var cd: CardData = view.card_data
-
-	var target_node: Control = ui.player_panel
-	if target_index >= 0 and target_index < ui.controller.enemies.size():
-		var e: CombatUnit = ui.controller.enemies[target_index]
-		var p: Panel = ui.unit_panels.get(e)
-		if p != null:
-			target_node = p
-
-	var ghost = ui._ghost
-
-	# 演出（飞行 + 到达结算 + 爆发 + 缓冲）交由 BattleDirector 编排
-	await BattleDirector.play_card_cast(ghost, target_node, cd, idx, target_index, ui.controller)
-
-	ui.selected_target = -1
-	if is_instance_valid(ghost):
-		ghost.queue_free()
 	ui._ghost = null
 	ui._drag_card = null
-	ui._casting = false
+	ui.selected_target = -1
 	ui.drop_layer.clear()
-	finish_cast_refresh()
+	ui._hand.refresh_hand()
 
 
 ## 非法落点：幽灵卡弹回原位并释放，原卡恢复。
@@ -172,7 +136,6 @@ func snap_back(view: CardView) -> void:
 	var ghost = ui._ghost
 	ui._ghost = null
 	ui.drop_layer.clear()
-	ui._hand.set_discard_hover(false)
 	ui._drag_active = false
 	ui._drag_card = null
 	ui._casting = true  # 回弹完再重建手牌，避免回弹中快速重复拖拽留下幽灵卡。
@@ -186,7 +149,7 @@ func snap_back(view: CardView) -> void:
 		if is_instance_valid(ghost):
 			ghost.queue_free()
 		if is_instance_valid(view):
-			view.set_playable(ui.controller.can_play_card(view.card_index))
+			view.set_playable(ui._play_queue.can_submit(view.get_meta("hand_entry", {})))
 		finish_cast_refresh()
 	)
 
@@ -209,16 +172,11 @@ func reject_card(view: CardView, msg: String) -> void:
 func on_end_turn() -> void:
 	if ui.card_browser_open():
 		return
-	if ui._casting or ui._drag_active or BattleDirector.input_locked or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
+	if ui._casting or ui._drag_active or ui._play_queue.busy() or BattleDirector.input_locked or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
 		return
-	ui._log("结束回合 —— 召唤阶段 + 敌人行动中…")
+	ui._log("结束回合 —— 敌人行动中…")
 	ui.controller.end_player_turn()
-	# 阶段顺序：玩家结束回合 → 召唤物阶段（友色光弹攻击，带动画/VFX）→ 敌人回合。
-	# 两者均由 BattleDirector 异步编排（input_locked 期间阻塞输入），"全播完才进下一回合"。
-	# 先 await 召唤阶段，结束解锁后再驱动敌人回合（run_enemy_turn 自身再上锁）。
 	var enemy_getter := func(e): return ui.unit_panels.get(e) if is_instance_valid(e) else null
-	var ally_getter := func(a): return ui.ally_panels.get(a) if is_instance_valid(a) else null
-	await BattleDirector.run_summon_turn(ui.controller, ui.player_panel, enemy_getter, ally_getter)
 	BattleDirector.run_enemy_turn(ui.controller, ui.player_panel, enemy_getter)
 
 

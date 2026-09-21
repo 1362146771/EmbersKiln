@@ -1,10 +1,9 @@
 extends Control
 class_name DropLayer
 ## DropLayer —— 落点层：全屏覆盖、MOUSE_FILTER_IGNORE 的 Control。
-## 只负责：目标列表 / 命中测试 / 指向箭头 / 弃牌堆高亮。
+## 只负责：目标列表 / 命中测试 / 指向箭头。
 ## 人物和敌人仅在合法悬停时沿透明图片轮廓描白。
 
-const DISCARD_TARGET := -4                  # 独立于玩家(-1)、无落点(-2)、无悬停(-3)
 
 const ARROW := preload("res://art/ui/formal/effrct_arrow.png")
 const OUTLINE := preload("res://art/ui/formal/TargetOutline.gdshader")
@@ -42,7 +41,7 @@ func clear() -> void:
 	queue_redraw()
 
 
-## 设定当前卡类型，用于合法落点判定和弃牌堆高亮。
+## 设定当前卡类型，用于合法落点判定。
 func highlight(card_type: StringName) -> void:
 	_card_type = card_type
 	queue_redraw()
@@ -72,7 +71,7 @@ func hover_update(global_pos: Vector2) -> void:
 func _update_outline() -> void:
 	var portrait: TextureRect
 	for t in _targets:
-		if t.index == _hover_index and t.index != DISCARD_TARGET and t.types.has(_card_type):
+		if t.index == _hover_index and t.types.has(_card_type):
 			portrait = t.get("outline_node", t.node) as TextureRect
 			break
 	if portrait == _outlined_portrait:
@@ -98,7 +97,7 @@ func _exit_tree() -> void:
 	_clear_outline()
 
 
-## 命中测试：返回目标 index（-1=玩家，>=0=敌人，-2=无落点，DISCARD_TARGET=弃牌）。
+## 命中测试：返回目标 index（-1=玩家，>=0=敌人，-2=无落点）。
 func hit_test(global_pos: Vector2) -> int:
 	var lp := global_pos - get_global_position()
 	for t in _targets:
@@ -127,14 +126,3 @@ func _draw() -> void:
 			draw_set_transform(point, delta.angle() - texture_forward.angle(), Vector2.ONE)
 			draw_texture_rect(ARROW, Rect2(-22, -24, 44, 48), false)
 		draw_set_transform(Vector2.ZERO)
-	if _card_type == &"":
-		return
-	for t in _targets:
-		if t.index != DISCARD_TARGET or not t.types.has(_card_type):
-			continue
-		var is_hover: bool = (t.index == _hover_index)
-		var c := Color("f2e8d5") if is_hover else Color("94826f")
-		var lw := 7.0 if is_hover else 4.0
-		var rect := Rect2(t.rect)
-		# 弃牌堆只描边，不用圆环遮住紧邻的手牌。使用 v3 米白/铁灰。
-		draw_rect(rect.grow(-2.0), c, false, lw)

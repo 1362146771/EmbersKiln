@@ -1,0 +1,8 @@
+{
+  "cards": ["bludgeon", "immolate", "reaper", "carnage", "uppercut", "searing_blow", "fiend_fire", "sever_soul", "blood_for_blood"],
+  "support_cards": ["defend", "strike", "bash"],
+  "enemies": ["claylump", "claylump", "claylump"],
+  "target_hp": 500,
+  "energy": 5,
+  "speeds": [0.25, 0.5, 1.0, 2.0]
+}

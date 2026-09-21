@@ -98,7 +98,6 @@ func run() -> void:
 		&"stoke": "活力",
 		&"glaze": "缓冲",
 		&"thirst": "衰朽",
-		&"command": "领袖气质",
 	}
 	for status_id in expected_status_names:
 		var status := GameData.get_status(status_id)

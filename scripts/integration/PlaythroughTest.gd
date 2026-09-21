@@ -54,9 +54,9 @@ func check(name: String, cond: bool, detail: String = "") -> void:
 func run() -> void:
 	# ---------- 数据层不变量 ----------
 	check("卡牌数据=75职业牌+3状态牌", GameData.cards.size() == 78, "cards=%d" % GameData.cards.size())
-	check("敌人数据=22（含抢劫的与三幕Boss）", GameData.enemies.size() == 22, "enemies=%d" % GameData.enemies.size())
-	check("遗物数据=11", GameData.relics.size() == 11, "relics=%d" % GameData.relics.size())
-	check("状态数据=10（含活力/缓冲/衰朽/领袖气质）", GameData.statuses.size() == 10, "statuses=%d" % GameData.statuses.size())
+	check("敌人数据=32（含四组精英编队与随从）", GameData.enemies.size() == 32, "enemies=%d" % GameData.enemies.size())
+	check("遗物数据=10", GameData.relics.size() == 10, "relics=%d" % GameData.relics.size())
+	check("状态数据=9（含活力/缓冲/衰朽）", GameData.statuses.size() == 9, "statuses=%d" % GameData.statuses.size())
 	check("层数=floor_count", RunState.total_floors() == int(GameData.act_configs[0].get("floor_count", 15)), "floors=%d" % RunState.total_floors())
 
 	# 全幕总层数（用于「通关时到达终幕 Boss 层」断言）
@@ -183,7 +183,6 @@ func _auto_battle(cc: CombatController) -> bool:
 		if cc.phase == CombatController.Phase.ENDED:
 			break
 		cc.end_player_turn()
-		await BattleDirector.run_summon_turn(cc, null, get_panel, get_panel)
 		await BattleDirector.run_enemy_turn(cc, null, get_panel)
 	return cc.phase == CombatController.Phase.ENDED and cc.player.is_alive()
 

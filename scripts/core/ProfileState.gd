@@ -2,8 +2,10 @@ extends Node
 ## Autoload: ProfileState —— 跨 Run 的永久玩家档案。
 ## 只保存长期状态；当前 Run 的牌组、HP、地图等仍归 RunState。
 
-const PROFILE_VERSION := 6
-const SUPPORTED_PROFILE_VERSIONS := [1, 2, 3, 4, 5, 6]
+const PROFILE_VERSION := 7
+const SUPPORTED_PROFILE_VERSIONS := [1, 2, 3, 4, 5, 6, 7]
+
+var mutation_data: Dictionary = {}
 
 var first_battle_started := false
 
@@ -26,6 +28,7 @@ var ad_daily_usage: Dictionary = {}
 
 
 func reset_to_defaults(emit_changed: bool = true) -> void:
+	mutation_data.clear()
 	first_battle_started = false
 	fireseed_balance = 0
 	facility_levels.clear()
@@ -51,6 +54,7 @@ func reset_to_defaults(emit_changed: bool = true) -> void:
 func to_save_dict() -> Dictionary:
 	return {
 		"version": PROFILE_VERSION,
+		"mutation_data": mutation_data.duplicate(true),
 		"first_battle_started": first_battle_started,
 		"fireseed_balance": fireseed_balance,
 		"facility_levels": facility_levels.duplicate(true),
@@ -77,6 +81,7 @@ func from_save_dict(data: Dictionary, emit_changed: bool = true, report_errors: 
 	if normalized.is_empty():
 		return false
 
+	mutation_data = normalized["mutation_data"]
 	first_battle_started = normalized["first_battle_started"]
 	fireseed_balance = normalized["fireseed_balance"]
 	facility_levels = normalized["facility_levels"]
@@ -84,6 +89,7 @@ func from_save_dict(data: Dictionary, emit_changed: bool = true, report_errors: 
 	unlocked_card_ids.assign(normalized["unlocked_card_ids"])
 	discovered_card_ids.assign(normalized["discovered_card_ids"])
 	unlocked_relic_ids.assign(normalized["unlocked_relic_ids"])
+	unlocked_relic_ids = unlocked_relic_ids.filter(func(id): return GameData.get_relic(id) != null)
 	unlocked_potion_ids.assign(normalized["unlocked_potion_ids"])
 	unlocked_enchant_ids.assign(normalized["unlocked_enchant_ids"])
 	unlocked_pre_run_buff_ids.assign(normalized["unlocked_pre_run_buff_ids"])
@@ -568,6 +574,7 @@ func _normalize_save_dict(data: Dictionary, report_errors: bool = true) -> Dicti
 		})
 
 	return {
+		"mutation_data": data.get("mutation_data", {}).duplicate(true),
 		"first_battle_started": bool(data.get("first_battle_started", source_version < 6)),
 		"fireseed_balance": normalized_balance,
 		"facility_levels": normalized_levels,
@@ -589,6 +596,18 @@ func _normalize_save_dict(data: Dictionary, report_errors: bool = true) -> Dicti
 
 
 func _has_expected_container_types(data: Dictionary) -> bool:
+	var mutation: Variant = data.get("mutation_data", {})
+	if not mutation is Dictionary: return false
+	if not mutation.get("patterns", {}) is Dictionary or not mutation.get("pending", {}) is Dictionary: return false
+	for cid in mutation.get("patterns", {}):
+		if not cid is String or not mutation["patterns"][cid] is String: return false
+	if not mutation.get("rng_state", "") is String: return false
+	if not (mutation.get("revision", 0) is int or mutation.get("revision", 0) is float): return false
+	var receipt: Dictionary = mutation.get("pending", {})
+	if not receipt.is_empty():
+		for field in ["card_id", "old_id", "new_id"]:
+			if not receipt.get(field) is String: return false
+		if not (receipt.get("revision") is int or receipt.get("revision") is float): return false
 	var array_fields := [
 		"completed_project_ids",
 		"unlocked_card_ids",

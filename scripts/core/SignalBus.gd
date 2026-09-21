@@ -67,18 +67,6 @@ signal damage_dealt(is_player_source: bool, target_index: int, amount: int)
 signal status_applied(is_player: bool, index: int, status_id: StringName, stacks: int)
 signal status_removed(is_player: bool, index: int, status_id: StringName)
 
-# ---------- 随从 / 召唤（友方单位，index 为 allies 数组下标） ----------
-signal ally_hp_changed(index: int, current: int, maximum: int)
-signal ally_block_changed(index: int, current: int)
-signal ally_intent_changed(index: int, intent: StringName, value: int)
-signal ally_status_applied(index: int, status_id: StringName, stacks: int)
-signal ally_lifetime_changed(index: int, lifetime: int)
-signal ally_action_start(index: int)        # 随从开始行动（UI 提亮 + 置顶）
-signal ally_action_end(index: int)          # 随从行动结束（UI 恢复遮挡/暗态）
-signal ally_died(index: int)
-signal allies_changed()                     # 随从列表增减（登场/消失）
-signal summon_rejected(cap: int)            # 召唤栏已满，拒绝再召唤
-
 # ---------- 进度 ----------
 signal gold_changed(amount: int)
 signal relic_gained(relic_id: StringName)

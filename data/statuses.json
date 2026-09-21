@@ -97,16 +97,6 @@
       "applies_to": "player",
       "effect": "回合结束未打出攻击牌，下回合 -1 能量（惩罚空过）。",
       "icon": "ICO_Status_Thirst"
-    },
-    {
-      "id": "command",
-      "name": "领袖气质",
-      "type": "buff",
-      "stacks": true,
-      "decay": false,
-      "applies_to": "player",
-      "effect": "你的随从攻击 / 获得格挡时额外 +层数。",
-      "icon": "ICO_Status_Command"
     }
   ]
 }

@@ -1,10 +1,932 @@
 {
+  "enemy_portrait": {
+    "multi_enemy_scale": 1.5
+  },
+  "card_presentation": {
+    "pullback_seconds": 0.22,
+    "charge_seconds": 0.18,
+    "strike_seconds": 0.14,
+    "pullback_card_heights": 0.85,
+    "charge_scale": 1.08,
+    "impact_scale": 0.65,
+    "discard_seconds": 0.38,
+    "discard_scale": 0.08,
+    "discard_turns": 1.0,
+    "discard_arc_pixels": 90.0,
+    "count_peak_scale": 1.3,
+    "count_expand_seconds": 0.10,
+    "count_restore_seconds": 0.20
+  },
+  "enchant_attack": {
+    "enabled": true,
+    "reduced_motion": false,
+    "impact_seconds": 1.02,
+    "reaper_cutin": {
+      "seconds": 0.65,
+      "portrait": "res://art/vfx/enchant/reaper_half_face_v2.png",
+      "portrait_height": 0.98,
+      "portrait_offset": [
+        -0.19,
+        0.035
+      ],
+      "mask_opacity_top": 0.5,
+      "mask_opacity_bottom": 0.9,
+      "mask_color": "#07050C",
+      "background_retention": 0.04,
+      "eye_uv": [
+        0.716,
+        0.482
+      ],
+      "blur_pixels": 18.0,
+      "red_color": "#D52935"
+    },
+    "frame_marks": [
+      0.0,
+      0.055,
+      0.15,
+      0.32,
+      0.54,
+      0.78,
+      1.0
+    ],
+    "impact_rhythm": {
+      "kiln_cleave": {
+        "contact_seconds": 0.025,
+        "hold_seconds": 0.1,
+        "contact_progress": 0.14,
+        "step_seconds": 0.045,
+        "stepped_until": 0.44,
+        "shake_keys": [
+          [
+            0.0,
+            8,
+            12
+          ],
+          [
+            0.025,
+            16,
+            24
+          ],
+          [
+            0.125,
+            -13,
+            -18
+          ],
+          [
+            0.17,
+            10,
+            14
+          ],
+          [
+            0.215,
+            -6,
+            -9
+          ],
+          [
+            0.26,
+            12,
+            17
+          ],
+          [
+            0.305,
+            -8,
+            -11
+          ],
+          [
+            0.35,
+            4,
+            6
+          ],
+          [
+            0.395,
+            -2,
+            -3
+          ],
+          [
+            0.44,
+            2,
+            2
+          ],
+          [
+            0.54,
+            0,
+            0
+          ]
+        ]
+      },
+      "furnace_wave": {
+        "contact_seconds": 0.03,
+        "hold_seconds": 0.065,
+        "contact_progress": 0.15,
+        "step_seconds": 0.04,
+        "stepped_until": 0.455,
+        "shake_keys": [
+          [
+            0.0,
+            3,
+            -10
+          ],
+          [
+            0.03,
+            7,
+            -21
+          ],
+          [
+            0.095,
+            -5,
+            14
+          ],
+          [
+            0.135,
+            4,
+            -10
+          ],
+          [
+            0.175,
+            -3,
+            6
+          ],
+          [
+            0.215,
+            9,
+            -26
+          ],
+          [
+            0.255,
+            -7,
+            18
+          ],
+          [
+            0.295,
+            5,
+            -12
+          ],
+          [
+            0.335,
+            -3,
+            7
+          ],
+          [
+            0.375,
+            2,
+            -4
+          ],
+          [
+            0.455,
+            1,
+            2
+          ],
+          [
+            0.56,
+            0,
+            0
+          ]
+        ]
+      },
+      "harvest_arc": {
+        "contact_seconds": 0.02,
+        "hold_seconds": 0.085,
+        "contact_progress": 0.3,
+        "step_seconds": 0.035,
+        "stepped_until": 0.385,
+        "shake_keys": [
+          [
+            0.0,
+            -13,
+            2
+          ],
+          [
+            0.02,
+            -29,
+            5
+          ],
+          [
+            0.105,
+            23,
+            -4
+          ],
+          [
+            0.14,
+            -17,
+            3
+          ],
+          [
+            0.175,
+            12,
+            -2
+          ],
+          [
+            0.21,
+            -19,
+            3
+          ],
+          [
+            0.245,
+            13,
+            -2
+          ],
+          [
+            0.28,
+            -8,
+            1
+          ],
+          [
+            0.315,
+            5,
+            -1
+          ],
+          [
+            0.35,
+            -3,
+            0
+          ],
+          [
+            0.385,
+            2,
+            0
+          ],
+          [
+            0.49,
+            0,
+            0
+          ]
+        ]
+      },
+      "carnage": {
+        "contact_seconds": 0.025,
+        "hold_seconds": 0.1,
+        "contact_progress": 0.15,
+        "step_seconds": 0.045,
+        "stepped_until": 0.44,
+        "shake_keys": [
+          [
+            0.0,
+            8.0,
+            12.0
+          ],
+          [
+            0.025,
+            16.0,
+            24.0
+          ],
+          [
+            0.125,
+            -13.0,
+            -18.0
+          ],
+          [
+            0.17,
+            10.0,
+            14.0
+          ],
+          [
+            0.215,
+            -6.0,
+            -9.0
+          ],
+          [
+            0.26,
+            12.0,
+            17.0
+          ],
+          [
+            0.305,
+            -8.0,
+            -11.0
+          ],
+          [
+            0.35,
+            4.0,
+            6.0
+          ],
+          [
+            0.395,
+            -2.0,
+            -3.0
+          ],
+          [
+            0.44,
+            2.0,
+            2.0
+          ],
+          [
+            0.54,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "uppercut": {
+        "contact_seconds": 0.03,
+        "hold_seconds": 0.075,
+        "contact_progress": 0.2,
+        "step_seconds": 0.04,
+        "stepped_until": 0.455,
+        "shake_keys": [
+          [
+            0.0,
+            3.0,
+            -10.0
+          ],
+          [
+            0.03,
+            7.0,
+            -21.0
+          ],
+          [
+            0.105,
+            -5.0,
+            14.0
+          ],
+          [
+            0.135,
+            4.0,
+            -10.0
+          ],
+          [
+            0.175,
+            -3.0,
+            6.0
+          ],
+          [
+            0.215,
+            9.0,
+            -26.0
+          ],
+          [
+            0.255,
+            -7.0,
+            18.0
+          ],
+          [
+            0.295,
+            5.0,
+            -12.0
+          ],
+          [
+            0.335,
+            -3.0,
+            7.0
+          ],
+          [
+            0.375,
+            2.0,
+            -4.0
+          ],
+          [
+            0.455,
+            1.0,
+            2.0
+          ],
+          [
+            0.56,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "searing_blow": {
+        "contact_seconds": 0.025,
+        "hold_seconds": 0.1,
+        "contact_progress": 0.18,
+        "step_seconds": 0.045,
+        "stepped_until": 0.44,
+        "shake_keys": [
+          [
+            0.0,
+            6.8,
+            10.2
+          ],
+          [
+            0.025,
+            13.6,
+            20.4
+          ],
+          [
+            0.125,
+            -11.05,
+            -15.3
+          ],
+          [
+            0.17,
+            8.5,
+            11.9
+          ],
+          [
+            0.215,
+            -5.1,
+            -7.65
+          ],
+          [
+            0.26,
+            10.2,
+            14.45
+          ],
+          [
+            0.305,
+            -6.8,
+            -9.35
+          ],
+          [
+            0.35,
+            3.4,
+            5.1
+          ],
+          [
+            0.395,
+            -1.7,
+            -2.55
+          ],
+          [
+            0.44,
+            1.7,
+            1.7
+          ],
+          [
+            0.54,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "fiend_fire": {
+        "contact_seconds": 0.03,
+        "hold_seconds": 0.065,
+        "contact_progress": 0.19,
+        "step_seconds": 0.04,
+        "stepped_until": 0.455,
+        "shake_keys": [
+          [
+            0.0,
+            3.15,
+            -10.5
+          ],
+          [
+            0.03,
+            7.35,
+            -22.05
+          ],
+          [
+            0.095,
+            -5.25,
+            14.7
+          ],
+          [
+            0.135,
+            4.2,
+            -10.5
+          ],
+          [
+            0.175,
+            -3.15,
+            6.3
+          ],
+          [
+            0.215,
+            9.45,
+            -27.3
+          ],
+          [
+            0.255,
+            -7.35,
+            18.9
+          ],
+          [
+            0.295,
+            5.25,
+            -12.6
+          ],
+          [
+            0.335,
+            -3.15,
+            7.35
+          ],
+          [
+            0.375,
+            2.1,
+            -4.2
+          ],
+          [
+            0.455,
+            1.05,
+            2.1
+          ],
+          [
+            0.56,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "sever_soul": {
+        "contact_seconds": 0.02,
+        "hold_seconds": 0.085,
+        "contact_progress": 0.2,
+        "step_seconds": 0.035,
+        "stepped_until": 0.385,
+        "shake_keys": [
+          [
+            0.0,
+            -11.7,
+            1.8
+          ],
+          [
+            0.02,
+            -26.1,
+            4.5
+          ],
+          [
+            0.105,
+            20.7,
+            -3.6
+          ],
+          [
+            0.14,
+            -15.3,
+            2.7
+          ],
+          [
+            0.175,
+            10.8,
+            -1.8
+          ],
+          [
+            0.21,
+            -17.1,
+            2.7
+          ],
+          [
+            0.245,
+            11.7,
+            -1.8
+          ],
+          [
+            0.28,
+            -7.2,
+            0.9
+          ],
+          [
+            0.315,
+            4.5,
+            -0.9
+          ],
+          [
+            0.35,
+            -2.7,
+            0.0
+          ],
+          [
+            0.385,
+            1.8,
+            0.0
+          ],
+          [
+            0.49,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "blood_for_blood": {
+        "contact_seconds": 0.025,
+        "hold_seconds": 0.1,
+        "contact_progress": 0.18,
+        "step_seconds": 0.045,
+        "stepped_until": 0.44,
+        "shake_keys": [
+          [
+            0.0,
+            8.8,
+            13.2
+          ],
+          [
+            0.025,
+            17.6,
+            26.4
+          ],
+          [
+            0.125,
+            -14.3,
+            -19.8
+          ],
+          [
+            0.17,
+            11.0,
+            15.4
+          ],
+          [
+            0.215,
+            -6.6,
+            -9.9
+          ],
+          [
+            0.26,
+            13.2,
+            18.7
+          ],
+          [
+            0.305,
+            -8.8,
+            -12.1
+          ],
+          [
+            0.35,
+            4.4,
+            6.6
+          ],
+          [
+            0.395,
+            -2.2,
+            -3.3
+          ],
+          [
+            0.44,
+            2.2,
+            2.2
+          ],
+          [
+            0.54,
+            0.0,
+            0.0
+          ]
+        ]
+      }
+    },
+    "card_profiles": {
+      "bludgeon": "kiln_cleave",
+      "immolate": "furnace_wave",
+      "reaper": "harvest_arc",
+      "carnage": "carnage",
+      "uppercut": "uppercut",
+      "searing_blow": "searing_blow",
+      "fiend_fire": "fiend_fire",
+      "sever_soul": "sever_soul",
+      "blood_for_blood": "blood_for_blood"
+    },
+    "profiles": {
+      "kiln_cleave": {
+        "effect_kind": 0,
+        "darken": 0.4,
+        "distortion_pixels": 9.0,
+        "atlas": "res://art/vfx/enchant/handdrawn/bludgeon.png",
+        "sprite_size": [
+          470.0,
+          470.0
+        ],
+        "sprite_anchor": [
+          0.55,
+          0.53
+        ],
+        "sprite_offset": [
+          0.0,
+          0.0
+        ],
+        "sprite_rotation": 0.0,
+        "saturation": 0.72,
+        "fire_color": "#D9A441",
+        "core_color": "#E0C1AC",
+        "ash_color": "#7E504E",
+        "ink_color": "#1B1612"
+      },
+      "furnace_wave": {
+        "effect_kind": 1,
+        "darken": 0.34,
+        "distortion_pixels": 7.0,
+        "atlas": "res://art/vfx/enchant/handdrawn/immolate.png",
+        "sprite_size": [
+          300.0,
+          350.0
+        ],
+        "sprite_anchor": [
+          0.5,
+          0.92
+        ],
+        "sprite_offset": [
+          0.0,
+          140.0
+        ],
+        "sprite_rotation": 0.0,
+        "saturation": 0.62,
+        "fire_color": "#D9A441",
+        "core_color": "#E0C1AC",
+        "ash_color": "#7E504E",
+        "ink_color": "#1B1612"
+      },
+      "harvest_arc": {
+        "effect_kind": 2,
+        "darken": 0.42,
+        "distortion_pixels": 6.0,
+        "atlas": "res://art/vfx/enchant/handdrawn/reaper.png",
+        "sprite_size": [
+          730.0,
+          350.0
+        ],
+        "sprite_anchor": [
+          0.5,
+          0.5
+        ],
+        "sprite_offset": [
+          0.0,
+          0.0
+        ],
+        "sprite_rotation": -0.16,
+        "saturation": 0.65,
+        "fire_color": "#D9A441",
+        "core_color": "#E0C1AC",
+        "ash_color": "#4A3C66",
+        "ink_color": "#1B1612"
+      },
+      "carnage": {
+        "effect_kind": 3,
+        "darken": 0.44,
+        "distortion_pixels": 10,
+        "atlas": "res://art/vfx/enchant/handdrawn/carnage.png",
+        "sprite_size": [
+          520,
+          520
+        ],
+        "sprite_anchor": [
+          0.5,
+          0.5
+        ],
+        "sprite_offset": [
+          0,
+          0
+        ],
+        "sprite_rotation": 0.0,
+        "saturation": 0.7,
+        "fire_color": "#D9A441",
+        "core_color": "#E0C1AC",
+        "ash_color": "#7E504E",
+        "ink_color": "#1B1612"
+      },
+      "uppercut": {
+        "effect_kind": 4,
+        "darken": 0.38,
+        "distortion_pixels": 8,
+        "atlas": "res://art/vfx/enchant/handdrawn/uppercut.png",
+        "sprite_size": [
+          420,
+          530
+        ],
+        "sprite_anchor": [
+          0.5,
+          0.66
+        ],
+        "sprite_offset": [
+          0,
+          50
+        ],
+        "sprite_rotation": 0.0,
+        "saturation": 0.72,
+        "fire_color": "#D9A441",
+        "core_color": "#E0C1AC",
+        "ash_color": "#7E504E",
+        "ink_color": "#1B1612"
+      },
+      "searing_blow": {
+        "effect_kind": 5,
+        "darken": 0.42,
+        "distortion_pixels": 11,
+        "atlas": "res://art/vfx/enchant/handdrawn/searing_blow.png",
+        "sprite_size": [
+          430,
+          490
+        ],
+        "sprite_anchor": [
+          0.5,
+          0.5
+        ],
+        "sprite_offset": [
+          0,
+          0
+        ],
+        "sprite_rotation": 0.0,
+        "saturation": 0.78,
+        "fire_color": "#D9A441",
+        "core_color": "#E0C1AC",
+        "ash_color": "#7E504E",
+        "ink_color": "#1B1612"
+      },
+      "fiend_fire": {
+        "effect_kind": 6,
+        "darken": 0.47,
+        "distortion_pixels": 12,
+        "atlas": "res://art/vfx/enchant/handdrawn/fiend_fire.png",
+        "sprite_size": [
+          500,
+          500
+        ],
+        "sprite_anchor": [
+          0.5,
+          0.5
+        ],
+        "sprite_offset": [
+          0,
+          0
+        ],
+        "sprite_rotation": 0.0,
+        "saturation": 0.7,
+        "fire_color": "#D9A441",
+        "core_color": "#E0C1AC",
+        "ash_color": "#7E504E",
+        "ink_color": "#1B1612"
+      },
+      "sever_soul": {
+        "effect_kind": 7,
+        "darken": 0.46,
+        "distortion_pixels": 8,
+        "atlas": "res://art/vfx/enchant/handdrawn/sever_soul.png",
+        "sprite_size": [
+          570,
+          510
+        ],
+        "sprite_anchor": [
+          0.5,
+          0.5
+        ],
+        "sprite_offset": [
+          0,
+          0
+        ],
+        "sprite_rotation": 0.0,
+        "saturation": 0.72,
+        "fire_color": "#8B789E",
+        "core_color": "#E0C1AC",
+        "ash_color": "#4A3C66",
+        "ink_color": "#1B1612"
+      },
+      "blood_for_blood": {
+        "effect_kind": 8,
+        "darken": 0.48,
+        "distortion_pixels": 10,
+        "atlas": "res://art/vfx/enchant/handdrawn/blood_for_blood.png",
+        "sprite_size": [
+          520,
+          520
+        ],
+        "sprite_anchor": [
+          0.5,
+          0.5
+        ],
+        "sprite_offset": [
+          0,
+          0
+        ],
+        "sprite_rotation": 0.0,
+        "saturation": 0.85,
+        "fire_color": "#AD3B31",
+        "core_color": "#E0C1AC",
+        "ash_color": "#812B22",
+        "ink_color": "#1B1612"
+      }
+    }
+  },
+  "damage_number": {
+    "enemy_color": "#812B22",
+    "player_color": "#9B2C2C",
+    "outline_color": "#E0C1AC",
+    "shadow_color": "#1B1612",
+    "outline_size": 3,
+    "shadow_outline_size": 7,
+    "shadow_offset": [
+      0.0,
+      3.0
+    ],
+    "font_size": 42,
+    "big_font_base": 44,
+    "big_font_per_damage": 0.7,
+    "big_font_max": 72,
+    "duration": 0.72,
+    "rise_pixels": 42.0,
+    "enemy_offset_y": 90.0,
+    "start_scale": 0.72,
+    "peak_scale": 1.3,
+    "pop_seconds": 0.085,
+    "settle_seconds": 0.12,
+    "tilt_degrees": -5.0,
+    "fade_start_ratio": 0.55
+  },
   "attack": {
     "heavy_cost_minimum": 2,
     "slash_duration": 0.28,
     "portrait_shake_duration": 0.3,
     "portrait_shake_pixels": 9.0,
-    "screen_shake_pixels": 6.0
+    "screen_shake_pixels": 6.0,
+    "frame_duration_ticks": [
+      3,
+      8,
+      2,
+      5,
+      6,
+      6,
+      6,
+      6
+    ],
+    "player_slash_duration": 0.18,
+    "player_duration_scale": 0.7,
+    "combo_window_seconds": 0.6,
+    "combo_min_hit_seconds": 0.045
   },
   "low_health": {
     "threshold_ratio": 0.15,
@@ -14,5 +936,173 @@
     "maximum_opacity": 0.6,
     "edge_width": 0.19,
     "color": "#9b101d"
+  },
+  "enemy_hit": {
+    "default_profile": "humanoid",
+    "flash_opacity": 0.58,
+    "keys": [
+      [
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0.14,
+        1,
+        1,
+        0.55
+      ],
+      [
+        0.27,
+        1,
+        1,
+        0
+      ],
+      [
+        0.66,
+        -0.18,
+        -0.22,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0
+      ]
+    ],
+    "enemy_profiles": {
+      "claylump": "soft",
+      "sootling": "humanoid",
+      "embermoth": "flying",
+      "potsherd": "humanoid",
+      "glazetick": "soft",
+      "kilnstatue": "heavy",
+      "ashcantor": "humanoid",
+      "robber": "humanoid",
+      "kilnward": "heavy",
+      "glazemaw": "beast",
+      "slagbeast": "heavy",
+      "kilnwarden": "heavy",
+      "cindermoth": "flying",
+      "meltgolem": "heavy",
+      "kiln_captain": "heavy",
+      "cinderfiend": "humanoid",
+      "magmawhelp": "beast",
+      "coalseer": "humanoid",
+      "ember_eater": "heavy",
+      "kilnheart_ember": "boss",
+      "sagger_matron": "boss",
+      "chi_the_first": "boss",
+      "escort_commander": "humanoid",
+      "escort_assault": "humanoid",
+      "escort_vanguard": "humanoid",
+      "escort_guard": "heavy",
+      "escort_disruptor": "humanoid",
+      "escort_deployer": "humanoid",
+      "escort_bomb": "heavy",
+      "escort_overseer": "humanoid",
+      "escort_skill_observer": "humanoid",
+      "escort_power_observer": "humanoid"
+    },
+    "profiles": {
+      "humanoid": {
+        "duration": 0.4,
+        "pivot": [
+          0.5,
+          0.9
+        ],
+        "offset": [
+          7,
+          -2
+        ],
+        "tilt_degrees": 6,
+        "squash": [
+          0.025,
+          -0.045
+        ]
+      },
+      "soft": {
+        "duration": 0.42,
+        "pivot": [
+          0.5,
+          0.85
+        ],
+        "offset": [
+          6,
+          2
+        ],
+        "tilt_degrees": 4,
+        "squash": [
+          0.12,
+          -0.14
+        ]
+      },
+      "flying": {
+        "duration": 0.38,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          10,
+          -9
+        ],
+        "tilt_degrees": -9,
+        "squash": [
+          0.04,
+          -0.06
+        ]
+      },
+      "heavy": {
+        "duration": 0.44,
+        "pivot": [
+          0.5,
+          0.9
+        ],
+        "offset": [
+          4,
+          0
+        ],
+        "tilt_degrees": 3,
+        "squash": [
+          0.015,
+          -0.025
+        ]
+      },
+      "beast": {
+        "duration": 0.4,
+        "pivot": [
+          0.5,
+          0.88
+        ],
+        "offset": [
+          9,
+          2
+        ],
+        "tilt_degrees": 5,
+        "squash": [
+          0.06,
+          -0.07
+        ]
+      },
+      "boss": {
+        "duration": 0.46,
+        "pivot": [
+          0.5,
+          0.9
+        ],
+        "offset": [
+          3,
+          0
+        ],
+        "tilt_degrees": 2,
+        "squash": [
+          0.01,
+          -0.018
+        ]
+      }
+    }
   }
 }

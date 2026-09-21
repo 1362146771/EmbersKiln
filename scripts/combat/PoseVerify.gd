@@ -20,15 +20,15 @@ func _ready() -> void:
 	var portrait := ui.player_sprite
 	var body := portrait.get_node("BodyAnimation") as AnimatedSprite2D
 	check(not body.visible and portrait.self_modulate.a == 1.0, "idle uses original portrait")
-	check(body.material is ShaderMaterial and portrait.material == null, "animation tone correction leaves original portrait unchanged")
+	check(body.material == null and portrait.material == null, "baked portrait palette has no second runtime color correction")
 	for action in [&"attack", &"hurt"]:
 		var frames := body.sprite_frames
-		var expected_count := 5 if action == &"attack" else 30
+		var expected_count := 8 if action == &"attack" else 30
 		check(frames.get_frame_count(action) == expected_count and frames.get_animation_speed(action) == 30.0 and not frames.get_animation_loop(action), "%s: %d frames, 30 fps timeline, one shot" % [action, expected_count])
 		var duration := 0.0
 		for i in range(frames.get_frame_count(action)):
 			duration += frames.get_frame_duration(action, i) / frames.get_animation_speed(action)
-		check(is_equal_approx(duration, 1.0), "%s lasts one second" % action)
+		check(is_equal_approx(duration, 1.4 if action == &"attack" else 1.0), "%s has intended duration" % action)
 		var contained := true
 		var native_hd := true
 		for i in range(frames.get_frame_count(action)):
@@ -56,7 +56,7 @@ func _ready() -> void:
 	check(body.frame == 0, "repeated attack restarts at frame zero")
 	await get_tree().create_timer(0.75).timeout
 	check(body.visible and body.is_playing(), "old pose timer cannot truncate repeated attack")
-	await get_tree().create_timer(0.35).timeout
+	await get_tree().create_timer(0.75).timeout
 	check(not body.visible and portrait.self_modulate.a == 1.0, "attack completion restores idle")
 	SignalBus.card_played.emit(&"defend", -1)
 	check(not body.visible, "skill card does not swing axe")
