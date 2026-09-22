@@ -18,6 +18,9 @@ const FILES := {
 	"meta_progression": "meta_progression.json",
 	"ad_economy": "ad_economy.json",
 	"vfx": "vfx.json",
+	"granny_opening": "granny_dialogue.json",
+	"difficulties": "difficulties.json",
+	"hidden_act": "hidden_act.json",
 }
 
 var cards: Dictionary = {}      # StringName -> CardData
@@ -40,6 +43,9 @@ var meta_projects: Dictionary = {}   # StringName -> Dictionary
 var meta_pre_run_buffs: Dictionary = {} # StringName -> Dictionary
 var ad_economy: Dictionary = {}
 var vfx: Dictionary = {}
+var hidden_act: Dictionary = {}
+var difficulties: Dictionary = {}
+var granny_opening: Dictionary = {}
 
 var is_loaded: bool = false
 var load_errors: Array[String] = []
@@ -111,8 +117,11 @@ func load_all() -> bool:
 	map_config = act_configs[0]
 	encounter_generation = map_raw.get("encounter_generation", {}).duplicate(true)
 	balance = raw["balance"]
+	difficulties = raw["difficulties"]
+	hidden_act = raw["hidden_act"]
 	meta_progression = raw["meta_progression"]
 	ad_economy = raw["ad_economy"]
+	granny_opening = raw["granny_opening"]
 	vfx = raw["vfx"]
 	for facility in meta_progression.get("facilities", []):
 		if facility is Dictionary:
@@ -141,8 +150,8 @@ func load_all() -> bool:
 	if load_errors.is_empty():
 		is_loaded = true
 		SignalBus.data_loaded.emit()
-	print("[GameData] 加载完成 — 卡牌 %d / 敌人 %d / 状态 %d / 遗物 %d / 药水 %d / 附魔 %d" % [cards.size(), enemies.size(), statuses.size(), relics.size(), potions.size(), enchants.size()])
-	return true
+		print("[GameData] 加载完成 — 卡牌 %d / 敌人 %d / 状态 %d / 遗物 %d / 药水 %d / 附魔 %d" % [cards.size(), enemies.size(), statuses.size(), relics.size(), potions.size(), enchants.size()])
+		return true
 
 	is_loaded = false
 	SignalBus.data_load_failed.emit(load_errors)

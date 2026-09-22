@@ -3,10 +3,12 @@ extends Node
 ## Run 结束只由 SaveManager 删除单局存档，不影响本管理器的 profile.json。
 
 const PROFILE_PATH := "user://profile.json"
-const PROFILE_VERSION := 7
+const PROFILE_VERSION := 9
 
 var is_loaded := false
 var autosave_enabled := true
+## 测试场可隔离显式保存；正式游戏默认路径不变。
+var runtime_profile_path := PROFILE_PATH
 
 
 func _ready() -> void:
@@ -53,7 +55,7 @@ func load_or_create_profile() -> bool:
 
 
 func save_profile() -> bool:
-	return save_to_file(PROFILE_PATH, ProfileState.to_save_dict())
+	return save_to_file(runtime_profile_path, ProfileState.to_save_dict())
 
 
 func has_profile() -> bool:

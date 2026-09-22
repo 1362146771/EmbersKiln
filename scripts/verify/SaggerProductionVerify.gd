@@ -46,7 +46,7 @@ func _finish() -> void:
 
 
 func _test_data_and_saves() -> void:
-	check("内容规模32敌人3Boss", GameData.enemies.size() == 32 and GameData.get_enemies_by_tier(&"boss").size() == 3)
+	check("内容规模37敌人定义3Boss", GameData.enemies.size() == 37 and GameData.get_enemies_by_tier(&"boss").size() == 3)
 	check("确认基础生命240", ed.base_hp == 240)
 	check("确认伤害16/格挡18/喷火32", ed.find_move(&"bar").value == 16 and ed.find_move(&"seal").value == 18 and ed.find_move(&"fire").value == 32)
 	check("固定循环链接合法", ed.ai == &"scripted_cycle" and ed.cycle_validation_errors().is_empty())
@@ -134,7 +134,7 @@ func _test_combat() -> void:
 	c.energy = GameData.get_card(&"carnage").cost
 	check("真实残杀卡可用", c.play_card(0, 0))
 	check("残杀破封且溢出2点伤害", boss.block == 0 and boss.hp == 238 and boss.intent.id == "vent")
-	check("已显示意图即时变泄压", ui.unit_panels[boss].get_node("Inner/IntentBar").tooltip_text == "泄压 · 不攻击")
+	check("已显示意图即时变泄压", ui.unit_panels[boss].get_node("Inner/IntentBar").tooltip_text.begins_with("泄压 · 不攻击"))
 	await snapshot("vent")
 	player_hp = c.player.hp
 	await end_turn()

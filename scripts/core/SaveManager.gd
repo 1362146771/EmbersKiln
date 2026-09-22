@@ -4,8 +4,8 @@ extends Node
 ## 运行时数据全部来自 RunState，本脚本不持有任何玩法数值。
 
 const SAVE_PATH := "user://save.json"
-const SAVE_VERSION := 7
-const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6, 7]
+const SAVE_VERSION := 10
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 ## 测试可临时改写到隔离路径；生产环境始终使用默认 SAVE_PATH。
 var runtime_save_path := SAVE_PATH

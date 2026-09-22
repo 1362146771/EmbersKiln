@@ -51,6 +51,7 @@ func set_enchant_selected(instance_id: String, enabled: bool) -> bool:
 	else: selected_enchant_instance_ids.erase(instance_id)
 	SignalBus.deck_changed.emit()
 	SaveManager.save_game()
+	if enabled: SignalBus.sound_requested.emit(&"loadout_select")
 	return true
 
 func can_receive_run_enchant(entry: Dictionary) -> bool:
@@ -83,6 +84,9 @@ var act_cleared_flags: Array = []      # Array[bool]，每幕是否已通关（B
 
 ## 注：单张 `map` 兼容 getter 已在 P-B 移除；所有调用方改用 `current_map()`。
 
+var difficulty_snapshot: Dictionary = {}
+var ordinary_cleared := false
+var hidden_act_state: Dictionary = {}
 var victory: bool = false
 
 ## 本局已击败的敌人 id（用于奖励与统计）
@@ -104,6 +108,7 @@ var pre_run_buff_id: StringName = &""
 var pre_run_buff_remaining_floors: int = 0
 var pre_run_buff_claimed := false
 var pre_run_preparation_resolved := false
+var granny_opening: Dictionary = {}
 var resolved_floor_keys: Array[String] = []
 var combat_checkpoint: Dictionary = {}
 var combat_death_pending := false
@@ -130,7 +135,26 @@ func _on_data_loaded() -> void:
 	pass
 
 
-func start_new_run() -> bool:
+## 正式入口使用事务式开局；失败时保留原冒险与永久档案。
+func start_new_run_and_save() -> bool:
+	var old_run := to_save_dict()
+	var old_profile := ProfileState.to_save_dict()
+	var autosave := ProfileManager.autosave_enabled
+	ProfileManager.autosave_enabled = false
+	var success := start_new_run() and SaveManager.save_game()
+	if success:
+		ProfileState.first_battle_started = true
+	else:
+		from_save_dict(old_run)
+		ProfileState.from_save_dict(old_profile, false)
+	ProfileManager.autosave_enabled = autosave
+	if success: SignalBus.profile_changed.emit()
+	return success
+
+
+func start_new_run(difficulty_id: String = "") -> bool:
+	if difficulty_id.is_empty(): difficulty_id = DifficultyRules.default_id()
+	if not DifficultyRules.unlocked(difficulty_id): return false
 	if not GameData.is_loaded:
 		push_error("[RunState] GameData 未就绪，无法开局")
 		return false
@@ -138,6 +162,10 @@ func start_new_run() -> bool:
 	# 开局装配期间先标记为非活跃：否则上一局残留的 is_active=true 会让
 	# generate_acts() 发出的 act_changed(0) 被 SaveManager 误当作幕间推进而落档。
 	is_active = false
+	difficulty_snapshot = DifficultyRules.tier(difficulty_id).duplicate(true)
+	difficulty_snapshot["version"] = GameData.difficulties.get("version")
+	ordinary_cleared = false
+	hidden_act_state = {"config": GameData.hidden_act.duplicate(true)}
 
 	var pc: Dictionary = GameData.player_config()
 	var progression_bonuses := GameData.profile_run_start_bonuses()
@@ -169,6 +197,7 @@ func start_new_run() -> bool:
 	pre_run_buff_remaining_floors = 0
 	pre_run_buff_claimed = false
 	pre_run_preparation_resolved = false
+	granny_opening.clear()
 	resolved_floor_keys.clear()
 	combat_checkpoint.clear()
 	combat_death_pending = false
@@ -297,6 +326,7 @@ func add_gold(amount: int) -> void:
 			bonus_percent += r.value
 	var final_amount := int(round(amount * (1.0 + bonus_percent / 100.0)))
 	gold = maxi(0, gold + final_amount)
+	if final_amount > 0: SignalBus.sound_requested.emit(&"gold_gain")
 	SignalBus.gold_changed.emit(gold)
 
 
@@ -304,6 +334,7 @@ func spend_gold(amount: int) -> bool:
 	if gold < amount:
 		return false
 	gold -= amount
+	if amount > 0: SignalBus.sound_requested.emit(&"gold_spend")
 	SignalBus.gold_changed.emit(gold)
 	return true
 
@@ -315,6 +346,7 @@ func lose_gold(amount: int) -> int:
 	if lost <= 0:
 		return 0
 	gold -= lost
+	SignalBus.sound_requested.emit(&"enemy_steal")
 	SignalBus.gold_changed.emit(gold)
 	return lost
 
@@ -342,6 +374,7 @@ func add_card(card_id: StringName, upgraded: bool = false) -> bool:
 		pending_enchant_review = true
 	ProfileState.discover_card(card_id)
 	SignalBus.deck_changed.emit()
+	SignalBus.sound_requested.emit(&"card_acquire")
 	return true
 
 
@@ -541,6 +574,7 @@ func remove_card_at(index: int) -> bool:
 		return false
 	deck.remove_at(index)
 	SignalBus.deck_changed.emit()
+	SignalBus.sound_requested.emit(&"card_remove")
 	return true
 
 
@@ -563,6 +597,7 @@ func try_remove_card(index: int, expected_entry: Dictionary, cost: int) -> bool:
 	if cost > 0:
 		SignalBus.gold_changed.emit(gold)
 	_removing_card = false
+	SignalBus.sound_requested.emit(&"card_remove")
 	return true
 
 
@@ -578,6 +613,7 @@ func can_spend_upgrade_shards() -> bool:
 func collect_upgrade_shards() -> int:
 	var amount := maxi(0, int(GameData.balance.get("rewards", {}).get("upgrade_shards_per_reward", 0)))
 	upgrade_shards += amount
+	if amount > 0: SignalBus.sound_requested.emit(&"shard_gain")
 	return amount
 
 
@@ -605,6 +641,7 @@ func upgrade_card_at(index: int) -> bool:
 	entry["upgrade_level"] = current_level + 1
 	deck[index] = entry
 	SignalBus.deck_changed.emit()
+	SignalBus.sound_requested.emit(&"card_upgrade")
 	return true
 
 
@@ -684,6 +721,7 @@ func add_potion(id: StringName) -> bool:
 		return false
 	potions.append(id)
 	SignalBus.deck_changed.emit()
+	SignalBus.sound_requested.emit(&"potion_gain")
 	return true
 
 ## 消耗并移除第 index 瓶药水，返回其 id（越界返回空）。
@@ -732,6 +770,7 @@ func add_enchant_to_card_at(index: int, enchant_id: StringName) -> bool:
 	elif not selected_enchant_instance_ids.has(String(entry["instance_id"])):
 		pending_enchant_review = true
 	SignalBus.deck_changed.emit()
+	SignalBus.sound_requested.emit(&"altar_enchant")
 	return true
 
 
@@ -749,6 +788,7 @@ func current_map() -> Array:
 
 ## 当前幕配置（来自 GameData.act_configs）
 func current_act_config() -> Dictionary:
+	if HiddenActFlow.is_hidden(): return HiddenActFlow.config()
 	return GameData.act_configs[current_act] if current_act < GameData.act_configs.size() else {}
 
 
@@ -766,8 +806,8 @@ func is_boss_floor() -> bool:
 
 
 # ---------- 存档（P4 落盘；P-A 升 v2 多幕） ----------
-const SAVE_VERSION := 7
-const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6, 7]
+const SAVE_VERSION := 10
+const SUPPORTED_SAVE_VERSIONS := [2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 ## 将运行态序列化为可 JSON 化的 Dictionary。
 ## 所有 StringName 必须转 String，否则 JSON.stringify 会丢失类型。
@@ -813,6 +853,9 @@ func to_save_dict() -> Dictionary:
 
 	return {
 		"version": SAVE_VERSION,
+		"difficulty_snapshot": difficulty_snapshot.duplicate(true),
+		"ordinary_cleared": ordinary_cleared,
+		"hidden_act_state": hidden_act_state.duplicate(true),
 		"mutation_patterns_snapshot": mutation_patterns_snapshot.duplicate(true),
 		"selected_enchant_instance_ids": selected_enchant_instance_ids.duplicate(),
 		"next_card_serial": next_card_serial,
@@ -831,7 +874,7 @@ func to_save_dict() -> Dictionary:
 		"victory": victory,
 		"is_active": is_active,
 		"current_act": current_act,
-		"act_cleared_flags": act_cleared_flags,
+		"act_cleared_flags": act_cleared_flags.duplicate(),
 		"act_maps": act_maps_data,
 		"run_id": run_id,
 		"base_run_deck_capacity": base_run_deck_capacity,
@@ -850,6 +893,7 @@ func to_save_dict() -> Dictionary:
 		"pre_run_buff_remaining_floors": pre_run_buff_remaining_floors,
 		"pre_run_buff_claimed": pre_run_buff_claimed,
 		"pre_run_preparation_resolved": pre_run_preparation_resolved,
+		"granny_opening": granny_opening.duplicate(true),
 		"resolved_floor_keys": resolved_floor_keys.duplicate(),
 		"combat_checkpoint": combat_checkpoint.duplicate(true),
 		"combat_death_pending": combat_death_pending,
@@ -860,11 +904,17 @@ func to_save_dict() -> Dictionary:
 ## 从存档 Dictionary 还原运行态，重建 MapNode 对象并广播信号。
 ## 接受 v2/v3/v4 并迁移到 v5；v1 旧单幕存档仍由 SaveManager 删除。
 func from_save_dict(d: Dictionary) -> bool:
+	if not d.get("difficulty_snapshot", {}) is Dictionary or not d.get("hidden_act_state", {}) is Dictionary: return false
+	if not d.get("granny_opening", {}) is Dictionary:
+		return false
 	var source_version := int(d.get("version", -1))
 	if not SUPPORTED_SAVE_VERSIONS.has(source_version):
 		push_error("[RunState] 不支持的存档版本：%d" % source_version)
 		return false
 
+	difficulty_snapshot = d.get("difficulty_snapshot", {}).duplicate(true)
+	ordinary_cleared = bool(d.get("ordinary_cleared", false))
+	hidden_act_state = d.get("hidden_act_state", {}).duplicate(true)
 	deck.clear()
 	for c in d.get("deck", []):
 		var loaded_id := StringName(String(c.get("id", "")))
@@ -949,6 +999,8 @@ func from_save_dict(d: Dictionary) -> bool:
 	pre_run_buff_remaining_floors = maxi(0, int(d.get("pre_run_buff_remaining_floors", 0)))
 	pre_run_buff_claimed = bool(d.get("pre_run_buff_claimed", false))
 	pre_run_preparation_resolved = bool(d.get("pre_run_preparation_resolved", source_version < 4))
+	# 旧版进行中的冒险不追发开场奖励，也不打断原来的广告准备。
+	granny_opening = d.get("granny_opening", {"resolved": true} if source_version < 8 else {}).duplicate(true)
 	resolved_floor_keys.clear()
 	for floor_key in d.get("resolved_floor_keys", []):
 		var clean_floor_key := String(floor_key).strip_edges()

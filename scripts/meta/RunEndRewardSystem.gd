@@ -36,20 +36,28 @@ func _on_run_ended(victory: bool) -> void:
 func settle_base_reward(victory: bool) -> bool:
 	if RunState.run_id.is_empty() or RunState.run_end_base_settled or not is_base_configured():
 		return false
-	var config: Dictionary = GameData.meta_progression["run_end_rewards"]
-	var reached_floors := _total_reached_floors(int(config["floor_index_offset"]))
-	var amount := reached_floors * int(config["per_floor"])
-	amount += RunState.defeated.size() * int(config["per_defeated_enemy"])
-	if victory:
-		amount += int(config["victory_bonus"])
-	amount = mini(amount, int(config["base_cap"]))
+	var amount := preview_base_reward(victory)
 	var transaction_id := "%s:base" % RunState.run_id
 	if not ProfileState.commit_fireseed_reward(transaction_id, amount, false):
 		if not ProfileState.has_reward_transaction(transaction_id):
 			return false
 	RunState.run_end_base_fireseed = amount
 	RunState.run_end_base_settled = true
+	if amount > 0: SignalBus.sound_requested.emit(&"fireseed_gain")
 	return true
+
+
+func preview_base_reward(victory: bool) -> int:
+	if RunState.hidden_act_state.has("ordinary_reward"):
+		return int(RunState.hidden_act_state.ordinary_reward)
+	if not is_base_configured(): return 0
+	var config: Dictionary = GameData.meta_progression["run_end_rewards"]
+	var reached_floors := _total_reached_floors(int(config["floor_index_offset"]))
+	var amount := reached_floors * int(config["per_floor"])
+	amount += RunState.defeated.size() * int(config["per_defeated_enemy"])
+	if victory:
+		amount += int(config["victory_bonus"])
+	return mini(amount, int(config["base_cap"]))
 
 
 ## current_floor 会在跨幕时归零；结算必须把已经完成的前置幕层数一起计入。

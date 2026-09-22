@@ -2,8 +2,11 @@ extends Node
 ## Autoload: ProfileState —— 跨 Run 的永久玩家档案。
 ## 只保存长期状态；当前 Run 的牌组、HP、地图等仍归 RunState。
 
-const PROFILE_VERSION := 7
-const SUPPORTED_PROFILE_VERSIONS := [1, 2, 3, 4, 5, 6, 7]
+const PROFILE_VERSION := 9
+const SUPPORTED_PROFILE_VERSIONS := [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+var difficulty_data: Dictionary = {}
+var narrative_data: Dictionary = {}
 
 var mutation_data: Dictionary = {}
 
@@ -28,6 +31,8 @@ var ad_daily_usage: Dictionary = {}
 
 
 func reset_to_defaults(emit_changed: bool = true) -> void:
+	difficulty_data.clear()
+	narrative_data.clear()
 	mutation_data.clear()
 	first_battle_started = false
 	fireseed_balance = 0
@@ -54,6 +59,8 @@ func reset_to_defaults(emit_changed: bool = true) -> void:
 func to_save_dict() -> Dictionary:
 	return {
 		"version": PROFILE_VERSION,
+		"difficulty_data": difficulty_data.duplicate(true),
+		"narrative_data": narrative_data.duplicate(true),
 		"mutation_data": mutation_data.duplicate(true),
 		"first_battle_started": first_battle_started,
 		"fireseed_balance": fireseed_balance,
@@ -81,6 +88,8 @@ func from_save_dict(data: Dictionary, emit_changed: bool = true, report_errors: 
 	if normalized.is_empty():
 		return false
 
+	difficulty_data = normalized["difficulty_data"]
+	narrative_data = normalized["narrative_data"]
 	mutation_data = normalized["mutation_data"]
 	first_battle_started = normalized["first_battle_started"]
 	fireseed_balance = normalized["fireseed_balance"]
@@ -575,6 +584,8 @@ func _normalize_save_dict(data: Dictionary, report_errors: bool = true) -> Dicti
 
 	return {
 		"mutation_data": data.get("mutation_data", {}).duplicate(true),
+		"difficulty_data": data.get("difficulty_data", {}).duplicate(true),
+		"narrative_data": data.get("narrative_data", {}).duplicate(true),
 		"first_battle_started": bool(data.get("first_battle_started", source_version < 6)),
 		"fireseed_balance": normalized_balance,
 		"facility_levels": normalized_levels,
@@ -596,6 +607,9 @@ func _normalize_save_dict(data: Dictionary, report_errors: bool = true) -> Dicti
 
 
 func _has_expected_container_types(data: Dictionary) -> bool:
+	if not DifficultyRules.valid_profile(data.get("difficulty_data", {})): return false
+	if not _valid_narrative_data(data.get("narrative_data", {})):
+		return false
 	var mutation: Variant = data.get("mutation_data", {})
 	if not mutation is Dictionary: return false
 	if not mutation.get("patterns", {}) is Dictionary or not mutation.get("pending", {}) is Dictionary: return false
@@ -636,6 +650,30 @@ func _has_expected_scalar_types(data: Dictionary) -> bool:
 		if data.has(field) and not (data[field] is int or data[field] is float):
 			return false
 	return true
+
+
+func _valid_narrative_data(value: Variant) -> bool:
+	if not value is Dictionary:
+		return false
+	for field in ["facts", "read"]:
+		if not value.get(field, []) is Array:
+			return false
+		for entry in value.get(field, []):
+			if not entry is String:
+				return false
+	for field in ["last_run", "last_outcome", "handled_return"]:
+		if not value.get(field, "") is String:
+			return false
+	var index: Variant = value.get("idle_index", 0)
+	if not (index is int or index is float) or int(index) < 0 or float(index) != float(int(index)):
+		return false
+	var cursor: Variant = value.get("cursor", {})
+	if not cursor is Dictionary:
+		return false
+	if not cursor.get("id", "") is String or not cursor.get("mode", "") is String:
+		return false
+	var choice: Variant = cursor.get("choice", -1)
+	return (choice is int or choice is float) and float(choice) == float(int(choice)) and int(choice) >= -1
 
 
 func _normalize_string_name_array(source: Array) -> Array[StringName]:
