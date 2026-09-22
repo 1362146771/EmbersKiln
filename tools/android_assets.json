@@ -52,6 +52,9 @@
     "art/ui/town/interior_levels/bellows_station/*",
     "art/ui/town/interior_levels/glaze_apothecary/*",
     "art/ui/town/interior_levels/relic_shelf/*",
-    "art/ui/town/interior_levels/card_mold_workshop/*"
+    "art/ui/town/interior_levels/card_mold_workshop/*",
+    "art/audio/sfx/*",
+    "art/audio/transition_boss.wav",
+    "art/audio/transition_chapter.wav"
   ]
 }

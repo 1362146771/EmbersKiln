@@ -30,7 +30,11 @@ python tools/build_android.py --godot F:/app/Godot_v4.7.1-stable_win64_console.e
 - 改过压缩参数的纹理必须重新导入，不得复制旧 `.ctex` 缓存；回归检查全部敌人图、JSON 动态资源和压缩图片的原始尺寸。
 - WebP 有损压缩主要减少下载体积，不降低相同分辨率纹理的显存占用。
 
+旧版合成音效 `art/audio/sfx/` 及旧转场 WAV 不再被当前映射引用，Android 导出予以排除；现行 `data/audio.json` 使用的音频保持完整。回归覆盖陶婆馈赠、广告跳过、地图首战、拖牌暂停／切后台和存档继续。暂停时取消拖拽立即生效，手牌重建延迟到节点通知遍历结束后执行。
+
 ## 手机行为
+
+卡牌命中、玩家受击、格挡/破防、窑变与击杀使用 Android 机身短振。导出预设已开启 `permissions/vibrate`；主菜单“声音与震动”和暂停菜单提供“手机震动”开关，独立持久化。暂停、后台、广告不启动新振动，群攻同帧合并且连击限频。触觉参数位于 `data/vfx.json.haptics`。真机验收需确认开关重启后保留、静音时仍按开关振动、格挡轻于受击、连击不拖尾；系统设置和马达能力会影响实际体感。桌面 `HapticVerify` 只验证派发逻辑，不能代替真机触觉验收。API/权限依据：[Godot Input.vibrate_handheld](https://docs.godotengine.org/en/stable/classes/class_input.html#class-input-method-vibrate-handheld)。
 
 Android 返回键打开 / 关闭已有暂停菜单；暂停菜单内图鉴优先关闭。主菜单仍通过现有退出按钮退出。切后台保存单局及永久档案，并在可暂停的游戏界面打开暂停菜单。转场中不插入新的暂停转场。
 
