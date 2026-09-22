@@ -35,9 +35,11 @@ func _ready() -> void:
 	ProfileState.reset_to_defaults(false)
 	RunState.start_new_run()
 	template = RunState.to_save_dict()
-	cfg = JSON.parse_string(FileAccess.get_file_as_string("res://data/testing/escort_balance_sweep.json"))
+	var config_path := "res://data/testing/escort_balance_sweep.json"
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--profile="): profile_filter = arg.trim_prefix("--profile=")
+		if arg.begins_with("--config="): config_path = arg.trim_prefix("--config=")
+	cfg = JSON.parse_string(FileAccess.get_file_as_string(config_path))
 	for build in cfg.builds:
 		for id in build.cards:
 			assert(GameData.get_card(StringName(id)) != null, "Unknown probe card: " + id)
@@ -58,18 +60,18 @@ func _ready() -> void:
 			write_results()
 	cc.free()
 	write_results()
-	print("ESCORT_BALANCE_RESULT:%s matches=%d invalid=%d" % ["COMPLETE" if invalid == 0 else "ERROR", results.size(), invalid])
+	print("%s_RESULT:%s matches=%d invalid=%d" % [cfg.get("result_tag", "ESCORT_BALANCE"), "COMPLETE" if invalid == 0 else "ERROR", results.size(), invalid])
 	get_tree().quit(0 if invalid == 0 else 1)
 
 func write_results() -> void:
 	var suffix := "_" + profile_filter if not profile_filter.is_empty() else ""
-	var file := FileAccess.open("res://Temp/escort_balance_results%s.json" % suffix, FileAccess.WRITE)
+	var file := FileAccess.open("res://Temp/%s%s.json" % [cfg.get("output_name", "escort_balance_results"), suffix], FileAccess.WRITE)
 	file.store_string(JSON.stringify(results))
 
 func simulate(cc: ProbeCombat, enc: Dictionary, profile: Dictionary, build: Dictionary, policy: String, legacy: bool, random_seed: int) -> Dictionary:
 	RunState.from_save_dict(template)
 	RunState.current_act = int(enc.act)
-	RunState.current_node_type = &"elite"
+	RunState.current_node_type = StringName(enc.get("node_type", "elite"))
 	RunState.relic_ids.assign(profile.relics)
 	RunState.deck.clear()
 	var cards: Array = build.cards
@@ -85,7 +87,9 @@ func simulate(cc: ProbeCombat, enc: Dictionary, profile: Dictionary, build: Dict
 	cc.leader_turn = -1
 	cc.leader_hp = -1
 	seed(random_seed)
-	cc.start_combat([StringName(enc.id)])
+	var enemy_ids: Array[StringName] = []
+	for id in enc.get("enemy_ids", [enc.id]): enemy_ids.append(StringName(id))
+	cc.start_combat(enemy_ids)
 	var starting_hp := cc.player.hp
 	var capped := false
 	while cc.combat_active() and cc.turn <= int(cfg.sim.max_turns):

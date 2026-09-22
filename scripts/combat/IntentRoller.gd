@@ -93,7 +93,9 @@ func roll_phase_cycle(e: CombatUnit, ed: EnemyData) -> void:
 	if moves.is_empty():
 		e.intent = {}
 		return
-	e.phase_move_index %= moves.size()
+	# 可选开场招只执行一次；之后从配置的循环起点继续，不因回血重播。
+	if e.phase_move_index >= moves.size():
+		e.phase_move_index = clampi(int(ed.phases[e.phase_index].get("cycle_start", 0)), 0, moves.size() - 1)
 	e.intent = scale_intent_damage(moves[e.phase_move_index], ed.tier, ed.effective_stats)
 	SignalBus.enemy_intent_changed.emit(ctrl._index_of(e), StringName(e.intent.get("intent", "unknown")), int(e.intent.get("value", 0)))
 
@@ -103,6 +105,7 @@ func cleanse_debuffs(e: CombatUnit) -> void:
 		var sd := GameData.get_status(sid)
 		var amount := e.get_status(sid)
 		if (sd != null and sd.is_debuff()) or amount < 0:
+			SignalBus.sound_requested.emit(&"status_cleanse")
 			ctrl._apply_status(e, sid, -amount)
 
 
@@ -138,6 +141,7 @@ func on_player_card_played(cd: CardData) -> void:
 			var gain := ed.power_response_strength(e.phase_index)
 			if gain > 0:
 				ctrl._apply_status(e, &"heat", gain)
+				SignalBus.sound_requested.emit(&"chi_reactive")
 
 
 ## 每个攻击行动末尾执行一次；图形演出与直接模拟共用此入口。
@@ -145,6 +149,7 @@ func apply_move_effects(e: CombatUnit) -> void:
 	if e.move_effects_resolved or not e.is_alive() or not ctrl.player_alive():
 		return
 	e.move_effects_resolved = true
+	ctrl._binder.apply_move(e)
 	for effect in e.intent.get("after_effects", []):
 		if not e.is_alive(): break
 		ctrl._escorts.apply_effect(e, effect)
@@ -177,16 +182,19 @@ func interrupt_on_block_break(e: CombatUnit, block_before: int) -> void:
 ## 攻击按难度/幕倍率缩放；第一、三幕非 Boss 的攻击、主动格挡再吃约 30% 削弱。
 ## 注意：choose_intent 返回的是 EnemyData.moves 内部字典的引用，必须 duplicate 后再改。
 func scale_intent_damage(intent: Dictionary, tier: StringName = &"", effective_stats: bool = false) -> Dictionary:
-	if effective_stats or bool(intent.get("effective_stats", false)):
-		return intent.duplicate(true)
 	if intent.is_empty():
 		return intent
+	if effective_stats or bool(intent.get("effective_stats", false)):
+		var effective := intent.duplicate(true)
+		var bonus := DifficultyRules.attack_bonus(tier, intent)
+		if bonus > 0: effective["value"] = int(intent.get("value", 0)) + bonus
+		return effective
 	var kind: String = intent.get("intent", "")
 	if kind != "attack" and kind != "aoe_debuff" and kind != "defend" and kind != "charge":
 		return intent
 	var out: Dictionary = intent.duplicate()
 	if kind == "attack" or kind == "aoe_debuff":
-		out["value"] = GameData.scaled_enemy_damage(int(intent.get("value", 0)), tier)
+		out["value"] = GameData.scaled_enemy_damage(int(intent.get("value", 0)), tier) + DifficultyRules.attack_bonus(tier, intent)
 	else:
 		out["value"] = GameData.scaled_enemy_defense(int(intent.get("value", 0)), tier)
 	return out

@@ -21,6 +21,7 @@ func apply_status(unit: CombatUnit, status_id: StringName, amount: int) -> void:
 	else:
 		SignalBus.status_applied.emit(false, ctrl._index_of(unit), status_id, unit.get_status(status_id))
 	if unit.get_status(status_id) > maxi(0, before):
+		SignalBus.sound_requested.emit(StringName("status_" + String(status_id)))
 		status_gained.emit(unit, status_id)
 
 func process_turn_start_statuses(unit: CombatUnit, on_death: Callable = Callable()) -> void:
@@ -29,6 +30,7 @@ func process_turn_start_statuses(unit: CombatUnit, on_death: Callable = Callable
 		if sd == null or sd.trigger != &"turn_start":
 			continue
 		if sid == &"ashrot":
+			if unit.get_status(sid) > 0: SignalBus.sound_requested.emit(&"burn_tick")
 			unit.lose_hp_direct(unit.get_status(sid))
 			if unit.is_player:
 				ctrl._sync_player_hp()

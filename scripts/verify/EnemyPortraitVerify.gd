@@ -23,7 +23,7 @@ func _ready() -> void:
 	records = manifest.get("images", [])
 	check("31 selected production portraits", records.size() == 31 and manifest.count == records.size())
 	DirAccess.make_dir_recursive_absolute(OUTPUT)
-	check("32 enemy definitions including escort formations", GameData.enemies.size() == 32)
+	check("37 enemy definitions including act-three variants", GameData.enemies.size() == 37)
 	var ids: Array = []
 	for record in records:
 		var path := "res://" + String(record.production)

@@ -10,6 +10,8 @@ var input_locked := false        # 演出期间锁结束回合/药水；手牌�
 signal card_cast_started(entry: Dictionary, target_index: int, travel: float, ghost: Control)
 signal card_cast_finished(ok: bool)
 signal card_flight_started(entry: Dictionary, travel: float)
+signal enemy_visual_started(enemy: CombatUnit, windup: float)
+signal enemy_visual_impact(enemy: CombatUnit)
 
 const CAST_TRAVEL := 0.18        # 出牌飞行时长（s）
 const CAST_SETTLE := 0.14       # 撞击后等爆发/飘字冒头的缓冲（s）
@@ -120,10 +122,12 @@ func _finish_card_flight(ghost: Control, in_discard: bool, config: Dictionary) -
 
 
 ## 保留敌人逐击节奏与玩家受击反馈，不再创建、飞行或碎裂攻击卡。
-func play_enemy_attack(player_panel: Control, on_impact: Callable = Callable()) -> void:
+func play_enemy_attack(player_panel: Control, on_impact: Callable = Callable(), enemy: CombatUnit = null) -> void:
+	if is_instance_valid(enemy): enemy_visual_started.emit(enemy, ENEMY_WINDUP)
 	var windup := create_tween()
 	windup.tween_interval(ENEMY_WINDUP)
 	await windup.finished
+	if is_instance_valid(enemy): enemy_visual_impact.emit(enemy)
 	if on_impact.is_valid(): on_impact.call()
 	if is_instance_valid(player_panel):
 		VFXSystem.screen_shake(6.0)
@@ -134,14 +138,16 @@ func play_enemy_attack(player_panel: Control, on_impact: Callable = Callable()) 
 
 
 ## 非攻击行动仅保留原有节拍与状态/格挡反馈。
-func play_enemy_action(panel: Control, on_apply: Callable = Callable()) -> void:
+func play_enemy_action(panel: Control, on_apply: Callable = Callable(), enemy: CombatUnit = null) -> void:
 	if panel == null:
 		if on_apply.is_valid():
 			on_apply.call()
 		return
+	if is_instance_valid(enemy): enemy_visual_started.emit(enemy, SELF_BEAT)
 	var tw := create_tween()
 	tw.tween_interval(SELF_BEAT)
 	await tw.finished
+	if is_instance_valid(enemy): enemy_visual_impact.emit(enemy)
 	if on_apply.is_valid():
 		on_apply.call()
 
@@ -185,7 +191,7 @@ func run_enemy_turn(controller, player_panel: Control, enemy_panel_getter: Calla
 				if not controller.player_alive() or not e.is_alive():
 					break
 				var dmg: int = controller.enemy_outgoing(e, value)
-				await play_enemy_attack(player_panel, func(): controller.enemy_attack_hit(e, dmg))
+				await play_enemy_attack(player_panel, func(): controller.enemy_attack_hit(e, dmg), e)
 				if not controller.player_alive():
 					controller.check_player_death()
 					input_locked = false
@@ -195,7 +201,7 @@ func run_enemy_turn(controller, player_panel: Control, enemy_panel_getter: Calla
 					return
 		elif kind == "aoe_debuff":
 			var dmg: int = controller.enemy_outgoing(e, value)
-			await play_enemy_attack(player_panel, func(): controller.enemy_aoe_hit(e, dmg, mv))
+			await play_enemy_attack(player_panel, func(): controller.enemy_aoe_hit(e, dmg, mv), e)
 			if not controller.player_alive():
 				controller.check_player_death()
 				input_locked = false
@@ -205,7 +211,7 @@ func run_enemy_turn(controller, player_panel: Control, enemy_panel_getter: Calla
 				return
 		else:
 			# defend / buff / debuff / charge / unknown → 行动节拍后结算
-			await play_enemy_action(ep, func(): controller.enemy_act(e))
+			await play_enemy_action(ep, func(): controller.enemy_act(e), e)
 			if not controller.combat_active():
 				input_locked = false
 				return

@@ -83,6 +83,7 @@ var _temporary_attack_block := 0
 var _double_tap_charges := 0
 var _resolving_block_trigger := false
 var pending_card_choice: Dictionary = {}
+var _binder := AshenBinder.new()
 var _mutation_energy_uses: Dictionary = {}
 
 ## 助手类实例（P4 拆分，经 attach 持有本门面引用）
@@ -115,6 +116,8 @@ func _init_helpers() -> void:
 # =====================================================================
 func start_combat(enemy_ids: Array) -> void:
 	_init_helpers()
+	_binder.attach(self)
+	_binder.reset()
 	if not GameData.is_loaded:
 		push_error("[CombatController] GameData 未就绪")
 		return
@@ -208,6 +211,7 @@ func _start_player_turn() -> void:
 	_mutation_energy_uses.clear()
 	turn += 1
 	cards_played_this_turn = 0
+	_binder.start_turn()
 	phase = Phase.PLAYER
 	energy = max_energy
 	# 巨像持续覆盖紧随玩家回合之后的敌方阶段，在下个玩家回合开始时失效。
@@ -381,7 +385,8 @@ func check_player_death() -> void:
 # =====================================================================
 # 出牌
 # =====================================================================
-func play_card(hand_index: int, target_index: int = -1) -> bool:
+func play_card(hand_index: int, target_index: int = -1, defer_completion: bool = false) -> bool:
+	if not _combat_active or not player.is_alive(): return false
 	if not can_play_more_cards():
 		return false
 	if phase != Phase.PLAYER or not pending_card_choice.is_empty():
@@ -444,7 +449,7 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 	attack_targets_all = effects.any(func(effect: Dictionary) -> bool: return String(effect.get("kind", "")) in ["aoe_damage", "x_aoe_damage", "heal_unblocked_aoe"])
 	var collect_hit := func(_source: bool, index: int, amount: int) -> void:
 		if index >= 0 and presenting_direct_hit:
-			attack_hits.append({"target": index, "amount": amount})
+			attack_hits.append({"target": index, "amount": amount, "audio": _dmg.last_feedback.duplicate()})
 		if index >= 0 and not struck_targets.has(index):
 			struck_targets.append(index)
 	if cd.type == &"attack":
@@ -494,7 +499,10 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 		card.erase("_active_card_id")
 		discard_pile.append(card)
 
+	if not defer_completion: _binder.card_finished()
 	SignalBus.card_played.emit(cd.id, target_index)
+	if cd.type != &"attack" and not CardMutation.effective_ids(card).is_empty():
+		SignalBus.sound_requested.emit(&"enchant_power" if cd.type == &"power" else &"enchant_seal")
 	if cd.type == &"attack":
 		attack_receipts_pending = false
 		attack_feedback.emit(x_spent if paid_cost < 0 else paid_cost, struck_targets)
@@ -508,6 +516,7 @@ func play_card(hand_index: int, target_index: int = -1) -> bool:
 # =====================================================================
 func _resolve_effects(effects: Array, source: CombatUnit, primary: CombatUnit, potion_apply: bool = false, active_card: Dictionary = {}) -> void:
 	for eff in effects:
+		if not player.is_alive(): break
 		if not (eff is Dictionary):
 			continue
 		var kind: String = eff.get("kind", "")
@@ -851,6 +860,7 @@ func _deal_direct_aoe(amount: int) -> void:
 
 func _lose_player_hp(amount: int, from_card: bool) -> void:
 	var lost := player.lose_hp_direct(amount)
+	if lost > 0: SignalBus.sound_requested.emit(&"self_damage")
 	_sync_player_hp()
 	if from_card and lost > 0:
 		_card_hp_loss_count += 1
@@ -878,6 +888,7 @@ func _count_cards_with_tag(tag: StringName, active_card: Dictionary = {}) -> int
 
 
 func _add_generated_card(card_id: StringName, pile_name: String, count: int, shuffle_after: bool) -> void:
+	if count > 0: SignalBus.sound_requested.emit(&"card_status" if card_id in [&"wound", &"burn", &"dazed"] else &"card_copy")
 	if GameData.get_card(card_id) == null:
 		return
 	var target_pile: Array = discard_pile
@@ -909,6 +920,7 @@ func _add_random_attack_to_hand(temporary_cost: int) -> void:
 
 
 func _play_top_draw_card_exhausted() -> void:
+	if not _combat_active or not player.is_alive(): return
 	if draw_pile.is_empty():
 		_reshuffle_discard()
 	if draw_pile.is_empty():
@@ -919,11 +931,13 @@ func _play_top_draw_card_exhausted() -> void:
 		entry["temporary_cost"] = 0
 		hand.append(entry)
 		var first_enemy := _first_alive_enemy()
-		var played := play_card(hand.size() - 1, _index_of(first_enemy) if first_enemy != null else -1)
+		var played := play_card(hand.size() - 1, _index_of(first_enemy) if first_enemy != null else -1, true)
 		if played:
 			var discard_index := discard_pile.find(entry)
 			if discard_index >= 0:
 				_exhaust_card(discard_pile.pop_at(discard_index))
+			_binder.card_finished()
+			_check_combat_end()
 			return
 	var failed_index := hand.find(entry)
 	if failed_index >= 0: hand.remove_at(failed_index)
@@ -1003,6 +1017,8 @@ func resolve_card_choice(candidate_index: int) -> bool:
 	var selected: Dictionary = candidates[candidate_index]
 	pending_card_choice.clear()
 	_apply_card_choice(kind, selected, effect)
+	_binder.flush()
+	_check_combat_end()
 	SignalBus.combat_card_choice_resolved.emit()
 	return true
 
@@ -1022,18 +1038,22 @@ func _apply_card_choice(kind: String, selected: Dictionary, effect: Dictionary) 
 				if hand.size() >= int(GameData.player_config().get("hand_max", 10)):
 					break
 				hand.append(CardMutation.strip_copy(selected))
+				SignalBus.sound_requested.emit(&"card_copy")
 		"return_discard_to_draw_top":
 			var discard_index := discard_pile.find(selected)
 			if discard_index >= 0:
 				draw_pile.push_front(discard_pile.pop_at(discard_index))
+				SignalBus.sound_requested.emit(&"card_recover")
 		"recover_exhausted_card":
 			var exhaust_index := exhaust_pile.find(selected)
 			if exhaust_index >= 0:
 				hand.append(exhaust_pile.pop_at(exhaust_index))
+				SignalBus.sound_requested.emit(&"card_recover")
 		"topdeck_hand":
 			var hand_index := hand.find(selected)
 			if hand_index >= 0:
 				draw_pile.push_front(hand.pop_at(hand_index))
+				SignalBus.sound_requested.emit(&"card_recover")
 
 
 func _upgrade_combat_card(card: Dictionary) -> void:
@@ -1042,6 +1062,7 @@ func _upgrade_combat_card(card: Dictionary) -> void:
 		return
 	var current := _card_upgrade_state(card)
 	card["combat_upgrade_level"] = current + 1 if data.repeatable_upgrade else maxi(1, current)
+	SignalBus.sound_requested.emit(&"card_upgrade")
 
 
 func _choice_title(kind: String) -> String:
@@ -1176,6 +1197,8 @@ func use_potion(slot_index: int, target_index: int = -1) -> bool:
 	_resolve_effects(pd.effects.duplicate(), player, primary, true)
 
 	RunState.remove_potion_at(slot_index)
+	SignalBus.sound_requested.emit(&"potion_use")
+	SignalBus.sound_requested.emit(&"potion_splash")
 	_log("使用药水：%s" % pd.name)
 	_check_combat_end()
 	return true
@@ -1263,6 +1286,7 @@ func _draw_cards(n: int) -> void:
 
 
 func _reshuffle_discard() -> void:
+	if not discard_pile.is_empty(): SignalBus.sound_requested.emit(&"card_shuffle")
 	for c in discard_pile:
 		draw_pile.append(c)
 	discard_pile.clear()
@@ -1366,6 +1390,7 @@ func _post_enemy_death(e: CombatUnit) -> void:
 # =====================================================================
 func _apply_relics_combat_start() -> void:
 	for r in RunState.relics_with_trigger(&"combat_start"):
+		SignalBus.sound_requested.emit(&"relic_trigger")
 		match r.id:
 			&"bellows_glove":
 				_status.apply_status(player, &"heat", int(r.value))
@@ -1378,6 +1403,7 @@ func _apply_relics_combat_start() -> void:
 func _apply_relics_first_turn() -> void:
 	for r in RunState.relics_with_trigger(&"combat_start_first_turn"):
 		if r.id == &"draft_flue":
+			SignalBus.sound_requested.emit(&"relic_trigger")
 			energy += int(r.value)
 			SignalBus.energy_changed.emit(energy, max_energy)
 
@@ -1413,6 +1439,7 @@ func _tick_heat_siphon(source: CombatUnit) -> void:
 func _tick_sherd_vest(attacker: CombatUnit) -> void:
 	for r in RunState.relics_with_trigger(&"on_hit"):
 		if r.id == &"sherd_vest" and attacker.is_alive():
+			SignalBus.sound_requested.emit(&"thorns")
 			_dmg.deal_to_unit(attacker, int(r.value))
 
 

@@ -97,7 +97,7 @@ func _test_boss_phase3() -> void:
 	cc._roll_enemy_intent(boss)
 	check("跨两阶段分别用回合觉醒，不攻击", cc.player.hp == preparation_hp)
 
-	check("跨两阶段各+6力量，共12力量", boss.get_status(&"heat") == 12,
+	check("跨两阶段各+3力量，共6力量", boss.get_status(&"heat") == 6,
 		"heat=%d" % boss.get_status(&"heat"))
 	check("觉醒阶段预告暗焰爆发", boss.intent.get("id", "") == "echo_last" and String(boss.intent.get("intent", "")) == "attack",
 		"intent=%s" % str(boss.intent.get("intent", "")))
@@ -109,7 +109,7 @@ func _test_boss_phase3() -> void:
 	check("觉醒爆发命中玩家（含力量加成=%d）" % expected,
 		cc.player.hp == player_hp_before - expected,
 		"player %d -> %d" % [player_hp_before, cc.player.hp])
-	check("阶段强化仅触发一次", boss.get_status(&"heat") == 12)
+	check("阶段强化仅触发一次", boss.get_status(&"heat") == 6)
 
 	cc.queue_free()
 
@@ -131,6 +131,12 @@ func _test_encounter_generation() -> void:
 		var expected: Array = _expected_encounter_rule(enemy.encounter_class)
 		if enemy.effective_stats:
 			expected = [0, 0, 0, 2 if enemy.id in [&"escort_assault", &"escort_bomb"] else 1]
+			if enemy.id in [&"coalseer_act3", &"kilnstatue_act3"]:
+				expected = [10, 0, 0, 1]
+			elif enemy.id in [&"cinderfiend_act3", &"magmawhelp_act3"]:
+				expected = [0, 6, 2, 1]
+			elif enemy.id == &"glazetick_act3":
+				expected = [0, 8, 10, 1]
 		if expected.is_empty():
 			enemy_data_ok = false
 			continue

@@ -39,6 +39,7 @@ func recruit(leader: CombatUnit) -> void:
 		unit.leader_index = slot
 		unit.can_act_from_turn = ctrl.turn + 1
 		ctrl.enemies[index] = unit
+		SignalBus.sound_requested.emit(&"enemy_summon")
 		ctrl._intent.roll_enemy_intent(unit)
 
 func attack_multiplier(target: CombatUnit) -> float:

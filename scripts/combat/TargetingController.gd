@@ -32,6 +32,7 @@ func on_card_tapped(view: CardView) -> void:
 
 
 func on_card_drag_started(view: CardView) -> void:
+	SignalBus.sound_requested.emit(&"card_pickup")
 	if ui.card_browser_open():
 		return
 	if ui._casting or ui._drag_active or ui.combat_over or ui.controller.phase != CombatController.Phase.PLAYER:
@@ -71,7 +72,13 @@ func on_card_drag_canceled(view: CardView) -> void:
 	ui._drag_active = false
 	ui.drop_layer.clear()
 	view.set_playable(ui._play_queue.can_submit(view.get_meta("hand_entry", {})))
-	ui._hand.refresh_hand()
+	# Pause notifications traverse the tree: rebuild only after that traversal ends.
+	_refresh_after_drag_cancel.call_deferred()
+
+
+func _refresh_after_drag_cancel() -> void:
+	if is_instance_valid(ui) and ui.is_inside_tree() and not ui.is_queued_for_deletion():
+		ui._hand.refresh_hand()
 
 
 func on_card_drag_ended(view: CardView, gpos: Vector2) -> void:
@@ -132,6 +139,7 @@ func cast_card(view: CardView, target_index: int) -> void:
 
 ## 非法落点：幽灵卡弹回原位并释放，原卡恢复。
 func snap_back(view: CardView) -> void:
+	SignalBus.sound_requested.emit(&"card_return")
 	var gr := view.get_global_rect()
 	var ghost = ui._ghost
 	ui._ghost = null
@@ -163,6 +171,7 @@ func finish_cast_refresh() -> void:
 
 ## 拒绝反馈：卡牌红色脉冲，并提示原因（不消耗牌）。
 func reject_card(view: CardView, msg: String) -> void:
+	SignalBus.sound_requested.emit(&"ui_deny")
 	ui._log(msg)
 	var tw := ui.create_tween()
 	tw.tween_property(view, "modulate", Color(1.0, 0.5, 0.5), 0.08)

@@ -10,6 +10,7 @@ func _ready() -> void:
 	_test_data_and_damage_floor()
 	_test_cycles_growth_and_effects()
 	_test_phase_transitions()
+	_test_chi_output_cycles()
 	_test_regeneration_and_power_cards()
 	_test_death_and_reset()
 	await _test_director_parity()
@@ -133,17 +134,48 @@ func _test_phase_transitions() -> void:
 	check("跨两阈值先预告第一觉醒", e.phase_index == 1 and e.get_status(&"heat") == 0 and e.intent.id == "phase_entry_1")
 	hp = cc.player.hp
 	step(e)
-	check("第一觉醒后接第二觉醒，各占行动", cc.player.hp == hp and e.phase_index == 2 and e.get_status(&"heat") == 6 and e.intent.id == "phase_entry_2")
+	check("第一觉醒后接第二觉醒，各占行动", cc.player.hp == hp and e.phase_index == 2 and e.get_status(&"heat") == 3 and e.intent.id == "phase_entry_2")
 	step(e)
-	check("两次觉醒后才预告暗焰", cc.player.hp == hp and e.get_status(&"heat") == 12 and e.intent.id == "echo_last")
+	check("两次觉醒后才预告暗焰", cc.player.hp == hp and e.get_status(&"heat") == 6 and e.intent.id == "echo_last")
 	step(e)
-	check("觉醒完毕下一回合才造成爆发伤害", cc.player.hp == hp - 64)
+	check("觉醒完毕下一回合才造成爆发伤害", cc.player.hp == hp - 58)
 	e = fresh(&"chi_the_first")
 	e.hp = 329
 	step(e)
 	check("回复跨回半血仍兑现已触发阶段", e.hp == 339 and e.phase_index == 1 and e.intent.id == "phase_entry_1")
 	step(e)
-	check("回复不取消已预告觉醒", e.phase_index == 1 and e.get_status(&"heat") == 6 and e.intent.id == "echo_awakened")
+	check("回复不取消已预告觉醒", e.phase_index == 1 and e.get_status(&"heat") == 3 and e.intent.id == "echo_awakened")
+
+func _test_chi_output_cycles() -> void:
+	for powers in [0, 2]:
+		var e := fresh(&"chi_the_first")
+		for i in powers:
+			cc.energy = 100
+			cc.hand = [{"id":&"inflame", "upgraded":false}]
+			cc.play_card(0)
+		var hp := cc.player.hp
+		for i in range(3): step(e)
+		check("P1三行动均伤 " + str(powers), hp - cc.player.hp == (84 if powers == 0 else 108))
+		for phase in [1, 2]:
+			e.hp = 330 if phase == 1 else 165
+			cc._roll_enemy_intent(e)
+			hp = cc.player.hp
+			step(e)
+			check("窑主觉醒零伤害 P%d" % phase, cc.player.hp == hp)
+			check("预告一次暗焰 P%d" % phase, String(e.intent.id).begins_with("echo_"))
+			step(e)
+			var expected_burst: int = (55 if phase == 1 else 58) + powers * 2
+			check("一次暗焰实际伤害 P%d powers%d" % [phase,powers], hp - cc.player.hp == expected_burst)
+			e.heal(e.max_hp)
+			for cycle in range(3):
+				hp = cc.player.hp
+				check("重复循环从扑击开始", String(e.intent.id).begins_with("pounce_"))
+				step(e)
+				check("重复循环第二招灰浆", String(e.intent.id).begins_with("sludge_"))
+				step(e)
+				var expected_sum: int = (74 if phase == 1 else 86) + powers * 8
+				check("后期均伤37/43或45/51且不重播暗焰", hp - cc.player.hp == expected_sum)
+			check("回血不倒退阶段或重复觉醒", e.phase_index == phase and e.get_status(&"heat") == phase * 3 + powers * 2)
 
 func _test_regeneration_and_power_cards() -> void:
 	var e := fresh(&"chi_the_first")
@@ -173,10 +205,10 @@ func _test_regeneration_and_power_cards() -> void:
 	step(e)
 	cc.draw_pile = [{"id":&"inflame", "upgraded":false}]
 	cc._play_top_draw_card_exhausted()
-	check("末阶段自动打出的能力也不反制", e.get_status(&"heat") == 10)
+	check("末阶段自动打出的能力也不反制", e.get_status(&"heat") == 7)
 	step(e)
 	for i in range(6): step(e)
-	check("后期持续攻击不再定时涨力量", e.get_status(&"heat") == 16)
+	check("后期持续攻击不再定时涨力量", e.get_status(&"heat") == 10)
 
 func _test_death_and_reset() -> void:
 	var e := fresh(&"chi_the_first")
@@ -254,7 +286,7 @@ func _test_ui() -> void:
 	panel.build(e, 0, false, 1, cc)
 	var bar := panel.get_node("Inner/IntentBar")
 	check("复合意图显示攻击/虚弱/易伤/伤口，无免费成长", bar.get_child_count() == 4)
-	check("界面提示包含独立强化规则", bar.tooltip_text.contains("各占一回合"))
+	check("敌人总览保留独立强化规则", panel.get_node("Inner/NameLabel").tooltip_text.contains("各占一回合"))
 	check("阶段名称可见", panel.get_node("Inner/NameLabel").text.contains("阶段1"))
 	panel.queue_free()
 	e = fresh(&"chi_the_first")
@@ -266,8 +298,8 @@ func _test_ui() -> void:
 	panel.build(e, 0, false, 1, cc)
 	bar = panel.get_node("Inner/IntentBar")
 	var labels: Array[String] = []
-	for badge in bar.get_children(): labels.append(badge.get_node("Value").text)
-	check("觉醒意图显示净化与回复，不显示能力反制", "净化" in labels and "回复10" in labels and not "反制2·回复10" in labels)
+	for badge in bar.get_children(): labels.append(badge.get_meta("info_title", ""))
+	check("觉醒意图显示净化与回复，不显示能力反制", "净化" in labels and "持续回复" in labels and not "能力反制" in labels)
 	check("觉醒意图无攻击图标", not bar.get_children().any(func(badge): return badge.get_meta("intent_kind") == "attack"))
 	panel.queue_free()
 

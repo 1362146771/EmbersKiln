@@ -76,10 +76,20 @@ func _ready() -> void:
 	await capture(ui, body, &"hit", 8)
 	await capture(ui, body, &"idle", 0)
 	SignalBus.unit_died.emit(true, -1)
+	check(body.visible and body.animation == &"death" and body.is_playing(), "death starts collapse animation")
 	SignalBus.card_played.emit(attack_id, 0)
 	SignalBus.damage_dealt.emit(false, -1, 5)
 	ui._on_turn_started(true)
-	check(ui._player_dead and not body.visible and not body.is_playing(), "death stops animation and rejects later poses")
+	check(ui._player_dead and body.visible and body.animation == &"death", "death rejects later poses")
+	await get_tree().create_timer(0.4).timeout
+	var death_frame := body.frame
+	SignalBus.unit_died.emit(true, -1)
+	portrait.begin_cast_attack(0.2)
+	portrait.strike_cast_attack()
+	check(death_frame > 0 and body.frame == death_frame and body.animation == &"death", "duplicate death and late attack callbacks cannot restart or interrupt collapse")
+	await body.animation_finished
+	check(portrait.death_complete and body.visible and body.frame == 5 and portrait.self_modulate.a == 0.0, "completed death retains final fallen pose")
+	await capture(ui, body, &"death", 5)
 	ui.queue_free()
 	await get_tree().process_frame
 	var legacy := CombatUI.new()

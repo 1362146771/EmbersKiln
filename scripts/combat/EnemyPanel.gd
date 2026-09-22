@@ -71,7 +71,9 @@ func _format_intent(e: CombatUnit, controller: CombatController = null) -> Strin
 		var rel_kind: String = _intent_cn(String(rel.get("intent", "未知")))
 		var rel_val: int = int(rel.get("value", 0))
 		if rel.get("intent", "") in ["attack", "aoe_debuff"] and e.data != null:
-			rel_val = GameData.scaled_enemy_damage(rel_val, e.data.tier)
+			if not e.data.effective_stats and not bool(rel.get("effective_stats", false)):
+				rel_val = GameData.scaled_enemy_damage(rel_val, e.data.tier)
+			rel_val += DifficultyRules.attack_bonus(e.data.tier, rel)
 			if controller != null:
 				rel_val = controller.enemy_preview_outgoing(e, rel_val)
 		var rel_times: int = int(rel.get("times", 1))
@@ -105,7 +107,10 @@ static func format_scripted_intent(e: CombatUnit, controller: CombatController =
 	var kind: String = mv.get("intent", "unknown")
 	if kind == "charge":
 		var release := ed.find_move(StringName(mv.get("next", "")))
-		var value := GameData.scaled_enemy_damage(int(release.get("value", 0)), ed.tier)
+		var value := int(release.get("value", 0))
+		if not ed.effective_stats and not bool(release.get("effective_stats", false)):
+			value = GameData.scaled_enemy_damage(value, ed.tier)
+		value += DifficultyRules.attack_bonus(ed.tier, release)
 		if controller != null:
 			value = controller.enemy_preview_outgoing(e, value)
 		return "%s 格挡 %d\n下回合喷火 %d" % [title, int(mv.get("value", 0)), value]

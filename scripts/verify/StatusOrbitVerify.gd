@@ -44,6 +44,13 @@ func _ready() -> void:
 	# Every defined status has its own motif, and real enemy intents reach portraits.
 	for sid in GameData.statuses:
 		check(GameData.vfx["status_orbit"]["profiles"].has(String(sid)), "profile exists: " + String(sid))
+	var colors: Dictionary = {}
+	var silhouettes: Dictionary = {}
+	for profile in GameData.vfx["status_orbit"]["profiles"].values():
+		colors[profile["color"]] = true
+		silhouettes[profile["glyph"]] = true
+	check(colors.size() == GameData.statuses.size(), "every status has a distinct color")
+	check(silhouettes.size() == GameData.statuses.size(), "every status has a distinct silhouette")
 	for sid in [&"heat", &"temper", &"anneal", &"stoke", &"glaze", &"damp", &"crazed", &"ashrot", &"thirst"]:
 		var buff: bool = not GameData.get_status(sid).is_debuff()
 		var target: CombatUnit = enemy if buff else ctrl.player

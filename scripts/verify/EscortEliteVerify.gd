@@ -279,10 +279,10 @@ func _test_ui() -> void:
 	panel.build(cc.enemies[1], 1, false, 3, cc)
 	check("突击兵意图预览包含先行动的全队强化", panel._format_intent(cc.enemies[1],cc).contains("10"))
 	panel.build(leader, 0, false, 3, cc)
-	check("全队强化与护盾显示", panel.get_node("Inner/IntentBar").get_child_count() >= 3)
+	check("全队强化与护盾各自显示", panel.get_node("Inner/IntentBar").get_children().any(func(b): return b.get_meta("info_title", "") == "号令") and panel.get_node("Inner/IntentBar").get_children().any(func(b): return b.get_meta("info_title", "") == "随从格挡"))
 	leader = fresh(&"escort_overseer")
 	panel.build(cc.enemies[1], 1, false, 3, cc)
-	check("技能反制说明显示", panel.get_node("Inner/IntentBar").tooltip_text.contains("技能"))
+	check("技能反制说明独立显示", panel.get_node("Inner/IntentBar").get_children().any(func(b): return b.get_meta("special_effect", "") == "skill_watch" and "技能牌" in b.get_meta("info_body", "")))
 	panel.queue_free()
 
 func _test_reward_flow() -> void:
@@ -389,10 +389,10 @@ func _test_visual() -> void:
 			check("主怪死后随从保持裁切适配 " + String(unit.id), sprite.texture is AtlasTexture and sprite.size.y > 200.0)
 			var labels := ""
 			for badge in panel.get_node("Inner/IntentBar").get_children():
-				labels += badge.get_node("Value").text
+				labels += String(badge.get_meta("info_title", ""))
 			if unit.id == &"escort_guard": check("主怪死后隐藏失效护主提示", not labels.contains("护主"))
-			if unit.id == &"escort_power_observer": check("主怪死后隐藏失效能力强化提示", not labels.contains("能力+"))
-			if unit.id == &"escort_skill_observer": check("主怪死后保留自身技能反制提示", labels.contains("技能+"))
+			if unit.id == &"escort_power_observer": check("主怪死后隐藏失效能力强化提示", not labels.contains("能力反制"))
+			if unit.id == &"escort_skill_observer": check("主怪死后保留自身技能反制提示", labels.contains("技能监视"))
 			var durability := unit.hp + unit.block
 			ui.controller.energy = 100
 			ui.controller.hand = [{"id":&"strike","upgraded":false}]

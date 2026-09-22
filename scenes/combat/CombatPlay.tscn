@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://doua82ixjjqsc"]
 
 [ext_resource type="Script" uid="uid://hbsk1gllvr77" path="res://scripts/combat/CombatUI.gd" id="1_cui"]
+[ext_resource type="Script" path="res://scripts/combat/AshenBinderFX.gd" id="ashen_fx"]
 [ext_resource type="Texture2D" uid="uid://dh5emmx0vsiow" path="res://themes/formal/PlayerPortrait.tres" id="2_3pd5i"]
 [ext_resource type="PackedScene" path="res://scenes/combat/RelicBar.tscn" id="3_relics"]
 [ext_resource type="PackedScene" path="res://scenes/combat/DiscardPile.tscn" id="4_discard"]
@@ -466,3 +467,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="AshenBinderFX" type="CanvasLayer" parent="."]
+layer = 25
+script = ExtResource("ashen_fx")

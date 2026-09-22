@@ -60,9 +60,19 @@ func _point(angle: float, lane: int, body: Rect2) -> Vector2:
 	var movement := 0.0 if reduced_motion else progress
 	center.y += body.size.y * (float(lane) - 0.5) * float(config["lane_spacing"])
 	center.y -= movement * body.size.y * float(profile["rise"])
-	var radius := body.size.x * float(config["radius_x"])
-	var depth := body.size.y * float(config["radius_y"])
-	return center + Vector2(cos(angle) * radius, sin(angle) * depth + cos(angle) * depth * float(profile["tilt"]))
+	var radius := body.size.x * float(config["radius_x"]) * float(profile["width"])
+	var depth := body.size.y * float(config["radius_y"]) * float(profile["depth"])
+	var point := center + Vector2(cos(angle) * radius, sin(angle) * depth + cos(angle) * depth * float(profile["tilt"]))
+	match String(profile["glyph"]):
+		"strength": point.y -= absf(cos(angle)) * body.size.y * 0.12 * movement
+		"weak": point.y += absf(cos(angle * 3.0)) * depth * 0.5
+		"vulnerable": point.x = center.x + (point.x - center.x) * (0.7 + movement * 0.5)
+		"burn": point.y -= absf(sin(angle * 4.0 + movement * TAU)) * depth * 0.55
+		"regen": point.y += sin(angle * 2.0) * depth * 0.4
+		"vigor": point.y += sin(angle * 9.0) * depth * 0.32
+		"shield": point.x = center.x + (point.x - center.x) * (0.85 + sin(movement * PI) * 0.15)
+		"wither": point.x = center.x + (point.x - center.x) * (1.0 - movement * 0.35)
+	return point
 
 
 func _draw_plane(canvas: Control, rear: bool) -> void:
@@ -74,27 +84,75 @@ func _draw_plane(canvas: Control, rear: bool) -> void:
 	var motion := 0.0 if reduced_motion else progress * TAU * float(profile["turns"])
 	var width := clampf(body.size.x * float(config["line_ratio"]), float(config["line_min"]), float(config["line_max"]))
 	var segments := int(config["segments"])
-	for lane in 2:
-		# A pair of broken ribbons, with a tapered leading edge; never a solid halo.
+	for lane in int(profile["lanes"]):
+		# Distinct silhouettes: wind streaks, drooping wisps, electric zigzags,
+		# dotted healing orbits and shield rims. Fracture/flame motifs carry no ring.
 		for step in segments:
+			if float(profile["ribbon_alpha"]) <= 0.0: break
+			if String(profile["glyph"]) == "regen" and step % 3 != 0: continue
+			if String(profile["glyph"]) == "wither" and step % 5 < 2: continue
 			var t := float(step) / segments
-			var angle := motion + lane * PI + t * TAU * float(config["arc_fraction"])
-			var next := motion + lane * PI + float(step + 1) / segments * TAU * float(config["arc_fraction"])
+			var angle := motion + lane * PI + t * TAU * float(profile["arc_fraction"])
+			var next := motion + lane * PI + float(step + 1) / segments * TAU * float(profile["arc_fraction"])
 			if (sin((angle + next) * 0.5) < 0.0) != rear: continue
 			var ink := color
-			ink.a *= sin(t * PI) * 0.75
+			ink.a *= sin(t * PI) * float(profile["ribbon_alpha"])
 			var from := _point(angle, lane, body)
 			var to := _point(next, lane, body)
 			canvas.draw_line(from, to, Color(ink, ink.a * 0.22), width * 3.0, true)
 			canvas.draw_line(from, to, ink, width, true)
 	var glyph_size := clampf(body.size.x * float(config["glyph_ratio"]), float(config["glyph_min"]), float(config["glyph_max"]))
-	for index in int(config["glyph_count"]):
-		var angle := motion + TAU * float(index) / float(config["glyph_count"])
+	for index in int(profile["glyph_count"]):
+		var angle := motion + TAU * float(index) / float(profile["glyph_count"])
 		if (sin(angle) < 0.0) != rear: continue
 		var center := _point(angle, index % 2, body)
 		var ink := color
 		ink.a *= 0.8 + 0.2 * sin(angle)
-		_draw_glyph(canvas, center, glyph_size * (0.9 + 0.1 * sin(angle)), ink, width)
+		var s := glyph_size * (0.9 + 0.1 * sin(angle))
+		_draw_accent(canvas, center, s, ink, width, index)
+		_draw_glyph(canvas, center, s, ink, width)
+
+
+func _fill(canvas: Control, center: Vector2, s: float, coords: Array, color: Color) -> void:
+	var points := PackedVector2Array()
+	for point in coords: points.append(center + Vector2(point[0], point[1]) * s)
+	canvas.draw_colored_polygon(points, Color(color, color.a * 0.28))
+
+
+func _draw_accent(canvas: Control, center: Vector2, s: float, color: Color, width: float, index: int) -> void:
+	var movement := 0.0 if reduced_motion else progress
+	match String(profile["glyph"]):
+		"strength":
+			_fill(canvas, center, s, [[0, -1], [-0.75, -0.1], [-0.3, -0.1], [-0.3, 1.0], [0.3, 1.0], [0.3, -0.1], [0.75, -0.1]], color)
+			canvas.draw_line(center + Vector2(0, s * 0.6), center + Vector2(0, s * (1.4 + movement)), Color(color, color.a * 0.4), width, true)
+		"agility":
+			canvas.draw_arc(center + Vector2(-s, s * 0.2), s * 1.3, -0.6, 0.7, 12, Color(color, color.a * 0.55), width, true)
+		"weak":
+			# Round, sagging cloud masses contrast with all angular buffs.
+			for puff in 3:
+				var offset := Vector2((puff - 1) * s * 0.55, sin(float(puff) + movement * PI) * s * 0.2)
+				canvas.draw_circle(center + offset, s * 0.62, Color(color, color.a * 0.18), true, -1.0, true)
+			canvas.draw_line(center + Vector2(s * 0.35, s * 0.8), center + Vector2(s * 0.35, s * 1.25), Color(color, color.a * 0.6), width, true)
+		"vulnerable":
+			_fill(canvas, center, s, [[0, -0.95], [-0.7, -0.3], [-0.25, 0.0], [-0.4, 0.7], [0.55, 0.25], [0.25, -0.1], [0.5, -0.6]], color)
+			var spread := s * (0.85 + movement * 0.9)
+			canvas.draw_line(center + Vector2(-spread, -s * 0.3), center + Vector2(-spread * 1.25, -s * 0.55), color, width, true)
+			canvas.draw_line(center + Vector2(spread, s * 0.2), center + Vector2(spread * 1.2, s * 0.45), color, width, true)
+		"burn":
+			_fill(canvas, center, s, [[0.05, -1.3], [-0.65, 0.1], [-0.35, 0.7], [0.3, 0.65], [0.6, 0.0], [0.3, -0.5], [0, -0.1]], color)
+			canvas.draw_circle(center + Vector2(s * 0.5, -s * (1.2 + movement)), width * 0.7, Color(color, color.a * 0.7), true, -1.0, true)
+		"regen":
+			canvas.draw_circle(center, s * 0.85, Color(color, color.a * 0.12), true, -1.0, true)
+			canvas.draw_circle(center + Vector2(-s * 0.85, -s), width, Color(color, color.a * 0.6), true, -1.0, true)
+		"vigor":
+			var pulse := 0.5 if reduced_motion else 0.5 + 0.5 * sin(progress * TAU * 2.0 + index)
+			_stroke(canvas, center, s, [[-0.9, -0.65], [-1.2, -0.1], [-0.85, 0.1]], Color(color, color.a * pulse), width)
+		"shield":
+			_fill(canvas, center, s, [[0, -0.9], [-0.75, -0.55], [-0.6, 0.35], [0, 0.95], [0.65, 0.3], [0.75, -0.55]], color)
+			_stroke(canvas, center, s, [[-0.75, -0.55], [-0.6, 0.35], [0, 0.95], [0.65, 0.3], [0.75, -0.55]], Color(color, color.a * 0.5), width)
+		"wither":
+			_stroke(canvas, center, s, [[-0.8, -0.8], [-0.55, -0.5], [-0.8, -0.15]], Color(color, color.a * 0.45), width)
+			canvas.draw_circle(center + Vector2(s * 0.6, s * (0.8 + movement)), width * 0.65, Color(color, color.a * 0.6), true, -1.0, true)
 
 
 func _stroke(canvas: Control, center: Vector2, scale_value: float, coords: Array, color: Color, width: float) -> void:

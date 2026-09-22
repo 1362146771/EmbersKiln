@@ -40,6 +40,8 @@ var can_act_from_turn := 0
 var last_action_turn := -1
 var pending_ally_block := 0
 var death_resolved := false
+var ash_sealed := false
+var ash_backlash_used := 0
 
 ## 本场战斗中由该敌人实际偷走、尚待胜利结算的金币。
 var stolen_gold: int = 0
@@ -69,6 +71,8 @@ func setup(p_is_player: bool, p_id: StringName, p_name: String, p_hp: int, p_spr
 	last_action_turn = -1
 	pending_ally_block = 0
 	death_resolved = false
+	ash_sealed = false
+	ash_backlash_used = 0
 	stolen_gold = 0
 	gold_steal_resolved = false
 
