@@ -1,0 +1,9 @@
+{
+  "boss_id": "ashen_binder",
+  "presets": [
+    {"name":"力量连击", "cards":["bash","inflame","spot_weakness","sword_boomerang","pummel","heavy_blade","shrug_it_off","shrug_it_off","true_grit","battle_trance","offering","defend"]},
+    {"name":"格挡反击", "cards":["body_slam","body_slam","barricade","entrench","impervious","shrug_it_off","shrug_it_off","flame_barrier","power_through","true_grit","battle_trance","defend"]},
+    {"name":"消耗运转", "cards":["corruption","feel_no_pain","dark_embrace","burning_pact","true_grit","shrug_it_off","shrug_it_off","power_through","second_wind","fiend_fire","pommel_strike","bash"]},
+    {"name":"起始牌组", "starting_deck":true}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "title": "封窑之内",
+  "boss_id": "ashen_binder",
+  "nodes": [
+    {"type":"rest"},
+    {"type":"elite","enemy_ids":["kiln_captain"]},
+    {"type":"boss","enemy_ids":["ashen_binder"]}
+  ],
+  "entrance_text": "窑主倒下后，灰丝退进裂开的风道。\n里面的火仍然温热。\n\n第三幕已经通关。现在回镇，或带着当前卡组继续深入。",
+  "ending_text": "灰索断开，陶瓣缓缓张开。\n被困的真火沿着风道流向山下。\n\n这一次，你留下了火，解开了束缚。"
+}

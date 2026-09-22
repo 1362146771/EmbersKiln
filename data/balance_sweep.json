@@ -1,34 +1,34 @@
 {
   "meta": {
-    "purpose": "战斗平衡 sweep：多种 build 对打当前三幕完整敌表与按正式权重动态生成的 1/2/3 敌遭遇，检测离群（打不死/秒杀/过肉/过易）。",
-    "design_record": "AI_Studio/Design/Balance/NUMERIC_LEDGER.md#balance_sweep",
-    "note": "本文件数值沿用 2026-08-17 已确认的平衡探针参数；2026-09-09 按用户要求改为从当前三幕正式数据动态派生遭遇，不再维护易过期的固定遭遇清单。探针参数非玩法最终平衡值，调整需回写本文件并同步台账。"
+	"purpose": "战斗平衡 sweep：多种 build 对打当前三幕完整敌表与按正式权重动态生成的 1/2/3 敌遭遇，检测离群（打不死/秒杀/过肉/过易）。",
+	"design_record": "AI_Studio/Design/Balance/NUMERIC_LEDGER.md#balance_sweep",
+	"note": "本文件数值沿用 2026-08-17 已确认的平衡探针参数；2026-09-09 按用户要求改为从当前三幕正式数据动态派生遭遇，不再维护易过期的固定遭遇清单。探针参数非玩法最终平衡值，调整需回写本文件并同步台账。"
   },
   "sim": {
-    "max_turns": 40,
-    "max_card_plays": 80,
-    "attempts_per_match": 20
+	"max_turns": 40,
+	"max_card_plays": 80,
+	"attempts_per_match": 20
   },
   "player": {
-    "use_relics": false,
-    "full_hp_each_match": true
+	"use_relics": false,
+	"full_hp_each_match": true
   },
   "builds": [
-    {"id": "aggro",   "name": "速攻",   "cards": ["strike", "strike", "twin_strike", "pommel_strike", "anger", "bludgeon"]},
-    {"id": "defense", "name": "防御",   "cards": ["defend", "defend", "shrug_it_off", "flame_barrier", "entrench", "body_slam"]},
-    {"id": "control", "name": "控制",   "cards": ["strike", "defend", "shockwave", "uppercut", "disarm", "dropkick"]},
-    {"id": "exhaust", "name": "消耗",   "cards": ["strike", "defend", "true_grit", "burning_pact", "feel_no_pain", "fiend_fire"]},
-    {"id": "strength", "name": "力量",  "cards": ["strike", "defend", "inflame", "spot_weakness", "heavy_blade", "limit_break"]}
+	{"id": "aggro",   "name": "速攻",   "cards": ["strike", "strike", "twin_strike", "pommel_strike", "anger", "bludgeon"]},
+	{"id": "defense", "name": "防御",   "cards": ["defend", "defend", "shrug_it_off", "flame_barrier", "entrench", "body_slam"]},
+	{"id": "control", "name": "控制",   "cards": ["strike", "defend", "shockwave", "uppercut", "disarm", "dropkick"]},
+	{"id": "exhaust", "name": "消耗",   "cards": ["strike", "defend", "true_grit", "burning_pact", "feel_no_pain", "fiend_fire"]},
+	{"id": "strength", "name": "力量",  "cards": ["strike", "defend", "inflame", "spot_weakness", "heavy_blade", "limit_break"]}
   ],
   "coverage": {
-    "derive_from_current_acts": true,
-    "include_weighted_encounters": true
+	"derive_from_current_acts": true,
+	"include_weighted_encounters": true
   },
   "outlier": {
-    "win_rate_floor": 0.5,
-    "trivial_win_turns": 2,
-    "grind_turn_cap": 25,
-    "too_easy_hp_ratio": 0.85,
-    "boss_one_shot_turns": 2
+	"win_rate_floor": 0.5,
+	"trivial_win_turns": 2,
+	"grind_turn_cap": 25,
+	"too_easy_hp_ratio": 0.85,
+	"boss_one_shot_turns": 2
   }
 }

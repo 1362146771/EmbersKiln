@@ -1,111 +1,110 @@
 {
   "backgrounds": [
-    "res://art/backgrounds/town_progression/town_level_0_base_preview.png",
-    "res://art/backgrounds/town_progression/town_level_1_base_preview.png",
-    "res://art/backgrounds/town_progression/town_level_2_base_preview.png",
+	"res://art/backgrounds/town_progression/town_level_0_base_preview.png",
+	"res://art/backgrounds/town_progression/town_level_1_base_preview.png",
+	"res://art/backgrounds/town_progression/town_level_2_base_preview.png",
     "res://art/backgrounds/town_progression/town_level_3_base_preview.png"
   ],
   "facilities": {
-    "bellows_station": {
-      "crop": [
-        111,
-        376,
-        768,
-        646
-      ],
-      "exteriors": [
-        "res://art/ui/town/building_levels/bellows_station/bellows_station_level_0.png",
-        "res://art/ui/town/building_levels/bellows_station/bellows_station_level_1.png",
-        "res://art/ui/town/building_levels/bellows_station/bellows_station_level_2.png",
+	"bellows_station": {
+	  "crop": [
+		111,
+		376,
+		768,
+		646
+	  ],
+	  "exteriors": [
+		"res://art/ui/town/building_levels/bellows_station/bellows_station_level_0.png",
+		"res://art/ui/town/building_levels/bellows_station/bellows_station_level_1.png",
+		"res://art/ui/town/building_levels/bellows_station/bellows_station_level_2.png",
         "res://art/ui/town/building_levels/bellows_station/bellows_station_level_3.png"
-      ],
-      "courtyards": [
-        "res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_0.png",
-        "res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_1.png",
-        "res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_2.png",
+	  ],
+	  "courtyards": [
+		"res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_0.png",
+		"res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_1.png",
+		"res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_2.png",
         "res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_3.png"
-      ]
-    },
-    "relic_shelf": {
-      "crop": [
-        101,
-        260,
-        761,
-        746
-      ],
-      "exteriors": [
-        "res://art/ui/town/building_levels/relic_shelf/relic_shelf_level_0.png",
-        "res://art/ui/town/building_levels/relic_shelf/relic_shelf_level_1.png",
-        "res://art/ui/town/building_levels/relic_shelf/relic_shelf_level_2.png",
+	  ]
+	},
+	"relic_shelf": {
+	  "crop": [
+		101,
+		260,
+		761,
+		746
+	  ],
+	  "exteriors": [
+		"res://art/ui/town/building_levels/relic_shelf/relic_shelf_level_0.png",
+		"res://art/ui/town/building_levels/relic_shelf/relic_shelf_level_1.png",
+		"res://art/ui/town/building_levels/relic_shelf/relic_shelf_level_2.png",
         "res://art/ui/town/building_levels/relic_shelf/relic_shelf_level_3.png"
-      ],
-      "courtyards": [
-        "res://art/ui/town/interior_levels/runtime/relic_shelf/relic_shelf_interior_level_0.png",
-        "res://art/ui/town/interior_levels/runtime/relic_shelf/relic_shelf_interior_level_1.png",
-        "res://art/ui/town/interior_levels/runtime/relic_shelf/relic_shelf_interior_level_2.png",
+	  ],
+	  "courtyards": [
+		"res://art/ui/town/interior_levels/runtime/relic_shelf/relic_shelf_interior_level_0.png",
+		"res://art/ui/town/interior_levels/runtime/relic_shelf/relic_shelf_interior_level_1.png",
+		"res://art/ui/town/interior_levels/runtime/relic_shelf/relic_shelf_interior_level_2.png",
         "res://art/ui/town/interior_levels/runtime/relic_shelf/relic_shelf_interior_level_3.png"
-      ]
-    },
-    "card_mold_workshop": {
-      "crop": [
-        187,
-        324,
-        829,
-        686
-      ],
-      "exteriors": [
-        "res://art/ui/town/building_levels/card_mold_workshop/card_mold_workshop_level_0.png",
-        "res://art/ui/town/building_levels/card_mold_workshop/card_mold_workshop_level_1.png",
-        "res://art/ui/town/building_levels/card_mold_workshop/card_mold_workshop_level_2.png",
+	  ]
+	},
+	"card_mold_workshop": {
+	  "crop": [
+		187,
+		324,
+		829,
+		686
+	  ],
+	  "exteriors": [
+		"res://art/ui/town/building_levels/card_mold_workshop/card_mold_workshop_level_0.png",
+		"res://art/ui/town/building_levels/card_mold_workshop/card_mold_workshop_level_1.png",
+		"res://art/ui/town/building_levels/card_mold_workshop/card_mold_workshop_level_2.png",
         "res://art/ui/town/building_levels/card_mold_workshop/card_mold_workshop_level_3.png"
-      ],
-      "courtyards": [
-        "res://art/ui/town/interior_levels/runtime/card_mold_workshop/card_mold_workshop_interior_level_0.png",
-        "res://art/ui/town/interior_levels/runtime/card_mold_workshop/card_mold_workshop_interior_level_1.png",
-        "res://art/ui/town/interior_levels/runtime/card_mold_workshop/card_mold_workshop_interior_level_2.png",
+	  ],
+	  "courtyards": [
+		"res://art/ui/town/interior_levels/runtime/card_mold_workshop/card_mold_workshop_interior_level_0.png",
+		"res://art/ui/town/interior_levels/runtime/card_mold_workshop/card_mold_workshop_interior_level_1.png",
+		"res://art/ui/town/interior_levels/runtime/card_mold_workshop/card_mold_workshop_interior_level_2.png",
         "res://art/ui/town/interior_levels/runtime/card_mold_workshop/card_mold_workshop_interior_level_3.png"
-      ]
-    },
-    "glaze_apothecary": {
-      "crop": [
-        87,
-        326,
-        723,
-        688
-      ],
-      "exteriors": [
-        "res://art/ui/town/building_levels/glaze_apothecary/glaze_apothecary_level_0.png",
-        "res://art/ui/town/building_levels/glaze_apothecary/glaze_apothecary_level_1.png",
-        "res://art/ui/town/building_levels/glaze_apothecary/glaze_apothecary_level_2.png",
+	  ]
+	},
+	"glaze_apothecary": {
+	  "crop": [
+		87,
+		326,
+		723,
+		688
+	  ],
+	  "exteriors": [
+		"res://art/ui/town/building_levels/glaze_apothecary/glaze_apothecary_level_0.png",
+		"res://art/ui/town/building_levels/glaze_apothecary/glaze_apothecary_level_1.png",
+		"res://art/ui/town/building_levels/glaze_apothecary/glaze_apothecary_level_2.png",
         "res://art/ui/town/building_levels/glaze_apothecary/glaze_apothecary_level_3.png"
-      ],
-      "courtyards": [
-        "res://art/ui/town/interior_levels/runtime/glaze_apothecary/glaze_apothecary_interior_level_0.png",
-        "res://art/ui/town/interior_levels/runtime/glaze_apothecary/glaze_apothecary_interior_level_1.png",
-        "res://art/ui/town/interior_levels/runtime/glaze_apothecary/glaze_apothecary_interior_level_2.png",
+	  ],
+	  "courtyards": [
+		"res://art/ui/town/interior_levels/runtime/glaze_apothecary/glaze_apothecary_interior_level_0.png",
+		"res://art/ui/town/interior_levels/runtime/glaze_apothecary/glaze_apothecary_interior_level_1.png",
+		"res://art/ui/town/interior_levels/runtime/glaze_apothecary/glaze_apothecary_interior_level_2.png",
         "res://art/ui/town/interior_levels/runtime/glaze_apothecary/glaze_apothecary_interior_level_3.png"
-      ]
-    },
-    "hearth": {
-      "crop": [
-        111,
-        387,
-        712,
-        636
-      ],
-      "exteriors": [
-        "res://art/ui/town/building_levels/hearth/hearth_level_0.png",
-        "res://art/ui/town/building_levels/hearth/hearth_level_1.png",
-        "res://art/ui/town/building_levels/hearth/hearth_level_2.png",
+	  ]
+	},
+	"hearth": {
+	  "crop": [
+		111,
+		387,
+		712,
+		636
+	  ],
+	  "exteriors": [
+		"res://art/ui/town/building_levels/hearth/hearth_level_0.png",
+		"res://art/ui/town/building_levels/hearth/hearth_level_1.png",
+		"res://art/ui/town/building_levels/hearth/hearth_level_2.png",
         "res://art/ui/town/building_levels/hearth/hearth_level_3.png"
-      ],
-      "courtyards": [
-        "res://art/ui/town/interior_levels/runtime/hearth/hearth_interior_level_0.png",
-        "res://art/ui/town/interior_levels/runtime/hearth/hearth_interior_level_1.png",
-        "res://art/ui/town/interior_levels/runtime/hearth/hearth_interior_level_2.png",
+	  ],
+	  "courtyards": [
+		"res://art/ui/town/interior_levels/runtime/hearth/hearth_interior_level_0.png",
+		"res://art/ui/town/interior_levels/runtime/hearth/hearth_interior_level_1.png",
+		"res://art/ui/town/interior_levels/runtime/hearth/hearth_interior_level_2.png",
         "res://art/ui/town/interior_levels/runtime/hearth/hearth_interior_level_3.png"
-      ]
-    }
+	  ]
+	}
   }
 }
-

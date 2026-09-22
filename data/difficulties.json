@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "default_id": "normal",
+  "hidden_unlock_id": "extreme",
+  "tiers": [
+	{"id":"normal","name":"窑火Ⅰ·普通","description":"现行普通规则。","single_hit_bonus":{}},
+	{"id":"warm","name":"窑火Ⅱ·旺火","description":"普通怪单段攻击＋1。","single_hit_bonus":{"normal":1}},
+	{"id":"blazing","name":"窑火Ⅲ·烈火","description":"新增：精英及随从单段攻击＋1。\n继承：普通怪单段攻击＋1。","single_hit_bonus":{"normal":1,"elite":1,"minion":1}},
+	{"id":"molten","name":"窑火Ⅳ·熔火","description":"新增：营火回复由30%降至25%。\n继承：普通怪、精英及随从单段攻击＋1。","single_hit_bonus":{"normal":1,"elite":1,"minion":1},"rest_heal_percent":0.25},
+	{"id":"extreme","name":"窑火Ⅴ·极火","description":"新增：Boss单段攻击＋2。\n继承：普通怪、精英及随从单段攻击＋1；营火回复25%。\n通关第三幕，永久打开第四幕入口。","single_hit_bonus":{"normal":1,"elite":1,"minion":1,"boss":2},"rest_heal_percent":0.25}
+  ]
+}

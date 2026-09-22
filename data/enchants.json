@@ -1,1267 +1,1267 @@
 {
   "version": 1,
   "enchants": [
-    {
-      "id": "kiln_quench",
-      "name": "窑淬",
-      "rarity": "common",
-      "description": "打出的攻击牌伤害 +2。",
-      "restriction": {
-        "card_type": [
+	{
+	  "id": "kiln_quench",
+	  "name": "窑淬",
+	  "rarity": "common",
+	  "description": "打出的攻击牌伤害 +2。",
+	  "restriction": {
+		"card_type": [
           "attack"
-        ]
-      },
-      "mods": {
-        "damage_bonus": 2
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "glaze_seal",
-      "name": "釉封",
-      "rarity": "common",
-      "description": "打出的防御/技能牌获得格挡 +2。",
-      "restriction": {
-        "card_type": [
-          "skill",
+		]
+	  },
+	  "mods": {
+		"damage_bonus": 2
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "glaze_seal",
+	  "name": "釉封",
+	  "rarity": "common",
+	  "description": "打出的防御/技能牌获得格挡 +2。",
+	  "restriction": {
+		"card_type": [
+		  "skill",
           "power"
-        ]
-      },
-      "mods": {
-        "block_bonus": 2
-      },
-      "icon": "ICO_Enchant_GlazeSeal"
-    },
-    {
-      "id": "ember_return",
-      "name": "余烬",
-      "rarity": "common",
-      "description": "打出的牌额外抽 1 张。",
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 1
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_EmberReturn"
-    },
-    {
-      "id": "wind_lead",
-      "name": "风引",
-      "rarity": "uncommon",
-      "description": "打出的牌获得 1 点能量（仅费用≥1 的牌）。",
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "energy",
-            "value": 1
-          }
-        ]
-      },
-      "condition": {
-        "min_cost": 1
-      },
-      "icon": "ICO_Enchant_WindLead"
-    },
-    {
-      "id": "heat_trace",
-      "name": "炽痕",
-      "rarity": "uncommon",
-      "description": "打出攻击牌后，自身获得 1 层力量。",
-      "restriction": {
-        "card_type": [
+		]
+	  },
+	  "mods": {
+		"block_bonus": 2
+	  },
+	  "icon": "ICO_Enchant_GlazeSeal"
+	},
+	{
+	  "id": "ember_return",
+	  "name": "余烬",
+	  "rarity": "common",
+	  "description": "打出的牌额外抽 1 张。",
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 1
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_EmberReturn"
+	},
+	{
+	  "id": "wind_lead",
+	  "name": "风引",
+	  "rarity": "uncommon",
+	  "description": "打出的牌获得 1 点能量（仅费用≥1 的牌）。",
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "energy",
+			"value": 1
+		  }
+		]
+	  },
+	  "condition": {
+		"min_cost": 1
+	  },
+	  "icon": "ICO_Enchant_WindLead"
+	},
+	{
+	  "id": "heat_trace",
+	  "name": "炽痕",
+	  "rarity": "uncommon",
+	  "description": "打出攻击牌后，自身获得 1 层力量。",
+	  "restriction": {
+		"card_type": [
           "attack"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "gain_strength",
-            "value": 1,
-            "target": "self"
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_HeatTrace"
-    },
-    {
-      "id": "ember_craze",
-      "name": "易伤",
-      "rarity": "uncommon",
-      "description": "打出攻击牌时，对目标敌人施加 1 层易伤。",
-      "restriction": {
-        "card_type": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "gain_strength",
+			"value": 1,
+			"target": "self"
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_HeatTrace"
+	},
+	{
+	  "id": "ember_craze",
+	  "name": "易伤",
+	  "rarity": "uncommon",
+	  "description": "打出攻击牌时，对目标敌人施加 1 层易伤。",
+	  "restriction": {
+		"card_type": [
           "attack"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "apply_status",
-            "status": "crazed",
-            "value": 1,
-            "target": "enemy"
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_EmberCraze"
-    },
-    {
-      "id": "anneal_glow",
-      "name": "再生",
-      "rarity": "common",
-      "description": "打出防御牌时，自身获得 1 层再生。",
-      "restriction": {
-        "card_type": [
-          "skill",
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "apply_status",
+			"status": "crazed",
+			"value": 1,
+			"target": "enemy"
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_EmberCraze"
+	},
+	{
+	  "id": "anneal_glow",
+	  "name": "再生",
+	  "rarity": "common",
+	  "description": "打出防御牌时，自身获得 1 层再生。",
+	  "restriction": {
+		"card_type": [
+		  "skill",
           "power"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "apply_status",
-            "status": "anneal",
-            "value": 1,
-            "target": "self"
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_AnnealGlow"
-    },
-    {
-      "id": "kiln_warmth",
-      "name": "窑温",
-      "rarity": "uncommon",
-      "description": "打出的牌积累 1 点窑温。",
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "gain_kiln_heat",
-            "value": 1
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnWarmth"
-    },
-    {
-      "id": "ash_bite",
-      "name": "燃烧",
-      "rarity": "rare",
-      "description": "攻击牌伤害 +3，但打出后自身获得 2 层燃烧。",
-      "restriction": {
-        "card_type": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "apply_status",
+			"status": "anneal",
+			"value": 1,
+			"target": "self"
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_AnnealGlow"
+	},
+	{
+	  "id": "kiln_warmth",
+	  "name": "窑温",
+	  "rarity": "uncommon",
+	  "description": "打出的牌积累 1 点窑温。",
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "gain_kiln_heat",
+			"value": 1
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnWarmth"
+	},
+	{
+	  "id": "ash_bite",
+	  "name": "燃烧",
+	  "rarity": "rare",
+	  "description": "攻击牌伤害 +3，但打出后自身获得 2 层燃烧。",
+	  "restriction": {
+		"card_type": [
           "attack"
-        ]
-      },
-      "mods": {
-        "damage_bonus": 3,
-        "extra_effects": [
-          {
-            "kind": "apply_status",
-            "status": "ashrot",
-            "value": 2,
-            "target": "self"
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_AshBite"
-    },
-    {
-      "id": "temper_bind",
-      "name": "敏捷",
-      "rarity": "uncommon",
-      "description": "打出获得格挡的牌时，自身获得 1 层敏捷。",
-      "restriction": {
-        "card_type": [
-          "skill",
+		]
+	  },
+	  "mods": {
+		"damage_bonus": 3,
+		"extra_effects": [
+		  {
+			"kind": "apply_status",
+			"status": "ashrot",
+			"value": 2,
+			"target": "self"
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_AshBite"
+	},
+	{
+	  "id": "temper_bind",
+	  "name": "敏捷",
+	  "rarity": "uncommon",
+	  "description": "打出获得格挡的牌时，自身获得 1 层敏捷。",
+	  "restriction": {
+		"card_type": [
+		  "skill",
           "power"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "apply_status",
-            "status": "temper",
-            "value": 1,
-            "target": "self"
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_TemperBind"
-    },
-    {
-      "id": "town_bludgeon_1",
-      "name": "重铸",
-      "description": "本牌基础伤害 +8",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "apply_status",
+			"status": "temper",
+			"value": 1,
+			"target": "self"
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_TemperBind"
+	},
+	{
+	  "id": "town_bludgeon_1",
+	  "name": "重铸",
+	  "description": "本牌基础伤害 +8",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "bludgeon"
-        ]
-      },
-      "mods": {
-        "damage_bonus": 8
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_bludgeon_2",
-      "name": "震窑",
-      "description": "原效果后，对原目标以外的所有存活敌人各造成 6 伤害",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"damage_bonus": 8
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_bludgeon_2",
+	  "name": "震窑",
+	  "description": "原效果后，对原目标以外的所有存活敌人各造成 6 伤害",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "bludgeon"
-        ]
-      },
-      "mods": {
-        "splash_damage": 6
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_bludgeon_3",
-      "name": "护身",
-      "description": "原效果后获得 10 格挡",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"splash_damage": 6
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_bludgeon_3",
+	  "name": "护身",
+	  "description": "原效果后获得 10 格挡",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "bludgeon"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 10
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_immolate_1",
-      "name": "烈烧",
-      "description": "本牌群体基础伤害 +5",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 10
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_immolate_1",
+	  "name": "烈烧",
+	  "description": "本牌群体基础伤害 +5",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "immolate"
-        ]
-      },
-      "mods": {
-        "aoe_damage_bonus": 5
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_immolate_2",
-      "name": "余焰",
-      "description": "原效果后，对所有存活敌人施加 2 层燃烧",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"aoe_damage_bonus": 5
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_immolate_2",
+	  "name": "余焰",
+	  "description": "原效果后，对所有存活敌人施加 2 层燃烧",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "immolate"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "apply_status",
-            "value": 2,
-            "status": "ashrot",
-            "target": "all_enemies"
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_immolate_3",
-      "name": "聚温",
-      "description": "原效果后获得 2 点窑温",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "apply_status",
+			"value": 2,
+			"status": "ashrot",
+			"target": "all_enemies"
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_immolate_3",
+	  "name": "聚温",
+	  "description": "原效果后获得 2 点窑温",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "immolate"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "gain_kiln_heat",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_demon_form_1",
-      "name": "炽心",
-      "description": "原能力生效后，立即获得 2 力量",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "gain_kiln_heat",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_demon_form_1",
+	  "name": "炽心",
+	  "description": "原能力生效后，立即获得 2 力量",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "demon_form"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "gain_strength",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_demon_form_2",
-      "name": "护炉",
-      "description": "原能力生效后，立即获得 12 格挡",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "gain_strength",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_demon_form_2",
+	  "name": "护炉",
+	  "description": "原能力生效后，立即获得 12 格挡",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "demon_form"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 12
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_demon_form_3",
-      "name": "续火",
-      "description": "本牌赋予的每回合力量增长额外 +1",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 12
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_demon_form_3",
+	  "name": "续火",
+	  "description": "本牌赋予的每回合力量增长额外 +1",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "demon_form"
-        ]
-      },
-      "mods": {
-        "value_bonuses": {
-          "power_start_turn_strength": 1
-        }
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_barricade_1",
-      "name": "厚釉",
-      "description": "原能力生效后，立即获得 12 格挡",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"value_bonuses": {
+		  "power_start_turn_strength": 1
+		}
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_barricade_1",
+	  "name": "厚釉",
+	  "description": "原能力生效后，立即获得 12 格挡",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "barricade"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 12
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_barricade_2",
-      "name": "定型",
-      "description": "原能力生效后，立即获得 2 敏捷",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 12
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_barricade_2",
+	  "name": "定型",
+	  "description": "原能力生效后，立即获得 2 敏捷",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "barricade"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "gain_dexterity",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_barricade_3",
-      "name": "养坯",
-      "description": "原能力生效后，额外获得“每个玩家回合开始获得 3 格挡”的能力",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "gain_dexterity",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_barricade_3",
+	  "name": "养坯",
+	  "description": "原能力生效后，额外获得“每个玩家回合开始获得 3 格挡”的能力",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "barricade"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "power_start_turn_block",
-            "value": 3
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_impervious_1",
-      "name": "封窑",
-      "description": "本牌基础格挡 +10",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "power_start_turn_block",
+			"value": 3
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_impervious_1",
+	  "name": "封窑",
+	  "description": "本牌基础格挡 +10",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "impervious"
-        ]
-      },
-      "mods": {
-        "block_bonus": 10
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_impervious_2",
-      "name": "回风",
-      "description": "原效果后抽 2 张牌",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"block_bonus": 10
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_impervious_2",
+	  "name": "回风",
+	  "description": "原效果后抽 2 张牌",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "impervious"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_impervious_3",
-      "name": "留火",
-      "description": "原效果后恢复 1 能量，须实际支付至少 1 能量。同名牌每回合最多返能一次。",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_impervious_3",
+	  "name": "留火",
+	  "description": "原效果后恢复 1 能量，须实际支付至少 1 能量。同名牌每回合最多返能一次。",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "impervious"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "energy",
-            "value": 1
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench",
-      "condition": {
-        "min_paid_cost": 1,
-        "max_per_card_per_turn": 1
-      }
-    },
-    {
-      "id": "town_fiend_fire_1",
-      "name": "炽燃",
-      "description": "每张被消耗手牌对应的基础伤害 +2",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "energy",
+			"value": 1
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench",
+	  "condition": {
+		"min_paid_cost": 1,
+		"max_per_card_per_turn": 1
+	  }
+	},
+	{
+	  "id": "town_fiend_fire_1",
+	  "name": "炽燃",
+	  "description": "每张被消耗手牌对应的基础伤害 +2",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "fiend_fire"
-        ]
-      },
-      "mods": {
-        "value_bonuses": {
-          "exhaust_hand_damage": 2
-        }
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_fiend_fire_2",
-      "name": "回风",
-      "description": "原效果后抽 2 张牌",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"value_bonuses": {
+		  "exhaust_hand_damage": 2
+		}
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_fiend_fire_2",
+	  "name": "回风",
+	  "description": "原效果后抽 2 张牌",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "fiend_fire"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_fiend_fire_3",
-      "name": "余壳",
-      "description": "原效果后获得 8 格挡",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_fiend_fire_3",
+	  "name": "余壳",
+	  "description": "原效果后获得 8 格挡",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "fiend_fire"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 8
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_corruption_1",
-      "name": "护炉",
-      "description": "原能力生效后立即获得 12 格挡",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 8
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_corruption_1",
+	  "name": "护炉",
+	  "description": "原能力生效后立即获得 12 格挡",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "corruption"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 12
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_corruption_2",
-      "name": "回风",
-      "description": "原能力生效后抽 2 张牌",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 12
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_corruption_2",
+	  "name": "回风",
+	  "description": "原能力生效后抽 2 张牌",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "corruption"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_corruption_3",
-      "name": "留火",
-      "description": "原能力生效后恢复 1 能量，须实际支付至少 1 能量。同名牌每回合最多返能一次。",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_corruption_3",
+	  "name": "留火",
+	  "description": "原能力生效后恢复 1 能量，须实际支付至少 1 能量。同名牌每回合最多返能一次。",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "corruption"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "energy",
-            "value": 1
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench",
-      "condition": {
-        "min_paid_cost": 1,
-        "max_per_card_per_turn": 1
-      }
-    },
-    {
-      "id": "town_juggernaut_1",
-      "name": "震裂",
-      "description": "本牌赋予的“获得格挡时造成伤害”基础值 +2",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "energy",
+			"value": 1
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench",
+	  "condition": {
+		"min_paid_cost": 1,
+		"max_per_card_per_turn": 1
+	  }
+	},
+	{
+	  "id": "town_juggernaut_1",
+	  "name": "震裂",
+	  "description": "本牌赋予的“获得格挡时造成伤害”基础值 +2",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "juggernaut"
-        ]
-      },
-      "mods": {
-        "value_bonuses": {
-          "power_on_block_damage": 2
-        }
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_juggernaut_2",
-      "name": "垫坯",
-      "description": "原能力生效后立即获得 10 格挡",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"value_bonuses": {
+		  "power_on_block_damage": 2
+		}
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_juggernaut_2",
+	  "name": "垫坯",
+	  "description": "原能力生效后立即获得 10 格挡",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "juggernaut"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 10
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_juggernaut_3",
-      "name": "定型",
-      "description": "原能力生效后立即获得 2 敏捷",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 10
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_juggernaut_3",
+	  "name": "定型",
+	  "description": "原能力生效后立即获得 2 敏捷",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "juggernaut"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "gain_dexterity",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_blood_for_blood_1",
-      "name": "复燃",
-      "description": "本牌基础伤害 +6",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "gain_dexterity",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_blood_for_blood_1",
+	  "name": "复燃",
+	  "description": "本牌基础伤害 +6",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "blood_for_blood"
-        ]
-      },
-      "mods": {
-        "damage_bonus": 6
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_blood_for_blood_2",
-      "name": "护伤",
-      "description": "原效果后获得 8 格挡",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"damage_bonus": 6
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_blood_for_blood_2",
+	  "name": "护伤",
+	  "description": "原效果后获得 8 格挡",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "blood_for_blood"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 8
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_blood_for_blood_3",
-      "name": "钝火",
-      "description": "原效果后，对存活原目标施加 2 层虚弱",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 8
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_blood_for_blood_3",
+	  "name": "钝火",
+	  "description": "原效果后，对存活原目标施加 2 层虚弱",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "blood_for_blood"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "apply_status",
-            "value": 2,
-            "status": "damp",
-            "target": "enemy"
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_carnage_1",
-      "name": "重锋",
-      "description": "本牌基础伤害 +6",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "apply_status",
+			"value": 2,
+			"status": "damp",
+			"target": "enemy"
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_carnage_1",
+	  "name": "重锋",
+	  "description": "本牌基础伤害 +6",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "carnage"
-        ]
-      },
-      "mods": {
-        "damage_bonus": 6
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_carnage_2",
-      "name": "固坯",
-      "description": "移除本牌的虚无属性",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"damage_bonus": 6
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_carnage_2",
+	  "name": "固坯",
+	  "description": "移除本牌的虚无属性",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "carnage"
-        ]
-      },
-      "mods": {
-        "remove_ethereal": true
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_carnage_3",
-      "name": "回风",
-      "description": "原效果后抽 1 张牌",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"remove_ethereal": true
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_carnage_3",
+	  "name": "回风",
+	  "description": "原效果后抽 1 张牌",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "carnage"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 1
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_dark_embrace_1",
-      "name": "启风",
-      "description": "原能力生效后立即抽 2 张牌",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 1
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_dark_embrace_1",
+	  "name": "启风",
+	  "description": "原能力生效后立即抽 2 张牌",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "dark_embrace"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_dark_embrace_2",
-      "name": "护炉",
-      "description": "原能力生效后立即获得 10 格挡",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_dark_embrace_2",
+	  "name": "护炉",
+	  "description": "原能力生效后立即获得 10 格挡",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "dark_embrace"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 10
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_dark_embrace_3",
-      "name": "灰甲",
-      "description": "额外获得“每消耗一张牌，获得 2 格挡”的能力",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 10
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_dark_embrace_3",
+	  "name": "灰甲",
+	  "description": "额外获得“每消耗一张牌，获得 2 格挡”的能力",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "dark_embrace"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "power_on_exhaust_block",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_entrench_1",
-      "name": "垫坯",
-      "description": "在本牌翻倍格挡之前，先获得 4 格挡",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "power_on_exhaust_block",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_entrench_1",
+	  "name": "垫坯",
+	  "description": "在本牌翻倍格挡之前，先获得 4 格挡",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "entrench"
-        ]
-      },
-      "mods": {
-        "prefix_effects": [
-          {
-            "kind": "block",
-            "value": 4
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_entrench_2",
-      "name": "定型",
-      "description": "原效果后获得 1 敏捷",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"prefix_effects": [
+		  {
+			"kind": "block",
+			"value": 4
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_entrench_2",
+	  "name": "定型",
+	  "description": "原效果后获得 1 敏捷",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "entrench"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "gain_dexterity",
-            "value": 1
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_entrench_3",
-      "name": "回风",
-      "description": "原效果后抽 2 张牌",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "gain_dexterity",
+			"value": 1
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_entrench_3",
+	  "name": "回风",
+	  "description": "原效果后抽 2 张牌",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "entrench"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_flame_barrier_1",
-      "name": "厚壁",
-      "description": "本牌基础格挡 +6",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_flame_barrier_1",
+	  "name": "厚壁",
+	  "description": "本牌基础格挡 +6",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "flame_barrier"
-        ]
-      },
-      "mods": {
-        "block_bonus": 6
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_flame_barrier_2",
-      "name": "棘釉",
-      "description": "本牌赋予的本回合反伤基础值 +2",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"block_bonus": 6
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_flame_barrier_2",
+	  "name": "棘釉",
+	  "description": "本牌赋予的本回合反伤基础值 +2",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "flame_barrier"
-        ]
-      },
-      "mods": {
-        "value_bonuses": {
-          "temporary_thorns": 2
-        }
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_flame_barrier_3",
-      "name": "留火",
-      "description": "原效果后恢复 1 能量，须实际支付至少 1 能量。同名牌每回合最多返能一次。",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"value_bonuses": {
+		  "temporary_thorns": 2
+		}
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_flame_barrier_3",
+	  "name": "留火",
+	  "description": "原效果后恢复 1 能量，须实际支付至少 1 能量。同名牌每回合最多返能一次。",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "flame_barrier"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "energy",
-            "value": 1
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench",
-      "condition": {
-        "min_paid_cost": 1,
-        "max_per_card_per_turn": 1
-      }
-    },
-    {
-      "id": "town_searing_blow_1",
-      "name": "硬烧",
-      "description": "在现有升级结果上，基础伤害额外 +6",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "energy",
+			"value": 1
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench",
+	  "condition": {
+		"min_paid_cost": 1,
+		"max_per_card_per_turn": 1
+	  }
+	},
+	{
+	  "id": "town_searing_blow_1",
+	  "name": "硬烧",
+	  "description": "在现有升级结果上，基础伤害额外 +6",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "searing_blow"
-        ]
-      },
-      "mods": {
-        "damage_bonus": 6
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_searing_blow_2",
-      "name": "聚温",
-      "description": "原效果后获得 2 点窑温",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"damage_bonus": 6
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_searing_blow_2",
+	  "name": "聚温",
+	  "description": "原效果后获得 2 点窑温",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "searing_blow"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "gain_kiln_heat",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_searing_blow_3",
-      "name": "溅火",
-      "description": "原效果后，对原目标以外的所有存活敌人各造成 4 伤害",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "gain_kiln_heat",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_searing_blow_3",
+	  "name": "溅火",
+	  "description": "原效果后，对原目标以外的所有存活敌人各造成 4 伤害",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "searing_blow"
-        ]
-      },
-      "mods": {
-        "splash_damage": 4
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_sever_soul_1",
-      "name": "裂魂",
-      "description": "本牌基础伤害 +6",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"splash_damage": 4
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_sever_soul_1",
+	  "name": "裂魂",
+	  "description": "本牌基础伤害 +6",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "sever_soul"
-        ]
-      },
-      "mods": {
-        "damage_bonus": 6
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_sever_soul_2",
-      "name": "余壳",
-      "description": "原效果后，按本次实际消耗的非攻击手牌每张获得 2 基础格挡，合计最多 8",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"damage_bonus": 6
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_sever_soul_2",
+	  "name": "余壳",
+	  "description": "原效果后，按本次实际消耗的非攻击手牌每张获得 2 基础格挡，合计最多 8",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "sever_soul"
-        ]
-      },
-      "mods": {
-        "block_per_exhausted": 2,
-        "exhaust_block_cap": 8
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_sever_soul_3",
-      "name": "回风",
-      "description": "原效果后抽 2 张牌",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"block_per_exhausted": 2,
+		"exhaust_block_cap": 8
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_sever_soul_3",
+	  "name": "回风",
+	  "description": "原效果后抽 2 张牌",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "sever_soul"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_shockwave_1",
-      "name": "久震",
-      "description": "本牌施加的虚弱和易伤各额外 +1 层",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_shockwave_1",
+	  "name": "久震",
+	  "description": "本牌施加的虚弱和易伤各额外 +1 层",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "shockwave"
-        ]
-      },
-      "mods": {
-        "status_bonuses": {
-          "damp": 1,
-          "crazed": 1
-        }
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_shockwave_2",
-      "name": "震火",
-      "description": "原效果后，对所有存活敌人各造成 6 伤害",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"status_bonuses": {
+		  "damp": 1,
+		  "crazed": 1
+		}
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_shockwave_2",
+	  "name": "震火",
+	  "description": "原效果后，对所有存活敌人各造成 6 伤害",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "shockwave"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "aoe_damage",
-            "value": 6
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_shockwave_3",
-      "name": "护窑",
-      "description": "原效果后获得 10 格挡",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "aoe_damage",
+			"value": 6
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_shockwave_3",
+	  "name": "护窑",
+	  "description": "原效果后获得 10 格挡",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "shockwave"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 10
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_uppercut_1",
-      "name": "重拳",
-      "description": "本牌基础伤害 +5",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 10
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_uppercut_1",
+	  "name": "重拳",
+	  "description": "本牌基础伤害 +5",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "uppercut"
-        ]
-      },
-      "mods": {
-        "damage_bonus": 5
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_uppercut_2",
-      "name": "裂釉",
-      "description": "本牌施加的虚弱和易伤各额外 +1 层",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"damage_bonus": 5
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_uppercut_2",
+	  "name": "裂釉",
+	  "description": "本牌施加的虚弱和易伤各额外 +1 层",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "uppercut"
-        ]
-      },
-      "mods": {
-        "status_bonuses": {
-          "damp": 1,
-          "crazed": 1
-        }
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_uppercut_3",
-      "name": "留火",
-      "description": "原效果后恢复 1 能量，须实际支付至少 1 能量。同名牌每回合最多返能一次。",
-      "rarity": "uncommon",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"status_bonuses": {
+		  "damp": 1,
+		  "crazed": 1
+		}
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_uppercut_3",
+	  "name": "留火",
+	  "description": "原效果后恢复 1 能量，须实际支付至少 1 能量。同名牌每回合最多返能一次。",
+	  "rarity": "uncommon",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "uppercut"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "energy",
-            "value": 1
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench",
-      "condition": {
-        "min_paid_cost": 1,
-        "max_per_card_per_turn": 1
-      }
-    },
-    {
-      "id": "town_reaper_1",
-      "name": "深收",
-      "description": "本牌群体吸血攻击的基础伤害 +1，治疗仍按实际未被格挡的伤害结算",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "energy",
+			"value": 1
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench",
+	  "condition": {
+		"min_paid_cost": 1,
+		"max_per_card_per_turn": 1
+	  }
+	},
+	{
+	  "id": "town_reaper_1",
+	  "name": "深收",
+	  "description": "本牌群体吸血攻击的基础伤害 +1，治疗仍按实际未被格挡的伤害结算",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "reaper"
-        ]
-      },
-      "mods": {
-        "value_bonuses": {
-          "heal_unblocked_aoe": 1
-        }
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_reaper_2",
-      "name": "护命",
-      "description": "原效果后获得 10 格挡",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"value_bonuses": {
+		  "heal_unblocked_aoe": 1
+		}
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_reaper_2",
+	  "name": "护命",
+	  "description": "原效果后获得 10 格挡",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "reaper"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "block",
-            "value": 10
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    },
-    {
-      "id": "town_reaper_3",
-      "name": "回风",
-      "description": "原效果后抽 2 张牌",
-      "rarity": "rare",
-      "acquisition_scope": "town_only",
-      "restriction": {
-        "card_ids": [
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "block",
+			"value": 10
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	},
+	{
+	  "id": "town_reaper_3",
+	  "name": "回风",
+	  "description": "原效果后抽 2 张牌",
+	  "rarity": "rare",
+	  "acquisition_scope": "town_only",
+	  "restriction": {
+		"card_ids": [
           "reaper"
-        ]
-      },
-      "mods": {
-        "extra_effects": [
-          {
-            "kind": "draw",
-            "value": 2
-          }
-        ]
-      },
-      "icon": "ICO_Enchant_KilnQuench"
-    }
+		]
+	  },
+	  "mods": {
+		"extra_effects": [
+		  {
+			"kind": "draw",
+			"value": 2
+		  }
+		]
+	  },
+	  "icon": "ICO_Enchant_KilnQuench"
+	}
   ]
 }

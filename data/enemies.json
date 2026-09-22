@@ -1,1497 +1,1786 @@
 {
   "version": 4,
   "enemies": [
-    {
-      "id": "claylump",
-      "name": "陶泥团",
-      "tier": "normal",
-      "encounter_class": "medium",
-      "encounter_weights": {"1": 6, "2": 6, "3": 2},
-      "max_copies_per_encounter": 1,
-      "hp": 44,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "tackle",
-          "intent": "attack",
-          "value": 12,
-          "chance": 0.5
-        },
-        {
-          "id": "mighty_charge",
-          "intent": "charge",
-          "value": 0,
-          "next": "heavy_slam",
-          "chance": 0.4
-        },
-        {
-          "id": "heavy_slam",
-          "intent": "attack",
-          "value": 17,
-          "chance": 0.0
-        },
-        {
-          "id": "harden",
-          "intent": "defend",
-          "value": 6,
-          "chance": 0.2
-        }
-      ],
-      "sprite": "SPR_Enemy_Claylump"
-    },
-    {
-      "id": "sootling",
-      "name": "煤灰仔",
-      "tier": "normal",
-      "encounter_class": "medium",
-      "encounter_weights": {"1": 6, "2": 6, "3": 2},
-      "max_copies_per_encounter": 1,
-      "hp": 38,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "stab",
-          "intent": "attack",
-          "value": 14,
-          "chance": 0.55
-        },
-        {
-          "id": "sear_charge",
-          "intent": "charge",
-          "value": 0,
-          "next": "searing_jab",
-          "chance": 0.35
-        },
-        {
-          "id": "searing_jab",
-          "intent": "attack",
-          "value": 16,
-          "chance": 0.0
-        },
-        {
-          "id": "curse",
-          "intent": "debuff",
-          "status": "damp",
-          "value": 1,
-          "chance": 0.2
-        }
-      ],
-      "sprite": "SPR_Enemy_Sootling"
-    },
-    {
-      "id": "embermoth",
-      "name": "火蛾",
-      "tier": "normal",
-      "encounter_class": "weak",
-      "encounter_weights": {"1": 2, "2": 8, "3": 10},
-      "max_copies_per_encounter": 2,
-      "hp": 34,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "bite",
-          "intent": "attack",
-          "value": 9,
-          "times": 2,
-          "chance": 0.5
-        },
-        {
-          "id": "ember_heavy",
-          "intent": "attack",
-          "value": 16,
-          "chance": 0.2
-        },
-        {
-          "id": "screech",
-          "intent": "debuff",
-          "status": "damp",
-          "value": 1,
-          "chance": 0.3
-        }
-      ],
-      "sprite": "SPR_Enemy_Embermoth"
-    },
-    {
-      "id": "potsherd",
-      "name": "陶片兵",
-      "tier": "normal",
-      "encounter_class": "medium",
-      "encounter_weights": {"1": 6, "2": 6, "3": 2},
-      "max_copies_per_encounter": 1,
-      "hp": 42,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "slash",
-          "intent": "attack",
-          "value": 14,
-          "chance": 0.55
-        },
-        {
-          "id": "crush",
-          "intent": "attack",
-          "value": 16,
-          "chance": 0.3
-        },
-        {
-          "id": "guard",
-          "intent": "defend",
-          "value": 8,
-          "chance": 0.2
-        }
-      ],
-      "sprite": "SPR_Enemy_Potsherd"
-    },
-    {
-      "id": "glazetick",
-      "name": "釉蛭",
-      "tier": "normal",
-      "encounter_class": "weak",
-      "encounter_weights": {"1": 2, "2": 8, "3": 10},
-      "max_copies_per_encounter": 2,
-      "hp": 36,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "sting",
-          "intent": "attack",
-          "value": 11,
-          "chance": 0.45
-        },
-        {
-          "id": "venom_charge",
-          "intent": "charge",
-          "value": 0,
-          "next": "venom_bite",
-          "chance": 0.35
-        },
-        {
-          "id": "venom_bite",
-          "intent": "attack",
-          "value": 15,
-          "chance": 0.0
-        },
-        {
-          "id": "venom",
-          "intent": "debuff",
-          "status": "ashrot",
-          "value": 2,
-          "chance": 0.25
-        }
-      ],
-      "sprite": "SPR_Enemy_Glazetick"
-    },
-    {
-      "id": "kilnstatue",
-      "name": "窑龛像",
-      "tier": "normal",
-      "encounter_class": "strong",
-      "encounter_weights": {"1": 10, "2": 2, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 52,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "slam",
-          "intent": "attack",
-          "value": 10,
-          "chance": 0.4
-        },
-        {
-          "id": "stone",
-          "intent": "defend",
-          "value": 8,
-          "chance": 0.4
-        },
-        {
-          "id": "gather_power",
-          "intent": "charge",
-          "value": 8,
-          "next": "pillar_slam",
-          "chance": 0.2
-        },
-        {
-          "id": "pillar_slam",
-          "intent": "attack",
-          "value": 18,
-          "chance": 0.0
-        }
-      ],
-      "sprite": "SPR_Enemy_Kilnstatue"
-    },
-    {
-      "id": "ashcantor",
-      "name": "灰颂者",
-      "tier": "normal",
-      "encounter_class": "strong",
-      "encounter_weights": {"1": 10, "2": 2, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 48,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "ritual",
-          "intent": "buff",
-          "status": "heat",
-          "value": 2,
-          "chance": 0.35
-        },
-        {
-          "id": "hex",
-          "intent": "attack",
-          "value": 15,
-          "chance": 0.45
-        },
-        {
-          "id": "drain",
-          "intent": "debuff",
-          "status": "thirst",
-          "value": 2,
-          "chance": 0.25
-        },
-        {
-          "id": "chant",
-          "intent": "charge",
-          "value": 0,
-          "next": "grand_hex",
-          "chance": 0.2
-        },
-        {
-          "id": "grand_hex",
-          "intent": "attack",
-          "value": 20,
-          "chance": 0.0
-        }
-      ],
-      "sprite": "SPR_Enemy_Ashcantor"
-    },
-    {
-      "id": "robber",
-      "name": "抢劫的",
-      "tier": "normal",
-      "encounter_class": "medium",
-      "encounter_weights": {"1": 6, "2": 6, "3": 2},
-      "max_copies_per_encounter": 1,
-      "hp": 44,
-      "ai": "weighted_random",
-      "description": "游荡在陶原商路上的普通人类劫匪，惯用短刀逼近旅人。",
-      "combat_hint": "每次小刀攻击会抢走至多 15 金币；击败他并赢得战斗后，可找回实际损失的金币。",
-      "moves": [
-        {
-          "id": "mug",
-          "name": "打劫",
-          "intent": "attack",
-          "value": 10,
-          "gold_steal": 15,
-          "chance": 1.0
-        }
-      ],
-      "sprite": "SPR_Enemy_Robber"
-    },
-    {
-      "id": "kilnward",
-      "name": "陶偶将",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {"1": 10, "2": 0, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 84,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "cleave",
-          "intent": "attack",
-          "value": 16,
-          "chance": 0.5
-        },
-        {
-          "id": "roar",
-          "intent": "buff",
-          "status": "heat",
-          "value": 2,
-          "chance": 0.25
-        },
-        {
-          "id": "shield",
-          "intent": "defend",
-          "value": 12,
-          "chance": 0.25
-        }
-      ],
-      "sprite": "SPR_Enemy_Kilnward"
-    },
-    {
-      "id": "glazemaw",
-      "name": "釉裂兽",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {"1": 10, "2": 0, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 82,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "triple",
-          "intent": "attack",
-          "value": 8,
-          "times": 3,
-          "chance": 0.5
-        },
-        {
-          "id": "maul",
-          "intent": "attack",
-          "value": 16,
-          "chance": 0.5
-        }
-      ],
-      "sprite": "SPR_Enemy_Glazemaw"
-    },
-    {
-      "id": "slagbeast",
-      "name": "熔渣兽",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {"1": 10, "2": 0, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 82,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "scald",
-          "intent": "attack",
-          "value": 13,
-          "chance": 0.5
-        },
-        {
-          "id": "brand",
-          "intent": "debuff",
-          "status": "crazed",
-          "value": 2,
-          "chance": 0.25
-        },
-        {
-          "id": "guard",
-          "intent": "defend",
-          "value": 11,
-          "chance": 0.25
-        }
-      ],
-      "sprite": "SPR_Enemy_Slagbeast"
-    },
-    {
-      "id": "kilnwarden",
-      "name": "炽窑卫",
-      "tier": "normal",
-      "encounter_class": "medium",
-      "encounter_weights": {"1": 6, "2": 6, "3": 2},
-      "max_copies_per_encounter": 1,
-      "hp": 48,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "bash",
-          "intent": "attack",
-          "value": 13,
-          "chance": 0.5
-        },
-        {
-          "id": "kindle",
-          "intent": "charge",
-          "value": 0,
-          "next": "molten_slam",
-          "chance": 0.3
-        },
-        {
-          "id": "molten_slam",
-          "intent": "attack",
-          "value": 18,
-          "chance": 0.0
-        },
-        {
-          "id": "ward",
-          "intent": "defend",
-          "value": 10,
-          "chance": 0.2
-        }
-      ],
-      "sprite": "SPR_Enemy_Kilnwarden"
-    },
-    {
-      "id": "cindermoth",
-      "name": "烬蝶",
-      "tier": "normal",
-      "encounter_class": "weak",
-      "encounter_weights": {"1": 2, "2": 8, "3": 10},
-      "max_copies_per_encounter": 2,
-      "hp": 36,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "wingbeat",
-          "intent": "attack",
-          "value": 10,
-          "times": 2,
-          "chance": 0.5
-        },
-        {
-          "id": "cinder_charge",
-          "intent": "charge",
-          "value": 0,
-          "next": "flare",
-          "chance": 0.2
-        },
-        {
-          "id": "flare",
-          "intent": "attack",
-          "value": 16,
-          "chance": 0.0
-        },
-        {
-          "id": "ash_cloud",
-          "intent": "debuff",
-          "status": "damp",
-          "value": 1,
-          "chance": 0.3
-        }
-      ],
-      "sprite": "SPR_Enemy_Cindermoth"
-    },
-    {
-      "id": "meltgolem",
-      "name": "熔心傀儡",
-      "tier": "normal",
-      "encounter_class": "strong",
-      "encounter_weights": {"1": 10, "2": 2, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 54,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "pound",
-          "intent": "attack",
-          "value": 12,
-          "chance": 0.45
-        },
-        {
-          "id": "kindle",
-          "intent": "charge",
-          "value": 0,
-          "next": "eruption",
-          "chance": 0.2
-        },
-        {
-          "id": "eruption",
-          "intent": "attack",
-          "value": 22,
-          "chance": 0.0
-        },
-        {
-          "id": "quench",
-          "intent": "defend",
-          "value": 9,
-          "chance": 0.35
-        }
-      ],
-      "sprite": "SPR_Enemy_Meltgolem"
-    },
-    {
-      "id": "kiln_captain",
-      "name": "窑卫长",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {"1": 10, "2": 0, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 92,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "sweep",
-          "intent": "attack",
-          "value": 18,
-          "chance": 0.5
-        },
-        {
-          "id": "rally",
-          "intent": "buff",
-          "status": "heat",
-          "value": 2,
-          "chance": 0.25
-        },
-        {
-          "id": "bulwark",
-          "intent": "defend",
-          "value": 14,
-          "chance": 0.25
-        }
-      ],
-      "sprite": "SPR_Enemy_KilnCaptain"
-    },
-    {
-      "id": "cinderfiend",
-      "name": "烬魈",
-      "tier": "normal",
-      "encounter_class": "medium",
-      "encounter_weights": {"1": 6, "2": 6, "3": 2},
-      "max_copies_per_encounter": 1,
-      "hp": 42,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "rip",
-          "intent": "attack",
-          "value": 16,
-          "chance": 0.5
-        },
-        {
-          "id": "immolate_charge",
-          "intent": "charge",
-          "value": 0,
-          "next": "immolate",
-          "chance": 0.3
-        },
-        {
-          "id": "immolate",
-          "intent": "attack",
-          "value": 20,
-          "chance": 0.0
-        },
-        {
-          "id": "cackle",
-          "intent": "debuff",
-          "status": "damp",
-          "value": 1,
-          "chance": 0.2
-        }
-      ],
-      "sprite": "SPR_Enemy_Cinderfiend"
-    },
-    {
-      "id": "magmawhelp",
-      "name": "岩浆幼兽",
-      "tier": "normal",
-      "encounter_class": "medium",
-      "encounter_weights": {"1": 6, "2": 6, "3": 2},
-      "max_copies_per_encounter": 1,
-      "hp": 46,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "chomp",
-          "intent": "attack",
-          "value": 14,
-          "chance": 0.5
-        },
-        {
-          "id": "lava_charge",
-          "intent": "charge",
-          "value": 0,
-          "next": "lava_glob",
-          "chance": 0.3
-        },
-        {
-          "id": "lava_glob",
-          "intent": "attack",
-          "value": 18,
-          "chance": 0.0
-        },
-        {
-          "id": "smother",
-          "intent": "debuff",
-          "status": "ashrot",
-          "value": 2,
-          "chance": 0.2
-        }
-      ],
-      "sprite": "SPR_Enemy_Magmawhelp"
-    },
-    {
-      "id": "coalseer",
-      "name": "煤烟先知",
-      "tier": "normal",
-      "encounter_class": "strong",
-      "encounter_weights": {"1": 10, "2": 2, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 50,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "bolt",
-          "intent": "attack",
-          "value": 16,
-          "chance": 0.45
-        },
-        {
-          "id": "smog",
-          "intent": "debuff",
-          "status": "thirst",
-          "value": 2,
-          "chance": 0.3
-        },
-        {
-          "id": "prophecy",
-          "intent": "charge",
-          "value": 0,
-          "next": "doom_blast",
-          "chance": 0.25
-        },
-        {
-          "id": "doom_blast",
-          "intent": "attack",
-          "value": 22,
-          "chance": 0.0
-        }
-      ],
-      "sprite": "SPR_Enemy_Coalseer"
-    },
-    {
-      "id": "ember_eater",
-      "name": "烬噬",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {"1": 10, "2": 0, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 96,
-      "ai": "weighted_random",
-      "moves": [
-        {
-          "id": "devour",
-          "intent": "attack",
-          "value": 19,
-          "chance": 0.5
-        },
-        {
-          "id": "sear",
-          "intent": "debuff",
-          "status": "crazed",
-          "value": 2,
-          "chance": 0.25
-        },
-        {
-          "id": "shell",
-          "intent": "defend",
-          "value": 13,
-          "chance": 0.25
-        }
-      ],
-      "sprite": "SPR_Enemy_EmberEater"
-    },
-    {
-      "id": "kilnheart_ember",
-      "map_icon": "res://art/map/bosses/MAP_Boss_KilnheartEmber_v6.png",
-      "name": "窑心·烬",
-      "tier": "boss",
-      "encounter_class": "solo_only",
-      "encounter_weights": {
-        "1": 10,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 402,
-      "ai": "phased_cycle",
-      "phases": [
-        {
-          "hp_threshold": 1.0,
-          "moves": [
-            {
-              "id": "claw",
-              "name": "烬爪",
-              "intent": "attack",
-              "value": 16,
-              "times": 1
-            },
-            {
-              "id": "ward",
-              "name": "护炉",
-              "intent": "defend",
-              "value": 15,
-              "effective_stats": true
-            },
-            {
-              "id": "scald_opening",
-              "name": "灼面",
-              "intent": "attack",
-              "value": 12,
-              "times": 1,
-              "after_effects": [
-                {
-                  "kind": "status",
-                  "status": "damp",
-                  "value": 2
-                },
-                {
-                  "kind": "status",
-                  "status": "crazed",
-                  "value": 2
-                },
-                {
-                  "kind": "add_card",
-                  "card_id": "wound",
-                  "pile": "discard",
-                  "count": 2
-                }
-              ]
-            },
-            {
-              "id": "stoke",
-              "name": "炽焰蓄势",
-              "intent": "buff",
-              "status": "heat",
-              "value": 3
-            }
-          ]
-        },
-        {
-          "hp_threshold": 0.5,
-          "moves": [
-            {
-              "id": "execute_enraged",
-              "name": "双重处决",
-              "intent": "attack",
-              "value": 10,
-              "times": 2
-            },
-            {
-              "id": "ward_enraged",
-              "name": "护炉",
-              "intent": "defend",
-              "value": 15,
-              "effective_stats": true
-            },
-            {
-              "id": "scald_enraged",
-              "name": "灼面",
-              "intent": "attack",
-              "value": 12,
-              "times": 1,
-              "after_effects": [
-                {
-                  "kind": "status",
-                  "status": "damp",
-                  "value": 2
-                },
-                {
-                  "kind": "status",
-                  "status": "crazed",
-                  "value": 2
-                },
-                {
-                  "kind": "add_card",
-                  "card_id": "wound",
-                  "pile": "discard",
-                  "count": 2
-                }
-              ]
-            },
-            {
-              "id": "stoke_enraged",
-              "name": "炽焰蓄势",
-              "intent": "buff",
-              "status": "heat",
-              "value": 3
-            },
-            {
-              "id": "burst_enraged",
-              "name": "炉心爆裂",
-              "intent": "attack",
-              "value": 45,
-              "times": 1
-            }
-          ],
-          "entry_move": {
-            "id": "phase_entry_1",
-            "name": "怒焰强化",
-            "intent": "buff",
-            "status": "heat",
-            "value": 6,
-            "cleanse": true
-          }
-        },
-        {
-          "hp_threshold": 0.25,
-          "moves": [
-            {
-              "id": "execute_last",
-              "name": "双重处决",
-              "intent": "attack",
-              "value": 10,
-              "times": 2
-            },
-            {
-              "id": "ward_last",
-              "name": "护炉",
-              "intent": "defend",
-              "value": 15,
-              "effective_stats": true
-            },
-            {
-              "id": "scald_last",
-              "name": "灼面",
-              "intent": "attack",
-              "value": 12,
-              "times": 1,
-              "after_effects": [
-                {
-                  "kind": "status",
-                  "status": "damp",
-                  "value": 2
-                },
-                {
-                  "kind": "status",
-                  "status": "crazed",
-                  "value": 2
-                },
-                {
-                  "kind": "add_card",
-                  "card_id": "wound",
-                  "pile": "discard",
-                  "count": 2
-                }
-              ]
-            },
-            {
-              "id": "stoke_last",
-              "name": "炽焰蓄势",
-              "intent": "buff",
-              "status": "heat",
-              "value": 3
-            },
-            {
-              "id": "burst_last",
-              "name": "炉心爆裂",
-              "intent": "attack",
-              "value": 45,
-              "times": 1
-            }
-          ],
-          "entry_move": {
-            "id": "phase_entry_2",
-            "name": "怒焰强化",
-            "intent": "buff",
-            "status": "heat",
-            "value": 6,
-            "cleanse": true
-          }
-        }
-      ],
-      "sprite": "SPR_Enemy_KilnheartEmber",
-      "boss_rules": {},
-      "combat_hint": "护炉与蓄势各占一回合，分别获得15格挡、3力量，不攻击。半血与四分之一血各用一回合净化并+6力量，之后预告处决；跨两阈值依次强化。灼面施加虚弱、易伤并塞伤口；后期周期释放炉心爆裂。"
-    },
-    {
-      "id": "sagger_matron",
-      "map_icon": "res://art/map/bosses/MAP_Boss_SaggerMatron_v6.png",
-      "name": "封窑兽·匣母",
-      "tier": "boss",
-      "encounter_class": "solo_only",
-      "encounter_weights": {"1": 10, "2": 0, "3": 0},
-      "max_copies_per_encounter": 1,
-      "hp": 240,
-      "ai": "scripted_cycle",
-      "first_move": "bar",
-      "description": "她记得护坯，忘了开匣。",
-      "combat_hint": "封匣蓄火时，打掉格挡可阻止喷火。",
-      "moves": [
-        {"id": "bar", "name": "拦路", "intent": "attack", "value": 16, "next": "seal"},
-        {"id": "seal", "name": "封匣", "intent": "charge", "value": 18, "next": "fire", "on_block_break": "vent"},
-        {"id": "fire", "name": "开窑", "intent": "attack", "value": 32, "next": "cool"},
-        {"id": "vent", "name": "泄压", "intent": "unknown", "next": "cool"},
-        {"id": "cool", "name": "散热", "intent": "unknown", "next": "bar"}
-      ],
-      "sprite": "SPR_Enemy_SaggerMatron",
-      "state_sprites": {
-        "bar": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Bar.png",
-        "seal": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Seal.png",
-        "fire": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Fire.png",
-        "vent": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Vent.png",
-        "cool": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Cool.png"
-      }
-    },
-    {
-      "id": "chi_the_first",
-      "map_icon": "res://art/map/bosses/MAP_Boss_ChiTheFirst_v5.png",
-      "name": "窑主·熾",
-      "tier": "boss",
-      "encounter_class": "solo_only",
-      "encounter_weights": {
-        "1": 10,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 508,
-      "ai": "phased_cycle",
-      "phases": [
-        {
-          "hp_threshold": 1.0,
-          "moves": [
-            {
-              "id": "slash_a",
-              "name": "焰斩",
-              "intent": "attack",
-              "value": 20,
-              "times": 1
-            },
-            {
-              "id": "soul",
-              "name": "四重灵击",
-              "intent": "attack",
-              "value": 6,
-              "times": 4
-            },
-            {
-              "id": "slash_b",
-              "name": "焰斩",
-              "intent": "attack",
-              "value": 20,
-              "times": 1
-            }
-          ],
-          "power_reactive": true
-        },
-        {
-          "hp_threshold": 0.5,
-          "moves": [
-            {
-              "id": "echo_awakened",
-              "name": "暗焰爆发",
-              "intent": "attack",
-              "value": 40,
-              "times": 1
-            },
-            {
-              "id": "pounce_awakened",
-              "name": "三重扑击",
-              "intent": "attack",
-              "value": 10,
-              "times": 3
-            },
-            {
-              "id": "sludge_awakened",
-              "name": "灰浆侵蚀",
-              "intent": "attack",
-              "value": 18,
-              "times": 1,
-              "after_effects": [
-                {
-                  "kind": "add_card",
-                  "card_id": "wound",
-                  "pile": "discard",
-                  "count": 2
-                }
-              ]
-            }
-          ],
-          "entry_move": {
-            "id": "phase_entry_1",
-            "name": "觉醒",
-            "intent": "buff",
-            "status": "heat",
-            "value": 6,
-            "cleanse": true
-          },
-          "power_reactive": false
-        },
-        {
-          "hp_threshold": 0.25,
-          "moves": [
-            {
-              "id": "echo_last",
-              "name": "暗焰爆发",
-              "intent": "attack",
-              "value": 40,
-              "times": 1
-            },
-            {
-              "id": "pounce_last",
-              "name": "三重扑击",
-              "intent": "attack",
-              "value": 10,
-              "times": 3
-            },
-            {
-              "id": "sludge_last",
-              "name": "灰浆侵蚀",
-              "intent": "attack",
-              "value": 18,
-              "times": 1,
-              "after_effects": [
-                {
-                  "kind": "add_card",
-                  "card_id": "wound",
-                  "pile": "discard",
-                  "count": 2
-                }
-              ]
-            }
-          ],
-          "entry_move": {
-            "id": "phase_entry_2",
-            "name": "觉醒",
-            "intent": "buff",
-            "status": "heat",
-            "value": 6,
-            "cleanse": true
-          },
-          "power_reactive": false
-        }
-      ],
-      "sprite": "SPR_Enemy_ChiTheFirst",
-      "boss_rules": {
-        "regeneration": 10,
-        "power_strength": 2
-      },
-      "combat_hint": "行动前回复10生命；仅第一阶段，你每打出能力牌使其+2力量。半血与四分之一血各用一回合觉醒：不攻击，净化并+6力量，之后预告暗焰爆发；跨两阈值依次觉醒。灰浆塞入伤口。"
-    },
-    {
-      "id": "escort_commander",
-      "name": "指挥官",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 165,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "rally",
-      "moves": [
-        {
-          "id": "rally",
-          "name": "全队强化",
-          "intent": "unknown",
-          "value": 0,
-          "after_effects": [
-            {
-              "kind": "rally",
-              "strength": 3,
-              "escort_block": 6
-            }
-          ],
-          "next": "flurry"
-        },
-        {
-          "id": "flurry",
-          "name": "连击",
-          "intent": "attack",
-          "value": 7,
-          "times": 3,
-          "next": "deploy"
-        },
-        {
-          "id": "deploy",
-          "name": "满员攻击",
-          "intent": "attack",
-          "value": 18,
-          "times": 1,
-          "if_missing": {
-            "name": "补充随从",
-            "intent": "unknown",
-            "value": 0,
-            "after_effects": [
-              {
-                "kind": "recruit"
-              },
-              {
-                "kind": "block",
-                "value": 12
-              }
-            ]
-          },
-          "next": "rally"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortCommander",
-      "combat_hint": "全队+3力量、随从+6格挡→7×3→缺员补兵并+12格挡，否则18攻击。主怪死亡后随从继续战斗，全部敌人死亡才胜利。",
-      "escort_ids": [
-        "escort_assault",
+	{
+	  "id": "claylump",
+	  "name": "陶泥团",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {"1": 6, "2": 6, "3": 2},
+	  "max_copies_per_encounter": 1,
+	  "hp": 44,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "tackle",
+		  "intent": "attack",
+		  "value": 12,
+		  "chance": 0.5
+		},
+		{
+		  "id": "mighty_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "heavy_slam",
+		  "chance": 0.4
+		},
+		{
+		  "id": "heavy_slam",
+		  "intent": "attack",
+		  "value": 17,
+		  "chance": 0.0
+		},
+		{
+		  "id": "harden",
+		  "intent": "defend",
+		  "value": 6,
+		  "chance": 0.2
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Claylump"
+	},
+	{
+	  "id": "sootling",
+	  "name": "煤灰仔",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {"1": 6, "2": 6, "3": 2},
+	  "max_copies_per_encounter": 1,
+	  "hp": 38,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "stab",
+		  "intent": "attack",
+		  "value": 14,
+		  "chance": 0.55
+		},
+		{
+		  "id": "sear_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "searing_jab",
+		  "chance": 0.35
+		},
+		{
+		  "id": "searing_jab",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.0
+		},
+		{
+		  "id": "curse",
+		  "intent": "debuff",
+		  "status": "damp",
+		  "value": 1,
+		  "chance": 0.2
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Sootling"
+	},
+	{
+	  "id": "embermoth",
+	  "name": "火蛾",
+	  "tier": "normal",
+	  "encounter_class": "weak",
+	  "encounter_weights": {"1": 2, "2": 8, "3": 10},
+	  "max_copies_per_encounter": 2,
+	  "hp": 34,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "bite",
+		  "intent": "attack",
+		  "value": 9,
+		  "times": 2,
+		  "chance": 0.5
+		},
+		{
+		  "id": "ember_heavy",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.2
+		},
+		{
+		  "id": "screech",
+		  "intent": "debuff",
+		  "status": "damp",
+		  "value": 1,
+		  "chance": 0.3
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Embermoth"
+	},
+	{
+	  "id": "potsherd",
+	  "name": "陶片兵",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {"1": 6, "2": 6, "3": 2},
+	  "max_copies_per_encounter": 1,
+	  "hp": 42,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "slash",
+		  "intent": "attack",
+		  "value": 14,
+		  "chance": 0.55
+		},
+		{
+		  "id": "crush",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.3
+		},
+		{
+		  "id": "guard",
+		  "intent": "defend",
+		  "value": 8,
+		  "chance": 0.2
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Potsherd"
+	},
+	{
+	  "id": "glazetick",
+	  "name": "釉蛭",
+	  "tier": "normal",
+	  "encounter_class": "weak",
+	  "encounter_weights": {"1": 2, "2": 8, "3": 10},
+	  "max_copies_per_encounter": 2,
+	  "hp": 36,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "sting",
+		  "intent": "attack",
+		  "value": 11,
+		  "chance": 0.45
+		},
+		{
+		  "id": "venom_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "venom_bite",
+		  "chance": 0.35
+		},
+		{
+		  "id": "venom_bite",
+		  "intent": "attack",
+		  "value": 15,
+		  "chance": 0.0
+		},
+		{
+		  "id": "venom",
+		  "intent": "debuff",
+		  "status": "ashrot",
+		  "value": 2,
+		  "chance": 0.25
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Glazetick"
+	},
+	{
+	  "id": "kilnstatue",
+	  "name": "窑龛像",
+	  "tier": "normal",
+	  "encounter_class": "strong",
+	  "encounter_weights": {"1": 10, "2": 2, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 52,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "slam",
+		  "intent": "attack",
+		  "value": 10,
+		  "chance": 0.4
+		},
+		{
+		  "id": "stone",
+		  "intent": "defend",
+		  "value": 8,
+		  "chance": 0.4
+		},
+		{
+		  "id": "gather_power",
+		  "intent": "charge",
+		  "value": 8,
+		  "next": "pillar_slam",
+		  "chance": 0.2
+		},
+		{
+		  "id": "pillar_slam",
+		  "intent": "attack",
+		  "value": 18,
+		  "chance": 0.0
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Kilnstatue"
+	},
+	{
+	  "id": "ashcantor",
+	  "name": "灰颂者",
+	  "tier": "normal",
+	  "encounter_class": "strong",
+	  "encounter_weights": {"1": 10, "2": 2, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 48,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "ritual",
+		  "intent": "buff",
+		  "status": "heat",
+		  "value": 2,
+		  "chance": 0.35
+		},
+		{
+		  "id": "hex",
+		  "intent": "attack",
+		  "value": 15,
+		  "chance": 0.45
+		},
+		{
+		  "id": "drain",
+		  "intent": "debuff",
+		  "status": "thirst",
+		  "value": 2,
+		  "chance": 0.25
+		},
+		{
+		  "id": "chant",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "grand_hex",
+		  "chance": 0.2
+		},
+		{
+		  "id": "grand_hex",
+		  "intent": "attack",
+		  "value": 20,
+		  "chance": 0.0
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Ashcantor"
+	},
+	{
+	  "id": "robber",
+	  "name": "抢劫的",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {"1": 6, "2": 6, "3": 2},
+	  "max_copies_per_encounter": 1,
+	  "hp": 44,
+	  "ai": "weighted_random",
+	  "description": "游荡在陶原商路上的普通人类劫匪，惯用短刀逼近旅人。",
+	  "combat_hint": "每次小刀攻击会抢走至多 15 金币；击败他并赢得战斗后，可找回实际损失的金币。",
+	  "moves": [
+		{
+		  "id": "mug",
+		  "name": "打劫",
+		  "intent": "attack",
+		  "value": 10,
+		  "gold_steal": 15,
+		  "chance": 1.0
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Robber"
+	},
+	{
+	  "id": "kilnward",
+	  "name": "陶偶将",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {"1": 10, "2": 0, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 104,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "cleave",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.5
+		},
+		{
+		  "id": "roar",
+		  "intent": "buff",
+		  "status": "heat",
+		  "value": 2,
+		  "chance": 0.25
+		},
+		{
+		  "id": "shield",
+		  "intent": "defend",
+		  "value": 12,
+		  "chance": 0.25
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Kilnward"
+	},
+	{
+	  "id": "glazemaw",
+	  "name": "釉裂兽",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {"1": 10, "2": 0, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 82,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "triple",
+		  "intent": "attack",
+		  "value": 8,
+		  "times": 3,
+		  "chance": 0.5
+		},
+		{
+		  "id": "maul",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.5
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Glazemaw"
+	},
+	{
+	  "id": "slagbeast",
+	  "name": "熔渣兽",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {"1": 10, "2": 0, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 82,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "scald",
+		  "intent": "attack",
+		  "value": 13,
+		  "chance": 0.5
+		},
+		{
+		  "id": "brand",
+		  "intent": "debuff",
+		  "status": "crazed",
+		  "value": 2,
+		  "chance": 0.25
+		},
+		{
+		  "id": "guard",
+		  "intent": "defend",
+		  "value": 11,
+		  "chance": 0.25
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Slagbeast"
+	},
+	{
+	  "id": "kilnwarden",
+	  "name": "炽窑卫",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {"1": 6, "2": 6, "3": 2},
+	  "max_copies_per_encounter": 1,
+	  "hp": 48,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "bash",
+		  "intent": "attack",
+		  "value": 13,
+		  "chance": 0.5
+		},
+		{
+		  "id": "kindle",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "molten_slam",
+		  "chance": 0.3
+		},
+		{
+		  "id": "molten_slam",
+		  "intent": "attack",
+		  "value": 18,
+		  "chance": 0.0
+		},
+		{
+		  "id": "ward",
+		  "intent": "defend",
+		  "value": 10,
+		  "chance": 0.2
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Kilnwarden"
+	},
+	{
+	  "id": "cindermoth",
+	  "name": "烬蝶",
+	  "tier": "normal",
+	  "encounter_class": "weak",
+	  "encounter_weights": {"1": 2, "2": 8, "3": 10},
+	  "max_copies_per_encounter": 2,
+	  "hp": 31,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "wingbeat",
+		  "intent": "attack",
+		  "value": 10,
+		  "times": 2,
+		  "chance": 0.5
+		},
+		{
+		  "id": "cinder_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "flare",
+		  "chance": 0.2
+		},
+		{
+		  "id": "flare",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.0
+		},
+		{
+		  "id": "ash_cloud",
+		  "intent": "debuff",
+		  "status": "damp",
+		  "value": 1,
+		  "chance": 0.3
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Cindermoth"
+	},
+	{
+	  "id": "meltgolem",
+	  "name": "熔心傀儡",
+	  "tier": "normal",
+	  "encounter_class": "strong",
+	  "encounter_weights": {"1": 10, "2": 2, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 54,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "pound",
+		  "intent": "attack",
+		  "value": 12,
+		  "chance": 0.45
+		},
+		{
+		  "id": "kindle",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "eruption",
+		  "chance": 0.2
+		},
+		{
+		  "id": "eruption",
+		  "intent": "attack",
+		  "value": 22,
+		  "chance": 0.0
+		},
+		{
+		  "id": "quench",
+		  "intent": "defend",
+		  "value": 9,
+		  "chance": 0.35
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Meltgolem"
+	},
+	{
+	  "id": "kiln_captain",
+	  "name": "窑卫长",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {"1": 10, "2": 0, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 92,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "sweep",
+		  "intent": "attack",
+		  "value": 18,
+		  "chance": 0.5
+		},
+		{
+		  "id": "rally",
+		  "intent": "buff",
+		  "status": "heat",
+		  "value": 2,
+		  "chance": 0.25
+		},
+		{
+		  "id": "bulwark",
+		  "intent": "defend",
+		  "value": 14,
+		  "chance": 0.25
+		}
+	  ],
+	  "sprite": "SPR_Enemy_KilnCaptain"
+	},
+	{
+	  "id": "cinderfiend",
+	  "name": "烬魈",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {"1": 6, "2": 6, "3": 2},
+	  "max_copies_per_encounter": 1,
+	  "hp": 42,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "rip",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.5
+		},
+		{
+		  "id": "immolate_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "immolate",
+		  "chance": 0.3
+		},
+		{
+		  "id": "immolate",
+		  "intent": "attack",
+		  "value": 20,
+		  "chance": 0.0
+		},
+		{
+		  "id": "cackle",
+		  "intent": "debuff",
+		  "status": "damp",
+		  "value": 1,
+		  "chance": 0.2
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Cinderfiend"
+	},
+	{
+	  "id": "magmawhelp",
+	  "name": "岩浆幼兽",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {"1": 6, "2": 6, "3": 2},
+	  "max_copies_per_encounter": 1,
+	  "hp": 46,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "chomp",
+		  "intent": "attack",
+		  "value": 14,
+		  "chance": 0.5
+		},
+		{
+		  "id": "lava_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "lava_glob",
+		  "chance": 0.3
+		},
+		{
+		  "id": "lava_glob",
+		  "intent": "attack",
+		  "value": 18,
+		  "chance": 0.0
+		},
+		{
+		  "id": "smother",
+		  "intent": "debuff",
+		  "status": "ashrot",
+		  "value": 2,
+		  "chance": 0.2
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Magmawhelp"
+	},
+	{
+	  "id": "coalseer",
+	  "name": "煤烟先知",
+	  "tier": "normal",
+	  "encounter_class": "strong",
+	  "encounter_weights": {"1": 10, "2": 2, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 50,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "bolt",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.45
+		},
+		{
+		  "id": "smog",
+		  "intent": "debuff",
+		  "status": "thirst",
+		  "value": 2,
+		  "chance": 0.3
+		},
+		{
+		  "id": "prophecy",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "doom_blast",
+		  "chance": 0.25
+		},
+		{
+		  "id": "doom_blast",
+		  "intent": "attack",
+		  "value": 22,
+		  "chance": 0.0
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Coalseer"
+	},
+	{
+	  "id": "ember_eater",
+	  "name": "烬噬",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {"1": 10, "2": 0, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 96,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "devour",
+		  "intent": "attack",
+		  "value": 19,
+		  "chance": 0.5
+		},
+		{
+		  "id": "sear",
+		  "intent": "debuff",
+		  "status": "crazed",
+		  "value": 2,
+		  "chance": 0.25
+		},
+		{
+		  "id": "shell",
+		  "intent": "defend",
+		  "value": 13,
+		  "chance": 0.25
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EmberEater"
+	},
+	{
+	  "id": "kilnheart_ember",
+	  "map_icon": "res://art/map/bosses/MAP_Boss_KilnheartEmber_v6.png",
+	  "name": "窑心·烬",
+	  "tier": "boss",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {
+		"1": 10,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 402,
+	  "ai": "phased_cycle",
+	  "phases": [
+		{
+		  "hp_threshold": 1.0,
+		  "moves": [
+			{
+			  "id": "claw",
+			  "name": "烬爪",
+			  "intent": "attack",
+			  "value": 16,
+			  "times": 1
+			},
+			{
+			  "id": "ward",
+			  "name": "护炉",
+			  "intent": "defend",
+			  "value": 15,
+			  "effective_stats": true
+			},
+			{
+			  "id": "scald_opening",
+			  "name": "灼面",
+			  "intent": "attack",
+			  "value": 12,
+			  "times": 1,
+			  "after_effects": [
+				{
+				  "kind": "status",
+				  "status": "damp",
+				  "value": 2
+				},
+				{
+				  "kind": "status",
+				  "status": "crazed",
+				  "value": 2
+				},
+				{
+				  "kind": "add_card",
+				  "card_id": "wound",
+				  "pile": "discard",
+				  "count": 2
+				}
+			  ]
+			},
+			{
+			  "id": "stoke",
+			  "name": "炽焰蓄势",
+			  "intent": "buff",
+			  "status": "heat",
+			  "value": 3
+			}
+		  ]
+		},
+		{
+		  "hp_threshold": 0.5,
+		  "moves": [
+			{
+			  "id": "execute_enraged",
+			  "name": "双重处决",
+			  "intent": "attack",
+			  "value": 10,
+			  "times": 2
+			},
+			{
+			  "id": "ward_enraged",
+			  "name": "护炉",
+			  "intent": "defend",
+			  "value": 15,
+			  "effective_stats": true
+			},
+			{
+			  "id": "scald_enraged",
+			  "name": "灼面",
+			  "intent": "attack",
+			  "value": 12,
+			  "times": 1,
+			  "after_effects": [
+				{
+				  "kind": "status",
+				  "status": "damp",
+				  "value": 2
+				},
+				{
+				  "kind": "status",
+				  "status": "crazed",
+				  "value": 2
+				},
+				{
+				  "kind": "add_card",
+				  "card_id": "wound",
+				  "pile": "discard",
+				  "count": 2
+				}
+			  ]
+			},
+			{
+			  "id": "stoke_enraged",
+			  "name": "炽焰蓄势",
+			  "intent": "buff",
+			  "status": "heat",
+			  "value": 3
+			},
+			{
+			  "id": "burst_enraged",
+			  "name": "炉心爆裂",
+			  "intent": "attack",
+			  "value": 45,
+			  "times": 1
+			}
+		  ],
+		  "entry_move": {
+			"id": "phase_entry_1",
+			"name": "怒焰强化",
+			"intent": "buff",
+			"status": "heat",
+			"value": 6,
+			"cleanse": true
+		  }
+		},
+		{
+		  "hp_threshold": 0.25,
+		  "moves": [
+			{
+			  "id": "execute_last",
+			  "name": "双重处决",
+			  "intent": "attack",
+			  "value": 10,
+			  "times": 2
+			},
+			{
+			  "id": "ward_last",
+			  "name": "护炉",
+			  "intent": "defend",
+			  "value": 15,
+			  "effective_stats": true
+			},
+			{
+			  "id": "scald_last",
+			  "name": "灼面",
+			  "intent": "attack",
+			  "value": 12,
+			  "times": 1,
+			  "after_effects": [
+				{
+				  "kind": "status",
+				  "status": "damp",
+				  "value": 2
+				},
+				{
+				  "kind": "status",
+				  "status": "crazed",
+				  "value": 2
+				},
+				{
+				  "kind": "add_card",
+				  "card_id": "wound",
+				  "pile": "discard",
+				  "count": 2
+				}
+			  ]
+			},
+			{
+			  "id": "stoke_last",
+			  "name": "炽焰蓄势",
+			  "intent": "buff",
+			  "status": "heat",
+			  "value": 3
+			},
+			{
+			  "id": "burst_last",
+			  "name": "炉心爆裂",
+			  "intent": "attack",
+			  "value": 45,
+			  "times": 1
+			}
+		  ],
+		  "entry_move": {
+			"id": "phase_entry_2",
+			"name": "怒焰强化",
+			"intent": "buff",
+			"status": "heat",
+			"value": 6,
+			"cleanse": true
+		  }
+		}
+	  ],
+	  "sprite": "SPR_Enemy_KilnheartEmber",
+	  "boss_rules": {},
+	  "combat_hint": "护炉与蓄势各占一回合，分别获得15格挡、3力量，不攻击。半血与四分之一血各用一回合净化并+6力量，之后预告处决；跨两阈值依次强化。灼面施加虚弱、易伤并塞伤口；后期周期释放炉心爆裂。"
+	},
+	{
+	  "id": "sagger_matron",
+	  "map_icon": "res://art/map/bosses/MAP_Boss_SaggerMatron_v6.png",
+	  "name": "封窑兽·匣母",
+	  "tier": "boss",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {"1": 10, "2": 0, "3": 0},
+	  "max_copies_per_encounter": 1,
+	  "hp": 240,
+	  "ai": "scripted_cycle",
+	  "first_move": "bar",
+	  "description": "她记得护坯，忘了开匣。",
+	  "combat_hint": "封匣蓄火时，打掉格挡可阻止喷火。",
+	  "moves": [
+		{"id": "bar", "name": "拦路", "intent": "attack", "value": 16, "next": "seal"},
+		{"id": "seal", "name": "封匣", "intent": "charge", "value": 18, "next": "fire", "on_block_break": "vent"},
+		{"id": "fire", "name": "开窑", "intent": "attack", "value": 32, "next": "cool"},
+		{"id": "vent", "name": "泄压", "intent": "unknown", "next": "cool"},
+		{"id": "cool", "name": "散热", "intent": "unknown", "next": "bar"}
+	  ],
+	  "sprite": "SPR_Enemy_SaggerMatron",
+	  "state_sprites": {
+		"bar": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Bar.png",
+		"seal": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Seal.png",
+		"fire": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Fire.png",
+		"vent": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Vent.png",
+		"cool": "res://art/enemies/sagger_matron/SPR_SaggerMatron_Cool.png"
+	  }
+	},
+	{
+	  "id": "chi_the_first",
+	  "map_icon": "res://art/map/bosses/MAP_Boss_ChiTheFirst_v5.png",
+	  "name": "窑主·熾",
+	  "tier": "boss",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {
+		"1": 10,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 508,
+	  "ai": "phased_cycle",
+	  "phases": [
+		{
+		  "hp_threshold": 1.0,
+		  "moves": [
+			{
+			  "id": "slash_a",
+			  "name": "焰斩",
+			  "intent": "attack",
+			  "value": 20,
+			  "times": 1
+			},
+			{
+			  "id": "soul",
+			  "name": "四重灵击",
+			  "intent": "attack",
+			  "value": 6,
+			  "times": 4
+			},
+			{
+			  "id": "slash_b",
+			  "name": "焰斩",
+			  "intent": "attack",
+			  "value": 20,
+			  "times": 1
+			}
+		  ],
+		  "power_reactive": true
+		},
+		{
+		  "hp_threshold": 0.5,
+		  "moves": [
+			{
+			  "id": "echo_awakened",
+			  "name": "暗焰爆发",
+			  "intent": "attack",
+			  "value": 40,
+			  "times": 1
+			},
+			{
+			  "id": "pounce_awakened",
+			  "name": "三重扑击",
+			  "intent": "attack",
+			  "value": 10,
+			  "times": 3
+			},
+			{
+			  "id": "sludge_awakened",
+			  "name": "灰浆侵蚀",
+			  "intent": "attack",
+			  "value": 18,
+			  "times": 1,
+			  "after_effects": [
+				{
+				  "kind": "add_card",
+				  "card_id": "wound",
+				  "pile": "discard",
+				  "count": 2
+				}
+			  ]
+			}
+		  ],
+		  "entry_move": {
+			"id": "phase_entry_1",
+			"name": "觉醒",
+			"intent": "buff",
+			"status": "heat",
+			"value": 3,
+			"cleanse": true
+		  },
+		  "power_reactive": false,
+		  "cycle_start": 1
+		},
+		{
+		  "hp_threshold": 0.25,
+		  "moves": [
+			{
+			  "id": "echo_last",
+			  "name": "暗焰爆发",
+			  "intent": "attack",
+			  "value": 40,
+			  "times": 1
+			},
+			{
+			  "id": "pounce_last",
+			  "name": "三重扑击",
+			  "intent": "attack",
+			  "value": 10,
+			  "times": 3
+			},
+			{
+			  "id": "sludge_last",
+			  "name": "灰浆侵蚀",
+			  "intent": "attack",
+			  "value": 18,
+			  "times": 1,
+			  "after_effects": [
+				{
+				  "kind": "add_card",
+				  "card_id": "wound",
+				  "pile": "discard",
+				  "count": 2
+				}
+			  ]
+			}
+		  ],
+		  "entry_move": {
+			"id": "phase_entry_2",
+			"name": "觉醒",
+			"intent": "buff",
+			"status": "heat",
+			"value": 3,
+			"cleanse": true
+		  },
+		  "power_reactive": false,
+		  "cycle_start": 1
+		}
+	  ],
+	  "sprite": "SPR_Enemy_ChiTheFirst",
+	  "boss_rules": {
+		"regeneration": 10,
+		"power_strength": 2
+	  },
+	  "combat_hint": "行动前回复10生命；仅第一阶段，你每打出能力牌使其+2力量。半血与四分之一血各用一回合觉醒：不攻击，净化并+3力量。每阶段暗焰爆发最多一次，随后扑击与灰浆循环；跨两阈值依次觉醒后进入末阶段。灰浆塞入伤口。"
+	},
+	{
+	  "id": "escort_commander",
+	  "name": "指挥官",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 165,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "rally",
+	  "moves": [
+		{
+		  "id": "rally",
+		  "name": "全队强化",
+		  "intent": "unknown",
+		  "value": 0,
+		  "after_effects": [
+			{
+			  "kind": "rally",
+			  "strength": 3,
+			  "escort_block": 6
+			}
+		  ],
+		  "next": "flurry"
+		},
+		{
+		  "id": "flurry",
+		  "name": "连击",
+		  "intent": "attack",
+		  "value": 7,
+		  "times": 3,
+		  "next": "deploy"
+		},
+		{
+		  "id": "deploy",
+		  "name": "满员攻击",
+		  "intent": "attack",
+		  "value": 18,
+		  "times": 1,
+		  "if_missing": {
+			"name": "补充随从",
+			"intent": "unknown",
+			"value": 0,
+			"after_effects": [
+			  {
+				"kind": "recruit"
+			  },
+			  {
+				"kind": "block",
+				"value": 12
+			  }
+			]
+		  },
+		  "next": "rally"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortCommander",
+	  "combat_hint": "全队+3力量、随从+6格挡→7×3→缺员补兵并+12格挡，否则18攻击。主怪死亡后随从继续战斗，全部敌人死亡才胜利。",
+	  "escort_ids": [
+		"escort_assault",
         "escort_assault"
-      ]
-    },
-    {
-      "id": "escort_assault",
-      "name": "突击兵",
-      "tier": "minion",
-      "encounter_class": "escort",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 2,
-      "hp": 35,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "hit",
-      "moves": [
-        {
-          "id": "hit",
-          "name": "攻击",
-          "intent": "attack",
-          "value": 7,
-          "times": 1,
-          "next": "hit"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortAssault",
-      "combat_hint": "每回合攻击；新补充的随从下回合开始行动。主怪死亡后继续战斗，无永久生命击杀收益。"
-    },
-    {
-      "id": "escort_vanguard",
-      "name": "主攻手",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 150,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "hit",
-      "moves": [
-        {
-          "id": "hit",
-          "name": "攻击",
-          "intent": "attack",
-          "value": 18,
-          "times": 1,
-          "next": "flurry"
-        },
-        {
-          "id": "flurry",
-          "name": "连击",
-          "intent": "attack",
-          "value": 10,
-          "times": 2,
-          "next": "heavy"
-        },
-        {
-          "id": "heavy",
-          "name": "重击",
-          "intent": "attack",
-          "value": 24,
-          "times": 1,
-          "next": "hit"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortVanguard",
-      "combat_hint": "18→10×2→24，每3次行动+2力量；护卫存活时受到的攻击减半。主怪死亡后随从继续战斗，全部敌人死亡才胜利。",
-      "escort_ids": [
-        "escort_guard",
+	  ]
+	},
+	{
+	  "id": "escort_assault",
+	  "name": "突击兵",
+	  "tier": "minion",
+	  "encounter_class": "escort",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 2,
+	  "hp": 35,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "hit",
+	  "moves": [
+		{
+		  "id": "hit",
+		  "name": "攻击",
+		  "intent": "attack",
+		  "value": 7,
+		  "times": 1,
+		  "next": "hit"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortAssault",
+	  "combat_hint": "每回合攻击；新补充的随从下回合开始行动。主怪死亡后继续战斗，无永久生命击杀收益。"
+	},
+	{
+	  "id": "escort_vanguard",
+	  "name": "主攻手",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 150,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "hit",
+	  "moves": [
+		{
+		  "id": "hit",
+		  "name": "攻击",
+		  "intent": "attack",
+		  "value": 18,
+		  "times": 1,
+		  "next": "flurry"
+		},
+		{
+		  "id": "flurry",
+		  "name": "连击",
+		  "intent": "attack",
+		  "value": 10,
+		  "times": 2,
+		  "next": "heavy"
+		},
+		{
+		  "id": "heavy",
+		  "name": "重击",
+		  "intent": "attack",
+		  "value": 24,
+		  "times": 1,
+		  "next": "hit"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortVanguard",
+	  "combat_hint": "18→10×2→24，每3次行动+2力量；护卫存活时受到的攻击减半。主怪死亡后随从继续战斗，全部敌人死亡才胜利。",
+	  "escort_ids": [
+		"escort_guard",
         "escort_disruptor"
-      ],
-      "boss_rules": {
-        "growth_every": 3,
-        "growth_strength": 2
-      }
-    },
-    {
-      "id": "escort_guard",
-      "name": "护卫",
-      "tier": "minion",
-      "encounter_class": "escort",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 50,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "hit",
-      "moves": [
-        {
-          "id": "hit",
-          "name": "攻击",
-          "intent": "attack",
-          "value": 8,
-          "times": 1,
-          "after_effects": [
-            {
-              "kind": "block",
-              "value": 10
-            }
-          ],
-          "next": "hit"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortGuard",
-      "combat_hint": "护卫存活：主怪受到攻击伤害减半，向下取整，先减伤后扣格挡；不影响直接伤害或失血。攻击后自身+10格挡。",
-      "escort_rules": {
-        "protect_leader_attack_mult": 0.5
-      }
-    },
-    {
-      "id": "escort_disruptor",
-      "name": "干扰兵",
-      "tier": "minion",
-      "encounter_class": "escort",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 38,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "weaken",
-      "moves": [
-        {
-          "id": "weaken",
-          "name": "施加虚弱",
-          "intent": "debuff",
-          "status": "damp",
-          "value": 2,
-          "next": "poke"
-        },
-        {
-          "id": "poke",
-          "name": "干扰攻击",
-          "intent": "attack",
-          "value": 6,
-          "times": 1,
-          "after_effects": [
-            {
-              "kind": "add_card",
-              "card_id": "wound",
-              "count": 2,
-              "pile": "discard"
-            }
-          ],
-          "next": "weaken"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortDisruptor",
-      "combat_hint": "2虚弱→6攻击并向弃牌堆加入2伤口，循环。主怪死亡后继续战斗。"
-    },
-    {
-      "id": "escort_deployer",
-      "name": "投放者",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 210,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "hit",
-      "moves": [
-        {
-          "id": "hit",
-          "name": "攻击",
-          "intent": "attack",
-          "value": 22,
-          "times": 1,
-          "next": "flurry"
-        },
-        {
-          "id": "flurry",
-          "name": "连击",
-          "intent": "attack",
-          "value": 12,
-          "times": 2,
-          "next": "deploy"
-        },
-        {
-          "id": "deploy",
-          "name": "满员攻击",
-          "intent": "attack",
-          "value": 22,
-          "times": 1,
-          "if_missing": {
-            "name": "补充随从",
-            "intent": "unknown",
-            "value": 0,
-            "after_effects": [
-              {
-                "kind": "recruit"
-              }
-            ]
-          },
-          "next": "hit"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortDeployer",
-      "combat_hint": "22→12×2→缺员补兵，否则22。每3次行动+2力量。新随从下回合行动；击败主怪可取消全部自爆。",
-      "escort_ids": [
-        "escort_bomb",
+	  ],
+	  "boss_rules": {
+		"growth_every": 3,
+		"growth_strength": 2
+	  }
+	},
+	{
+	  "id": "escort_guard",
+	  "name": "护卫",
+	  "tier": "minion",
+	  "encounter_class": "escort",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 50,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "hit",
+	  "moves": [
+		{
+		  "id": "hit",
+		  "name": "攻击",
+		  "intent": "attack",
+		  "value": 8,
+		  "times": 1,
+		  "after_effects": [
+			{
+			  "kind": "block",
+			  "value": 10
+			}
+		  ],
+		  "next": "hit"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortGuard",
+	  "combat_hint": "护卫存活：主怪受到攻击伤害减半，向下取整，先减伤后扣格挡；不影响直接伤害或失血。攻击后自身+10格挡。",
+	  "escort_rules": {
+		"protect_leader_attack_mult": 0.5
+	  }
+	},
+	{
+	  "id": "escort_disruptor",
+	  "name": "干扰兵",
+	  "tier": "minion",
+	  "encounter_class": "escort",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 38,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "weaken",
+	  "moves": [
+		{
+		  "id": "weaken",
+		  "name": "施加虚弱",
+		  "intent": "debuff",
+		  "status": "damp",
+		  "value": 2,
+		  "next": "poke"
+		},
+		{
+		  "id": "poke",
+		  "name": "干扰攻击",
+		  "intent": "attack",
+		  "value": 6,
+		  "times": 1,
+		  "after_effects": [
+			{
+			  "kind": "add_card",
+			  "card_id": "wound",
+			  "count": 2,
+			  "pile": "discard"
+			}
+		  ],
+		  "next": "weaken"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortDisruptor",
+	  "combat_hint": "2虚弱→6攻击并向弃牌堆加入2伤口，循环。主怪死亡后继续战斗。"
+	},
+	{
+	  "id": "escort_deployer",
+	  "name": "投放者",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 210,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "hit",
+	  "moves": [
+		{
+		  "id": "hit",
+		  "name": "攻击",
+		  "intent": "attack",
+		  "value": 22,
+		  "times": 1,
+		  "next": "flurry"
+		},
+		{
+		  "id": "flurry",
+		  "name": "连击",
+		  "intent": "attack",
+		  "value": 12,
+		  "times": 2,
+		  "next": "deploy"
+		},
+		{
+		  "id": "deploy",
+		  "name": "满员攻击",
+		  "intent": "attack",
+		  "value": 22,
+		  "times": 1,
+		  "if_missing": {
+			"name": "补充随从",
+			"intent": "unknown",
+			"value": 0,
+			"after_effects": [
+			  {
+				"kind": "recruit"
+			  }
+			]
+		  },
+		  "next": "hit"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortDeployer",
+	  "combat_hint": "22→12×2→缺员补兵，否则22。每3次行动+2力量。新随从下回合行动；击败主怪可取消全部自爆。",
+	  "escort_ids": [
+		"escort_bomb",
         "escort_bomb"
-      ],
-      "boss_rules": {
-        "growth_every": 3,
-        "growth_strength": 2
-      }
-    },
-    {
-      "id": "escort_bomb",
-      "name": "倒计时随从",
-      "tier": "minion",
-      "encounter_class": "escort",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 2,
-      "hp": 28,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "poke",
-      "moves": [
-        {
-          "id": "poke",
-          "name": "干扰攻击",
-          "intent": "attack",
-          "value": 8,
-          "times": 1,
-          "after_effects": [
-            {
-              "kind": "add_card",
-              "card_id": "wound",
-              "count": 1,
-              "pile": "discard"
-            }
-          ],
-          "next": "detonate"
-        },
-        {
-          "id": "detonate",
-          "name": "自爆",
-          "intent": "attack",
-          "value": 28,
-          "times": 1,
-          "after_effects": [
-            {
-              "kind": "self_destruct"
-            }
-          ],
-          "next": "poke"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortBomb",
-      "combat_hint": "首次行动8攻击+1伤口；第二次行动28攻击后自毁。攻击可格挡；提前击杀不会爆炸。"
-    },
-    {
-      "id": "escort_overseer",
-      "name": "监视主攻手",
-      "tier": "elite",
-      "encounter_class": "solo_only",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 220,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "hit",
-      "moves": [
-        {
-          "id": "hit",
-          "name": "攻击",
-          "intent": "attack",
-          "value": 20,
-          "times": 1,
-          "next": "flurry"
-        },
-        {
-          "id": "flurry",
-          "name": "连击",
-          "intent": "attack",
-          "value": 8,
-          "times": 3,
-          "next": "hit"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortOverseer",
-      "combat_hint": "20→8×3，每2次行动+2力量。击败对应监视者会停止后续出牌反制，已获得的力量保留。",
-      "escort_ids": [
-        "escort_skill_observer",
+	  ],
+	  "boss_rules": {
+		"growth_every": 3,
+		"growth_strength": 2
+	  }
+	},
+	{
+	  "id": "escort_bomb",
+	  "name": "倒计时随从",
+	  "tier": "minion",
+	  "encounter_class": "escort",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 2,
+	  "hp": 28,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "poke",
+	  "moves": [
+		{
+		  "id": "poke",
+		  "name": "干扰攻击",
+		  "intent": "attack",
+		  "value": 8,
+		  "times": 1,
+		  "after_effects": [
+			{
+			  "kind": "add_card",
+			  "card_id": "wound",
+			  "count": 1,
+			  "pile": "discard"
+			}
+		  ],
+		  "next": "detonate"
+		},
+		{
+		  "id": "detonate",
+		  "name": "自爆",
+		  "intent": "attack",
+		  "value": 28,
+		  "times": 1,
+		  "after_effects": [
+			{
+			  "kind": "self_destruct"
+			}
+		  ],
+		  "next": "poke"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortBomb",
+	  "combat_hint": "首次行动8攻击+1伤口；第二次行动28攻击后自毁。攻击可格挡；提前击杀不会爆炸。"
+	},
+	{
+	  "id": "escort_overseer",
+	  "name": "监视主攻手",
+	  "tier": "elite",
+	  "encounter_class": "solo_only",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 220,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "hit",
+	  "moves": [
+		{
+		  "id": "hit",
+		  "name": "攻击",
+		  "intent": "attack",
+		  "value": 20,
+		  "times": 1,
+		  "next": "flurry"
+		},
+		{
+		  "id": "flurry",
+		  "name": "连击",
+		  "intent": "attack",
+		  "value": 8,
+		  "times": 3,
+		  "next": "hit"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortOverseer",
+	  "combat_hint": "20→8×3，每2次行动+2力量。击败对应监视者会停止后续出牌反制，已获得的力量保留。",
+	  "escort_ids": [
+		"escort_skill_observer",
         "escort_power_observer"
-      ],
-      "boss_rules": {
-        "growth_every": 2,
-        "growth_strength": 2
-      }
-    },
-    {
-      "id": "escort_skill_observer",
-      "name": "技能监视者",
-      "tier": "minion",
-      "encounter_class": "escort",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 42,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "hit",
-      "moves": [
-        {
-          "id": "hit",
-          "name": "攻击",
-          "intent": "attack",
-          "value": 6,
-          "times": 1,
-          "next": "hit"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortSkillObserver",
-      "combat_hint": "每实际打出技能牌，自身+1力量；包括自动出牌。死亡后停止反制。",
-      "escort_rules": {
-        "react_card_type": "skill",
-        "react_target": "self",
-        "react_strength": 1
-      }
-    },
-    {
-      "id": "escort_power_observer",
-      "name": "能力监视者",
-      "tier": "minion",
-      "encounter_class": "escort",
-      "encounter_weights": {
-        "1": 0,
-        "2": 0,
-        "3": 0
-      },
-      "max_copies_per_encounter": 1,
-      "hp": 42,
-      "effective_stats": true,
-      "ai": "scripted_cycle",
-      "first_move": "hit",
-      "moves": [
-        {
-          "id": "hit",
-          "name": "攻击",
-          "intent": "attack",
-          "value": 6,
-          "times": 1,
-          "next": "hit"
-        }
-      ],
-      "sprite": "SPR_Enemy_EscortPowerObserver",
-      "combat_hint": "每实际打出能力牌，主怪+2力量；包括自动出牌。死亡后停止反制，主怪已有力量保留。",
-      "escort_rules": {
-        "react_card_type": "power",
-        "react_target": "leader",
-        "react_strength": 2
-      }
-    }
+	  ],
+	  "boss_rules": {
+		"growth_every": 2,
+		"growth_strength": 2
+	  }
+	},
+	{
+	  "id": "escort_skill_observer",
+	  "name": "技能监视者",
+	  "tier": "minion",
+	  "encounter_class": "escort",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 42,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "hit",
+	  "moves": [
+		{
+		  "id": "hit",
+		  "name": "攻击",
+		  "intent": "attack",
+		  "value": 6,
+		  "times": 1,
+		  "next": "hit"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortSkillObserver",
+	  "combat_hint": "每实际打出技能牌，自身+1力量；包括自动出牌。死亡后停止反制。",
+	  "escort_rules": {
+		"react_card_type": "skill",
+		"react_target": "self",
+		"react_strength": 1
+	  }
+	},
+	{
+	  "id": "escort_power_observer",
+	  "name": "能力监视者",
+	  "tier": "minion",
+	  "encounter_class": "escort",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 42,
+	  "effective_stats": true,
+	  "ai": "scripted_cycle",
+	  "first_move": "hit",
+	  "moves": [
+		{
+		  "id": "hit",
+		  "name": "攻击",
+		  "intent": "attack",
+		  "value": 6,
+		  "times": 1,
+		  "next": "hit"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_EscortPowerObserver",
+	  "combat_hint": "每实际打出能力牌，主怪+2力量；包括自动出牌。死亡后停止反制，主怪已有力量保留。",
+	  "escort_rules": {
+		"react_card_type": "power",
+		"react_target": "leader",
+		"react_strength": 2
+	  }
+	},
+	{
+	  "id": "coalseer_act3",
+	  "name": "煤烟先知",
+	  "tier": "normal",
+	  "encounter_class": "strong",
+	  "encounter_weights": {
+		"1": 10,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 120,
+	  "ai": "scripted_cycle",
+	  "moves": [
+		{
+		  "id": "strike",
+		  "intent": "attack",
+		  "value": 18,
+		  "next": "smog"
+		},
+		{
+		  "id": "smog",
+		  "intent": "debuff",
+		  "status": "damp",
+		  "value": 2,
+		  "after_effects": [
+			{
+			  "kind": "add_card",
+			  "card_id": "wound",
+			  "pile": "discard",
+			  "count": 1
+			}
+		  ],
+		  "next": "doom"
+		},
+		{
+		  "id": "doom",
+		  "intent": "attack",
+		  "value": 30,
+		  "next": "strike"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Coalseer",
+	  "effective_stats": true,
+	  "first_move": "strike",
+	  "combat_hint": "烟矢18→烟咒（2虚弱、1伤口，不攻击）→厄兆30，固定循环。"
+	},
+	{
+	  "id": "kilnstatue_act3",
+	  "name": "窑龛像",
+	  "tier": "normal",
+	  "encounter_class": "strong",
+	  "encounter_weights": {
+		"1": 10,
+		"2": 0,
+		"3": 0
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 150,
+	  "ai": "scripted_cycle",
+	  "moves": [
+		{
+		  "id": "strike",
+		  "intent": "attack",
+		  "value": 18,
+		  "next": "fortify"
+		},
+		{
+		  "id": "fortify",
+		  "intent": "defend",
+		  "value": 16,
+		  "after_effects": [
+			{
+			  "kind": "status",
+			  "target": "self",
+			  "status": "heat",
+			  "value": 3
+			}
+		  ],
+		  "next": "slam"
+		},
+		{
+		  "id": "slam",
+		  "intent": "attack",
+		  "value": 26,
+		  "next": "strike"
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Kilnstatue",
+	  "effective_stats": true,
+	  "first_move": "strike",
+	  "combat_hint": "石击18→固化（16格挡、永久+3力量，不攻击）→重砸26，固定循环。"
+	},
+	{
+	  "id": "cinderfiend_act3",
+	  "name": "烬魈",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 6,
+		"3": 2
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 65,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "rip",
+		  "intent": "attack",
+		  "value": 15,
+		  "chance": 0.5
+		},
+		{
+		  "id": "immolate_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "immolate",
+		  "chance": 0.3
+		},
+		{
+		  "id": "immolate",
+		  "intent": "attack",
+		  "value": 18,
+		  "chance": 0.0
+		},
+		{
+		  "id": "cackle",
+		  "intent": "debuff",
+		  "status": "damp",
+		  "value": 1,
+		  "chance": 0.2
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Cinderfiend",
+	  "effective_stats": true,
+	  "combat_hint": "第三幕组合主力，随机选择普攻、蓄力或减益。"
+	},
+	{
+	  "id": "magmawhelp_act3",
+	  "name": "岩浆幼兽",
+	  "tier": "normal",
+	  "encounter_class": "medium",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 6,
+		"3": 2
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 65,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "chomp",
+		  "intent": "attack",
+		  "value": 13,
+		  "chance": 0.5
+		},
+		{
+		  "id": "lava_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "lava_glob",
+		  "chance": 0.3
+		},
+		{
+		  "id": "lava_glob",
+		  "intent": "attack",
+		  "value": 16,
+		  "chance": 0.0
+		},
+		{
+		  "id": "smother",
+		  "intent": "debuff",
+		  "status": "ashrot",
+		  "value": 2,
+		  "chance": 0.2
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Magmawhelp",
+	  "effective_stats": true,
+	  "combat_hint": "第三幕组合主力，随机选择普攻、蓄力或减益。"
+	},
+	{
+	  "id": "glazetick_act3",
+	  "name": "釉蛭",
+	  "tier": "normal",
+	  "encounter_class": "weak",
+	  "encounter_weights": {
+		"1": 0,
+		"2": 8,
+		"3": 10
+	  },
+	  "max_copies_per_encounter": 1,
+	  "hp": 47,
+	  "ai": "weighted_random",
+	  "moves": [
+		{
+		  "id": "sting",
+		  "intent": "attack",
+		  "value": 10,
+		  "chance": 0.45
+		},
+		{
+		  "id": "venom_charge",
+		  "intent": "charge",
+		  "value": 0,
+		  "next": "venom_bite",
+		  "chance": 0.35
+		},
+		{
+		  "id": "venom_bite",
+		  "intent": "attack",
+		  "value": 14,
+		  "chance": 0.0
+		},
+		{
+		  "id": "venom",
+		  "intent": "debuff",
+		  "status": "ashrot",
+		  "value": 2,
+		  "chance": 0.25
+		}
+	  ],
+	  "sprite": "SPR_Enemy_Glazetick",
+	  "effective_stats": true,
+	  "combat_hint": "第三幕辅助怪，仅随组合出场；以燃烧干扰玩家。"
+	},
+	{
+	  "id": "ashen_binder",
+	  "max_copies_per_encounter": 1,
+	  "encounter_weights": {
+		"1": 1.0,
+		"2": 0.0,
+		"3": 0.0
+	  },
+	  "name": "缚火者·灰络",
+	  "tier": "boss",
+	  "encounter_class": "solo_only",
+	  "hp": 600,
+	  "ai": "scripted_cycle",
+	  "effective_stats": true,
+	  "first_move": "seal",
+	  "sprite": "SPR_Enemy_AshenBinder",
+	  "map_icon": "res://art/enemies/SPR_Enemy_AshenBinder.png",
+	  "description": "它把火拢在怀里，不肯让一丝暖意出去。",
+	  "combat_hint": "封焰时出牌后反冲1伤害，每回合最多6，可格挡。换气时反冲暂停并蓄力。晕眩进入弃牌堆，抽到后可自然消耗。",
+	  "boss_rules": {
+		"backlash_damage": 1,
+		"backlash_raw_cap": 6,
+		"ash_cards_per_seal": 2,
+		"ash_live_cap": 4
+	  },
+	  "moves": [
+		{
+		  "id": "seal",
+		  "name": "封焰",
+		  "intent": "defend",
+		  "value": 18,
+		  "next": "ash_burst"
+		},
+		{
+		  "id": "ash_burst",
+		  "name": "连续喷灰",
+		  "intent": "attack",
+		  "value": 8,
+		  "times": 3,
+		  "next": "press"
+		},
+		{
+		  "id": "press",
+		  "name": "压窑",
+		  "intent": "attack",
+		  "value": 32,
+		  "times": 1,
+		  "next": "vent"
+		},
+		{
+		  "id": "vent",
+		  "name": "换气蓄压",
+		  "intent": "buff",
+		  "status": "heat",
+		  "value": 2,
+		  "next": "seal"
+		}
+	  ]
+	}
   ]
 }

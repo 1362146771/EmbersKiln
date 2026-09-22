@@ -96,7 +96,7 @@
       "single_start_node": true,
       "mid_treasure_floor": 7,
       "enemy_pool": {
-        "normal": ["cinderfiend", "magmawhelp", "coalseer", "kilnstatue", "glazetick"],
+        "normal": ["cinderfiend_act3", "magmawhelp_act3", "coalseer_act3", "kilnstatue_act3", "glazetick_act3"],
         "elite": ["ember_eater", "glazemaw", "escort_deployer", "escort_overseer"]
       },
       "fixed_rows": {

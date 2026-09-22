@@ -1,0 +1,332 @@
+{
+  "note": "A3N diagnostic: reuse ES-BAL player fixtures and AI; paired old/new encounter IDs and seeds. No claim of representative human win rate.",
+  "sim": {
+    "attempts_per_match": 20,
+    "seed_base": 20260920,
+    "max_turns": 40,
+    "max_card_plays": 80
+  },
+  "profiles": [
+    {
+      "id": "developing",
+      "relics": [],
+      "upgrade_additions": false
+    },
+    {
+      "id": "developed",
+      "relics": [
+        "everlit_core"
+      ],
+      "upgrade_additions": true
+    },
+    {
+      "id": "optimized",
+      "relics": [
+        "everlit_core"
+      ],
+      "upgrade_additions": true,
+      "starter_cards": [
+        "strike",
+        "strike",
+        "defend",
+        "defend"
+      ],
+      "policies": [
+        "leader_first",
+        "adds_first",
+        "tactical"
+      ]
+    }
+  ],
+  "builds": [
+    {
+      "id": "mixed",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "pommel_strike",
+        "shrug_it_off",
+        "flame_barrier",
+        "uppercut",
+        "cleave",
+        "disarm",
+        "anger",
+        "battle_trance"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "strength",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "inflame",
+        "spot_weakness",
+        "heavy_blade",
+        "twin_strike",
+        "whirlwind",
+        "shrug_it_off",
+        "uppercut",
+        "limit_break"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "aoe",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "cleave",
+        "cleave",
+        "immolate",
+        "whirlwind",
+        "offering",
+        "battle_trance",
+        "shrug_it_off",
+        "shockwave"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "defense",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "shrug_it_off",
+        "shrug_it_off",
+        "flame_barrier",
+        "body_slam",
+        "body_slam",
+        "entrench",
+        "barricade",
+        "disarm"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "control",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "disarm",
+        "shockwave",
+        "uppercut",
+        "dropkick",
+        "dropkick",
+        "shrug_it_off",
+        "pommel_strike",
+        "whirlwind"
+      ],
+      "starter_count": 10
+    },
+    {
+      "id": "exhaust",
+      "cards": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "defend",
+        "defend",
+        "defend",
+        "defend",
+        "bash",
+        "true_grit",
+        "burning_pact",
+        "feel_no_pain",
+        "corruption",
+        "dark_embrace",
+        "fiend_fire",
+        "second_wind",
+        "shrug_it_off"
+      ],
+      "starter_count": 10
+    }
+  ],
+  "encounters": [
+    {
+      "id": "coalseer_old",
+      "enemy_ids": [
+        "coalseer"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "coalseer_new",
+      "enemy_ids": [
+        "coalseer_act3"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "kilnstatue_old",
+      "enemy_ids": [
+        "kilnstatue"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "kilnstatue_new",
+      "enemy_ids": [
+        "kilnstatue_act3"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "cinderfiend+magmawhelp_old",
+      "enemy_ids": [
+        "cinderfiend",
+        "magmawhelp"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "cinderfiend+magmawhelp_new",
+      "enemy_ids": [
+        "cinderfiend_act3",
+        "magmawhelp_act3"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "cinderfiend+glazetick_old",
+      "enemy_ids": [
+        "cinderfiend",
+        "glazetick"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "cinderfiend+glazetick_new",
+      "enemy_ids": [
+        "cinderfiend_act3",
+        "glazetick_act3"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "magmawhelp+glazetick_old",
+      "enemy_ids": [
+        "magmawhelp",
+        "glazetick"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "magmawhelp+glazetick_new",
+      "enemy_ids": [
+        "magmawhelp_act3",
+        "glazetick_act3"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "cinderfiend+magmawhelp+glazetick_old",
+      "enemy_ids": [
+        "cinderfiend",
+        "magmawhelp",
+        "glazetick"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    },
+    {
+      "id": "cinderfiend+magmawhelp+glazetick_new",
+      "enemy_ids": [
+        "cinderfiend_act3",
+        "magmawhelp_act3",
+        "glazetick_act3"
+      ],
+      "act": 2,
+      "escort": false,
+      "node_type": "combat"
+    }
+  ],
+  "policies": [
+    "leader_first",
+    "adds_first"
+  ],
+  "ai": {
+    "setup_turns": 3,
+    "setup_priority": 45,
+    "setup_late_priority": 12,
+    "draw_priority": 10,
+    "energy_priority": 20,
+    "debuff_priority": 20,
+    "kill_priority": 60,
+    "block_weight": 1.5,
+    "damage_weight": 1.0,
+    "setup_skills": [
+      "inflame",
+      "spot_weakness",
+      "limit_break",
+      "disarm",
+      "shockwave"
+    ],
+    "finisher_priority": 2
+  },
+  "output_name": "act3_normal_balance_results",
+  "result_tag": "ACT3_NORMAL_BALANCE"
+}

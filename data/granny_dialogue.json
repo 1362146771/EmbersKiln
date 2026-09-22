@@ -1,0 +1,111 @@
+{
+  "version": 2,
+  "groups": [
+    {
+      "id": "build",
+      "count": 2
+    },
+    {
+      "id": "supply",
+      "count": 1
+    },
+    {
+      "id": "bargain",
+      "count": 1
+    }
+  ],
+  "greetings": {
+    "default": [
+      "选一样带上，路上用得着。",
+      "东西都放好了。挑件趁手的。"
+    ],
+    "failed": [
+      "裂口补好了。这次，挑样东西再走。",
+      "余火还在。带上这个，别急着逞强。"
+    ],
+    "won": [
+      "又要上去？挑一样，别空着手走。"
+    ]
+  },
+  "rewards": [
+    {
+      "id": "new_tool",
+      "group": "build",
+      "kind": "card",
+      "rarity": "common",
+      "title": "添一件工具",
+      "description": "获得1张普通牌。"
+    },
+    {
+      "id": "sharpen",
+      "group": "build",
+      "kind": "upgrade",
+      "title": "磨利旧刃",
+      "description": "选择1张牌，免费升级。"
+    },
+    {
+      "id": "shed_weight",
+      "group": "build",
+      "kind": "remove",
+      "title": "卸下累赘",
+      "description": "选择并永久移除1张牌。"
+    },
+    {
+      "id": "reshape",
+      "group": "build",
+      "kind": "transform",
+      "title": "重新烧制",
+      "description": "选择1张牌，转换为随机职业牌；不保留原升级与附魔。"
+    },
+    {
+      "id": "travel_money",
+      "group": "supply",
+      "kind": "gold",
+      "amount": 100,
+      "title": "带上盘缠",
+      "description": "获得100金币。"
+    },
+    {
+      "id": "mend_body",
+      "group": "supply",
+      "kind": "max_hp",
+      "amount": 8,
+      "title": "补强陶身",
+      "description": "最大生命＋8，同时回复8生命。"
+    },
+    {
+      "id": "medicine",
+      "group": "supply",
+      "kind": "potions",
+      "amount": 3,
+      "title": "备齐药囊",
+      "description": "获得3瓶随机药水。"
+    },
+    {
+      "id": "old_keepsake",
+      "group": "supply",
+      "kind": "relic",
+      "rarity": "common",
+      "title": "旧匠遗物",
+      "description": "获得1件普通遗物。"
+    },
+    {
+      "id": "thin_shell",
+      "group": "bargain",
+      "kind": "gold",
+      "amount": 250,
+      "lose_max_hp": 8,
+      "title": "削薄换薪",
+      "description": "最大生命－8，获得250金币。"
+    },
+    {
+      "id": "trial_by_fire",
+      "group": "bargain",
+      "kind": "card",
+      "rarity": "rare",
+      "lose_hp": 24,
+      "title": "以伤试火",
+      "description": "失去24生命，获得1张稀有牌。"
+    }
+  ]
+}
