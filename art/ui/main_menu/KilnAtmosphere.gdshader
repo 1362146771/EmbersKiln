@@ -12,8 +12,29 @@ uniform float cycle_phase : hint_range(0.0, 1.0) = 0.0;
 uniform float smoke_travel_pixels : hint_range(0.0, 120.0) = 84.0;
 uniform float smoke_detail : hint_range(0.0, 0.4) = 0.22;
 uniform float smoke_strength : hint_range(0.0, 1.0) = 1.0;
+uniform float shed_strength : hint_range(0.0, 1.0) = 0.8;
 uniform float flame_strength : hint_range(0.0, 1.0) = 0.8;
 varying vec4 vertex_tint;
+
+// Origins sit on the outside of the painted ribbons in a 720 x 1280
+// reference canvas. XY = origin; ZW = outward/upward travel per lifetime.
+// Keeping this in background UV also preserves alignment in tall viewports.
+const vec4 SHED_STREAMS[14] = vec4[14](
+	vec4(484.0, 113.0, 38.0, -56.0),
+	vec4(462.0, 210.0, 44.0, -62.0),
+	vec4(418.0, 292.0, 46.0, -48.0),
+	vec4(73.0, 142.0, -32.0, -60.0),
+	vec4(92.0, 248.0, -30.0, -45.0),
+	vec4(196.0, 286.0, -44.0, -49.0),
+	vec4(391.0, 422.0, 37.0, -54.0),
+	vec4(410.0, 519.0, 40.0, -60.0),
+	vec4(382.0, 594.0, 44.0, -55.0),
+	vec4(445.0, 730.0, 49.0, -46.0),
+	vec4(470.0, 797.0, 45.0, -65.0),
+	vec4(292.0, 805.0, 39.0, -53.0),
+	vec4(89.0, 829.0, 33.0, -46.0),
+	vec4(51.0, 1032.0, 35.0, -63.0)
+);
 
 void vertex() {
 	vertex_tint = COLOR;
@@ -65,6 +86,43 @@ void fragment() {
 		float density = texture(smoke_noise, vec2(stream_uv.x * 8.0 - phase, stream_uv.y * 1.5)).r - 0.5;
 		transported += vec3(1.0, 0.97, 0.93) * density * smoke_detail;
 		result = mix(base.rgb, transported, smoke);
+	}
+	// Small detached wisps: staggered births, curved upward drift, expansion,
+	// then erosion to transparency. Integer lifetime counts close the 24s loop.
+	// No particle resets and no new per-frame CPU objects are required.
+	if (shed_strength > 0.0) {
+		vec2 point = UV * vec2(720.0, 1280.0);
+		float veil = 0.0;
+		for (int i = 0; i < 14; i++) {
+			float seed = float(i);
+			float age = fract(phase * (2.0 + mod(seed, 2.0)) + seed * 0.618034);
+			vec4 stream = SHED_STREAMS[i];
+			vec2 drift = stream.zw;
+			vec2 bend = vec2(sin(age * PI) * (7.0 + mod(seed, 3.0) * 3.0), 0.0);
+			bend.x *= sign(drift.x);
+			vec2 center = stream.xy + drift * age + bend;
+			vec2 up = normalize(drift);
+			vec2 side = vec2(-up.y, up.x);
+			vec2 relative = point - center;
+			vec2 local = vec2(dot(relative, side), dot(relative, up));
+			vec2 radius = vec2(10.0 + mod(seed * 7.0, 9.0), 22.0 + mod(seed * 3.0, 13.0));
+			radius *= 0.7 + age * 0.9;
+			vec2 q = local / radius;
+			if (dot(q, q) < 2.8) {
+				vec2 grain_uv = q * vec2(0.19, 0.12) + vec2(seed * 0.137, seed * 0.271 - age * 0.23);
+				float grain = texture(smoke_noise, grain_uv).r;
+				float curl = texture(smoke_noise, grain_uv * 2.1 + vec2(age * 0.1, 0.0)).r;
+				q.x += sin(q.y * 2.5 + seed) * 0.18 + (curl - 0.5) * 0.6;
+				float fringe = 1.0 - smoothstep(0.15, 1.25, length(q) + (grain - 0.5) * 0.8);
+				float life = smoothstep(0.0, 0.18, age) * (1.0 - smoothstep(0.38, 1.0, age));
+				float threads = smoothstep(0.23 + age * 0.14, 0.72, grain);
+				veil += fringe * life * threads * (0.48 + mod(seed, 3.0) * 0.09);
+			}
+		}
+		// Protect warm masonry and lit windows; wisps softly veil the open sky.
+		float masonry = smoothstep(0.07, 0.18, base.r - base.b);
+		float opacity = min(veil, 0.45) * shed_strength * (1.0 - masonry);
+		result = mix(result, vec3(0.52, 0.515, 0.50), opacity);
 	}
 	float fire = matte.g * fire_paint(base.rgb);
 	if (fire > 0.001) {

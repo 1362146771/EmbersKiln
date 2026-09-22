@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://ph26q5m8x60m" path="res://art/player/animations/attack/atlas-8.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dmg0fm30kslwv" path="res://art/player/animations/hurt/atlas-hd-1.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://bshmtypqgaena" path="res://art/player/animations/hurt/atlas-hd-2.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://cwisi4mhl64xn" path="res://art/player/animations/death/atlas.png" id="death_atlas"]
 
 [sub_resource type="AtlasTexture" id="attack_1"]
 atlas = ExtResource("1")
@@ -42,6 +43,36 @@ filter_clip = true
 [sub_resource type="AtlasTexture" id="attack_8"]
 atlas = ExtResource("1")
 region = Rect2(768, 2304, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="death_1"]
+atlas = ExtResource("death_atlas")
+region = Rect2(0, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="death_2"]
+atlas = ExtResource("death_atlas")
+region = Rect2(768, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="death_3"]
+atlas = ExtResource("death_atlas")
+region = Rect2(1536, 0, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="death_4"]
+atlas = ExtResource("death_atlas")
+region = Rect2(0, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="death_5"]
+atlas = ExtResource("death_atlas")
+region = Rect2(768, 768, 768, 768)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="death_6"]
+atlas = ExtResource("death_atlas")
+region = Rect2(1536, 768, 768, 768)
 filter_clip = true
 
 [sub_resource type="AtlasTexture" id="hurt_1"]
@@ -223,6 +254,29 @@ animations = [{
 }],
 "loop": 0,
 "name": &"attack",
+"speed": 30.0
+}, {
+"frames": [{
+"duration": 5.0,
+"texture": SubResource("death_1")
+}, {
+"duration": 6.0,
+"texture": SubResource("death_2")
+}, {
+"duration": 6.0,
+"texture": SubResource("death_3")
+}, {
+"duration": 5.0,
+"texture": SubResource("death_4")
+}, {
+"duration": 4.0,
+"texture": SubResource("death_5")
+}, {
+"duration": 10.0,
+"texture": SubResource("death_6")
+}],
+"loop": 0,
+"name": &"death",
 "speed": 30.0
 }, {
 "frames": [{

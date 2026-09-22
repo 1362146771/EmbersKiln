@@ -1,0 +1,23 @@
+{
+  "generator": "built-in image_gen",
+  "prompt": "Create a game asset pack sheet: EXACTLY 16 distinct compact enemy special-effect icons in a precise 4 columns by 4 rows square grid. Flat solid #FF00FF background, no grid lines, no text, no numbers, no labels. Each icon centered in its invisible equal square cell with all art within central 70% width and height. Project style: dark hand-drawn cartoon kiln fantasy, very thick near-black outline, extremely simple bold silhouette, flat two-tone cel shading, muted slate blue, clay orange, bone ivory, muted jade green and ash lavender (no magenta within art). Each readable when reduced to 42 pixels. No glossy rendering, no texture noise, no tiny details, no circular backing plates, no ground shadows. All 16 visually unique. Exact row-major order: ROW 1: (1) BACKLASH: an ivory playing card pierced by a curling hooked ash-lavender flaming lash; (2) VENT/PAUSED BACKLASH: two separated open iron collar halves with a soft gray escaping puff; (3) GROWTH: three ascending orange kiln embers rising from dark coals; (4) PROTECT LEADER: a large slate blue shield covering a small clay crown. ROW 2: (5) SKILL WATCH: one teal eye embedded in a blue playing card; (6) POWER WATCH: one amber eye embedded in an orange playing card with a small crown at top; (7) REGENERATION: a repaired jade-green ceramic heart surrounded by one ivory circular arrow; (8) CLEANSE: a bone-white broom sweeping away two dark purple flecks. ROW 3: (9) RALLY: red-orange war banner over two short spearheads; (10) RECRUIT: two squat clay soldiers, front one with a large ivory plus mark; (11) SELF DESTRUCT: dark spherical clay bomb with a thick orange lit fuse and bold orange crack; (12) NEW ARRIVAL: simple blue hourglass in front of a small clay helmet. ROW 4: (13) WOUND CARD: ivory playing card with three deep red claw cuts; (14) DAZED CARD: lavender playing card with a large ivory spiral; (15) BREAKABLE CHARGE: cracked blue shield with two outward-flying halves and small orange flame within; (16) PLUNDER: an ochre coin held in a black hooked claw. These are a coherent special-mechanic icon pack for the same game; match scale and line weight. No additional objects outside the 16 icons.",
+  "order": [
+    "Backlash",
+    "Vent",
+    "Growth",
+    "Guard",
+    "SkillWatch",
+    "PowerWatch",
+    "Regeneration",
+    "Cleanse",
+    "Rally",
+    "Recruit",
+    "SelfDestruct",
+    "Arrival",
+    "WoundCard",
+    "DazedCard",
+    "BreakableCharge",
+    "Plunder"
+  ],
+  "processing": "Generated RGBA pack split at transparent gutters, repacked into equal 400px cells, then generate2dsprite process: 4x4, 128px, fit 0.88, center, all components, strict QC. Source retained in source/."
+}
