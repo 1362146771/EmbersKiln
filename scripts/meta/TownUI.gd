@@ -37,6 +37,9 @@ func _ready() -> void:
 		PauseManager.hide_pause_button()
 	%BackButton.pressed.connect(_on_back)
 	_depart_button.pressed.connect(_on_depart)
+	%NewRunButton.pressed.connect(_on_new_run_pressed)
+	%CancelNewRun.pressed.connect(_cancel_new_run)
+	%ConfirmNewRun.pressed.connect(_confirm_new_run)
 	%CloseDetailButton.pressed.connect(_close_facility_details)
 	%RefreshTimer.timeout.connect(_on_timer)
 	%TownRestoration.pressed.connect(_on_facility_pressed.bind(&"town_restoration"))
@@ -63,6 +66,7 @@ func _exit_tree() -> void:
 
 
 func _rebuild() -> void:
+	_refresh_departure()
 	_fireseed_balance.text = str(ProfileState.fireseed_balance)
 	var backgrounds: Array = _visuals.get("backgrounds", [])
 	var background_path := String(backgrounds[clampi(ProfileState.town_visual_stage, 0, backgrounds.size() - 1)])
@@ -142,6 +146,7 @@ func _update_courtyard(facility_id: StringName) -> void:
 
 
 func _on_facility_pressed(facility_id: StringName) -> void:
+	SignalBus.sound_requested.emit(&"town_building")
 	_selection_revision += 1
 	var revision := _selection_revision
 	_selected_facility_id = facility_id
@@ -166,6 +171,7 @@ func _on_facility_pressed(facility_id: StringName) -> void:
 		_facility_layer.show()
 		%DetailBackdrop.hide()
 	_depart_button.hide()
+	%NewRunButton.hide()
 	%TownRestoration.hide()
 	_detail_panel.show()
 	_refresh_facility_details()
@@ -193,6 +199,7 @@ func _close_facility_details() -> void:
 	%CourtyardView.hide()
 	_facility_layer.show()
 	_depart_button.show()
+	_refresh_departure()
 	%TownRestoration.show()
 	_selected_facility_id = &""
 
@@ -443,7 +450,52 @@ func _on_ad_reward_resolved(_transaction_id: String, placement_id: StringName, r
 
 
 func _on_back() -> void:
+	if %NewRunConfirmation.visible:
+		_cancel_new_run()
+		return
 	TransitionManager.change_scene_to_file(MAIN_MENU)
+
+
+func _refresh_departure() -> void:
+	_depart_button.text = "继续当前冒险" if RunState.is_active else "从风箱台出发 · 新一局"
+	if RunState.is_active and GrannyStory.needs_opening():
+		_depart_button.text = "继续领取陶婆馈赠"
+	%NewRunButton.visible = RunState.is_active and not _detail_panel.visible
+
+
+func _on_new_run_pressed() -> void:
+	if TransitionManager.is_transitioning: return
+	%NewRunError.hide()
+	%NewRunConfirmation.show()
+	%CancelNewRun.grab_focus()
+
+
+func _cancel_new_run() -> void:
+	if TransitionManager.is_transitioning: return
+	%NewRunConfirmation.hide()
+	_depart_button.grab_focus()
+
+
+func _confirm_new_run() -> void:
+	if not %NewRunConfirmation.visible or TransitionManager.is_transitioning: return
+	TransitionManager.change_scene_to_file(PRE_RUN_PREPARATION, _prepare_new_run)
+
+
+func _prepare_new_run() -> Error:
+	if RunState.start_new_run_and_save(): return OK
+	%NewRunError.show()
+	return ERR_FILE_CANT_WRITE
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if %NewRunConfirmation.visible and event.is_action_pressed("ui_cancel"):
+		_cancel_new_run()
+		get_viewport().set_input_as_handled()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST and is_node_ready() and %NewRunConfirmation.visible:
+		_cancel_new_run()
 
 
 func _on_depart() -> void:
@@ -453,10 +505,7 @@ func _depart_destination() -> String:
 	# 非战斗存档先回镇，再由这里继续原来的爬塔进度。
 	if RunState.is_active:
 		PreRunBuffSystem.prepare_offer()
-		return PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY
-	if SaveManager.has_save():
-		SaveManager.delete_save()
-	if RunState.start_new_run():
-		PreRunBuffSystem.prepare_offer()
-		return PRE_RUN_PREPARATION if PreRunBuffSystem.needs_preparation() else MAP_PLAY
+		return PRE_RUN_PREPARATION if GrannyStory.needs_opening() or PreRunBuffSystem.needs_preparation() else MAP_PLAY
+	if RunState.start_new_run_and_save(): return PRE_RUN_PREPARATION
+	%NewRunError.show()
 	return ""

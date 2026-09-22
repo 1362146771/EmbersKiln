@@ -88,6 +88,13 @@ func _ready() -> void:
 	check(upper_delta > 0.012 and lower_delta > 0.012, "smoke changes clearly in both exposed bands within two seconds")
 	material.set_shader_parameter("cycle_phase", 0.23)
 	var later := await capture("phase_23")
+	# Compare the actual rendered edge against the old ribbon-only treatment.
+	material.set_shader_parameter("shed_strength", 0.0)
+	var without_shed := await capture("without_shed")
+	material.set_shader_parameter("shed_strength", 0.8)
+	var shed_delta := difference(later, without_shed, Rect2i(485, 85, 65, 185))
+	print("SHED_PIXEL_DELTA=%f" % shed_delta)
+	check(shed_delta > 0.0003, "detached smoke visibly extends beyond the painted upper ribbon")
 	# Regions refer to 720x1280 output, not source-image coordinates.
 	var fog_delta := difference(start, later, Rect2i(75, 825, 210, 68))
 	var fire_delta := difference(start, later, Rect2i(118, 771, 18, 35))
@@ -106,6 +113,10 @@ func _ready() -> void:
 	var wrap_after := await capture("wrap_after")
 	var step_before := difference(wrap_before, start, Rect2i(350, 50, 120, 180))
 	var step_after := difference(start, wrap_after, Rect2i(350, 50, 120, 180))
+	var shed_step_before := difference(wrap_before, start, Rect2i(470, 70, 100, 230))
+	var shed_step_after := difference(start, wrap_after, Rect2i(470, 70, 100, 230))
+	check(shed_step_before > 0.000001 and shed_step_after > 0.000001 and absf(shed_step_before - shed_step_after) < 0.0002,
+		"detached wisps keep drifting smoothly through the cycle boundary")
 	check(step_before > 0.00001 and step_after > 0.00001 and absf(step_before - step_after) < 0.0005,
 		"smoke crosses loop boundary at continuous speed, with no held frame")
 	# Advection has an internal two-phase handoff as well as the full-cycle wrap.

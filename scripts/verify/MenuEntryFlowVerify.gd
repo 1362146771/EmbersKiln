@@ -4,6 +4,8 @@ const MENU := "res://scenes/main/MainMenu.tscn"
 const COMBAT := "res://scenes/combat/CombatPlay.tscn"
 const TOWN := "res://scenes/town/Town.tscn"
 const MAP := "res://scenes/map/MapPlay.tscn"
+const OPENING := "res://scenes/main/PreRunPreparation.tscn"
+const AD := "res://scenes/main/PreRunAdPreparation.tscn"
 func check(ok: bool, title: String) -> void:
 	if not ok: failed += 1
 	print("[%s] %s" % ["PASS" if ok else "FAIL", title])
@@ -30,7 +32,21 @@ func _ready() -> void:
 	check(menu.find_child("NewGameButton", true, false) == null and menu.find_child("ContinueButton", true, false) == null, "single authored entry replaces separate new and continue buttons")
 	menu.get_node("MenuCenter/MenuColumn/PlayButton").pressed.emit()
 	await settle()
-	check(get_tree().current_scene.scene_file_path == COMBAT, "first start directly enters combat")
+	check(get_tree().current_scene.scene_file_path == OPENING, "first start directly enters Granny dialogue")
+	var free_offer: Dictionary = RunState.granny_opening["offers"][0]
+	if String(free_offer["kind"]) in ["upgrade", "remove", "transform"]:
+		check(GrannyStory.claim(String(free_offer["id"]), 0, RunState.deck[0].duplicate(true)), "claim target opening reward")
+	else:
+		check(GrannyStory.claim(String(free_offer["id"])), "claim opening reward")
+	get_tree().current_scene._depart()
+	await settle()
+	check(get_tree().current_scene.scene_file_path == AD, "farewell opens original ad preparation")
+	get_tree().current_scene.get_node("%SkipButton").pressed.emit()
+	await settle()
+	check(get_tree().current_scene.scene_file_path == MAP, "opening reward leads to route selection")
+	get_tree().current_scene._on_node_pressed(0, 0)
+	await settle()
+	check(get_tree().current_scene.scene_file_path == COMBAT, "first route node enters combat")
 	check(ProfileState.first_battle_started and RunState.has_combat_checkpoint(), "first battle recorded and checkpoint saved")
 	check(RunState.current_map()[0][0].visited, "first encounter is an actual visited map node")
 	var run_id := RunState.run_id
@@ -63,6 +79,13 @@ func _ready() -> void:
 	get_tree().current_scene.controller.player.hp = 0
 	get_tree().current_scene.controller.check_player_death()
 	check(RunState.combat_death_pending and RunState.is_active, "first death offers revive without ending run")
+	var dead_ui := get_tree().current_scene as CombatUI
+	check(dead_ui.find_child("ReviveAdButton", true, false) == null, "revive UI remains absent when collapse starts")
+	var dead_body := dead_ui.player_sprite.get_node("BodyAnimation") as AnimatedSprite2D
+	dead_body.speed_scale = 0.5
+	await get_tree().create_timer(0.6).timeout
+	check(not dead_ui.player_sprite.death_complete and dead_ui.find_child("ReviveAdButton", true, false) == null, "revive UI waits for actual animation completion at slower playback speed")
+	await dead_body.animation_finished
 	var revive_button := get_tree().current_scene.find_child("ReviveAdButton", true, false) as Button
 	check(revive_button != null and not revive_button.disabled, "first death shows available revive button")
 	if revive_button != null:
@@ -71,6 +94,12 @@ func _ready() -> void:
 	check(get_tree().current_scene.scene_file_path == COMBAT and RunState.revive_used_count == 1 and not RunState.combat_death_pending, "completed ad reloads combat and consumes revive")
 	get_tree().current_scene.controller.player.hp = 0
 	get_tree().current_scene.controller.check_player_death()
+	dead_ui = get_tree().current_scene as CombatUI
+	dead_body = dead_ui.player_sprite.get_node("BodyAnimation") as AnimatedSprite2D
+	check(dead_body.animation == &"death" and not dead_ui.player_sprite.death_complete, "second death also starts collapse before result transition")
+	await get_tree().create_timer(0.5).timeout
+	check(get_tree().current_scene == dead_ui and not dead_ui.player_sprite.death_complete, "final result cannot replace combat during collapse")
+	await dead_body.animation_finished
 	await settle()
 	check(get_tree().current_scene.scene_file_path == MAP, "second death opens result scene instead of town")
 	check(get_tree().current_scene.find_child("ReviveAdButton", true, false) == null, "second death does not offer another revive")
@@ -95,7 +124,7 @@ func _ready() -> void:
 	check(get_tree().current_scene.scene_file_path == TOWN and not RunState.is_active, "later starts route through town without creating a run")
 	get_tree().current_scene._on_depart()
 	await settle()
-	check(RunState.is_active and get_tree().current_scene.scene_file_path != COMBAT, "town departure starts normal map/preparation flow")
+	check(RunState.is_active and get_tree().current_scene.scene_file_path == OPENING, "town departure starts opening reward")
 	run_id = RunState.run_id
 	RunState.gold = 17
 	SaveManager.save_game()
@@ -103,10 +132,16 @@ func _ready() -> void:
 	check(get_tree().current_scene.get_node("MenuCenter/MenuColumn/PlayButton").text == "继续游戏", "active noncombat save shows continue")
 	get_tree().current_scene.get_node("MenuCenter/MenuColumn/PlayButton").pressed.emit()
 	await settle()
-	check(get_tree().current_scene.scene_file_path == TOWN, "noncombat save continues in town")
-	get_tree().current_scene._on_depart()
+	check(get_tree().current_scene.scene_file_path == OPENING, "unresolved opening resumes directly")
+	var pending_offer: Dictionary = RunState.granny_opening["offers"][0]
+	if String(pending_offer["kind"]) in ["upgrade", "remove", "transform"]:
+		GrannyStory.claim(String(pending_offer["id"]), 0, RunState.deck[0].duplicate(true))
+	else:
+		GrannyStory.claim(String(pending_offer["id"]))
+	var expected_gold := RunState.gold
+	get_tree().current_scene._depart()
 	await settle()
-	check(RunState.run_id == run_id and RunState.gold == 17, "departing town resumes existing noncombat run")
+	check(RunState.run_id == run_id and RunState.gold == expected_gold, "departing opening resumes existing run and granted reward")
 	var legacy := ProfileState.to_save_dict()
 	legacy.version = 5
 	legacy.erase("first_battle_started")

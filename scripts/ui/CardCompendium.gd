@@ -173,6 +173,7 @@ func _set_filter(filter_id: StringName) -> void:
 
 
 func _change_page(direction: int) -> void:
+	SignalBus.sound_requested.emit(&"ui_page")
 	_page += direction
 	_refresh()
 

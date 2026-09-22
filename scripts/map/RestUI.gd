@@ -34,7 +34,7 @@ func _ready() -> void:
 
 
 func _build_main() -> void:
-	var heal_pct: float = float(GameData.balance.get("rest", {}).get("heal_percent", 0.3))
+	var heal_pct: float = DifficultyRules.rest_percent()
 	var heal_amt: int = int(RunState.max_hp * heal_pct)
 	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
 	if scene_panel != null:
@@ -105,6 +105,7 @@ func _build_main() -> void:
 func _on_rest(heal_amt: int) -> void:
 	if not can_interact() or RunState.has_relic_drawback(&"no_rest_heal"):
 		return
+	SignalBus.sound_requested.emit(&"rest_settle")
 	RunState.heal(heal_amt)
 	# 补陶泥遗物：休息额外回血
 	for rid in RunState.relic_ids:

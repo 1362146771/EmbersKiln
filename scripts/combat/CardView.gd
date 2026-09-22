@@ -29,6 +29,10 @@ var _enabled := true
 var _playable := true
 var _ghost := false
 var _start_global := Vector2.ZERO
+var _hand_scroll: ScrollContainer
+var _scrolling_hand := false
+var _scroll_origin := 0
+var _touch_gesture := false
 
 # ---- 配色（与 CombatUI 保持一致）----
 const CREAM := Color(0.984, 0.953, 0.894)
@@ -78,6 +82,7 @@ func set_enabled(v: bool) -> void:
 		modulate.a = 0.4
 		_pressing = false
 		_dragging = false
+		_scrolling_hand = false
 
 
 ## 不可出牌时仍允许点击详情；拖拽到任何落点都回弹。
@@ -92,17 +97,35 @@ func set_playable(v: bool) -> void:
 func _input(ev: InputEvent) -> void:
 	if not _enabled or not _pressing:
 		return
-	if ev is InputEventMouseMotion:
-		_update_drag_position(get_canvas_transform().affine_inverse() * ev.position)
-		if _dragging:
-			get_viewport().set_input_as_handled()
-	elif _dragging and ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and not ev.pressed:
+	if (ev is InputEventScreenTouch or ev is InputEventMouseButton) and ev.canceled:
+		var was_dragging := _dragging
 		_pressing = false
 		_dragging = false
+		_scrolling_hand = false
+		if was_dragging: drag_canceled.emit(self)
+		return
+	if ev is InputEventMouseMotion:
+		var point: Vector2 = get_canvas_transform().affine_inverse() * ev.position
+		var delta: Vector2 = point - _start_global
+		if not _dragging and not _scrolling_hand and _touch_gesture and is_instance_valid(_hand_scroll):
+			var bar := _hand_scroll.get_h_scroll_bar()
+			if bar.max_value > bar.page and delta.length() >= DRAG_THRESHOLD and absf(delta.x) > absf(delta.y):
+				_scrolling_hand = true
+		if _scrolling_hand:
+			_hand_scroll.scroll_horizontal = _scroll_origin - roundi(delta.x)
+		else:
+			_update_drag_position(point)
+		if _dragging or _scrolling_hand:
+			get_viewport().set_input_as_handled()
+	elif (_dragging or _scrolling_hand) and ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and not ev.pressed:
+		_pressing = false
+		var was_scrolling := _scrolling_hand
+		_scrolling_hand = false
+		_dragging = false
 		# Submission can synchronously remove this card from the scene tree.
-		# Consume the event while its viewport is still available.
 		get_viewport().set_input_as_handled()
-		drag_ended.emit(self, get_canvas_transform().affine_inverse() * ev.position)
+		if not was_scrolling:
+			drag_ended.emit(self, get_canvas_transform().affine_inverse() * ev.position)
 
 
 func _on_gui_input(ev: InputEvent) -> void:
@@ -115,6 +138,10 @@ func _on_gui_input(ev: InputEvent) -> void:
 		if mb.pressed:
 			_pressing = true
 			_dragging = false
+			_scrolling_hand = false
+			_touch_gesture = DisplayServer.is_touchscreen_available()
+			_hand_scroll = MobileScroll.parent_scroll(self)
+			_scroll_origin = _hand_scroll.scroll_horizontal if _hand_scroll != null else 0
 			_start_global = get_global_transform() * mb.position
 			get_viewport().set_input_as_handled()
 		else:
@@ -133,6 +160,7 @@ func _notification(what: int) -> void:
 		var was_dragging := _dragging
 		_pressing = false
 		_dragging = false
+		_scrolling_hand = false
 		if was_dragging:
 			drag_canceled.emit(self)
 

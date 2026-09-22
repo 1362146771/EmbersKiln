@@ -2,17 +2,41 @@
 
 [ext_resource type="Theme" uid="uid://mmwy4iawijb3" path="res://themes/formal/btn_hall_normal_small.tres" id="1_i65kw"]
 [ext_resource type="Script" uid="uid://3xm7rgx7y6d4" path="res://scripts/core/MainMenu.gd" id="1_mm"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/BG_MainMenu_KilnAscent_v2.png" id="4_eclvw"]
+[ext_resource type="Texture2D" uid="uid://dwgxwrhsvkrdj" path="res://art/backgrounds/BG_MainMenu_KilnAscent_v2.png" id="4_eclvw"]
 [ext_resource type="Texture2D" uid="uid://beyyq4slyq7gc" path="res://art/ui/formal/logo_kiln_integrated_v2.png" id="5_4gm0a"]
 [ext_resource type="PackedScene" path="res://scenes/ui/MainMenuOption.tscn" id="6_option"]
-[ext_resource type="Shader" path="res://art/ui/main_menu/KilnAtmosphere.gdshader" id="7_atmosphere"]
-[ext_resource type="Texture2D" path="res://art/ui/main_menu/KilnAtmosphereMask.svg" id="8_matte"]
+[ext_resource type="Shader" uid="uid://c1rmlqrpd3xuj" path="res://art/ui/main_menu/KilnAtmosphere.gdshader" id="7_atmosphere"]
+[ext_resource type="Texture2D" uid="uid://r854vk6nw61d" path="res://art/ui/main_menu/KilnAtmosphereMask.svg" id="8_matte"]
 [ext_resource type="PackedScene" path="res://scenes/ui/MainMenuAtmosphere.tscn" id="9_atmosphere"]
-[ext_resource type="Texture2D" path="res://art/ui/main_menu/SmokeFlow.png" id="10_flow"]
-[ext_resource type="Texture2D" path="res://art/ui/main_menu/SmokePathUV.png" id="11_path"]
-[ext_resource type="Shader" path="res://art/ui/main_menu/LogoHeat.gdshader" id="12_logo_heat"]
-[ext_resource type="Shader" path="res://art/ui/main_menu/LogoFlames.gdshader" id="13_logo_fire"]
-[ext_resource type="Script" path="res://scripts/ui/MainMenuLogo.gd" id="14_logo_script"]
+[ext_resource type="Texture2D" uid="uid://c1mwvm0xgx4ap" path="res://art/ui/main_menu/SmokeFlow.png" id="10_flow"]
+[ext_resource type="Texture2D" uid="uid://b42d5msnxljpa" path="res://art/ui/main_menu/SmokePathUV.png" id="11_path"]
+[ext_resource type="Shader" uid="uid://d2qsa8blea0x7" path="res://art/ui/main_menu/LogoHeat.gdshader" id="12_logo_heat"]
+[ext_resource type="Shader" uid="uid://bycujm5k7134m" path="res://art/ui/main_menu/LogoFlames.gdshader" id="13_logo_fire"]
+[ext_resource type="Script" uid="uid://cogkm8r7k20je" path="res://scripts/ui/MainMenuLogo.gd" id="14_logo_script"]
+
+[sub_resource type="FastNoiseLite" id="Noise_smoke"]
+seed = 193
+frequency = 0.018
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="Texture_smoke_noise"]
+noise = SubResource("Noise_smoke")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_atmosphere"]
+resource_local_to_scene = true
+shader = ExtResource("7_atmosphere")
+shader_parameter/atmosphere_mask = ExtResource("8_matte")
+shader_parameter/smoke_flow_map = ExtResource("10_flow")
+shader_parameter/smoke_path_uv = ExtResource("11_path")
+shader_parameter/smoke_noise = SubResource("Texture_smoke_noise")
+shader_parameter/use_runtime_clock = false
+shader_parameter/cycle_phase = 0.0
+shader_parameter/smoke_travel_pixels = 84.0
+shader_parameter/smoke_detail = 0.22
+shader_parameter/smoke_strength = 1.0
+shader_parameter/shed_strength = 0.8
+shader_parameter/flame_strength = 0.8
 
 [sub_resource type="FastNoiseLite" id="Noise_logo_fire"]
 seed = 371
@@ -22,45 +46,27 @@ fractal_octaves = 3
 [sub_resource type="NoiseTexture2D" id="Texture_logo_fire"]
 width = 256
 height = 256
-seamless = true
 noise = SubResource("Noise_logo_fire")
+seamless = true
 
 [sub_resource type="ShaderMaterial" id="Material_logo_heat"]
 resource_local_to_scene = true
 shader = ExtResource("12_logo_heat")
 shader_parameter/fire_noise = SubResource("Texture_logo_fire")
+shader_parameter/use_runtime_clock = false
+shader_parameter/cycle_phase = 0.0
 shader_parameter/heat_strength = 0.85
 
 [sub_resource type="ShaderMaterial" id="Material_logo_fire"]
 resource_local_to_scene = true
 shader = ExtResource("13_logo_fire")
 shader_parameter/fire_noise = SubResource("Texture_logo_fire")
+shader_parameter/use_runtime_clock = false
+shader_parameter/cycle_phase = 0.0
+shader_parameter/logo_size = Vector2(344.14224, 200)
+shader_parameter/padding = Vector2(16, 40)
 shader_parameter/flame_height = 25.0
 shader_parameter/flame_opacity = 0.85
-
-[sub_resource type="FastNoiseLite" id="Noise_smoke"]
-seed = 193
-frequency = 0.018
-fractal_octaves = 3
-
-[sub_resource type="NoiseTexture2D" id="Texture_smoke_noise"]
-width = 512
-height = 512
-seamless = true
-noise = SubResource("Noise_smoke")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_atmosphere"]
-resource_local_to_scene = true
-shader = ExtResource("7_atmosphere")
-shader_parameter/atmosphere_mask = ExtResource("8_matte")
-shader_parameter/smoke_flow_map = ExtResource("10_flow")
-shader_parameter/smoke_path_uv = ExtResource("11_path")
-shader_parameter/smoke_noise = SubResource("Texture_smoke_noise")
-shader_parameter/cycle_phase = 0.0
-shader_parameter/smoke_travel_pixels = 84.0
-shader_parameter/smoke_detail = 0.22
-shader_parameter/smoke_strength = 1.0
-shader_parameter/flame_strength = 0.8
 
 [node name="MainMenu" type="Control" unique_id=541195838]
 layout_mode = 3
@@ -82,8 +88,7 @@ texture = ExtResource("4_eclvw")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Atmosphere" parent="." instance=ExtResource("9_atmosphere")]
-layout_mode = 1
+[node name="Atmosphere" parent="." unique_id=1810171110 instance=ExtResource("9_atmosphere")]
 
 [node name="MenuCenter" type="CenterContainer" parent="." unique_id=604896758]
 layout_mode = 1
@@ -111,39 +116,37 @@ expand_mode = 1
 stretch_mode = 5
 script = ExtResource("14_logo_script")
 
-[node name="Flames" type="TextureRect" parent="MenuCenter/MenuColumn/Logo"]
+[node name="Flames" type="TextureRect" parent="MenuCenter/MenuColumn/Logo" unique_id=954566497]
 show_behind_parent = true
 material = SubResource("Material_logo_fire")
 layout_mode = 0
-offset_left = 7.0
+offset_left = 11.928879
 offset_top = -40.0
-offset_right = 393.0
+offset_right = 388.0711
 offset_bottom = 240.0
 mouse_filter = 2
 texture = ExtResource("5_4gm0a")
 expand_mode = 1
-stretch_mode = 0
 
 [node name="PlayButton" parent="MenuCenter/MenuColumn" unique_id=77172879 instance=ExtResource("6_option")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(327, 100)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "开始游戏"
 autowrap_mode = 3
 
 [node name="CompendiumButton" parent="MenuCenter/MenuColumn" unique_id=806571973 instance=ExtResource("6_option")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(327, 100)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
 text = "卡牌图鉴"
+autowrap_mode = 3
+
+[node name="SettingsButton" parent="MenuCenter/MenuColumn" instance=ExtResource("6_option")]
+unique_name_in_owner = true
+layout_mode = 2
+text = "设置"
 autowrap_mode = 3
 
 [node name="QuitButton" parent="MenuCenter/MenuColumn" unique_id=763290553 instance=ExtResource("6_option")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(327, 100)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
 text = "退出游戏"
 autowrap_mode = 3

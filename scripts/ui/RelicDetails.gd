@@ -20,7 +20,10 @@ func present(relic_id: StringName, source: Control) -> void:
 
 func close() -> void:
 	$Details.hide()
-	if is_instance_valid(_source): _source.grab_focus()
+	if is_instance_valid(_source):
+		var button := _source.get_node_or_null("InspectRelic") as Button
+		if button != null: button.grab_focus()
+		else: _source.grab_focus()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if $Details.visible and event.is_action_pressed("ui_cancel"):

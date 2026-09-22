@@ -1,6 +1,7 @@
 extends HFlowContainer
 ## 图片与真实层数共用视图；不改变状态规则或库存。
 const BADGE := preload("res://scenes/combat/StatusBadge.tscn")
+const ICON_INFO := preload("res://scripts/ui/CombatIconInfo.gd")
 var _badges: Dictionary = {}
 var _initialized := false
 
@@ -36,9 +37,12 @@ func set_unit(unit: CombatUnit, kiln_heat: int = 0, kiln_threshold: int = 0) -> 
 		var current: Control = _badges[sid]
 		current.get_node("Stacks").text = str(stacks)
 		current.get_node("Stacks").add_theme_font_size_override("font_size", 16 if str(stacks).length() > 2 else 18)
-		current.tooltip_text = "%s · %d\n%s" % [data.name if data != null else String(sid), stacks, data.effect if data != null else ""]
+		var title: String = data.name if data != null else String(sid)
+		var body := "当前层数：%d。\n%s" % [stacks, data.effect if data != null else ""]
 		if sid == &"kiln_heat":
-			current.tooltip_text = "窑温 %d / %d" % [kiln_heat, kiln_threshold]
+			title = "窑温"
+			body = "当前窑温：%d。\n触发阈值：%d。" % [kiln_heat, kiln_threshold]
+		ICON_INFO.configure(current, title, body, current.get_node("Icon").texture)
 	visible = not _badges.is_empty()
 
 func content_height(available_width: float) -> float:

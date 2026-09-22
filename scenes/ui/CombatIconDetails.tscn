@@ -1,0 +1,57 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/ui/CombatIconDetails.gd" id="script"]
+[sub_resource type="StyleBoxFlat" id="panel"]
+bg_color = Color(0.09, 0.12, 0.16, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.65, 0.54, 0.34, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+content_margin_left = 16.0
+content_margin_right = 16.0
+content_margin_top = 14.0
+content_margin_bottom = 16.0
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 5
+[node name="CombatIconDetails" type="CanvasLayer"]
+layer = 90
+script = ExtResource("script")
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+offset_right = 330.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("panel")
+[node name="Body" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+[node name="Header" type="HBoxContainer" parent="Panel/Body"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+[node name="Icon" type="TextureRect" parent="Panel/Body/Header"]
+custom_minimum_size = Vector2(38, 38)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="Title" type="Label" parent="Panel/Body/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.95, 0.77, 0.44, 1)
+theme_override_font_sizes/font_size = 25
+text = "效果名称"
+autowrap_mode = 3
+[node name="Description" type="Label" parent="Panel/Body"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.96, 0.93, 0.86, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_constants/line_spacing = 5
+text = "此图标对应的触发条件与效果。"
+autowrap_mode = 3

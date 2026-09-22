@@ -115,7 +115,9 @@ func refresh() -> void:
 func _fire() -> void:
 	if _busy or _selected_id == "": return
 	_busy = true
+	var reroll := CardMutation.pattern(_selected_id) != ""
 	_message = CardMutation.begin(_selected_id, _revision)
+	SignalBus.sound_requested.emit((&"town_reroll" if reroll else &"town_enchant") if _message.is_empty() else &"ui_deny")
 	_busy = false
 	refresh()
 

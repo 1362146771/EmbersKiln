@@ -58,7 +58,8 @@ func setup(done: Callable) -> void:
 ## 从 GameData 取一个随机事件；GameData 未就绪时退回一个兜底事件，避免空屏。
 func _pick_event() -> Dictionary:
 	if GameData.is_loaded and not GameData.events.is_empty():
-		return GameData.random_event(RunState.current_act + 1)
+		var picked: Dictionary = GameData.random_event(RunState.current_act + 1)
+		return picked
 	return {
 		"title": "岔路口",
 		"desc": "前路不明，你原地整备。",

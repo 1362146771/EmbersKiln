@@ -148,6 +148,7 @@ func _grant_refresh(transaction_id: String, context: Dictionary) -> void:
 		return
 	ProfileState.complete_reward_transaction(transaction_id)
 	SignalBus.shop_inventory_changed.emit(shop_id)
+	SignalBus.sound_requested.emit(&"shop_refresh")
 
 
 func _has_alternative(state: Dictionary) -> bool:

@@ -120,7 +120,7 @@ func _ready() -> void:
 	topbar.hide()
 	if not RunState.pre_run_preparation_resolved:
 		PreRunBuffSystem.prepare_offer()
-	if PreRunBuffSystem.needs_preparation():
+	if GrannyStory.needs_opening() or PreRunBuffSystem.needs_preparation():
 		_route_scene(PreRunPreparationScene)
 		return
 	if RunState.has_combat_checkpoint() and not RunState.pending_combat_enemy_ids.is_empty():
@@ -136,6 +136,10 @@ func _ready() -> void:
 		return
 	if not RunState.pending_reward_data.is_empty():
 		_route_scene(RewardScene)
+		return
+	if HiddenActFlow.choice_pending():
+		start_new_map()
+		_show_hidden_entrance()
 		return
 	# 2) 战斗返回：胜利发奖励（场景切到 RewardUI），失败弹结算屏
 	if RunState.pending_post_combat:
@@ -172,7 +176,7 @@ func start_new_map() -> void:
 		if not RunState.start_new_run():
 			return
 		PreRunBuffSystem.prepare_offer()
-		if PreRunBuffSystem.needs_preparation():
+		if GrannyStory.needs_opening() or PreRunBuffSystem.needs_preparation():
 			_route_scene(PreRunPreparationScene)
 			return
 	chosen.clear()
@@ -476,6 +480,7 @@ func _prepare_node(f: int, i: int) -> Error:
 	RunState.current_floor = f
 	RunState.current_node_type = node.type
 	SignalBus.floor_entered.emit(f, node.type)
+	SignalBus.sound_requested.emit(&"map_select")
 	if node.is_combat_like():
 		RunState.pending_combat_enemy_ids = node.enemy_ids.duplicate()
 		RunState.create_combat_checkpoint(node.enemy_ids)
@@ -496,6 +501,11 @@ func _start_noncombat(node) -> void:
 
 func _grant_reward() -> void:
 	var tier: StringName = RunState.current_node_type
+	if tier == &"boss" and HiddenActFlow.is_hidden():
+		RunState.pending_post_reward = true
+		SaveManager.save_game()
+		_on_reward_done()
+		return
 	var gold := RewardBuilder.roll_gold(tier)
 	RunState.add_gold(gold)
 	var relic_id: StringName = RewardBuilder.roll_relic(tier)
@@ -511,7 +521,7 @@ func _grant_reward() -> void:
 	var rw_data := {"tier": tier, "gold": gold, "relic_id": relic_id, "potion_id": potion_id, "cards": cards}
 	# P2 场景化：奖励界面改为独立场景。先把数据交给 RunState，再切场景；
 	# RewardUI._finish 置 pending_post_reward 后切回本场景，_ready 走 _on_reward_done。
-	if tier == &"boss" and not RunState.is_last_act():
+	if tier == &"boss" and RunState.current_act < GameData.act_configs.size() - 1:
 		rw_data["boss_relic_choices"] = RewardBuilder.roll_boss_relic_choices()
 	rw_data["stage"] = "cards"
 	RunState.pending_reward_data = rw_data
@@ -526,6 +536,15 @@ func _on_reward_done() -> void:
 	_refresh_topbar()
 	if RunState.current_node_type == &"boss":
 		if RunState.is_last_act():
+			var recorded := HiddenActFlow.record_hidden_clear() if HiddenActFlow.is_hidden() else HiddenActFlow.record_ordinary_clear()
+			if not recorded:
+				RunState.pending_post_reward = true
+				SaveManager.save_game()
+				_show_continue_panel("通关记录保存失败，请重试。", "重试")
+				return
+			if HiddenActFlow.choice_pending():
+				_show_hidden_entrance()
+				return
 			RunState.end_run(true)
 			SignalBus.run_won.emit()
 			_show_result(true)
@@ -537,8 +556,37 @@ func _on_reward_done() -> void:
 	_show_continue_panel("战斗胜利！获得战利品。", "继续前进")
 
 
+func _show_hidden_entrance() -> void:
+	if has_node("HiddenActEntrance"): return
+	SignalBus.sound_requested.emit(&"hidden_open")
+	var panel := preload("res://scenes/map/HiddenActEntrance.tscn").instantiate() as Control
+	panel.get_node("%Story").text = String(RunState.hidden_act_state.config.entrance_text)
+	panel.get_node("%Enter").pressed.connect(_enter_hidden.bind(panel))
+	panel.get_node("%Return").pressed.connect(_decline_hidden.bind(panel))
+	_show_transition_panel(panel)
+
+
+func _enter_hidden(panel: Control) -> void:
+	if TransitionManager.is_transitioning or not HiddenActFlow.choice_pending(): return
+	if not HiddenActFlow.enter():
+		panel.get_node("%Story").text = "未能保存入口进度，请重试。第三幕通关记录已保留。"
+		return
+	_on_enter_act(panel)
+
+
+func _decline_hidden(panel: Control) -> void:
+	if TransitionManager.is_transitioning or not HiddenActFlow.choice_pending(): return
+	RunState.hidden_act_state["choice_pending"] = false
+	RunState.end_run(true)
+	SignalBus.run_won.emit()
+	remove_child(panel)
+	panel.queue_free()
+	_show_result(true)
+
+
 ## 幕间转场屏：击败非终幕 Boss 后展示，点击「进入第 N 幕」重建本幕地图。
 func _show_act_transition(act_idx: int) -> void:
+	SignalBus.sound_requested.emit(&"act_clear")
 	var panel: Control = _overlay_panel()
 	panel.name = "ActTransition"
 	var col := panel.get_child(0).get_child(0) as VBoxContainer
@@ -593,11 +641,18 @@ func _on_continue(panel: Control) -> void:
 
 
 func _show_result(victory: bool) -> void:
+	SignalBus.sound_requested.emit(&"run_win" if victory else &"defeat")
 	var panel := (load("res://scenes/ui/RunResult.tscn") as PackedScene).instantiate() as Control
 	PauseManager.hide_pause_button()
 	var content := panel.get_node("Center/Content")
 	content.get_node("Emblem/Title").text = "胜利" if victory else "你倒下了"
 	content.get_node("Floor").text = "抵达第 %d 层" % RunState.current_floor
+	content.get_node("Floor").autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if bool(RunState.hidden_act_state.get("cleared", false)):
+		content.get_node("Emblem/Title").text = "封窑已破"
+		content.get_node("Floor").text = String(RunState.hidden_act_state.config.ending_text)
+	elif HiddenActFlow.is_hidden() and RunState.ordinary_cleared:
+		content.get_node("Floor").text = "第三幕已通关\n隐藏挑战未完成 · 通关收益保留"
 	_result_fireseed_label = content.get_node("Fireseed")
 	_result_ad_button = content.get_node("AdButton")
 	_result_ad_button.hide()
@@ -670,7 +725,7 @@ func _refresh_topbar() -> void:
 	if old_header != null:
 		remove_child(old_header)
 		old_header.queue_free()
-	FormalUI.header(self, "第 %d 幕 · %s" % [RunState.current_act + 1, RunState.current_act_config().get("title", "")])
+	FormalUI.header(self, "%s · 第%d幕" % [DifficultyRules.current_name(), RunState.current_act + 1])
 	var act_cfg: Dictionary = RunState.current_act_config()
 	top_act.text = "第 %d 幕 · %s" % [RunState.current_act + 1, String(act_cfg.get("title", ""))]
 	top_hp.text = "HP %d / %d" % [RunState.hp, RunState.max_hp]
@@ -718,6 +773,9 @@ func _focus_map() -> void:
 			return
 
 func _return_to_map() -> void:
+	if RunState.pending_post_reward:
+		_on_reward_done()
+		return
 	_build_map_view()
 	_focus_map()
 	for button in map_area.get_children():

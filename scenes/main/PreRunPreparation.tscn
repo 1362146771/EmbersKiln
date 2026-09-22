@@ -1,12 +1,38 @@
-[gd_scene format=3]
+[gd_scene load_steps=10 format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/main/BuffOffer.tscn" id="buff_offer"]
+[ext_resource type="Script" path="res://scripts/meta/PreRunPreparationUI.gd" id="script"]
+[ext_resource type="Texture2D" path="res://art/npcs/granny_kiln/SPR_NPC_GrannyKiln.png" id="granny"]
+[ext_resource type="Texture2D" path="res://themes/formal/PlayerPortrait.tres" id="player"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/BG_Combat_KilnMouth.png" id="background"]
+[ext_resource type="Theme" path="res://themes/formal/btn_event_normal.tres" id="theme"]
+[ext_resource type="StyleBox" path="res://themes/formal/Town_field.tres" id="header"]
 
-[ext_resource type="Script" path="res://scripts/meta/PreRunPreparationUI.gd" id="1"]
-[ext_resource type="Theme" path="res://themes/formal/btn_event_normal.tres" id="2"]
-[ext_resource type="Texture2D" path="res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_1.png" id="3"]
-[ext_resource type="StyleBox" path="res://themes/formal/Town_detail.tres" id="4"]
-[ext_resource type="Theme" path="res://themes/formal/btn_hall_normal_small.tres" id="5_slate"]
+[sub_resource type="StyleBoxFlat" id="bubble"]
+content_margin_left = 26.0
+content_margin_top = 20.0
+content_margin_right = 26.0
+content_margin_bottom = 20.0
+bg_color = Color(0.76, 0.81, 0.8, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.1, 0.12, 0.13, 1)
+corner_radius_top_left = 28
+corner_radius_top_right = 34
+corner_radius_bottom_left = 32
+corner_radius_bottom_right = 22
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 5
+
+[sub_resource type="Gradient" id="fade"]
+offsets = PackedFloat32Array(0, 0.23, 1)
+colors = PackedColorArray(0.05, 0.07, 0.08, 0, 0.05, 0.07, 0.08, 0.85, 0.05, 0.07, 0.08, 0.98)
+
+[sub_resource type="GradientTexture2D" id="fade_texture"]
+gradient = SubResource("fade")
+fill_from = Vector2(0, 0)
+fill_to = Vector2(0, 1)
 
 [node name="PreRunPreparation" type="Control"]
 layout_mode = 3
@@ -15,127 +41,194 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2")
-script = ExtResource("1")
+theme = ExtResource("theme")
+script = ExtResource("script")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.05, 0.07, 0.08, 1)
+
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.55
 mouse_filter = 2
-color = Color(0.08, 0.095, 0.11, 1)
-
-[node name="Courtyard" type="TextureRect" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchor_right = 1.0
-anchor_bottom = 0.49
-mouse_filter = 2
-texture = ExtResource("3")
+texture = ExtResource("background")
 expand_mode = 1
 stretch_mode = 6
+modulate = Color(0.55, 0.58, 0.61, 1)
 
-[node name="Header" type="MarginContainer" parent="."]
+[node name="Header" type="PanelContainer" parent="."]
 layout_mode = 1
 anchor_right = 1.0
-offset_left = 32.0
-offset_top = 30.0
-offset_right = -32.0
-mouse_filter = 2
-
-[node name="Heading" type="VBoxContainer" parent="Header"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 4
-
-[node name="Eyebrow" type="Label" parent="Header/Heading"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.85, 0.65, 1)
-theme_override_colors/font_shadow_color = Color(0.06, 0.06, 0.06, 1)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 22
-text = "窑口镇 / 风箱台"
-
-[node name="Title" type="Label" parent="Header/Heading"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.94, 0.79, 1)
-theme_override_colors/font_shadow_color = Color(0.06, 0.06, 0.06, 1)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 44
-text = "临行添薪"
-
-[node name="PreparationPanel" type="PanelContainer" parent="."]
-layout_mode = 1
-anchor_top = 0.47
-anchor_right = 1.0
-anchor_bottom = 1.0
 offset_left = 20.0
+offset_top = 20.0
 offset_right = -20.0
-offset_bottom = -20.0
-theme_override_styles/panel = ExtResource("4")
+offset_bottom = 82.0
+theme_override_styles/panel = ExtResource("header")
 
-[node name="Margin" type="MarginContainer" parent="PreparationPanel"]
+[node name="Place" type="Label" parent="Header"]
 layout_mode = 2
-theme_override_constants/margin_left = 28
-theme_override_constants/margin_right = 28
-theme_override_constants/margin_top = 30
-theme_override_constants/margin_bottom = 26
+text = "窑口镇 · 临行"
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
 
-[node name="Column" type="VBoxContainer" parent="PreparationPanel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="SectionTitle" type="Label" parent="PreparationPanel/Margin/Column"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.87, 0.66, 1)
-theme_override_font_sizes/font_size = 28
-text = "启程前的馈赠"
-
-[node name="Hint" type="Label" parent="PreparationPanel/Margin/Column"]
+[node name="PlayerPortrait" type="TextureRect" parent="."]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.82, 0.85, 0.86, 1)
-theme_override_font_sizes/font_size = 21
-text = "选择一项增益，完整观看广告后激活。"
-autowrap_mode = 2
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.225
+anchor_right = 0.40
+anchor_bottom = 0.445
+mouse_filter = 2
+texture = ExtResource("player")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Scroll" type="ScrollContainer" parent="PreparationPanel/Margin/Column"]
+[node name="GrannyPortrait" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.58
+anchor_top = 0.27
+anchor_right = 0.86
+anchor_bottom = 0.44
+mouse_filter = 2
+texture = ExtResource("granny")
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="SpeechBubble" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.23
+anchor_top = 0.085
+anchor_right = 0.90
+anchor_bottom = 0.205
+mouse_filter = 2
+theme_override_styles/panel = SubResource("bubble")
+
+[node name="Copy" type="VBoxContainer" parent="SpeechBubble"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Speaker" type="Label" parent="SpeechBubble/Copy"]
+layout_mode = 2
+text = "陶婆"
+theme_override_colors/font_color = Color(0.25, 0.3, 0.29, 1)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 21
+
+[node name="Greeting" type="Label" parent="SpeechBubble/Copy"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-horizontal_scroll_mode = 0
+theme_override_colors/font_color = Color(0.1, 0.14, 0.15, 1)
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 28
+text = "你来了。\n又要往窑里去了？"
+autowrap_mode = 2
+vertical_alignment = 1
 
-[node name="BuffOptions" type="VBoxContainer" parent="PreparationPanel/Margin/Column/Scroll"]
+[node name="BubbleTail" type="Polygon2D" parent="SpeechBubble"]
 unique_name_in_owner = true
+position = Vector2(295, 168)
+polygon = PackedVector2Array(0, 0, 30, 0, 44, 34, 18, 20)
+color = Color(0.76, 0.81, 0.8, 1)
+
+[node name="BottomShade" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_top = 0.42
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = SubResource("fade_texture")
+mouse_filter = 2
+
+[node name="Responses" type="MarginContainer" parent="."]
+layout_mode = 1
+anchor_top = 0.46
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_right = -28.0
+offset_bottom = -20.0
+
+[node name="Column" type="VBoxContainer" parent="Responses"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SectionTitle" type="Label" parent="Responses/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.74, 0.52, 1)
+theme_override_font_sizes/font_size = 23
+text = "临行 · 陶婆"
+
+[node name="TalkButton" type="Button" parent="Responses/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 76)
+text = "[对话]"
+alignment = 1
+
+[node name="RewardOptions" type="VBoxContainer" parent="Responses/Column"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 16
+size_flags_vertical = 3
+theme_override_constants/separation = 10
 
-[node name="EditorPreviewOption" parent="PreparationPanel/Margin/Column/Scroll/BuffOptions" instance=ExtResource("buff_offer")]
-layout_mode = 2
-
-[node name="AdStatus" type="Label" parent="PreparationPanel/Margin/Column"]
+[node name="Receipt" type="Label" parent="Responses/Column"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.89, 0.8, 0.61, 1)
-theme_override_font_sizes/font_size = 18
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+text = ""
 autowrap_mode = 2
 
-[node name="SkipButton" type="Button" parent="PreparationPanel/Margin/Column"]
+[node name="DepartButton" type="Button" parent="Responses/Column"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 72)
+visible = false
 layout_mode = 2
-theme = ExtResource("5_slate")
-theme_override_font_sizes/font_size = 25
-text = "直接出发"
+custom_minimum_size = Vector2(0, 76)
+text = "[告别]"
+alignment = 1
 
-[node name="Note" type="Label" parent="PreparationPanel/Margin/Column"]
+[node name="Status" type="Label" parent="Responses/Column"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.76, 0.79, 0.81, 1)
-theme_override_font_sizes/font_size = 17
-text = "可跳过广告，正常开局与基础奖励不受影响"
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.72, 0.76, 0.77, 1)
+theme_override_font_sizes/font_size = 19
 autowrap_mode = 2
+
+[node name="RetryButton" type="Button" parent="Responses/Column"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+text = "重试"
+
+[node name="Spacer" type="Control" parent="Responses/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="BackButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -155.0
+offset_top = 29.0
+offset_right = -30.0
+offset_bottom = 73.0
+text = "保存退出"
+flat = true
+theme_override_font_sizes/font_size = 19

@@ -4,10 +4,12 @@ extends Control
 
 const TOWN_SCENE := "res://scenes/town/Town.tscn"
 const COMBAT_SCENE := "res://scenes/combat/CombatPlay.tscn"
+const PREPARATION_SCENE := "res://scenes/main/PreRunPreparation.tscn"
 const CARD_COMPENDIUM := preload("res://scenes/ui/CardCompendium.tscn")
 
 @onready var play_button: Button = %PlayButton
 var _menu_busy := false
+var _settings_popup: CanvasLayer
 
 
 func _ready() -> void:
@@ -17,13 +19,26 @@ func _ready() -> void:
 	play_button.pressed.connect(_activate_option.bind(play_button, _on_play))
 	%CompendiumButton.pressed.connect(_activate_option.bind(%CompendiumButton, _on_compendium))
 	%QuitButton.pressed.connect(_activate_option.bind(%QuitButton, _on_quit))
+	%SettingsButton.pressed.connect(_activate_option.bind(%SettingsButton, _on_settings))
+
+
+func _on_settings() -> void:
+	if is_instance_valid(_settings_popup): return
+	_settings_popup = preload("res://scenes/ui/AudioSettingsPopup.tscn").instantiate()
+	for option in [play_button, %CompendiumButton, %SettingsButton, %QuitButton]:
+		option.disabled = true
+	_settings_popup.tree_exited.connect(func():
+		for option in [play_button, %CompendiumButton, %SettingsButton, %QuitButton]:
+			option.disabled = false
+		%SettingsButton.grab_focus.call_deferred())
+	add_child(_settings_popup)
 
 
 func _activate_option(button: Button, action: Callable) -> void:
-	if _menu_busy:
+	if _menu_busy or is_instance_valid(_settings_popup):
 		return
 	_menu_busy = true
-	for option in [play_button, %CompendiumButton, %QuitButton]:
+	for option in [play_button, %CompendiumButton, %SettingsButton, %QuitButton]:
 		option.feedback_locked = true
 	await button.confirm_feedback().finished
 	action.call()
@@ -33,7 +48,7 @@ func _activate_option(button: Button, action: Callable) -> void:
 	if not is_inside_tree():
 		return
 	_menu_busy = false
-	for option in [play_button, %CompendiumButton, %QuitButton]:
+	for option in [play_button, %CompendiumButton, %SettingsButton, %QuitButton]:
 		option.reset_feedback()
 
 
@@ -51,24 +66,7 @@ func _start_destination() -> String:
 	RunState.pending_combat_enemy_ids.clear()
 	if ProfileState.first_battle_started:
 		return TOWN_SCENE
-	if not RunState.start_new_run():
-		return ""
-	RunState.pre_run_preparation_resolved = true
-	var map := RunState.current_map()
-	if map.is_empty() or map[0].is_empty():
-		return ""
-	var first_node = map[0][0]
-	if not first_node.is_combat_like() or first_node.enemy_ids.is_empty():
-		push_error("首个地图节点必须配置为战斗")
-		return ""
-	first_node.visited = true
-	RunState.current_floor = first_node.floor
-	RunState.current_node_type = first_node.type
-	if not RunState.create_combat_checkpoint(first_node.enemy_ids) or not SaveManager.save_game():
-		return ""
-	ProfileState.first_battle_started = true
-	SignalBus.profile_changed.emit()
-	return COMBAT_SCENE
+	return PREPARATION_SCENE if RunState.start_new_run_and_save() else ""
 
 
 func _continue_destination() -> String:
@@ -79,10 +77,12 @@ func _continue_destination() -> String:
 			if RunState.restore_combat_checkpoint():
 				SaveManager.save_game()
 				return COMBAT_SCENE
-		if RunState.pending_post_reward:
+		if RunState.pending_post_reward or HiddenActFlow.choice_pending():
 			return "res://scenes/map/MapPlay.tscn"
 		if not RunState.pending_reward_data.is_empty():
 			return "res://scenes/rewards/RewardUI.tscn"
+		if GrannyStory.needs_opening() or PreRunBuffSystem.needs_preparation():
+			return PREPARATION_SCENE
 		return TOWN_SCENE
 	# 仅有永久档案（例如刚战败）也能继续回镇；坏档不自动创建新局。
 	RunState.is_active = false

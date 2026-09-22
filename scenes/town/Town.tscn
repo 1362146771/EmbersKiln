@@ -419,6 +419,7 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_vertical = 3
 
+
 [node name="TownRestoration" type="Button" parent="PageMargin/PageColumn"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
@@ -426,12 +427,20 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "镇貌修复 · Lv.0"
 
+[node name="NewRunButton" type="Button" parent="PageMargin/PageColumn"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "开始新一局"
+
 [node name="DepartButton" type="Button" parent="PageMargin/PageColumn" unique_id=1289604435]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "从风箱台出发"
+text = "从风箱台出发 · 新一局"
 
 [node name="CourtyardView" type="TextureRect" parent="."]
 unique_name_in_owner = true
@@ -579,4 +588,70 @@ unique_name_in_owner = true
 autostart = true
 
 [node name="FireseedInfo" parent="." instance=ExtResource("fireseed_info")]
-[connection signal="pressed" from="PageMargin/PageColumn/HeaderField/HeaderPadding/Header/FireseedButton" to="FireseedInfo" method="open"]
+
+[node name="NewRunConfirmation" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 40
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.06, 0.88)
+
+[node name="Center" type="CenterContainer" parent="NewRunConfirmation"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Panel" type="PanelContainer" parent="NewRunConfirmation/Center"]
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("panel_detail")
+
+[node name="Margin" type="MarginContainer" parent="NewRunConfirmation/Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_bottom = 36
+
+[node name="Column" type="VBoxContainer" parent="NewRunConfirmation/Center/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="NewRunConfirmation/Center/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "结束当前冒险，开始新一局？"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="NewRunConfirmation/Center/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "当前冒险的牌组、金币和地图进度会清除。
+窑口镇建设与永久解锁保留。
+
+新一局将先领取陶婆的馈赠。"
+autowrap_mode = 2
+
+[node name="NewRunError" type="Label" parent="NewRunConfirmation/Center/Panel/Margin/Column"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "保存失败，原冒险已保留，请重试。"
+autowrap_mode = 2
+
+[node name="CancelNewRun" type="Button" parent="NewRunConfirmation/Center/Panel/Margin/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "取消，保留当前冒险"
+
+[node name="ConfirmNewRun" type="Button" parent="NewRunConfirmation/Center/Panel/Margin/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "结束旧局，领取陶婆馈赠"

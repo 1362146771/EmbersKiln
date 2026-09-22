@@ -23,8 +23,8 @@ border_width_bottom = 2
 border_color = Color(1, 1, 1, 0.75)
 corner_radius_top_left = 14
 corner_radius_top_right = 14
-corner_radius_bottom_left = 14
 corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ivfxs"]
 content_margin_left = 12.0
