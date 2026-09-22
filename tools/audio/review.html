@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>炽窑 · 音效审批</title>
+<style>
+:root{color-scheme:dark;--bg:#14171a;--panel:#1c2024;--line:#343b40;--text:#eee9e0;--muted:#a7afb2;--accent:#e9af70;--green:#91c4aa;--red:#e79586}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 "Microsoft YaHei","Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button,select{cursor:pointer}button{border:1px solid var(--line);background:#272d32;color:var(--text);border-radius:7px;padding:7px 13px}button:hover{border-color:var(--accent);background:#32383c}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}button.primary{background:var(--accent);color:#211b16;border-color:var(--accent);font-weight:700}button.ghost{background:transparent}a{color:var(--accent);text-underline-offset:3px}header{padding:28px 34px 24px;border-bottom:1px solid var(--line);background:linear-gradient(110deg,#272421,#181d21)}.eyebrow{letter-spacing:3px;font-size:11px;color:var(--accent)}h1{font-size:30px;letter-spacing:2px;margin:4px 0 9px;font-weight:650}header p{margin:0;color:var(--muted);max-width:950px}.stats{display:flex;gap:28px;margin-top:18px;flex-wrap:wrap}.stats strong{font-size:23px;color:var(--text);font-weight:600;margin-right:6px}.stats span{color:var(--muted);font-size:12px}.badge{display:inline-block;border:1px solid #67513b;border-radius:99px;color:var(--accent);font-size:11px;padding:3px 9px;letter-spacing:0;margin-left:12px;vertical-align:middle}.layout{display:grid;grid-template-columns:215px minmax(0,1fr);max-width:1700px;margin:auto}aside{padding:23px 15px 100px 22px;border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow:auto}.nav-label{color:var(--muted);font-size:11px;letter-spacing:2px;margin:0 0 12px 10px}.nav-item{width:100%;border:0;text-align:left;display:flex;justify-content:space-between;background:none;margin:2px 0;padding:9px 11px}.nav-item.active{background:#35312b;color:var(--accent)}.nav-item small{color:var(--muted)}.aside-foot{margin-top:24px;border-top:1px solid var(--line);padding:16px 8px;color:var(--muted);font-size:12px}.aside-foot button{margin-top:8px;width:100%;font-size:12px}main{padding:24px 28px 125px;min-width:0}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}input[type=search]{flex:1;min-width:180px}input[type=search],select,textarea{border:1px solid var(--line);background:#14181b;color:var(--text);border-radius:7px;padding:8px 10px}h2{font-size:20px;margin:0 0 8px;font-weight:600}.section-note{color:var(--muted);margin:0 0 20px;font-size:13px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.cue{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 17px;min-width:0}.cue.playing{border-color:var(--accent);box-shadow:inset 3px 0 var(--accent)}.cue-top{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}.cue h3{font-size:15px;margin:0 0 3px;font-weight:600}.cue-id{font:11px/1.6 Consolas,monospace;color:var(--muted);overflow-wrap:anywhere}.pill{font-size:10px;white-space:nowrap;color:var(--accent);border:1px solid #554a3c;border-radius:4px;padding:2px 6px}.usage{color:var(--muted);font-size:12px;min-height:38px;margin:10px 0 8px}.wave{height:35px;display:block;width:100%;color:#997653;margin:8px 0}.playing .wave{color:var(--accent)}.play-row{display:flex;align-items:center;gap:8px;margin-top:10px}.play-row select{max-width:103px;padding:5px 7px;font-size:12px}.meta{margin-left:auto;color:var(--muted);font-size:11px}.review-row{border-top:1px solid var(--line);margin-top:13px;padding-top:11px;display:flex;gap:6px;align-items:center}.review-row button{padding:4px 10px;font-size:12px;flex:1}.review-row button.chosen[data-status=approved]{border-color:var(--green);color:var(--green);background:#273b32}.review-row button.chosen[data-status=revise]{border-color:var(--red);color:var(--red);background:#3d2b29}.review-row button.chosen[data-status=pending]{border-color:#7b858c;color:#d1d7db}.note{width:100%;resize:vertical;min-height:39px;font-size:12px;margin-top:8px;padding:8px;background:#171b1e}.download{font-size:11px;white-space:nowrap}.summary{display:flex;gap:14px;font-size:12px;color:var(--muted);padding:10px 0}.summary .ok{color:var(--green)}.summary .change{color:var(--red)}.player{position:fixed;bottom:0;left:0;right:0;z-index:10;border-top:1px solid #5a4939;background:#202326f5;backdrop-filter:blur(14px);padding:13px 27px;display:flex;align-items:center;gap:18px;box-shadow:0 -8px 30px #0004}.now{min-width:180px;max-width:280px}.now strong{display:block;font-size:13px}.now span{font-size:11px;color:var(--muted)}audio{height:34px;flex:1;max-width:560px}.volume{display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap;color:var(--muted)}input[type=range]{width:100px;accent-color:var(--accent)}.loop.on{color:var(--accent);border-color:var(--accent)}.player-status{font-size:11px;color:var(--muted);margin-left:auto}.notice{border:1px solid #5b4b38;border-radius:8px;padding:12px 15px;background:#2c2822;font-size:12px;color:#d9c5ad;margin-bottom:20px}.demo{padding:19px;margin-bottom:13px;border:1px solid var(--line);background:var(--panel);border-radius:10px}.demo h3{margin:0 0 5px;font-size:16px}.timeline{display:flex;flex-wrap:wrap;gap:5px;margin-top:13px}.timeline span{padding:3px 7px;background:#15191c;border-radius:4px;font-size:10px;color:var(--muted)}.timeline b{color:var(--accent);font-weight:400;margin-right:5px}.coverage-row{padding:12px 14px;border:1px solid var(--line);border-radius:7px;margin-bottom:8px;background:var(--panel)}.coverage-row h3{font-size:14px;margin:0 0 5px}.coverage-row p{font-size:11px;color:var(--muted);margin:5px 0 0}.cue-link{display:inline-block;margin:3px 5px 3px 0;padding:3px 8px;font-size:11px}.coverage-row details{font-size:12px;color:var(--muted);margin-top:8px}.empty{padding:45px;color:var(--muted);text-align:center}.toast{position:fixed;right:24px;bottom:95px;max-width:420px;background:#38443d;color:#e9f1e8;padding:13px 20px;border-radius:9px;z-index:30;box-shadow:0 4px 20px #0005}.hidden{display:none!important}footer{font-size:11px;color:var(--muted);padding-top:24px}.group-break{grid-column:1/-1;padding:18px 0 0;color:var(--accent);font-size:13px;letter-spacing:1px}.coverage-summary{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px}.coverage-summary span{border:1px solid var(--line);padding:7px 11px;border-radius:6px;font-size:12px;color:var(--muted)}
+@media(min-width:1350px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:820px){header{padding:22px}h1{font-size:26px}.layout{grid-template-columns:1fr}aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px;display:flex;flex-wrap:wrap;gap:2px}.nav-label,.aside-foot{display:none}.nav-item{width:auto;gap:8px;margin:0;padding:6px 9px;font-size:12px}main{padding:20px 16px 190px}.grid{grid-template-columns:1fr}.player{flex-wrap:wrap;padding:11px 16px;gap:8px}.now{min-width:150px;flex:1}audio{order:5;flex:1 1 100%;max-width:none}.volume input{width:70px}.player-status{display:none}.stats{gap:15px}.stats strong{font-size:20px}.badge{font-size:10px}.toast{bottom:170px;left:20px;right:20px}}
+</style>
+</head>
+<body>
+<header>
+<div class="eyebrow">EMBER’S KILN / SOUND LAB</div>
+<h1>炽窑 · 音效审批<span class="badge">候选 V1 · 待审批</span></h1>
+<p>陶壳的脆、铁器的重、纸牌的轻、炉火的呼吸。逐项试听，留下你的修改意见。</p>
+<div class="stats" id="stats"></div>
+</header>
+<div class="layout">
+<aside id="nav" aria-label="音效分类"></aside>
+<main>
+<div class="toolbar">
+<input id="search" type="search" placeholder="搜索音效名称、用途或编号…" aria-label="搜索音效">
+<select id="filter" aria-label="审批状态筛选"><option value="all">全部审批状态</option><option value="pending">待审批</option><option value="approved">已通过</option><option value="revise">需修改</option></select>
+<button id="export" class="primary">导出审批 JSON</button><button id="exportMd">导出意见表</button>
+<button id="import" class="ghost">导入审批</button><input id="importFile" type="file" accept=".json,application/json" class="hidden">
+</div>
+<div class="summary" id="summary" aria-live="polite"></div>
+<h2 id="heading"></h2><p class="section-note" id="sectionNote"></p>
+<div id="content"></div>
+<footer>原创程序合成／分层拟音 · 短音单声道，环境声立体声 · 44.1 kHz / 16-bit WAV<br>本页为候选素材审批；组合试听为编排示例。正式游戏接入、手机外放听感与动作同步尚未验证。</footer>
+</main>
+</div>
+<div class="player" aria-label="试听播放器">
+<div class="now"><strong id="nowName">选择一个声音开始试听</strong><span id="nowMeta">播放前可先调低音量</span></div>
+<audio id="audio" controls preload="none"></audio>
+<button id="stop">停止</button><button id="loop" class="loop" aria-pressed="false">循环</button>
+<label class="volume">音量 <input id="volume" type="range" min="0" max="100" value="65" aria-label="试听音量"><span id="volumeValue">65%</span></label>
+<span class="player-status" id="saveStatus">意见保存在本浏览器</span>
+</div>
+<div class="toast hidden" id="toast" role="status"></div>
+<script>
+'use strict';
+const DATA=__AUDIO_DATA__;
+const $=id=>document.getElementById(id);
+const byId=new Map(DATA.cues.map(c=>[c.id,c]));
+const KEY='embers-kiln-sfx-review-v1';
+let reviews={},category='组合试听',current=null,playlist=[],playlistTimer=null,toastTimer=null;
+let storageOK=true;
+try{reviews=JSON.parse(localStorage.getItem(KEY)||'{}');if(!reviews||typeof reviews!=='object'||Array.isArray(reviews))reviews={};}catch{reviews={};storageOK=false;}
+const statusLabels={pending:'待审批',approved:'通过',revise:'需修改'};
+function decision(id){const r=reviews[id];return r&&statusLabels[r.status]?r.status:'pending';}
+function noteFor(id){return typeof reviews[id]?.note==='string'?reviews[id].note:'';}
+function esc(x){return String(x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function toast(text){$('toast').textContent=text;$('toast').classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3500);}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(reviews));$('saveStatus').textContent='意见已保存到本浏览器';storageOK=true;}catch{storageOK=false;$('saveStatus').textContent='无法本地保存，请导出审批';}summary();}
+function summary(){const ok=DATA.cues.filter(c=>decision(c.id)==='approved').length;const rev=DATA.cues.filter(c=>decision(c.id)==='revise').length;$('summary').innerHTML=`<span>待审批 ${DATA.cues.length-ok-rev}</span><span class="ok">已通过 ${ok}</span><span class="change">需修改 ${rev}</span><span>${storageOK?'意见自动保存在当前浏览器，请导出备份。':'本地保存不可用，请导出备份。'}</span>`;}
+function waveform(values){return `<svg class="wave" viewBox="0 0 400 38" preserveAspectRatio="none" aria-hidden="true">${values.map((v,i)=>`<rect x="${i*4}" y="${19-Math.max(1,v*17)}" width="2" height="${Math.max(2,v*34)}" rx="1" fill="currentColor"/>`).join('')}</svg>`;}
+function nav(){const groups=['组合试听','全部音效',...new Set(DATA.cues.map(c=>c.group)),'内容覆盖'];$('nav').innerHTML='<div class="nav-label">试听分类</div>'+groups.map(g=>`<button class="nav-item ${category===g?'active':''}" data-group="${esc(g)}">${esc(g)}<small>${g==='全部音效'?DATA.cues.length:g==='组合试听'?DATA.demos.length:g==='内容覆盖'?DATA.coverage.length:DATA.cues.filter(c=>c.group===g).length}</small></button>`).join('')+'<div class="aside-foot">先听组合，再逐项审批。<br>每项可填写需要修改的材质、轻重、时长或音调。<br><br>建议先用耳机，再用手机外放比较。<br><a href="manifest.json" download>下载完整素材清单</a><br><a href="README.md" download>下载交付说明</a></div>';$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{category=b.dataset.group;$('search').value='';nav();render();});}
+function visibleCues(){const q=$('search').value.trim().toLowerCase(),filter=$('filter').value;return DATA.cues.filter(c=>(category==='全部音效'||c.group===category)&&(filter==='all'||decision(c.id)===filter)&&`${c.id} ${c.name} ${c.use} ${c.group}`.toLowerCase().includes(q));}
+function render(){
+ $('heading').textContent=category;
+ if(category==='组合试听'){renderDemos();return;}
+ if(category==='内容覆盖'){renderCoverage();return;}
+ const cues=visibleCues();
+ $('sectionNote').innerHTML=`当前 ${cues.length} 类音效。每项审批包含全部变体；循环环境声可点底栏「循环」持续听。 <button id="playCategory">连续试听当前列表</button>`;
+ $('content').innerHTML=cues.length?'<div class="grid">'+cues.map(c=>{
+ const f=c.files[0],status=decision(c.id);
+ return `<article class="cue ${current?.id===c.id?'playing':''}" id="cue-${c.id}">
+ <div class="cue-top"><div><h3>${esc(c.name)}</h3><div class="cue-id">${esc(c.id)}</div></div><span class="pill">${c.loop?'无缝循环':esc(c.group)}</span></div>
+ <p class="usage">${esc(c.use)}</p>${waveform(f.waveform)}
+ <div class="play-row"><button class="play primary" data-id="${c.id}">▶ 试听</button>${c.files.length>1?`<select class="variant" aria-label="${esc(c.name)}变体">${c.files.map((v,i)=>`<option value="${i}">变体 ${i+1} / ${c.files.length}</option>`).join('')}</select>`:''}<span class="meta">${f.duration.toFixed(2)}s · ${f.channels===2?'立体声':'单声道'}</span><a class="download" href="${f.file}" download>WAV</a></div>
+ <div class="review-row" role="group" aria-label="${esc(c.name)}审批">${Object.entries(statusLabels).map(([s,label])=>`<button data-status="${s}" data-id="${c.id}" class="${status===s?'chosen':''}" aria-pressed="${status===s}">${label}</button>`).join('')}</div>
+ <textarea class="note" rows="1" data-id="${c.id}" aria-label="${esc(c.name)}修改意见" placeholder="修改意见：更厚重／短一点／少些碎片声…">${esc(noteFor(c.id))}</textarea></article>`;
+ }).join('')+'</div>':'<div class="empty">没有匹配音效。试试其他关键词或审批状态。</div>';
+ $('playCategory').onclick=()=>startPlaylist(cues.map(c=>({id:c.id,variant:0})));
+ $('content').querySelectorAll('.play').forEach(b=>b.onclick=()=>{stopQueue();const v=Number(b.closest('.cue').querySelector('.variant')?.value||0);play(b.dataset.id,v);});
+ $('content').querySelectorAll('.variant').forEach(select=>select.onchange=()=>{const card=select.closest('.cue'),c=byId.get(card.id.slice(4)),f=c.files[Number(select.value)];card.querySelector('.download').href=f.file;card.querySelector('.wave').outerHTML=waveform(f.waveform);});
+ $('content').querySelectorAll('[data-status]').forEach(b=>b.onclick=()=>{const id=b.dataset.id;reviews[id]={status:b.dataset.status,note:noteFor(id)};save();if($('filter').value!=='all'){render();return;}b.parentElement.querySelectorAll('button').forEach(x=>{x.classList.toggle('chosen',x===b);x.setAttribute('aria-pressed',String(x===b));});});
+ $('content').querySelectorAll('.note').forEach(input=>input.oninput=()=>{const id=input.dataset.id;reviews[id]={status:decision(id),note:input.value};save();});
+}
+function renderDemos(){
+ $('sectionNote').textContent='先听声音放在一起的效果。以下是固定时间编排的试听片段，不是游戏运行录音；不包含背景音乐。';
+ $('content').innerHTML='<div class="notice">制作方式：原创程序合成与分层拟音。音效已做格式、峰值、静音和首尾检查；听感与风格等你审批。正式游戏中的同步、混音与手机外放还需要接入后验证。</div>'+DATA.demos.map(d=>`<article class="demo"><div class="cue-top"><div><h3>${esc(d.name)}</h3><div class="cue-id">${d.duration.toFixed(0)} 秒 · ${d.events.length} 个动作</div></div><button class="primary demo-play" data-id="${d.id}">▶ 试听片段</button></div>${waveform(d.waveform)}<div class="timeline">${d.events.map(e=>`<span><b>${e.time.toFixed(2)}s</b>${esc(e.name)}</span>`).join('')}</div></article>`).join('');
+ $('content').querySelectorAll('.demo-play').forEach(b=>b.onclick=()=>{stopQueue();play(b.dataset.id);});
+}
+function renderCoverage(){
+ $('sectionNote').textContent='来自当前项目数据的逐项覆盖。复用同类材质，保留专属首领动作。这里列的是可能用到的音效，不表示会同时播放。';
+ const q=$('search').value.trim().toLowerCase();
+ const rows=DATA.coverage.filter(r=>`${r.group} ${r.id} ${r.name}`.toLowerCase().includes(q));
+ $('content').innerHTML='<div class="coverage-summary">'+Object.entries(DATA.coverage_counts).map(([k,v])=>`<span>${k} ${v}</span>`).join('')+'</div>'+rows.map(r=>`<article class="coverage-row"><h3>${esc(r.name)} <span class="cue-id">${esc(r.group)} / ${esc(r.id)}</span></h3><div>${r.cues.map(id=>`<button class="cue-link" data-id="${id}">${esc(byId.get(id).name)}</button>`).join('')}</div><p>${esc(r.note)}</p>${r.moves?`<details><summary>动作映射 · ${Object.keys(r.moves).length} 项</summary>${Object.entries(r.moves).map(([m,ids])=>`<p>${esc(m)} → ${ids.map(id=>esc(byId.get(id).name)).join(' / ')}</p>`).join('')}</details>`:''}</article>`).join('');
+ $('content').querySelectorAll('.cue-link').forEach(b=>b.onclick=()=>{stopQueue();play(b.dataset.id);});
+}
+function stopQueue(){playlist=[];clearTimeout(playlistTimer);playlistTimer=null;}
+function startPlaylist(items){stopQueue();$('audio').loop=false;updateLoop();playlist=items.slice();nextInQueue();}
+function nextInQueue(){if(!playlist.length)return;const n=playlist.shift();play(n.id,n.variant,true);}
+async function play(id,variant=0,queued=false){
+ const c=byId.get(id)||DATA.demos.find(d=>d.id===id);if(!c)return;
+ const f=c.files.length?c.files[variant]:c;
+ current={id,variant};const a=$('audio');a.pause();a.loop=false;updateLoop();a.src=f.file;
+ $('nowName').textContent=c.name;$('nowMeta').textContent=`${f.duration.toFixed(2)} 秒${c.files.length>1?' · 变体 '+(variant+1):''}${queued?' · 连续试听':''}`;
+ document.querySelectorAll('.cue').forEach(el=>el.classList.toggle('playing',el.id==='cue-'+id));
+ try{await a.play();}catch(err){stopQueue();toast('播放未开始：'+err.message+'。可点击底栏播放按钮重试。');}
+}
+function updateLoop(){$('loop').classList.toggle('on',$('audio').loop);$('loop').setAttribute('aria-pressed',String($('audio').loop));}
+$('audio').onended=()=>{if(playlist.length)playlistTimer=setTimeout(nextInQueue,300);};
+$('audio').onerror=()=>{stopQueue();toast('音频文件无法加载。请保留 index.html 与 wav、demos 文件夹的相对位置。');};
+$('stop').onclick=()=>{stopQueue();$('audio').pause();$('audio').currentTime=0;};
+$('loop').onclick=()=>{stopQueue();$('audio').loop=!$('audio').loop;updateLoop();};
+function setVolume(v){$('audio').volume=v/100;$('volumeValue').textContent=v+'%';}
+$('volume').oninput=()=>setVolume(Number($('volume').value));setVolume(65);
+$('search').oninput=()=>{if(category==='组合试听'&&$('search').value){category='全部音效';nav();}render();};
+$('filter').onchange=()=>{if(['组合试听','内容覆盖'].includes(category)){category='全部音效';nav();}render();};
+function exportData(){return {version:DATA.version,exported_at:new Date().toISOString(),total:DATA.cues.length,items:DATA.cues.map(c=>({id:c.id,name:c.name,group:c.group,status:decision(c.id),note:noteFor(c.id),files:c.files.map(f=>({file:f.file,sha256:f.sha256}))}))};}
+function download(name,text,type){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('审批文件已交给浏览器下载。');}
+$('export').onclick=()=>download('炽窑_音效审批_v1.json',JSON.stringify(exportData(),null,2),'application/json;charset=utf-8');
+$('exportMd').onclick=()=>{const d=exportData();const rows=d.items.map(i=>`| ${i.id} | ${i.name} | ${statusLabels[i.status]} | ${i.note.replace(/\|/g,'／').replace(/\n/g,' / ')} |`);download('炽窑_音效审批_v1.md','# 炽窑音效审批 v1\n\n导出时间：'+d.exported_at+'\n\n| 编号 | 音效 | 审批 | 意见 |\n|---|---|---|---|\n'+rows.join('\n')+'\n','text/markdown;charset=utf-8');};
+$('import').onclick=()=>$('importFile').click();
+$('importFile').onchange=async()=>{const file=$('importFile').files[0];if(!file)return;try{const d=JSON.parse(await file.text());if(d.version!==DATA.version||!Array.isArray(d.items))throw Error('审批版本或格式不匹配');const next={...reviews};let count=0;for(const i of d.items){if(byId.has(i.id)&&statusLabels[i.status]){next[i.id]={status:i.status,note:typeof i.note==='string'?i.note:''};count++;}}reviews=next;save();render();toast('已导入 '+count+' 项审批意见。');}catch(err){toast('导入失败：'+err.message);}finally{$('importFile').value='';}};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('stop').click();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){stopQueue();$('audio').pause();}});
+$('stats').innerHTML=`<span><strong>${DATA.cues.length}</strong>类音效</span><span><strong>${DATA.technical_checks.files}</strong>个 WAV 文件</span><span><strong>${DATA.cues.filter(c=>c.loop).length}</strong>组循环环境</span><span><strong>${DATA.demos.length}</strong>段组合试听</span>`;
+nav();summary();render();
+</script>
+</body>
+</html>

@@ -1,0 +1,2043 @@
+{
+  "version": 2,
+  "voices": 12,
+  "default_volumes": {
+    "Master": 0.85,
+    "SFX": 1.0,
+    "Ambience": 0.55,
+    "Music": 0.5
+  },
+  "ambience_fade_seconds": 0.65,
+  "cues": {
+    "ui_click": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UIClick_1_v2.wav",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UIClick_2_v2.wav"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "ui_confirm": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_CardSelect_v2.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "ui_cancel": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ShopRugClose_v1.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "ui_open": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ViewDeck_v2.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "ui_close": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ShopRugClose_v1.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "ui_page": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_3_v1.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "ui_deny": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_CardReject_v1.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "ui_toggle": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UIClick_1_v2.wav",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UIClick_2_v2.wav"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "map_select": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_MapSelect_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_MapSelect_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_MapSelect_3_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_MapSelect_4_v1.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "pause_open": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ViewDeck_v2.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "pause_close": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_CardSelect_v2.ogg"
+      ],
+      "bus": "UI",
+      "loop": false,
+      "cooldown": 0.08,
+      "gain_db": -6.0,
+      "priority": 1
+    },
+    "card_pickup": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_CardSelect_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_draw": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_CardDeal8_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_attack": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_FastAtk_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_skill": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_power": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Power_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_discard": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_shuffle": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_CardDeal8_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_exhaust": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ExhaustCard.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_return": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_CardSelect_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_acquire": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ObtainCard_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_upgrade": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UpgradeCard_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_remove": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ExhaustCard.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_copy": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ObtainCard_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_recover": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ObtainCard_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "card_status": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_BurnCard_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "axe_swing": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_EnemyAtk_Axe_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "axe_heavy": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_HeavyAtk_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "hit_ceramic": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_IronClad_Atk_RR1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_IronClad_Atk_RR2_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_IronClad_Atk_RR3_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "hit_clay": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_FastBlunt_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "hit_metal": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_EnemyAtk_Sword_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "hit_stone": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_HeavyBlunt_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "hit_ash": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_PowerWoosh_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "player_hit": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Blood_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Blood_2_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "block_gain": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_GainDefense_RR1_v3.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_GainDefense_RR2_v3.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_GainDefense_RR3_v3.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "block_hit": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BlockAtk_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "block_break": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_DefenseBreak_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "heal": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_HealShort_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_HealShort_2_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_HealShort_3_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "energy_gain": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "turn_start": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_PlayerTurn_v4_1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_PlayerTurn_v4_2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_PlayerTurn_v4_3.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "turn_end": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_EndTurn_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "heat_gain": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_FireIgnite_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_FireIgnite_2_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "heat_burst": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossOrbIgnite2_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "player_death": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_DeathStinger_v4_SFX.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 3
+    },
+    "enemy_death": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_JawWormDefeat_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "combat_start": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_BattleStart_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/STS_SFX_BattleStart_2_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "self_damage": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Blood_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Blood_2_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "thorns": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_FlameBarrier_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_heat": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Strength_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_temper": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Dexterity_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_crazed": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Debuff_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Debuff_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Debuff_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_damp": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Debuff_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Debuff_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Debuff_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_ashrot": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_PoisonApply_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_anneal": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_HealShort_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_HealShort_2_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_HealShort_3_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_stoke": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Strength_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_glaze": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Metallicize_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_thirst": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_VampireBite_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "status_cleanse": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Nullify_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "burn_tick": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_BurnCard_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "buffer_trigger": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BlockAtk_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_tackle": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_ChampSlap_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_stab": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_EnemyAtk_Dagger_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_claw": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_ByrdAtk1_v2.ogg",
+        "res://art/audio/sts/audio/sound/STS_SFX_ByrdAtk2_v2.ogg",
+        "res://art/audio/sts/audio/sound/STS_SFX_ByrdAtk3_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_bite": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_VampireBite_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_wing": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Flight_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_fire": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_slam": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Bludgeon_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_hex": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_CollectorDebuff_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_charge": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_ChampChargeUp_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_buff": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Buff_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_summon": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_CollectorSummon_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_steal": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Gold_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_detonate": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossOrbIgnite1_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_interrupt": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_DefenseBreak_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enemy_sweep": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_EnemyAtk_Scythe_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "matron_bar": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Bludgeon_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "matron_seal": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossBallTransform_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "matron_fire": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "matron_vent": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_BGTorchExtinguish_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "matron_cool": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_PiercingWail_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "heart_claw": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_ByrdAtk1_v2.ogg",
+        "res://art/audio/sts/audio/sound/STS_SFX_ByrdAtk2_v2.ogg",
+        "res://art/audio/sts/audio/sound/STS_SFX_ByrdAtk3_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "heart_ward": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_DonuDecaDefense_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "heart_scald": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "heart_stoke": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_ChampChargeUp_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "heart_burst": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossOrbIgnite2_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "boss_awaken": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_ChampChargeUp_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "chi_slash": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_AwakenedOne3Atk_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "chi_soul": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_MagicFast_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_MagicFast_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_MagicFast_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "chi_echo": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossOrbIgnite2_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "chi_pounce": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_AwakenedOnePounce_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "chi_sludge": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_SlimedAtk_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "chi_reactive": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_CollectorDebuff_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "ashen_seal": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Shackled_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "ashen_burst": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_BossGhostFireAtk_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "ashen_press": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Bludgeon_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "ashen_vent": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_PiercingWail_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "ashen_backlash": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Constrict_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "boss_death": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Guardian3Destroy_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 3
+    },
+    "enchant_cleave": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Bludgeon_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enchant_flame": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_GhostGuardianFlames_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enchant_reap": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Reaper_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enchant_rush": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Whirlwind_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enchant_seal": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_DonuDecaDefense_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "enchant_power": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_Power_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "gold_gain": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Gold_RR1_v3.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Gold_RR2_v3.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Gold_RR3_v3.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Gold_RR4_v3.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Gold_RR5_v3.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "gold_spend": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Gold_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "fireseed_gain": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_BonfireSpirits_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "relic_gain": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_DropRelic_Magical.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "relic_trigger": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_RelicActivation_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "potion_gain": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_DropPotion_1_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_DropPotion_2_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "potion_use": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Potion_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Potion_2_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Potion_3_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "potion_splash": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Potion_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Potion_2_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Potion_3_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "shard_gain": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_DropRelic_Clink.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "chest_open": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ChestOpen_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "reward_open": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ObtainCard_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "victory": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_Victory_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 3
+    },
+    "defeat": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_DeathStinger_v4_SFX.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 3
+    },
+    "act_clear": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_BossVictoryStinger_1_v3_SFX.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "run_win": {
+      "files": [
+        "res://art/audio/sts/audio/music/STS_EndingStinger_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 3
+    },
+    "revive": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_DarklingRegrow_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "hidden_open": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_DungeonGate.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "transition_boss": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_BattleStart_Boss_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "transition_chapter": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_DungeonGate.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "ad_reward": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_NewUnlock_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "town_building": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UIClick_1_v2.wav",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UIClick_2_v2.wav"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "town_build_start": {
+      "files": [
+        "res://art/audio/sts/audio/sound/sts_sfx_shovel_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "town_build_ready": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_NewUnlock_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "town_upgrade": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_OminousForge_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "town_research": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_AncientWriting_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "town_enchant": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_ShiningLight_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "town_reroll": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_OminousForge_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "loadout_select": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_CardSelect_v2.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "granny_dialogue": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_SleepBlanket_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "granny_blessing": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_BonfireSpirits_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "rest_settle": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SleepJingle_1a_NewMix_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "event_enter": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_1_v2.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_2_v1.ogg",
+        "res://art/audio/sts/audio/sound/SOTE_SFX_UI_Parchment_3_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "shop_refresh": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_ShopRugOpen_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "altar_enchant": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_ShiningLight_v1.ogg"
+      ],
+      "bus": "SFX",
+      "loop": false,
+      "cooldown": 0.045,
+      "gain_db": -6.0,
+      "priority": 2
+    },
+    "amb_menu": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_WindAmb_v1.ogg"
+      ],
+      "bus": "Ambience",
+      "loop": true,
+      "cooldown": 0.045,
+      "gain_db": -14.0,
+      "priority": 2
+    },
+    "amb_town": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_CityAmb_v1.ogg"
+      ],
+      "bus": "Ambience",
+      "loop": true,
+      "cooldown": 0.045,
+      "gain_db": -14.0,
+      "priority": 2
+    },
+    "amb_act1": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_Level1_Ambience_v6.ogg"
+      ],
+      "bus": "Ambience",
+      "loop": true,
+      "cooldown": 0.045,
+      "gain_db": -14.0,
+      "priority": 2
+    },
+    "amb_act2": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_CityAmb_v1.ogg"
+      ],
+      "bus": "Ambience",
+      "loop": true,
+      "cooldown": 0.045,
+      "gain_db": -14.0,
+      "priority": 2
+    },
+    "amb_act3": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_BeyondAmb_v1.ogg"
+      ],
+      "bus": "Ambience",
+      "loop": true,
+      "cooldown": 0.045,
+      "gain_db": -14.0,
+      "priority": 2
+    },
+    "amb_hidden": {
+      "files": [
+        "res://art/audio/sts/audio/sound/STS_SFX_LowRumble_Long_v4.ogg"
+      ],
+      "bus": "Ambience",
+      "loop": true,
+      "cooldown": 0.045,
+      "gain_db": -14.0,
+      "priority": 2
+    },
+    "amb_rest": {
+      "files": [
+        "res://art/audio/sts/audio/sound/SOTE_SFX_RestFireDry_v2.ogg"
+      ],
+      "bus": "Ambience",
+      "loop": true,
+      "cooldown": 0.045,
+      "gain_db": -14.0,
+      "priority": 2
+    },
+    "music_menu": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_MenuTheme_NewMix_v1.ogg"
+      ]
+    },
+    "music_town": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Merchant_NewMix_v1.ogg"
+      ]
+    },
+    "music_act1": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Level1_NewMix_v1.ogg"
+      ]
+    },
+    "music_act2": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Level2_NewMix_v1.ogg"
+      ]
+    },
+    "music_act3": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Level3_v2.ogg"
+      ]
+    },
+    "music_hidden": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Act4_BGM_v2.ogg"
+      ]
+    },
+    "music_boss1": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Boss1_NewMix_v1.ogg"
+      ]
+    },
+    "music_boss2": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Boss2_NewMix_v1.ogg"
+      ]
+    },
+    "music_boss3": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Boss3_NewMix_v1.ogg"
+      ]
+    },
+    "music_boss4": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Boss4_v6.ogg"
+      ]
+    },
+    "music_elite": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_EliteBoss_NewMix_v1.ogg"
+      ]
+    },
+    "music_rest": {
+      "bus": "Music",
+      "loop": true,
+      "cooldown": 0,
+      "priority": 0,
+      "gain_db": -8.0,
+      "files": [
+        "res://art/audio/sts/audio/music/STS_Shrine_NewMix_v1.ogg"
+      ]
+    }
+  },
+  "enemies": {
+    "claylump": {
+      "hit": "hit_clay",
+      "moves": {
+        "tackle": "enemy_tackle",
+        "mighty_charge": "enemy_charge",
+        "heavy_slam": "enemy_tackle",
+        "harden": "block_gain"
+      }
+    },
+    "sootling": {
+      "hit": "hit_ash",
+      "moves": {
+        "stab": "enemy_stab",
+        "sear_charge": "enemy_charge",
+        "searing_jab": "enemy_stab",
+        "curse": "enemy_hex"
+      }
+    },
+    "embermoth": {
+      "hit": "hit_ash",
+      "moves": {
+        "bite": "enemy_wing",
+        "ember_heavy": "enemy_wing",
+        "screech": "enemy_hex"
+      }
+    },
+    "potsherd": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "slash": "enemy_claw",
+        "crush": "enemy_claw",
+        "guard": "block_gain"
+      }
+    },
+    "glazetick": {
+      "hit": "hit_clay",
+      "moves": {
+        "sting": "enemy_stab",
+        "venom_charge": "enemy_charge",
+        "venom_bite": "enemy_stab",
+        "venom": "enemy_hex"
+      }
+    },
+    "kilnstatue": {
+      "hit": "hit_stone",
+      "moves": {
+        "slam": "enemy_slam",
+        "stone": "block_gain",
+        "gather_power": "enemy_charge",
+        "pillar_slam": "enemy_slam"
+      }
+    },
+    "ashcantor": {
+      "hit": "hit_ash",
+      "moves": {
+        "ritual": "enemy_buff",
+        "hex": "enemy_hex",
+        "drain": "enemy_hex",
+        "chant": "enemy_charge",
+        "grand_hex": "enemy_hex"
+      }
+    },
+    "robber": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "mug": "enemy_stab"
+      }
+    },
+    "kilnward": {
+      "hit": "hit_metal",
+      "moves": {
+        "cleave": "enemy_sweep",
+        "roar": "enemy_buff",
+        "shield": "block_gain"
+      }
+    },
+    "glazemaw": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "triple": "enemy_bite",
+        "maul": "enemy_bite"
+      }
+    },
+    "slagbeast": {
+      "hit": "hit_stone",
+      "moves": {
+        "scald": "enemy_fire",
+        "brand": "enemy_hex",
+        "guard": "block_gain"
+      }
+    },
+    "kilnwarden": {
+      "hit": "hit_metal",
+      "moves": {
+        "bash": "enemy_slam",
+        "kindle": "enemy_charge",
+        "molten_slam": "enemy_fire",
+        "ward": "block_gain"
+      }
+    },
+    "cindermoth": {
+      "hit": "hit_ash",
+      "moves": {
+        "wingbeat": "enemy_wing",
+        "cinder_charge": "enemy_charge",
+        "flare": "enemy_fire",
+        "ash_cloud": "enemy_hex"
+      }
+    },
+    "meltgolem": {
+      "hit": "hit_stone",
+      "moves": {
+        "pound": "enemy_slam",
+        "kindle": "enemy_charge",
+        "eruption": "enemy_fire",
+        "quench": "block_gain"
+      }
+    },
+    "kiln_captain": {
+      "hit": "hit_metal",
+      "moves": {
+        "sweep": "enemy_sweep",
+        "rally": "enemy_buff",
+        "bulwark": "block_gain"
+      }
+    },
+    "cinderfiend": {
+      "hit": "hit_ash",
+      "moves": {
+        "rip": "enemy_claw",
+        "immolate_charge": "enemy_charge",
+        "immolate": "enemy_fire",
+        "cackle": "enemy_hex"
+      }
+    },
+    "magmawhelp": {
+      "hit": "hit_clay",
+      "moves": {
+        "chomp": "enemy_bite",
+        "lava_charge": "enemy_charge",
+        "lava_glob": "enemy_fire",
+        "smother": "enemy_hex"
+      }
+    },
+    "coalseer": {
+      "hit": "hit_ash",
+      "moves": {
+        "bolt": "enemy_hex",
+        "smog": "enemy_hex",
+        "prophecy": "enemy_charge",
+        "doom_blast": "enemy_fire"
+      }
+    },
+    "ember_eater": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "devour": "enemy_bite",
+        "sear": "enemy_hex",
+        "shell": "block_gain"
+      }
+    },
+    "kilnheart_ember": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "claw": "heart_claw",
+        "ward": "heart_ward",
+        "scald_opening": "heart_scald",
+        "stoke": "heart_stoke",
+        "execute_enraged": "heart_claw",
+        "ward_enraged": "heart_ward",
+        "scald_enraged": "heart_scald",
+        "stoke_enraged": "heart_stoke",
+        "burst_enraged": "heart_burst",
+        "phase_entry_1": "boss_awaken",
+        "execute_last": "heart_claw",
+        "ward_last": "heart_ward",
+        "scald_last": "heart_scald",
+        "stoke_last": "heart_stoke",
+        "burst_last": "heart_burst",
+        "phase_entry_2": "boss_awaken"
+      }
+    },
+    "sagger_matron": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "bar": "matron_bar",
+        "seal": "matron_seal",
+        "fire": "matron_fire",
+        "vent": "matron_vent",
+        "cool": "matron_cool"
+      }
+    },
+    "chi_the_first": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "slash_a": "chi_slash",
+        "soul": "chi_soul",
+        "slash_b": "chi_slash",
+        "echo_awakened": "chi_echo",
+        "pounce_awakened": "chi_pounce",
+        "sludge_awakened": "chi_sludge",
+        "phase_entry_1": "boss_awaken",
+        "echo_last": "chi_echo",
+        "pounce_last": "chi_pounce",
+        "sludge_last": "chi_sludge",
+        "phase_entry_2": "boss_awaken"
+      }
+    },
+    "escort_commander": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "rally": "enemy_buff",
+        "flurry": "enemy_sweep",
+        "deploy": "enemy_sweep"
+      }
+    },
+    "escort_assault": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "hit": "enemy_sweep"
+      }
+    },
+    "escort_vanguard": {
+      "hit": "hit_metal",
+      "moves": {
+        "hit": "enemy_sweep",
+        "flurry": "enemy_sweep",
+        "heavy": "enemy_sweep"
+      }
+    },
+    "escort_guard": {
+      "hit": "hit_metal",
+      "moves": {
+        "hit": "enemy_sweep"
+      }
+    },
+    "escort_disruptor": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "weaken": "enemy_hex",
+        "poke": "enemy_sweep"
+      }
+    },
+    "escort_deployer": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "hit": "enemy_sweep",
+        "flurry": "enemy_sweep",
+        "deploy": "enemy_sweep"
+      }
+    },
+    "escort_bomb": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "poke": "enemy_sweep",
+        "detonate": "enemy_detonate"
+      }
+    },
+    "escort_overseer": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "hit": "enemy_sweep",
+        "flurry": "enemy_sweep"
+      }
+    },
+    "escort_skill_observer": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "hit": "enemy_sweep"
+      }
+    },
+    "escort_power_observer": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "hit": "enemy_sweep"
+      }
+    },
+    "coalseer_act3": {
+      "hit": "hit_ash",
+      "moves": {
+        "strike": "enemy_hex",
+        "smog": "enemy_hex",
+        "doom": "enemy_fire"
+      }
+    },
+    "kilnstatue_act3": {
+      "hit": "hit_stone",
+      "moves": {
+        "strike": "enemy_slam",
+        "fortify": "block_gain",
+        "slam": "enemy_slam"
+      }
+    },
+    "cinderfiend_act3": {
+      "hit": "hit_ash",
+      "moves": {
+        "rip": "enemy_claw",
+        "immolate_charge": "enemy_charge",
+        "immolate": "enemy_fire",
+        "cackle": "enemy_hex"
+      }
+    },
+    "magmawhelp_act3": {
+      "hit": "hit_clay",
+      "moves": {
+        "chomp": "enemy_bite",
+        "lava_charge": "enemy_charge",
+        "lava_glob": "enemy_fire",
+        "smother": "enemy_hex"
+      }
+    },
+    "glazetick_act3": {
+      "hit": "hit_clay",
+      "moves": {
+        "sting": "enemy_stab",
+        "venom_charge": "enemy_charge",
+        "venom_bite": "enemy_stab",
+        "venom": "enemy_hex"
+      }
+    },
+    "ashen_binder": {
+      "hit": "hit_ceramic",
+      "moves": {
+        "seal": "ashen_seal",
+        "ash_burst": "ashen_burst",
+        "press": "ashen_press",
+        "vent": "ashen_vent"
+      }
+    }
+  },
+  "enchant_profiles": {
+    "kiln_cleave": "enchant_cleave",
+    "furnace_wave": "enchant_flame",
+    "harvest_arc": "enchant_reap",
+    "carnage": "enchant_cleave",
+    "uppercut": "enchant_cleave",
+    "searing_blow": "enchant_flame",
+    "fiend_fire": "enchant_flame",
+    "sever_soul": "enchant_reap",
+    "blood_for_blood": "enchant_cleave"
+  },
+  "scene_ambience": {
+    "MainMenu.tscn": "amb_menu",
+    "Town.tscn": "amb_town",
+    "PreRunPreparation.tscn": "amb_town",
+    "PreRunAdPreparation.tscn": "amb_town",
+    "RestUI.tscn": "amb_rest",
+    "HiddenActEntrance.tscn": "amb_hidden"
+  },
+  "scene_cues": {
+    "TreasureUI.tscn": "chest_open",
+    "EventUI.tscn": "event_enter",
+    "RewardUI.tscn": "reward_open",
+    "HiddenActEntrance.tscn": "hidden_open"
+  },
+  "act_ambience": [
+    "amb_act1",
+    "amb_act2",
+    "amb_act3",
+    "amb_hidden"
+  ],
+  "button_cues": {
+    "ResumeButton": "pause_close",
+    "CompendiumButton": "ui_open",
+    "CancelAbandonButton": "ui_cancel",
+    "ConfirmAbandonButton": "ui_confirm",
+    "BackButton": "ui_cancel",
+    "CloseButton": "ui_close",
+    "EndTurnButton": "",
+    "PlayButton": "ui_confirm",
+    "PrevButton": "ui_page",
+    "NextButton": "ui_page"
+  },
+  "source": "Slay the Spire local installation",
+  "music_fade_seconds": 1.2,
+  "scene_music": {
+    "MainMenu.tscn": "music_menu",
+    "Town.tscn": "music_town",
+    "PreRunPreparation.tscn": "music_town",
+    "PreRunAdPreparation.tscn": "music_town",
+    "ShopUI.tscn": "music_town",
+    "RestUI.tscn": "music_rest",
+    "EventUI.tscn": "music_rest",
+    "AltarUI.tscn": "music_rest",
+    "HiddenActEntrance.tscn": "music_hidden"
+  },
+  "act_music": [
+    "music_act1",
+    "music_act2",
+    "music_act3",
+    "music_hidden"
+  ],
+  "boss_music": [
+    "music_boss1",
+    "music_boss2",
+    "music_boss3",
+    "music_boss4"
+  ],
+  "elite_music": "music_elite",
+  "runtime_file_count": 216
+}

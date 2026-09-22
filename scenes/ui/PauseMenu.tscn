@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/ui/AudioSettings.tscn" id="audio_settings"]
+
 [ext_resource type="Texture2D" path="res://art/ui/main_menu/OptionSlate.tres" id="1_7ida2"]
 [ext_resource type="Texture2D" path="res://art/ui/formal/bd_main_setting.png" id="2_n5dsq"]
 
@@ -101,6 +103,9 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_o0a0r")
 process_mode = 3
 layout_mode = 2
 theme_override_constants/separation = 24
+
+[node name="AudioSettings" parent="Center/Panel/Buttons" instance=ExtResource("audio_settings")]
+layout_mode = 2
 
 [node name="ResumeButton" type="Button" parent="Center/Panel/Buttons" unique_id=103336715]
 process_mode = 3

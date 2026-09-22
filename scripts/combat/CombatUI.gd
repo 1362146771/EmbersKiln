@@ -74,6 +74,7 @@ const PANEL_BG := Color(0.22, 0.19, 0.17, 0.92)
 # 攻击/受击由 PlayerCombatPortrait 的 SpriteFrames 播放完成后恢复静态立绘。
 var _player_dead := false       # true 后立绘锁定 death，不再回 idle
 var _revive_prompt: CanvasLayer
+var _revive_prompt_pending := false
 
 # 助手类（门面 + 助手类模式，P4b）
 var _hud: CombatHUD
@@ -598,7 +599,7 @@ func _on_turn_ended(is_player: bool) -> void:
 func _on_combat_end(victory: bool) -> void:
 	if TransitionManager.is_transitioning:
 		return
-	var gate := _transition_feedback_ready if victory else Callable()
+	var gate := _transition_feedback_ready if victory else _player_death_animation_ready
 	var error := TransitionManager.change_scene_to_file("res://scenes/map/MapPlay.tscn", Callable(), VFXSystem.DEATH_DUR if victory else 0.0, &"fade", gate)
 	if error != OK:
 		return
@@ -627,10 +628,22 @@ func _transition_feedback_ready() -> bool:
 
 
 func _on_combat_death_pending() -> void:
+	if _revive_prompt_pending or is_instance_valid(_revive_prompt):
+		return
+	_revive_prompt_pending = true
 	combat_over = true
 	_close_card_browser()
 	_set_player_pose(&"death")
-	_show_revive_prompt()
+	_hand.refresh_hand()
+	if not _player_death_animation_ready():
+		await player_sprite.death_finished
+	_revive_prompt_pending = false
+	if is_inside_tree() and not is_queued_for_deletion() and RunState.combat_death_pending:
+		_show_revive_prompt()
+
+
+func _player_death_animation_ready() -> bool:
+	return not _player_dead or player_sprite == null or bool(player_sprite.get("death_complete"))
 
 
 func _show_revive_prompt() -> void:
@@ -716,6 +729,8 @@ func _on_damage(_is_player_source: bool, target_index: int, amount: int, present
 		return
 	if amount <= 0:
 		return
+	if not presented_attack:
+		SignalBus.sound_requested.emit(AudioManager.impact_cue(controller._dmg.last_feedback))
 	var target: Control = null
 	if target_index < 0:
 		target = player_panel
@@ -729,6 +744,11 @@ func _on_damage(_is_player_source: bool, target_index: int, amount: int, present
 	if not to_player and not presented_attack:
 		target.get_node("Inner/SpriteRect").play_hit(0.0, get_node("EnchantAttackFX").reduced_motion)
 	if to_player:
+		if not _player_dead:
+			var receipt: Dictionary = controller._dmg.last_feedback
+			var cue: StringName = &"block" if bool(receipt.get("blocked", false)) else &"player_hit"
+			if bool(receipt.get("broken", false)): cue = &"block_break"
+			SignalBus.haptic_requested.emit(cue)
 		VFXSystem.spawn_hit_shake(player_panel)
 		if target_index < 0:
 			_set_player_pose(&"hit")
@@ -737,6 +757,7 @@ func _on_damage(_is_player_source: bool, target_index: int, amount: int, present
 ## 死亡淡出：动画播完才释放面板（解决旧方案野指针）。index 稳定（死亡敌人保留在 enemies 数组）。
 func _on_unit_died(is_player: bool, index: int) -> void:
 	if is_player:
+		SignalBus.sound_requested.emit(&"player_death")
 		# 玩家死亡：立绘常驻 death 姿态
 		_set_player_pose(&"death")
 		return
@@ -750,6 +771,8 @@ func _on_unit_died(is_player: bool, index: int) -> void:
 	var p: Panel = unit_panels.get(e)
 	if p == null:
 		return
+	SignalBus.sound_requested.emit(&"boss_death" if e.data != null and e.data.tier == &"boss" else &"enemy_death")
+	SignalBus.haptic_requested.emit(&"boss_defeat" if e.data != null and e.data.tier == &"boss" else &"enemy_defeat")
 	VFXSystem.spawn_death(p, func(): _enemy.free_enemy(e))
 
 

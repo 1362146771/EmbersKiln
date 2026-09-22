@@ -109,6 +109,7 @@ func on_attack(paid_energy: int, _targets: Array[int]) -> void:
 		ui.player_sprite.strike_cast_attack()
 	else:
 		# Automatically played attacks have no flying card to synchronize with.
+		SignalBus.sound_requested.emit(&"axe_swing")
 		ui._set_player_pose(&"attack")
 		await get_tree().create_timer(windup, false).timeout
 	if token != _playback_token or ui._player_dead: return
@@ -122,6 +123,12 @@ func on_attack(paid_energy: int, _targets: Array[int]) -> void:
 			hit_targets.append(int(hit["target"]))
 			ui._on_damage(true, int(hit["target"]), int(hit["amount"]), true)
 		_present_hit(paid_energy, hit_targets, impact_seconds)
+		_present_haptic(paid_energy, groups[group_index])
+		var sound := AudioManager.enchant_cue(entry)
+		var receipt: Dictionary = groups[group_index][0].get("audio", {})
+		if sound == &"" or bool(receipt.get("broken", false)) or bool(receipt.get("blocked", false)):
+			sound = AudioManager.impact_cue(receipt)
+		SignalBus.sound_requested.emit(sound)
 		hit_presented.emit(hit_targets)
 		# Keep a killed portrait until its actual final hit is shown.
 		for target in hit_targets:
@@ -140,6 +147,23 @@ func on_attack(paid_energy: int, _targets: Array[int]) -> void:
 	playing_hits = false
 	_flush_deaths()
 	playback_finished.emit()
+
+
+func _present_haptic(paid_energy: int, hits: Array) -> void:
+	var has_impact := false
+	var all_blocked := true
+	var broken := false
+	for hit in hits:
+		if int(hit["amount"]) <= 0: continue
+		has_impact = true
+		var receipt: Dictionary = hit.get("audio", {})
+		all_blocked = all_blocked and bool(receipt.get("blocked", false))
+		broken = broken or bool(receipt.get("broken", false))
+	if not has_impact: return
+	var cue: StringName = &"attack_heavy" if paid_energy >= int(GameData.vfx["attack"]["heavy_cost_minimum"]) else &"attack"
+	if all_blocked: cue = &"block"
+	if broken: cue = &"block_break"
+	SignalBus.haptic_requested.emit(cue)
 
 
 func _attack_windup() -> float:
@@ -204,6 +228,8 @@ func _on_cast_started(entry: Dictionary, target_index: int, travel: float, ghost
 func _on_flight_started(entry: Dictionary, travel: float) -> void:
 	var card: CardData = GameData.get_card(StringName(entry.get("id", "")))
 	if card != null and card.type == &"attack" and not ui._player_dead and not ui.combat_over:
+		SignalBus.sound_requested.emit(&"card_attack")
+		SignalBus.sound_requested.emit(&"axe_heavy" if card.cost >= int(GameData.vfx.attack.heavy_cost_minimum) else &"axe_swing")
 		_cast_attack_prepared = true
 		ui.player_sprite.begin_cast_attack(travel)
 
@@ -275,5 +301,6 @@ func _on_combat_end(victory: bool) -> void:
 
 
 func _exit_tree() -> void:
+	HapticFeedback.clear()
 	BattleDirector.input_locked = false
 	VFXSystem.cancel_screen_shake()

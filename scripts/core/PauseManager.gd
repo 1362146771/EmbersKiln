@@ -72,6 +72,7 @@ func _open_pause() -> void:
 	if _open or TransitionManager.is_transitioning:
 		return
 	_open = true
+	SignalBus.sound_requested.emit(&"pause_open")
 	get_tree().paused = true
 	_overlay = _build_overlay()
 	TransitionManager.open_panel(_layer, _overlay, 0.12, 0.0)

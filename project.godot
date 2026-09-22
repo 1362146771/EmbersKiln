@@ -22,7 +22,11 @@ run/max_fps.android=60
 
 TestBridge="*res://test_bridge.gd"
 SignalBus="*res://scripts/core/SignalBus.gd"
+AudioManager="*res://scripts/core/AudioManager.gd"
+GraphicsSettings="*res://scripts/core/GraphicsSettings.gd"
+MobileScroll="*res://scripts/ui/MobileScroll.gd"
 GameData="*res://scripts/data/GameData.gd"
+HapticFeedback="*res://scripts/core/HapticFeedback.gd"
 ProfileState="*res://scripts/core/ProfileState.gd"
 ProfileManager="*res://scripts/core/ProfileManager.gd"
 WorkshopSystem="*res://scripts/meta/WorkshopSystem.gd"
@@ -39,6 +43,7 @@ ShopInventorySystem="*res://scripts/meta/ShopInventorySystem.gd"
 CardAcquireService="*res://scripts/meta/CardAcquireService.gd"
 PreRunBuffSystem="*res://scripts/meta/PreRunBuffSystem.gd"
 CombatReviveSystem="*res://scripts/meta/CombatReviveSystem.gd"
+GrannyStory="*res://scripts/meta/GrannyStory.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]

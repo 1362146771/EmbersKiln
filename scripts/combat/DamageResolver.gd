@@ -5,6 +5,7 @@ extends RefCounted
 ## 本文件零 preload：所有外部类型（CombatController / CombatUnit / SignalBus / GameData 等）均为全局 class_name。
 
 var ctrl: CombatController
+var last_feedback: Dictionary = {}
 
 func attach(controller: CombatController) -> void:
 	ctrl = controller
@@ -27,8 +28,11 @@ func compute_outgoing(attacker: CombatUnit, target: CombatUnit, base: int, inclu
 func deal_to_unit(unit: CombatUnit, final_dmg: int) -> void:
 	var block_before := unit.block
 	unit.apply_damage(final_dmg)
+	last_feedback = {"player": unit.is_player, "id": unit.id, "blocked": final_dmg > 0 and block_before >= final_dmg, "broken": block_before > 0 and unit.block == 0}
 	if ctrl.enemies.has(unit):
+		var could_interrupt := unit.block_break_next != &""
 		ctrl._intent.interrupt_on_block_break(unit, block_before)
+		last_feedback["interrupted"] = could_interrupt and unit.block_break_next == &"" and unit.is_alive()
 	SignalBus.damage_dealt.emit(not unit.is_player, ctrl._index_of(unit), final_dmg)
 	if unit.is_player:
 		ctrl._sync_player_hp()
@@ -39,17 +43,21 @@ func deal_to_unit(unit: CombatUnit, final_dmg: int) -> void:
 
 func deal_to_player(final_dmg: int) -> void:
 	var dmg := maxi(0, final_dmg)
+	var block_before := ctrl.player.block
 	# 缓冲（glaze）：受到攻击时减伤等于层数，触发 1 次后 -1 层
 	if ctrl.player.has_status(&"glaze"):
 		dmg = maxi(0, dmg - ctrl.player.get_status(&"glaze"))
 		ctrl._apply_status(ctrl.player, &"glaze", -1)
+		SignalBus.sound_requested.emit(&"buffer_trigger")
 	ctrl.player.apply_damage(dmg)
+	last_feedback = {"player": true, "blocked": dmg > 0 and block_before >= dmg, "broken": block_before > 0 and ctrl.player.block == 0}
 	ctrl._sync_player_hp()
 	SignalBus.damage_dealt.emit(false, -1, dmg)
 
 ## 窑变贯穿伤害：绕过格挡直接扣血。
 func deal_kiln_resonance(unit: CombatUnit, dmg: int) -> void:
 	unit.lose_hp_direct(dmg)
+	last_feedback = {"player": unit.is_player, "id": unit.id}
 	SignalBus.enemy_hp_changed.emit(ctrl._index_of(unit), unit.hp, unit.max_hp)
 	SignalBus.damage_dealt.emit(true, ctrl._index_of(unit), dmg)
 	if not unit.is_alive():
@@ -60,6 +68,7 @@ func add_block(unit: CombatUnit, amount: int) -> void:
 	real += unit.get_status(&"temper")
 	var before := unit.block
 	unit.add_block(real)
+	if unit.block > before: SignalBus.sound_requested.emit(&"block_gain")
 	if unit.is_player:
 		SignalBus.player_block_changed.emit(ctrl.player.block)
 	if unit.is_player and unit.block > before:
@@ -84,6 +93,8 @@ func enemy_aoe_hit(e: CombatUnit, dmg: int, mv: Dictionary) -> void:
 ## 窑温·共鸣：累计满阈值时立即触发「窑变」——对所有敌人造成贯穿伤害并消耗阈值点窑温。
 func check_kiln_resonance() -> void:
 	while ctrl.kiln_heat >= ctrl._kiln_threshold():
+		SignalBus.sound_requested.emit(&"heat_burst")
+		SignalBus.haptic_requested.emit(&"kiln_burst")
 		ctrl.kiln_heat -= ctrl._kiln_threshold()
 		SignalBus.kiln_heat_changed.emit(ctrl.kiln_heat, ctrl._kiln_threshold())
 		for e in ctrl.enemies:

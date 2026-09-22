@@ -1,0 +1,718 @@
+{
+  "source": "Slay the Spire local installation",
+  "archive": "D:\\SteamLibrary\\steamapps\\common\\SlayTheSpire\\desktop-1.0.jar",
+  "archive_sha256": "cfad868ac8d65a88e71a0bf096fb09f78811e553effe0787c5309a655e081673",
+  "transformation": "Original archive bytes; no re-encoding",
+  "files": [
+    {
+      "file": "audio/sound/SOTE_SFX_UIClick_1_v2.wav",
+      "bytes": 13138,
+      "sha256": "0b556698f7f3ee4c0d5c9e27ccbede4dcd87d41ab8f2e752a8fb6dd75f1de64d"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_UIClick_2_v2.wav",
+      "bytes": 13174,
+      "sha256": "31c9bc6c9a3f6d6379fe1bdec50d3711ee32181bb84b9820261232bec1fd275c"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_CardSelect_v2.ogg",
+      "bytes": 13003,
+      "sha256": "0b31b168d22c8b7afe091a2745d4cfc9cd9550b260f712c63b157b84ace7c838"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_ShopRugClose_v1.ogg",
+      "bytes": 31956,
+      "sha256": "78381c233648daf8445dd91068b0414bc8c1d14cd83f4490ff42f7fedfb8fc74"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_ViewDeck_v2.ogg",
+      "bytes": 16168,
+      "sha256": "df61cb1c6bf8a926cb3e692cdeea4c8332ef0716628fe0e37c3f54a7896d237c"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_UI_Parchment_1_v2.ogg",
+      "bytes": 36488,
+      "sha256": "59158e3ae70dbfb8f8595d15a36d3bcbbbea6c07ba3d188797d42b755dddc4e5"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_UI_Parchment_2_v1.ogg",
+      "bytes": 17389,
+      "sha256": "558705d30180e94b9fa6d1163ec737e25cce6c50230828bbe309e2c5fa1f2eb6"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_UI_Parchment_3_v1.ogg",
+      "bytes": 30625,
+      "sha256": "a9803c86f9c18a02647acc115fa887a13c0067e81ee34336345ebedadf6c4bcc"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_CardReject_v1.ogg",
+      "bytes": 15104,
+      "sha256": "b8138bf6c727941da7374b3479dbbbdbab46a3aafcafd35431e73eb1446219f9"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_MapSelect_1_v1.ogg",
+      "bytes": 14791,
+      "sha256": "af3874cdbc73383375d173524b1c40577e36d1b6e3cbc8d9bc287cb8edbaca78"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_MapSelect_2_v1.ogg",
+      "bytes": 11987,
+      "sha256": "e7b2c93bc7c91af9433f5136554de7a6bb76d2de1d54c1d453e6ba04c7330f19"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_MapSelect_3_v1.ogg",
+      "bytes": 11702,
+      "sha256": "b0768063843ba1309c666fc4137078486368d3e1f9538f0199434444afd3a62a"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_MapSelect_4_v1.ogg",
+      "bytes": 11334,
+      "sha256": "6ce1a7abdf649e729a56dd168c5b5df4ac563bd20ac4ebaef12cd8d3fe54ba76"
+    },
+    {
+      "file": "audio/sound/STS_SFX_CardDeal8_v1.ogg",
+      "bytes": 8333,
+      "sha256": "4105386320746187a57b417806ead0d9052200c0e1c87e57d5e44b26a1e4e7c8"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_FastAtk_v2.ogg",
+      "bytes": 18281,
+      "sha256": "58fcd24654fb41d0855ea22334bc5ca0ed207d57f16d1222b2e03660a6f916a9"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Buff_1_v1.ogg",
+      "bytes": 49091,
+      "sha256": "9f7effe7a1026fd122d6049d1fc57c8b1ee0ba47d8285c7358cd9680c0dabe62"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Buff_2_v1.ogg",
+      "bytes": 50727,
+      "sha256": "2fc3be0d9a289f62efe9e159c96b62a12338f86d2cd89ee1e9dd00f07c9aaf62"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Buff_3_v1.ogg",
+      "bytes": 51706,
+      "sha256": "14128ba865a15d049c13eefeabbb1208bf8a9484f626fe65311ed1ae0021780e"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Power_v1.ogg",
+      "bytes": 39258,
+      "sha256": "98d37713948f549977ccdc48bce1586c0ebd9ee32a345233b57c8db156ccfedc"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_ExhaustCard.ogg",
+      "bytes": 84003,
+      "sha256": "f6d2e7c947f60aeff27c8291e40b1ac22b8aa7ec7efba3208f27d4c554309c7c"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_ObtainCard_v2.ogg",
+      "bytes": 11971,
+      "sha256": "85ec2d952218ce027c156340e1f7deafd91aa50c40b96f137b2e85747aba6850"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_UpgradeCard_v1.ogg",
+      "bytes": 38509,
+      "sha256": "f6355ce79269127b739f23985e7d1be52c865992297d276510872f9834133252"
+    },
+    {
+      "file": "audio/sound/STS_SFX_BurnCard_v1.ogg",
+      "bytes": 24018,
+      "sha256": "6bed0c5a8926e58fa5bf0189932b43c46bc9dce2e984d3812e90f30af10faa8d"
+    },
+    {
+      "file": "audio/sound/STS_SFX_EnemyAtk_Axe_v1.ogg",
+      "bytes": 15819,
+      "sha256": "9f30341998108448cbe7ca96c0967216e65bcd9bfe902132083d5bc3147f1153"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_HeavyAtk_v2.ogg",
+      "bytes": 29446,
+      "sha256": "ad739aa33b35f4eb44363638bc39dd90cc5dad6e2cd9d09e5a478eb0061c8bed"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_IronClad_Atk_RR1_v2.ogg",
+      "bytes": 27815,
+      "sha256": "c136e346ebdeda11b95ca433dfdbed0e2141e1f7e94b4dcfe9ecbd11c8f9a4c2"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_IronClad_Atk_RR2_v2.ogg",
+      "bytes": 26953,
+      "sha256": "eda9ab7cfbdcb1473aa3af8228751736e1a333bc7130a28619826a30949c60b7"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_IronClad_Atk_RR3_v2.ogg",
+      "bytes": 22619,
+      "sha256": "f125e7a3a8a5848fb620dbdf52b969908313ffc9d3fecdbbcf6e5d69efe26452"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_FastBlunt_v2.ogg",
+      "bytes": 18066,
+      "sha256": "b1c246ec744b676d4b2437304440c3f047252089d7e644b47c317c81eb4eaf6d"
+    },
+    {
+      "file": "audio/sound/STS_SFX_EnemyAtk_Sword_v1.ogg",
+      "bytes": 12713,
+      "sha256": "bc5cf9ad2239b314298d5dc20fe6b4240b6d276eba0f086d762245767bfa22e8"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_HeavyBlunt_v2.ogg",
+      "bytes": 24031,
+      "sha256": "7aee6c47988a2e8981b3f082a389354514aff71bbae541a072c88e9d539376a8"
+    },
+    {
+      "file": "audio/sound/STS_SFX_PowerWoosh_v1.ogg",
+      "bytes": 18622,
+      "sha256": "a8aab1fe8d5c677b04caf0224a500b9537b1c8377e3e9840af45490bcb57a638"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Blood_1_v2.ogg",
+      "bytes": 59810,
+      "sha256": "3cf34e1c621386d6f6db0ffe859b94999119b9ef53ef152d11646ba149675f3e"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Blood_2_v2.ogg",
+      "bytes": 53078,
+      "sha256": "7a8ff6852e8e3042fd6712cf6ce29187169aafb6e902654645fefc1e297f3c48"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_GainDefense_RR1_v3.ogg",
+      "bytes": 27925,
+      "sha256": "a7eefd363f9c9b5bed59c541e81e23648fbf113e78d6d26f2c32405a5d2c220d"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_GainDefense_RR2_v3.ogg",
+      "bytes": 27682,
+      "sha256": "99e6c0ef3a90031a59f2ae809355888d2104b63107b3e57db321642f8db67ab6"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_GainDefense_RR3_v3.ogg",
+      "bytes": 25209,
+      "sha256": "101a8adc95e34e5f6ca9a5c5f35bf2d3422a5768c571075f33bbee1240cfe581"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_BlockAtk_v2.ogg",
+      "bytes": 31726,
+      "sha256": "9077b5ef3b207c9b9907c7802782130911f47edc822512f27cb139af2f4599ea"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_DefenseBreak_v2.ogg",
+      "bytes": 31895,
+      "sha256": "07eaa20231b5efcfb51f06e230763022dd6a17ae3a3a77b28d79e907776850d7"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_HealShort_1_v2.ogg",
+      "bytes": 55855,
+      "sha256": "4b4693f721f94dee6e9c2b1f6890421e79f8432540ae072e52879dd54943862d"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_HealShort_2_v2.ogg",
+      "bytes": 45588,
+      "sha256": "fb7f6b96929140ee01acc5efd03dc318e53c8265520802ded3b7f59afe1a776b"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_HealShort_3_v2.ogg",
+      "bytes": 54390,
+      "sha256": "9015efb8aebbf0ce209ca4c6a130810e072d4dcf1657eb60b9e0f67b89acf04e"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_PlayerTurn_v4_1.ogg",
+      "bytes": 69529,
+      "sha256": "34d562f0f0dd8d70fa8c87e3566a4cc5e7c14ff3eed5e6c13743794549ef340a"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_PlayerTurn_v4_2.ogg",
+      "bytes": 74484,
+      "sha256": "7ba7e6b3e8fb86809bbc7ef8063cda8bc727e9d840f694ea56d9a84ded1c6552"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_PlayerTurn_v4_3.ogg",
+      "bytes": 80368,
+      "sha256": "bc354b501753e268de99801f0747a577e0d712272444359062dc18c60c380e45"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_EndTurn_v2.ogg",
+      "bytes": 20549,
+      "sha256": "05034521721d23e97535733a055398de6da149a3dc4931fddca7eab7b339b2a9"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_FireIgnite_1_v1.ogg",
+      "bytes": 39082,
+      "sha256": "dd698f3a6a3742a1fd6c6ea90fea857d07c912382c0283b97622b3ca6e8c5ece"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_FireIgnite_2_v1.ogg",
+      "bytes": 36203,
+      "sha256": "afe7d795cedbaa9b89b8335b58ea66233b6e9499fbdd8985196f50ece7b9df82"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_BossOrbIgnite2_v2.ogg",
+      "bytes": 33026,
+      "sha256": "6101e397683425ec72a4797ee13e229c7d7636ec3f2c032099e594857331556e"
+    },
+    {
+      "file": "audio/sound/STS_DeathStinger_v4_SFX.ogg",
+      "bytes": 68222,
+      "sha256": "ee2f808b75a7e74d95a62d9a11eb9749c194f442b9d19c1b2a6d30004202f240"
+    },
+    {
+      "file": "audio/sound/STS_SFX_JawWormDefeat_v2.ogg",
+      "bytes": 45970,
+      "sha256": "fceb9fdb16a2ca12c986784e600ec28c6e2a66d677001c8c4b1f77c2d0368b15"
+    },
+    {
+      "file": "audio/sound/STS_SFX_BattleStart_1_v1.ogg",
+      "bytes": 62635,
+      "sha256": "9b2b2f35661b3a45e7ae02e99a18dd08ad062eb4384b8c9c0427607a1b5aa527"
+    },
+    {
+      "file": "audio/sound/STS_SFX_BattleStart_2_v1.ogg",
+      "bytes": 63666,
+      "sha256": "bd83cce70ecc87f33491222f5c001d27e636c4c0756d4d2179318f45953ca6bc"
+    },
+    {
+      "file": "audio/sound/STS_SFX_FlameBarrier_v2.ogg",
+      "bytes": 32486,
+      "sha256": "7e6080af00c7bebffb0bf8612555ed4771fcddffb9012f4d795fc0bc17d930b6"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Strength_v1.ogg",
+      "bytes": 24218,
+      "sha256": "55c988f47e8674073596fe5b096f0cc83a0445ed8451ef0f7832a51284963305"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Dexterity_v2.ogg",
+      "bytes": 22719,
+      "sha256": "410b4fdb830cfc9827c80324ef5de1e5b48b2a99d3bed24edc9eb4f8996e2c08"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Debuff_1_v1.ogg",
+      "bytes": 51387,
+      "sha256": "20d7928784fac8d5fd21e9824ea7cf9a25f75fb292d5c99ff041964973de011a"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Debuff_2_v1.ogg",
+      "bytes": 53294,
+      "sha256": "9d5287bd774d08377554a44614809b778ef680d48466fa6b16c9fec643a5d2fb"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Debuff_3_v1.ogg",
+      "bytes": 51482,
+      "sha256": "e980d6dbb7dfc104c0faa4fc33327dbe17265661dde63703f51136413f1cb30d"
+    },
+    {
+      "file": "audio/sound/STS_SFX_PoisonApply_v1.ogg",
+      "bytes": 24079,
+      "sha256": "0466c4f94d644d735aab1712472c3b60fb18270b90a9e593db6deac765eee0d9"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Metallicize_v2.ogg",
+      "bytes": 31129,
+      "sha256": "b72fdb4f4c0eb774d2465cc90e8b4e69aacb6a8b9ce34c3b2337375feb3a2bfd"
+    },
+    {
+      "file": "audio/sound/STS_SFX_VampireBite_v2.ogg",
+      "bytes": 13724,
+      "sha256": "a878c768e952dcb51f368c2228802319d4f1d6b2afdfd79a69d03e1ad12cf465"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Nullify_v1.ogg",
+      "bytes": 39790,
+      "sha256": "88631cbaeaa818c5854a6b79624fe502d37d0bf80396acee7dbeb0bff15989a3"
+    },
+    {
+      "file": "audio/sound/STS_SFX_ChampSlap_v2.ogg",
+      "bytes": 17105,
+      "sha256": "e048da24e0112f68bc679cf2ca51bd1778ecf8159309953003f849e4f4200d14"
+    },
+    {
+      "file": "audio/sound/STS_SFX_EnemyAtk_Dagger_v1.ogg",
+      "bytes": 8634,
+      "sha256": "73ec179ef230a392d80d9d31ab7d787447e95546311eccc326cb1150e7f69b5c"
+    },
+    {
+      "file": "audio/sound/STS_SFX_ByrdAtk1_v2.ogg",
+      "bytes": 13597,
+      "sha256": "7b6d16364e424027c1ae7efe2b84e7cc2834ac7f571614fad989adae7663e689"
+    },
+    {
+      "file": "audio/sound/STS_SFX_ByrdAtk2_v2.ogg",
+      "bytes": 13557,
+      "sha256": "d04d5733486185197ed315038bcb145aa8b6b9aae1a0d654efda7ee5534d9cf7"
+    },
+    {
+      "file": "audio/sound/STS_SFX_ByrdAtk3_v2.ogg",
+      "bytes": 13686,
+      "sha256": "499345d5d098dd1bfb469a0432fec2641d950e9d84b0cceb9bd663430ee64e06"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Flight_v2.ogg",
+      "bytes": 20408,
+      "sha256": "f0b90a7d48efba8dc6385aedfb72a4c5b508cb0d6583087fd480b764eee61715"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_BossGhostFireAtk_1_v1.ogg",
+      "bytes": 31734,
+      "sha256": "4dc0894690f590792b3ca6a3e7d50d8389f1fdbf2a92207204f701396d948237"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_BossGhostFireAtk_2_v1.ogg",
+      "bytes": 32519,
+      "sha256": "34e02366f2e0109e273d9656de44a83d23f0b0622c8680df0c364612c46ae277"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_BossGhostFireAtk_3_v1.ogg",
+      "bytes": 31076,
+      "sha256": "0745603818f4ceb3bf579bebe379195bfdaf83439ad29d9e1e5dc8f496cae121"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Bludgeon_v1.ogg",
+      "bytes": 21220,
+      "sha256": "49cde12cfd0b05f78dd450e6026697d3def139e6a2905b6cb1aa7ffdbc4f16db"
+    },
+    {
+      "file": "audio/sound/STS_SFX_CollectorDebuff_v2.ogg",
+      "bytes": 43076,
+      "sha256": "b30409ed8f24d35d439a30ee86feaa158d9616aec050d5afdd74c53ebc16b513"
+    },
+    {
+      "file": "audio/sound/STS_SFX_ChampChargeUp_v2.ogg",
+      "bytes": 30922,
+      "sha256": "e17ab0e398b0c5c0fb5b3897f0433234f842b6f8b2cef6e4466946feea4d9a2b"
+    },
+    {
+      "file": "audio/sound/STS_SFX_CollectorSummon_v2.ogg",
+      "bytes": 27979,
+      "sha256": "a61cfbe49314b8e9c03d0f7ebc931ebf742bb3b5be456b624d0924b6b8a3be64"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Gold_v1.ogg",
+      "bytes": 100014,
+      "sha256": "146c4da03d0100c01ba34b2fad58ae6150def1fde1859ad2613d70c205d4b0ea"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_BossOrbIgnite1_v2.ogg",
+      "bytes": 33447,
+      "sha256": "1a9159b9daad71a9a08e109484c131e32728a495eb9eefda6587b282ceb0fce4"
+    },
+    {
+      "file": "audio/sound/STS_SFX_EnemyAtk_Scythe_v1.ogg",
+      "bytes": 18759,
+      "sha256": "8a078ebebe8e0d4e53237b82432a58c8d9a29c03e95c3b0eb87d7395fc612490"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_BossBallTransform_v1.ogg",
+      "bytes": 60722,
+      "sha256": "2c4ad50d46e8abc9d9c9fa7d9a5dcc36c985952aecb0058e639e380f1777c779"
+    },
+    {
+      "file": "audio/sound/STS_SFX_BGTorchExtinguish_v1.ogg",
+      "bytes": 28410,
+      "sha256": "83e0bf0899ce4c72d0a26cd02a59dcf4857df0cd41c878910d3456ccd2cfd253"
+    },
+    {
+      "file": "audio/sound/STS_SFX_PiercingWail_v2.ogg",
+      "bytes": 31613,
+      "sha256": "1b0076d4ea7a4be6fa3cbb9555ebf2cf105748708d3e442eff8a15ffaf6346f9"
+    },
+    {
+      "file": "audio/sound/STS_SFX_DonuDecaDefense_v2.ogg",
+      "bytes": 25829,
+      "sha256": "33375d7cc5c70ae141e70fca9a0b86ac6b02741407651292de0340dee5d0fb43"
+    },
+    {
+      "file": "audio/sound/STS_SFX_AwakenedOne3Atk_v1.ogg",
+      "bytes": 30172,
+      "sha256": "52c848a5cb8a64be8ea37a64c4f559550489a893d20e9d2c791f550cccc624fd"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_MagicFast_1_v1.ogg",
+      "bytes": 39384,
+      "sha256": "8d5c880bed11b26005faf4fbea772646dddc6cdd16aba2def23f00bb49114ee4"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_MagicFast_2_v1.ogg",
+      "bytes": 32785,
+      "sha256": "7a8853b18c2e0fc51c7a0a536ec5d34fb187299816bd98a5c8ddc147cfe03b57"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_MagicFast_3_v1.ogg",
+      "bytes": 39821,
+      "sha256": "9a42bd35f4f31efa9d374fb278fe8db1c4b214f450bc0678d44abd5dc8d3da3d"
+    },
+    {
+      "file": "audio/sound/STS_SFX_AwakenedOnePounce_v2.ogg",
+      "bytes": 23997,
+      "sha256": "8defcf00ff27577454b1b355cbf9add44185405eea55f830dbab9b486921700d"
+    },
+    {
+      "file": "audio/sound/STS_SFX_SlimedAtk_v2.ogg",
+      "bytes": 25903,
+      "sha256": "e53047604c3aca93e93a5d73b8e8baa08155684812637f0f440da2f746a86b70"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Shackled_v1.ogg",
+      "bytes": 17320,
+      "sha256": "9e436c1d76f06bcc766c7911f550fb82157f0fc677b85a970e2a599404ee03d1"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Constrict_v2.ogg",
+      "bytes": 20513,
+      "sha256": "e06a27b22e97d2689b9c9defd56fade110fdf1515c0892d931bca2deadbb6a82"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Guardian3Destroy_v2.ogg",
+      "bytes": 39600,
+      "sha256": "17caf947c6eb35dd657fb9de79ecd75e8da03c951427672d372bc3c8e1b8460a"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_GhostGuardianFlames_v1.ogg",
+      "bytes": 113465,
+      "sha256": "12f79accc5f0c7354b20800d2dc6aca0ca49b1b1f4de643511e3debcc08c0905"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Reaper_v1.ogg",
+      "bytes": 23176,
+      "sha256": "16c24a3e2e3e193966ce7aabf77a5c965bb2ff5c2f3537444914d2e90a93a37e"
+    },
+    {
+      "file": "audio/sound/STS_SFX_Whirlwind_v2.ogg",
+      "bytes": 31952,
+      "sha256": "1251cd5e96c8aaed418c3f0a3abdeac8ca6dbc521481d35b33340465e29a87c9"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Gold_RR1_v3.ogg",
+      "bytes": 21193,
+      "sha256": "fc407707a8c99cb7975375c260c8728f639769a94049609ec720dc6798049321"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Gold_RR2_v3.ogg",
+      "bytes": 16085,
+      "sha256": "c4ff837865336a8b690643ed57485b4f804e1cb0f5f8a5842aa2ac47ef1b5d68"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Gold_RR3_v3.ogg",
+      "bytes": 14580,
+      "sha256": "a0523e7504b6e4fef1a02a4fdbb51a4021a7ed78f007815fdc9bb4fe8dc7fabe"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Gold_RR4_v3.ogg",
+      "bytes": 20005,
+      "sha256": "2af9b94869f226fbdfcf78060633b3e20ec09a7f8adecbf08b153d7acfeb2530"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Gold_RR5_v3.ogg",
+      "bytes": 18789,
+      "sha256": "4b1a20bc6acaf2f4ee6b34f8f15aa06c4d7a48f7951d538d8e0ab505825d67e8"
+    },
+    {
+      "file": "audio/sound/STS_SFX_BonfireSpirits_v1.ogg",
+      "bytes": 84310,
+      "sha256": "258bf8baaf025d7d8f0199898ed48da35b7f7423db03e3e06ccaf0b0c2c4d72f"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_DropRelic_Magical.ogg",
+      "bytes": 44223,
+      "sha256": "f2b2d8396370f0edfe89965fb5776b8791c0023b0be7708703ebb945e878b87c"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_RelicActivation_v1.ogg",
+      "bytes": 58650,
+      "sha256": "2eafaa1bc4c4637c1bfecee56d5c07336b49ada1b2c9e6ca67c5d1811a09aafb"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_DropPotion_1_v1.ogg",
+      "bytes": 12489,
+      "sha256": "8d2b4aebafb90fc8dbbf0b3791f73dc3eb256c00f396ed9fe1a5aed842727cca"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_DropPotion_2_v1.ogg",
+      "bytes": 14694,
+      "sha256": "7cbe9bb63db7e74badc661eb8c471e1644e0c19cebceab0da524465d73fdbfc4"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Potion_1_v2.ogg",
+      "bytes": 26972,
+      "sha256": "56b62fe18db95e58e894388087523aaab4d59aae6158b79b2decb62ca59526be"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Potion_2_v2.ogg",
+      "bytes": 27194,
+      "sha256": "9d15015320d1bc59e55102f0d86d1b5e0982561478401e94d5e9bdc066a205b8"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Potion_3_v2.ogg",
+      "bytes": 27997,
+      "sha256": "e2b5e20985f9132d31362581d42bd5210eca6d79a268e966fa66056db8817233"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_DropRelic_Clink.ogg",
+      "bytes": 15201,
+      "sha256": "ed3e5e7930ea8caac31eaf2ab8f15f06d4574c49d317eaf88e2ca90043d9a041"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_ChestOpen_v2.ogg",
+      "bytes": 28758,
+      "sha256": "eaadf133fa8fc57ecc8728d0804f5c639271bc729d5a0a7ad6e003f209686fff"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_Victory_v1.ogg",
+      "bytes": 41484,
+      "sha256": "b6321388da91e14562ed8a8a99846e58a81909316dadd9c773b9003cae5ee7ca"
+    },
+    {
+      "file": "audio/sound/STS_BossVictoryStinger_1_v3_SFX.ogg",
+      "bytes": 82955,
+      "sha256": "e8a211884e07157671a49e6625665ddb5d8e09f4c2ea2a5feabf156e2c958f85"
+    },
+    {
+      "file": "audio/music/STS_EndingStinger_v1.ogg",
+      "bytes": 542999,
+      "sha256": "b1e42dd569dd3a08c0b8375318760de8bd9c1be0568305ccf64d4981f0e4947c"
+    },
+    {
+      "file": "audio/sound/STS_SFX_DarklingRegrow_v2.ogg",
+      "bytes": 43982,
+      "sha256": "048fa75a85d71ca2271b1550e71793feb3b74cf00e4760d1ec61bb72531b654a"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_DungeonGate.ogg",
+      "bytes": 121018,
+      "sha256": "48afa1950fb984ee0ccb2896a76242bfd2aa9603ff7bc0b23029e8d9c686608a"
+    },
+    {
+      "file": "audio/sound/STS_SFX_BattleStart_Boss_v1.ogg",
+      "bytes": 70031,
+      "sha256": "02f1d9b42492c4d5ab9e0b2dcbbee08b0e5063e579fde72df9a75e0c54b44698"
+    },
+    {
+      "file": "audio/sound/STS_NewUnlock_v1.ogg",
+      "bytes": 100277,
+      "sha256": "ef51488567755ac2a337e348e71e04db885368a5af23fbbe62fccf7689556631"
+    },
+    {
+      "file": "audio/sound/sts_sfx_shovel_v1.ogg",
+      "bytes": 46488,
+      "sha256": "6054cbd1d26f65914d037f7d0fc9c8b0033b1e7354c4815e4d922c52c8ee7f46"
+    },
+    {
+      "file": "audio/sound/STS_SFX_OminousForge_v1.ogg",
+      "bytes": 95781,
+      "sha256": "cffd371c3304f79db3eacfa5144b4faffa41c28ece6b0a3f31b2b69487cefeb0"
+    },
+    {
+      "file": "audio/sound/STS_SFX_AncientWriting_v1.ogg",
+      "bytes": 86276,
+      "sha256": "51da2198d1031d636c57b36c6b85a5fd79789fc6a0789a4ca2de9b794bc1f622"
+    },
+    {
+      "file": "audio/sound/STS_SFX_ShiningLight_v1.ogg",
+      "bytes": 91062,
+      "sha256": "6411ed9b78b4d2d8bb64c95e2df71250c4d27fbe73be83655dc3b398c00a9adf"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_SleepBlanket_v1.ogg",
+      "bytes": 51788,
+      "sha256": "6d47152c41d3f41ebc2b527d11b9990f6b2447c3c15daca53c46e93590ddccaa"
+    },
+    {
+      "file": "audio/sound/STS_SleepJingle_1a_NewMix_v1.ogg",
+      "bytes": 191328,
+      "sha256": "5901bb244fe6d8f8cf3a9d448212d7e62119e9e234d226ad4781b9ff770fe7ed"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_ShopRugOpen_v1.ogg",
+      "bytes": 35332,
+      "sha256": "89928faa444b1f24cd79362ff60cc1acddcfe6797620f7e6062fc20974621df3"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_WindAmb_v1.ogg",
+      "bytes": 415363,
+      "sha256": "64527c5750958a83ebdf115c9a4873796c18e2c14aea363dc352e53ba87c7fcd"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_CityAmb_v1.ogg",
+      "bytes": 1347399,
+      "sha256": "4eae7970f95bfc2f05bf8c51414f11386ca69366936c5d178344a7702b5379bc"
+    },
+    {
+      "file": "audio/sound/SOTE_Level1_Ambience_v6.ogg",
+      "bytes": 1256329,
+      "sha256": "2fc6f3dd0c3f0ef5c59dcc84f7f820e8124276e02b4ce62db6d553890840b32c"
+    },
+    {
+      "file": "audio/sound/STS_SFX_BeyondAmb_v1.ogg",
+      "bytes": 1222365,
+      "sha256": "f36d0efaedb5064eb36a4efddf16cf2bf3ef54a03658762c528fe4897bf57013"
+    },
+    {
+      "file": "audio/sound/STS_SFX_LowRumble_Long_v4.ogg",
+      "bytes": 801765,
+      "sha256": "6426ff3f889495f1b149c78b86e2f1c44a045cab9a31b46e6f639386facaad3d"
+    },
+    {
+      "file": "audio/sound/SOTE_SFX_RestFireDry_v2.ogg",
+      "bytes": 679409,
+      "sha256": "bddc7bea255829136b58af06269b2f8af394b44dfa0af6fee09a0dba72f42463"
+    },
+    {
+      "file": "audio/music/STS_MenuTheme_NewMix_v1.ogg",
+      "bytes": 3513495,
+      "sha256": "b725d01489b41c64a09b72683ad9a14bc0f39314b51aad44337198dbc13c520e"
+    },
+    {
+      "file": "audio/music/STS_Merchant_NewMix_v1.ogg",
+      "bytes": 1871711,
+      "sha256": "f80aa5e3a8ef6d4926ef3a8f619cd13ba3567eb98a88cfc4c576c54f93c4c232"
+    },
+    {
+      "file": "audio/music/STS_Level1_NewMix_v1.ogg",
+      "bytes": 5665918,
+      "sha256": "2e3ceeac3426e3939b305378a4e39aa44addfea151646d89498eec83ed50c00e"
+    },
+    {
+      "file": "audio/music/STS_Level2_NewMix_v1.ogg",
+      "bytes": 6246966,
+      "sha256": "bab30fa018b8071e25ac7ce2acd1cd15dfdb39cb38a4a1e7c51cd51b1c643b41"
+    },
+    {
+      "file": "audio/music/STS_Level3_v2.ogg",
+      "bytes": 6026601,
+      "sha256": "8815a9aed1b7f0ea30c6f711d4d45bae7e250c65b2c763a44c6f742e0d34bf74"
+    },
+    {
+      "file": "audio/music/STS_Act4_BGM_v2.ogg",
+      "bytes": 2666831,
+      "sha256": "7ddd2b4c027a5346f105bb012a49cb06a479348b35ce77662c54027c25dce45d"
+    },
+    {
+      "file": "audio/music/STS_Boss1_NewMix_v1.ogg",
+      "bytes": 3840125,
+      "sha256": "6cf3ee3414eea637830b29b02d2d057db6ac0de76ab5a184dc3f8248ca02fb35"
+    },
+    {
+      "file": "audio/music/STS_Boss2_NewMix_v1.ogg",
+      "bytes": 3760420,
+      "sha256": "408cfe92972132e0344d15a551fb19ef1b27269336e875196cc065bf0fdd9c98"
+    },
+    {
+      "file": "audio/music/STS_Boss3_NewMix_v1.ogg",
+      "bytes": 3997883,
+      "sha256": "9e4d24fa2a1ded1ae3157f30dcf7c4e9e83b5eef032ef4625e7f9858c37ddbf1"
+    },
+    {
+      "file": "audio/music/STS_Boss4_v6.ogg",
+      "bytes": 2449757,
+      "sha256": "fe03af06b1bac970315550be0b5c06603bac91bef5ddc9ed3a5a52f7af0ccc40"
+    },
+    {
+      "file": "audio/music/STS_EliteBoss_NewMix_v1.ogg",
+      "bytes": 1938592,
+      "sha256": "627f8183f3ee1682c185e768f6e8a216f1828b27d624aa0f0f019903fa47d5fd"
+    },
+    {
+      "file": "audio/music/STS_Shrine_NewMix_v1.ogg",
+      "bytes": 1461318,
+      "sha256": "b1311dba04b3d95e59822d2c184ba94e2086515f2df6e212696761fb6453f388"
+    }
+  ]
+}

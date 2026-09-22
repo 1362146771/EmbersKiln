@@ -1,4 +1,7 @@
 extends Node
+signal haptic_requested(cue: StringName)
+signal sound_requested(cue: StringName)
+signal sound_batch_muted(muted: bool)
 ## Autoload: SignalBus —— 全局事件总线。
 ## 唯一的跨系统通信通道。禁止任何系统直接 get_node 另一个系统。
 

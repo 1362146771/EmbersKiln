@@ -13,8 +13,6 @@ const CLAY_OUT := 0.18
 const CLAY_IN := 0.20
 const CLAY_SHADER := preload("res://art/shaders/clay_wipe.gdshader")
 const KILN_SHADER := preload("res://art/shaders/kiln_transition.gdshader")
-const BOSS_SOUND := "res://art/audio/transition_boss.wav"
-const CHAPTER_SOUND := "res://art/audio/transition_chapter.wav"
 const SPECIAL_TIMINGS := {&"boss": Vector2(0.28, 0.34), &"chapter": Vector2(0.30, 0.38)}
 const PANEL_DURATION := 0.18
 const PANEL_DISTANCE := 18.0
@@ -54,10 +52,10 @@ func _ready() -> void:
 	_kiln_material.shader = KILN_SHADER
 	_sound = AudioStreamPlayer.new()
 	# 在导入完成后的运行期加载，避免全新工程首次扫描 autoload 早于 WAV 导入。
-	_boss_sound = load(BOSS_SOUND) as AudioStream
-	_chapter_sound = load(CHAPTER_SOUND) as AudioStream
+	_boss_sound = AudioManager.stream_for(&"transition_boss")
+	_chapter_sound = AudioManager.stream_for(&"transition_chapter")
 	_sound.name = "TransitionSound"
-	_sound.volume_db = -12.0
+	_sound.volume_db = 0.0
 	_sound.bus = &"SFX" if AudioServer.get_bus_index(&"SFX") >= 0 else &"Master"
 	add_child(_sound)
 	set_process_input(false)
@@ -121,6 +119,7 @@ func _change_scene(scene: PackedScene, prepare: Callable, hold_seconds: float, s
 		await get_tree().create_timer(hold_seconds, true, false, true).timeout
 	if _effect in SPECIAL_TIMINGS:
 		_sound.stream = _boss_sound if _effect == &"boss" else _chapter_sound
+		_sound.volume_db = float(AudioManager.config.cues["transition_boss" if _effect == &"boss" else "transition_chapter"].gain_db)
 		_sound.play()
 	await _fade_cover(1.0, _cover_duration(false))
 	# 场景被外部替换时取消陈旧请求，不允许延迟任务把玩家带回旧流程。
