@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "instructions": "按项目相对路径填写 assets。fields 可补充24项交付字段；evidence 填依据；qa 的每项必须填 result/evidence，并用 reviewed_sha256 绑定实际被验收文件。重建不会覆盖此文件。",
+  "assets": {
+    "art/icons/rewards/ICO_UpgradeShard.png": {
+      "fields": {
+        "用途与出现位置": "战后战利品页升级碎片按钮，scenes/rewards/RewardUI.tscn直接引用",
+        "内容拆分": "图片只含蓝灰陶瓷卡角与琥珀箭头；名称、数量、按钮底板由UI独立提供",
+        "来源与制作资料": "内置image_gen，2026-09-20；art/icons/rewards/README.md保留当前制作要求，现存1254×1254 RGBA文件为交付图。独立上游原始输出未确认。"
+      },
+      "evidence": [
+        "art/icons/rewards/README.md",
+        "AI_Studio/Design/Art/ART_STYLE.md",
+        "scenes/rewards/RewardUI.tscn"
+      ]
+    },
+    "art/npcs/granny_kiln/SPR_NPC_GrannyKiln.png": {
+      "fields": {
+        "来源与制作资料": "内置image_gen，2026-09-21；当前版本hooded-simplified-crone，art/npcs/granny_kiln/prompts-v2.json是现行罩袍基线；prompts.json为旧露脸形象资料。",
+        "对齐与视觉大小": "开场馈赠场景玩家左、陶婆右，共同地面基线，陶婆坐姿小于主角；GrannyPortrait使用flip_h。具体显示大小随场景区域等比适配。"
+      },
+      "evidence": [
+        "art/npcs/granny_kiln/prompts-v2.json",
+        "AI_Studio/Design/World/GRANNY_KILN_DIALOGUE.md",
+        "scenes/main/PreRunPreparation.tscn"
+      ]
+    },
+    "art/player/SPR_Player_Tannaro.png": {
+      "fields": {
+        "用途与出现位置": "炭之郎当前正式静态立绘；战斗静姿与陶婆开场馈赠。死亡由独立六帧动画承担，旧README的Death静图描述待校对。",
+        "构图与留白": "原图1024×1536；themes/formal/PlayerPortrait.tres的Atlas区域为Rect2(230,120,520,1330)。该值是现有裁区，不等于重新裁改源图。"
+      },
+      "evidence": [
+        "themes/formal/PlayerPortrait.tres",
+        "AI_Studio/Design/Art/ART_STYLE.md",
+        "art/player/animations/PlayerCombatFrames.tres"
+      ]
+    }
+  }
+}
