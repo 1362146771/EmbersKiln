@@ -91,42 +91,106 @@ func _ready() -> void:
 	await get_tree().process_frame
 	ProfileState.reset_to_defaults(false)
 	while TransitionManager.is_transitioning: await get_tree().process_frame
+	ProfileState.unlocked_pre_run_buff_ids.assign([&"kiln_guard"])
+	ProfileState.facility_levels["bellows_station"] = 1
 	RunState.start_new_run()
 	var opening: Control = load("res://scenes/main/PreRunPreparation.tscn").instantiate()
 	add_child(opening)
 	await get_tree().process_frame
 	check(opening.find_child("DifficultySelector", true, false) == null, "dialogue removes difficulty controls")
-	check(not DifficultyRules.select_at_opening("warm"), "locked opening selection rejected")
-	ProfileState.difficulty_data = {"cleared":["normal","warm","blazing","molten","extreme"]}
+	check(not DifficultyRules.can_select_at_preparation() and not DifficultyRules.select_at_preparation("normal"), "difficulty cannot change during granny opening")
+	if "--visual" in OS.get_cmdline_user_args():
+		opening._talk()
+		await get_tree().process_frame
+		await RenderingServer.frame_post_draw
+		get_viewport().get_texture().get_image().save_png("res://Temp/difficulty_granny.png")
+	check(_claim_opening(), "claim blessing before bellows")
+	check(GrannyStory.finish(), "finish opening")
+	opening.queue_free()
+	await get_tree().process_frame
+	var preparation: Control = load("res://scenes/main/PreRunAdPreparation.tscn").instantiate()
+	add_child(preparation)
+	await get_tree().process_frame
+	var previous: Button = preparation.get_node("%DifficultyPrevious")
+	var next: Button = preparation.get_node("%DifficultyNext")
+	check(preparation.find_child("DifficultySelector", true, false).is_visible_in_tree(), "bellows contains visible difficulty selector")
+	check(DifficultyRules.can_select_at_preparation() and PreRunBuffSystem.needs_preparation(), "bellows preparation allows selection")
+	check(previous.disabled and next.disabled, "fresh profile cannot move below first tier or into locked tier")
+	check(not DifficultyRules.select_at_preparation("warm"), "locked bellows tier rejected")
+	preparation._change_difficulty(1)
+	check(RunState.difficulty_snapshot.id == "normal", "arrow handler cannot enter locked tier")
+	ProfileState.difficulty_data = {"cleared":["normal","warm"]}
+	preparation._refresh_difficulty()
+	check(previous.disabled and not next.disabled, "unlock enables next arrow only")
 	var original := RunState.to_save_dict()
-	check(DifficultyRules.select_at_opening("warm") and DifficultyRules.select_at_opening("blazing"), "existing difficulty snapshot API remains compatible")
+	next.pressed.emit()
+	check(RunState.difficulty_snapshot.id == "warm" and not previous.disabled and not next.disabled, "next arrow selects second unlocked tier")
+	next.pressed.emit()
+	check(RunState.difficulty_snapshot.id == "blazing" and not previous.disabled and next.disabled, "next arrow selects third tier and stops at unlock boundary")
+	check(not String(preparation.get_node("%DifficultyValue").text).is_empty() and not String(preparation.get_node("%DifficultyHint").text).is_empty(), "selected difficulty and rule hint are shown")
 	var changed := RunState.to_save_dict()
 	original.erase("difficulty_snapshot")
 	changed.erase("difficulty_snapshot")
-	check(original == changed, "switching changes neither gifts, map, inventory, run id nor ad state")
+	check(original == changed, "arrows change neither claimed gift, map, inventory, run id nor ad state")
 	check(SaveManager.load_game() and RunState.difficulty_snapshot.id == "blazing", "difficulty snapshot survives disk reload")
-	if "--visual" in OS.get_cmdline_user_args():
-		await RenderingServer.frame_post_draw
-		get_viewport().get_texture().get_image().save_png("res://Temp/difficulty_granny.png")
-	DifficultyRules.select_at_opening("warm")
-	check(RunState.difficulty_snapshot.id == "warm", "existing API selects preceding difficulty")
+	check(not GrannyStory.needs_opening() and PreRunBuffSystem.needs_preparation(), "reload resumes bellows after claimed gift")
+	previous.pressed.emit()
+	check(RunState.difficulty_snapshot.id == "warm", "previous arrow selects preceding tier")
 	var saved_path := SaveManager.runtime_save_path
 	SaveManager.runtime_save_path = "res://missing_difficulty_directory/run.json"
-	check(not DifficultyRules.select_at_opening("normal") and RunState.difficulty_snapshot.id == "warm", "failed save rolls back difficulty")
+	check(not DifficultyRules.select_at_preparation("normal") and RunState.difficulty_snapshot.id == "warm", "failed save rolls back difficulty")
 	SaveManager.runtime_save_path = saved_path
-	var offer: Dictionary = RunState.granny_opening.offers[0]
-	if String(offer.kind) in ["upgrade", "remove", "transform"]:
-		check(GrannyStory.claim(String(offer.id), 0, RunState.deck[0].duplicate(true)), "claim target blessing")
-	else:
-		check(GrannyStory.claim(String(offer.id)), "claim blessing")
-	var rewarded := RunState.to_save_dict()
-	check(DifficultyRules.select_at_opening("blazing"), "can change difficulty after choosing blessing")
-	var after_reward_switch := RunState.to_save_dict()
-	rewarded.erase("difficulty_snapshot")
-	after_reward_switch.erase("difficulty_snapshot")
-	check(rewarded == after_reward_switch, "claimed reward and receipt unchanged")
-	check(GrannyStory.finish(), "finish opening")
-	check(not DifficultyRules.select_at_opening("normal") and RunState.difficulty_snapshot.id == "blazing", "difficulty locked after departure")
-	opening.queue_free()
+	preparation.set("_request_active", true)
+	preparation._refresh_difficulty()
+	preparation._change_difficulty(1)
+	check(previous.disabled and next.disabled and RunState.difficulty_snapshot.id == "warm", "advert in flight disables and guards difficulty arrows")
+	preparation.set("_request_active", false)
+	preparation.set("_leaving", true)
+	preparation._refresh_difficulty()
+	preparation._change_difficulty(1)
+	check(previous.disabled and next.disabled and RunState.difficulty_snapshot.id == "warm", "leaving disables and guards difficulty arrows")
+	preparation.set("_leaving", false)
+	preparation._refresh_difficulty()
+	next.pressed.emit()
+	check(RunState.difficulty_snapshot.id == "blazing", "selection resumes when advert is no longer active")
+	RunState.current_floor = 1
+	check(not DifficultyRules.can_select_at_preparation() and not DifficultyRules.select_at_preparation("normal"), "entered run cannot change difficulty")
+	RunState.current_floor = 0
+	var preparation_snapshot := RunState.difficulty_snapshot.duplicate(true)
+	RunState.difficulty_snapshot.clear()
+	check(not DifficultyRules.can_select_at_preparation() and not DifficultyRules.select_at_preparation("normal"), "legacy run without snapshot cannot acquire difficulty")
+	RunState.difficulty_snapshot = preparation_snapshot
+	preparation._refresh_difficulty()
+	if "--visual" in OS.get_cmdline_user_args():
+		await get_tree().process_frame
+		await RenderingServer.frame_post_draw
+		get_viewport().get_texture().get_image().save_png("res://Temp/difficulty_bellows.png")
+	check(PreRunBuffSystem.skip_preparation(), "direct departure resolves preparation")
+	preparation._refresh_difficulty()
+	check(previous.disabled and next.disabled and not DifficultyRules.select_at_preparation("normal"), "difficulty locked after direct departure")
+	preparation.queue_free()
+	await get_tree().process_frame
+	# A locked/unavailable advertisement must not remove the departure difficulty step.
+	ProfileState.unlocked_pre_run_buff_ids.clear()
+	check(RunState.start_new_run(), "start run without unlocked advert buff")
+	check(GrannyStory.prepare() and _claim_opening() and GrannyStory.finish(), "finish free gift without advert buff")
+	check(PreRunBuffSystem.prepare_offer().is_empty() and not RunState.pre_run_preparation_resolved, "no advert offers keeps new preparation unresolved")
+	check(PreRunBuffSystem.needs_preparation() and DifficultyRules.can_select_at_preparation(), "difficulty-only preparation remains reachable")
+	var without_ad: Control = load("res://scenes/main/PreRunAdPreparation.tscn").instantiate()
+	add_child(without_ad)
+	await get_tree().process_frame
+	check(without_ad.find_child("DifficultySelector", true, false).is_visible_in_tree(), "difficulty selector visible without advert offers")
+	without_ad.get_node("%DifficultyNext").pressed.emit()
+	check(RunState.difficulty_snapshot.id == "warm", "difficulty arrow works without advert offers")
+	check(SaveManager.load_game() and RunState.difficulty_snapshot.id == "warm" and PreRunBuffSystem.needs_preparation() and RunState.pre_run_buff_offer_ids.is_empty(), "saved no-ad preparation reloads at bellows")
+	check(PreRunBuffSystem.skip_preparation() and not PreRunBuffSystem.needs_preparation() and not DifficultyRules.select_at_preparation("normal"), "no-ad direct departure locks difficulty")
+	without_ad.queue_free()
 	print("DIFFICULTY_PROGRESSION_RESULT:%s checks=%d failures=%d" % ["PASS" if failures == 0 else "FAIL", checks, failures])
 	get_tree().quit(0 if failures == 0 else 1)
+
+
+func _claim_opening() -> bool:
+	var offer: Dictionary = RunState.granny_opening.offers[0]
+	if String(offer.kind) in ["upgrade", "remove", "transform"]:
+		return GrannyStory.claim(String(offer.id), 0, RunState.deck[0].duplicate(true))
+	return GrannyStory.claim(String(offer.id))

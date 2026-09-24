@@ -7,6 +7,15 @@
 [ext_resource type="Texture2D" path="res://art/ui/town/interior_levels/runtime/bellows_station/bellows_station_interior_level_1.png" id="3"]
 [ext_resource type="StyleBox" path="res://themes/formal/Town_detail.tres" id="4"]
 [ext_resource type="Theme" path="res://themes/formal/btn_hall_normal_small.tres" id="5_slate"]
+[ext_resource type="Texture2D" path="res://art/ui/main_menu/OptionSlate.tres" id="6_slate_texture"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_difficulty"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+texture = ExtResource("6_slate_texture")
+modulate_color = Color(1, 1, 1, 0.66)
 
 [node name="PreRunAdPreparation" type="Control"]
 layout_mode = 3
@@ -69,7 +78,7 @@ text = "临行添薪"
 
 [node name="PreparationPanel" type="PanelContainer" parent="."]
 layout_mode = 1
-anchor_top = 0.47
+anchor_top = 0.44
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 20.0
@@ -86,7 +95,7 @@ theme_override_constants/margin_bottom = 26
 
 [node name="Column" type="VBoxContainer" parent="PreparationPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 
 [node name="SectionTitle" type="Label" parent="PreparationPanel/Margin/Column"]
 layout_mode = 2
@@ -140,10 +149,67 @@ text = "可跳过广告，正常开局与基础奖励不受影响"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="BackButton" type="Button" parent="PreparationPanel/Margin/Column"]
+[node name="Footer" type="HBoxContainer" parent="PreparationPanel/Margin/Column"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BackButton" type="Button" parent="PreparationPanel/Margin/Column/Footer"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 72)
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme = ExtResource("5_slate")
 theme_override_font_sizes/font_size = 21
 text = "保存退出"
+
+[node name="DifficultySelector" type="VBoxContainer" parent="PreparationPanel/Margin/Column/Footer"]
+custom_minimum_size = Vector2(264, 0)
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Frame" type="PanelContainer" parent="PreparationPanel/Margin/Column/Footer/DifficultySelector"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme = ExtResource("5_slate")
+theme_override_styles/panel = SubResource("StyleBoxTexture_difficulty")
+
+[node name="Arrows" type="HBoxContainer" parent="PreparationPanel/Margin/Column/Footer/DifficultySelector/Frame"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 4
+
+[node name="DifficultyPrevious" type="Button" parent="PreparationPanel/Margin/Column/Footer/DifficultySelector/Frame/Arrows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "◀"
+tooltip_text = "降低难度"
 flat = true
+
+[node name="DifficultyValue" type="Label" parent="PreparationPanel/Margin/Column/Footer/DifficultySelector/Frame/Arrows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(116, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "难度 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DifficultyNext" type="Button" parent="PreparationPanel/Margin/Column/Footer/DifficultySelector/Frame/Arrows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "▶"
+tooltip_text = "提高难度"
+flat = true
+
+[node name="DifficultyHint" type="Label" parent="PreparationPanel/Margin/Column/Footer/DifficultySelector"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.85, 0.86, 1)
+theme_override_font_sizes/font_size = 16
+text = "通关难度 1 解锁下一档"
+horizontal_alignment = 1

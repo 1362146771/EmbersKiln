@@ -47,11 +47,11 @@ static func record_clear(hidden: bool = false) -> bool:
 static func current_name() -> String:
 	return String(RunState.difficulty_snapshot.get("name", tier(default_id()).get("name", "普通")))
 
-static func can_select_at_opening() -> bool:
-	return GrannyStory.needs_opening() and not RunState.difficulty_snapshot.is_empty()
+static func can_select_at_preparation() -> bool:
+	return GrannyStory.at_start() and not GrannyStory.needs_opening() and not RunState.pre_run_preparation_resolved and not RunState.difficulty_snapshot.is_empty()
 
-static func select_at_opening(id: String) -> bool:
-	if not can_select_at_opening() or not unlocked(id): return false
+static func select_at_preparation(id: String) -> bool:
+	if not can_select_at_preparation() or not unlocked(id): return false
 	var previous: Dictionary = RunState.difficulty_snapshot.duplicate(true)
 	RunState.difficulty_snapshot = tier(id).duplicate(true)
 	RunState.difficulty_snapshot["version"] = GameData.difficulties.get("version")

@@ -76,7 +76,20 @@ func _ready() -> void:
 	for definition in GameData.granny_opening["rewards"]:
 		fresh()
 		var offer := GrannyStory._materialize(definition, rng)
+		# Old saves may carry item names/effects in all three presentation fields.
+		offer["title"] = "旧存档具体奖励名称"
+		offer["description"] = "旧存档具体奖励效果"
 		RunState.granny_opening = {"offers": [offer], "line": "选一样带上，路上用得着。"}
+		var frozen := RunState.to_save_dict()
+		check(SaveManager.save_game() and SaveManager.load_game() and RunState.to_save_dict() == frozen, "legacy offer disk restore preserves rolled reward and costs")
+		get_tree().change_scene_to_file(OPENING)
+		await settle()
+		var disclosure_ui = get_tree().current_scene
+		disclosure_ui.get_node("%TalkButton").pressed.emit()
+		await settle()
+		var option_text: String = disclosure_ui.get_node("%RewardOptions").get_child(0).text
+		check(option_text == "[%s]\n%s" % [definition["title"], definition["description"]], "legacy option uses only current generic title and description: " + String(offer["id"]))
+		check(RunState.to_save_dict() == frozen, "rendering legacy option does not reroll or mutate saved reward")
 		var before := RunState.to_save_dict()
 		var kind := String(offer["kind"])
 		var target := 0 if kind in ["upgrade", "remove", "transform"] else -1
@@ -92,10 +105,18 @@ func _ready() -> void:
 			"upgrade": check(RunState.deck[0]["upgraded"] and RunState.upgrade_shards == int(before["upgrade_shards"]), "free upgrade consumes no shards")
 			"remove": check(RunState.deck.size() == before["deck"].size() - 1, "chosen instance removed")
 			"transform": check(RunState.deck.size() == before["deck"].size() and String(RunState.deck[0]["id"]) == offer["card_id"] and RunState.deck[0]["instance_id"] != entry["instance_id"], "transform replaces selected instance")
+		check(RunState.granny_opening["result_text"] == definition["description"], "new receipt stores only generic reward description")
+		RunState.granny_opening["result_text"] = "旧存档具体物品名称及效果"
+		check(SaveManager.save_game() and SaveManager.load_game(), "legacy receipt reloads from disk")
+		get_tree().change_scene_to_file(OPENING)
+		await settle()
+		disclosure_ui = get_tree().current_scene
+		check(disclosure_ui.get_node("%Receipt").text == "已获得 · %s\n%s" % [definition["title"], definition["description"]], "legacy receipt hides saved names and effects: " + String(offer["id"]))
 		var claimed := RunState.to_save_dict()
 		check(not GrannyStory.claim(String(offer["id"]), target, entry) and RunState.to_save_dict() == claimed, "double-click cannot repeat reward/cost")
 		check(SaveManager.load_game() and RunState.granny_opening.get("chosen", "") == offer["id"], "receipt persists with inventory")
 		check(GrannyStory.finish() and not GrannyStory.needs_opening(), "finish closes opening once")
+	check(GrannyStory.title_for({"id": "unknown", "title": "具体奖励"}) == "馈赠" and GrannyStory.describe({"id": "unknown", "description": "具体效果"}).is_empty(), "unknown legacy offer cannot fall back to disclosed saved text")
 	# Disk failure must roll back both reward and receipt, including card discovery.
 	fresh()
 	var gold_offer := GrannyStory._materialize(GameData.granny_opening["rewards"][4], rng)

@@ -26,6 +26,8 @@ func _ready() -> void:
 		SignalBus.ad_reward_resolved.connect(_on_ad_reward_resolved)
 	_skip_button.pressed.connect(_on_skip)
 	%BackButton.pressed.connect(_back)
+	%DifficultyPrevious.pressed.connect(_change_difficulty.bind(-1))
+	%DifficultyNext.pressed.connect(_change_difficulty.bind(1))
 	PreRunBuffSystem.prepare_offer()
 	_build()
 
@@ -40,11 +42,11 @@ func _build() -> void:
 		_options.remove_child(child)
 		child.queue_free()
 	_hint.text = "选择一项增益，完整观看广告后激活。\n本局前 %d 层生效。" % int(GameData.ad_placement_config(PreRunBuffSystem.PLACEMENT)["duration_floors"])
-	if not PreRunBuffSystem.needs_preparation():
+	if not PreRunBuffSystem.needs_preparation() or RunState.pre_run_buff_offer_ids.is_empty():
 		_hint.text = "护窑余温已领取，可以出发了。" if RunState.pre_run_buff_claimed else "修复风箱台后，可在这里观看广告获得护窑余温。"
 	var available := AdService.is_available(PreRunBuffSystem.PLACEMENT)
 	%AdStatus.text = "正在等待广告结果…" if _request_active else ("完整观看后即可携带增益出发" if available else "暂无可用广告，可直接出发")
-	if not PreRunBuffSystem.needs_preparation(): %AdStatus.text = "陶婆的馈赠已收好，可以直接出发。"
+	if not PreRunBuffSystem.needs_preparation() or RunState.pre_run_buff_offer_ids.is_empty(): %AdStatus.text = "陶婆的馈赠已收好，可以直接出发。"
 	for buff_id in RunState.pre_run_buff_offer_ids:
 		var buff := GameData.get_pre_run_buff(buff_id)
 		var panel := preload("res://scenes/main/BuffOffer.tscn").instantiate()
@@ -63,6 +65,38 @@ func _build() -> void:
 		button.pressed.connect(_on_buff_pressed.bind(buff_id))
 	_skip_button.disabled = _request_active
 	%BackButton.disabled = _request_active
+	_refresh_difficulty()
+
+
+func _difficulty_index() -> int:
+	var tiers := DifficultyRules.tiers()
+	var id := String(RunState.difficulty_snapshot.get("id", DifficultyRules.default_id()))
+	for i in tiers.size():
+		if String(tiers[i].id) == id: return i
+	return 0
+
+
+func _refresh_difficulty() -> void:
+	var tiers := DifficultyRules.tiers()
+	var index := _difficulty_index()
+	var enabled := not _request_active and not _leaving and DifficultyRules.can_select_at_preparation()
+	%DifficultyValue.text = "难度 %d" % (index + 1)
+	%DifficultyValue.tooltip_text = "%s\n%s" % [tiers[index].name, tiers[index].get("description", "")]
+	%DifficultyPrevious.disabled = not enabled or index == 0 or not DifficultyRules.unlocked(String(tiers[index - 1].id))
+	%DifficultyNext.disabled = not enabled or index >= tiers.size() - 1 or not DifficultyRules.unlocked(String(tiers[index + 1].id))
+	%DifficultyHint.text = String(tiers[index].name)
+	if index < tiers.size() - 1 and not DifficultyRules.unlocked(String(tiers[index + 1].id)):
+		%DifficultyHint.text = "通关难度 %d 解锁下一档" % (index + 1)
+
+
+func _change_difficulty(direction: int) -> void:
+	if _request_active or _leaving or TransitionManager.is_transitioning or not DifficultyRules.can_select_at_preparation(): return
+	var index := _difficulty_index() + direction
+	var tiers := DifficultyRules.tiers()
+	if index < 0 or index >= tiers.size() or not DifficultyRules.unlocked(String(tiers[index].id)): return
+	var saved := DifficultyRules.select_at_preparation(String(tiers[index].id))
+	_refresh_difficulty()
+	if not saved: %DifficultyHint.text = "保存失败，请重试。"
 
 
 func _load_courtyard() -> void:
@@ -104,6 +138,7 @@ func _on_ad_reward_resolved(_transaction_id: String, placement_id: StringName, r
 func _go_map() -> void:
 	if _leaving: return
 	_leaving = true
+	_refresh_difficulty()
 	_route_scene(MAP_PLAY)
 
 

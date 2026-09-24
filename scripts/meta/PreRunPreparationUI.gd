@@ -73,12 +73,12 @@ func _build() -> void:
 		var receipt := GrannyStory.offer_for(String(RunState.granny_opening["chosen"]))
 		%Greeting.text = "拿稳了。\n添些薪再走，路上小心。"
 		# Old receipts may contain names; always render the current generic description.
-		%Receipt.text = "已获得 · %s\n%s" % [receipt.get("title", "馈赠"), GrannyStory.describe(receipt)]
+		%Receipt.text = "已获得 · %s\n%s" % [GrannyStory.title_for(receipt), GrannyStory.describe(receipt)]
 		%Status.text = "生命 %d/%d · 金币 %d" % [RunState.hp, RunState.max_hp, RunState.gold]
 	elif _talking:
 		for offer in RunState.granny_opening.get("offers", []):
 			var button := Button.new()
-			button.text = "[%s]\n%s" % [offer["title"], GrannyStory.describe(offer)]
+			button.text = "[%s]\n%s" % [GrannyStory.title_for(offer), GrannyStory.describe(offer)]
 			button.custom_minimum_size = Vector2(0, 116)
 			button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 			button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -103,7 +103,7 @@ func _choose(id: String) -> void:
 		add_child(_picker)
 	elif kind in ["remove", "transform"]:
 		_picker = Browser.new()
-		_picker.setup(String(offer["title"]), GrannyStory.describe(offer), RunState.deck, true,
+		_picker.setup(GrannyStory.title_for(offer), GrannyStory.describe(offer), RunState.deck, true,
 			"确认选择", "确认后消耗本局免费馈赠机会；取消可重新选择其他奖励。",
 			"原卡会替换为一张随机职业牌，不保留原卡升级与附魔。" if kind == "transform" else "该卡会从本局牌组中永久移除。")
 		_picker.confirmed.connect(_confirm_target.bind(id))

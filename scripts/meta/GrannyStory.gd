@@ -84,8 +84,18 @@ func offer_for(id: String) -> Dictionary:
 
 
 func describe(offer: Dictionary) -> String:
-	# Opening rewards show only their type, quantity and cost, never the rolled contents.
-	return String(offer.get("description", ""))
+	return String(_display_definition(offer).get("description", ""))
+
+
+func title_for(offer: Dictionary) -> String:
+	return String(_display_definition(offer).get("title", "馈赠"))
+
+
+func _display_definition(offer: Dictionary) -> Dictionary:
+	# Saved offers freeze rewards, not presentation: legacy text can disclose rolled items.
+	for definition in GameData.granny_opening.get("rewards", []):
+		if definition.get("id", "") == offer.get("id", ""): return definition
+	return {}
 
 
 func blocked_reason(offer: Dictionary) -> String:

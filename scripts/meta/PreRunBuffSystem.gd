@@ -45,8 +45,11 @@ func prepare_offer() -> Array[StringName]:
 		return RunState.pre_run_buff_offer_ids.duplicate()
 	var candidates := eligible_buff_ids()
 	if candidates.is_empty():
-		RunState.pre_run_preparation_resolved = true
-		SaveManager.save_game()
+		# New runs still visit the bellows to choose difficulty without an ad offer.
+		# Legacy runs without difficulty snapshots retain their original routing.
+		if RunState.difficulty_snapshot.is_empty():
+			RunState.pre_run_preparation_resolved = true
+			SaveManager.save_game()
 		return []
 	candidates.shuffle()
 	var choice_count := int(GameData.ad_placement_config(PLACEMENT)["choice_count"])
@@ -56,7 +59,7 @@ func prepare_offer() -> Array[StringName]:
 
 
 func needs_preparation() -> bool:
-	return RunState.is_active and not RunState.pre_run_preparation_resolved and not RunState.pre_run_buff_offer_ids.is_empty()
+	return GrannyStory.at_start() and not RunState.pre_run_preparation_resolved and (not RunState.pre_run_buff_offer_ids.is_empty() or not RunState.difficulty_snapshot.is_empty())
 
 
 func request_buff(buff_id: StringName) -> String:

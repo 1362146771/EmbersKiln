@@ -11,6 +11,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--godot', default='F:/app/Godot_v4.7.1-stable_win64.exe')
     parser.add_argument('--render', action='store_true')
+    parser.add_argument('--stage', choices=('all', 'granny'), default='all')
     parser.add_argument('--run-fixture', type=Path, help='Read-only copy of a run save for town departure regression')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
@@ -53,16 +54,17 @@ def main():
     run('import', ['--headless', '--editor', '--import'])
     opts = ['--resolution', '720x1280', '--rendering-method', 'gl_compatibility', '--audio-driver', 'Dummy'] if args.render else ['--headless']
     run('granny', opts + ['--quit-after', '6000', 'res://scenes/verify/GrannyDialogueVerify.tscn'] + (['--', '--visual'] if args.render else []), 'GRANNY_RESULT:PASS')
-    run('profile', ['--headless', '--quit-after', '240', 'res://scenes/verify/ProfilePersistenceVerify.tscn'], 'PROFILE_RESULT:PASS')
-    run('buff-revive', ['--headless', 'res://scenes/verify/PreRunReviveVerify.tscn'], 'PRE_RUN_REVIVE_RESULT:PASS')
-    run('menu', ['--headless', '--quit-after', '3600', 'res://scenes/verify/MenuEntryFlowVerify.tscn'], 'MENU_ENTRY_FLOW_RESULT FAIL=0')
-    run('difficulty', ['--headless', '--quit-after', '600', 'res://scenes/verify/DifficultyProgressionVerify.tscn'], 'DIFFICULTY_PROGRESSION_RESULT:PASS')
+    if args.stage == 'all':
+        run('profile', ['--headless', '--quit-after', '240', 'res://scenes/verify/ProfilePersistenceVerify.tscn'], 'PROFILE_RESULT:PASS')
+        run('buff-revive', ['--headless', 'res://scenes/verify/PreRunReviveVerify.tscn'], 'PRE_RUN_REVIVE_RESULT:PASS')
+        run('menu', ['--headless', '--quit-after', '3600', 'res://scenes/verify/MenuEntryFlowVerify.tscn'], 'MENU_ENTRY_FLOW_RESULT FAIL=0')
+        run('difficulty', ['--headless', '--quit-after', '600', 'res://scenes/verify/DifficultyProgressionVerify.tscn'], 'DIFFICULTY_PROGRESSION_RESULT:PASS')
     if args.render:
         output = root/'outputs/qa/granny'
         output.mkdir(parents=True, exist_ok=True)
         for image in (sandbox/'Temp').glob('granny_*.png'):
             shutil.copy2(image, output/image.name)
-    print('GRANNY_SUITE:PASS', flush=True)
+    print('GRANNY_SUITE:PASS stage=' + args.stage, flush=True)
 
 
 if __name__ == '__main__':
