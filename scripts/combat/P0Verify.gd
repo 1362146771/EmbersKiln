@@ -10,10 +10,13 @@ var fc := 0
 
 
 func _ready() -> void:
+	ProfileManager.autosave_enabled = false
+	SaveManager.runtime_save_path = "res://Temp/p0_verify_save.json"
 	await get_tree().process_frame
 	if not GameData.is_loaded:
 		GameData.load_all()
 	RunState.start_new_run()
+	RunState.pre_run_preparation_resolved = true
 	check("新局: 遗物库存为空", RunState.relic_ids.is_empty())
 	verify_reward_builder()
 	verify_reward_ui()
@@ -135,7 +138,13 @@ func verify_relic_bar(cu: CombatUI, path: String) -> void:
 	bar.scroll.ensure_control_visible(missing)
 	await get_tree().process_frame
 	check("遗物栏 %s: 可滚动到最后一个遗物" % path, bar.scroll.scroll_horizontal > 0 and bar.scroll.get_global_rect().intersects(missing.get_global_rect()))
-	check("遗物栏 %s: 左上角且在敌人区上方" % path, bar.global_position.x < 20 and bar.global_position.y < 20 and bar.get_global_rect().end.y <= cu.enemy_area.global_position.y)
+	var potions: Control = cu.get_node("Safe/Layout/PotionBar")
+	check("遗物栏 %s: 顶部药水右侧且不被透明敌人面板覆盖" % path,
+		bar.global_position.x >= potions.get_global_rect().end.x
+		and bar.global_position.y >= 0 and bar.global_position.y <= 8
+		and bar.get_global_rect().end.y <= 100
+		and bar.get_parent().get_index() > cu.enemy_area.get_index()
+		and get_viewport_rect().encloses(bar.get_global_rect()))
 	var saved: Array[StringName] = RunState.relic_ids.duplicate()
 	RunState.relic_ids.clear()
 	bar.refresh()
@@ -160,3 +169,4 @@ func _find_label_text(node: Node, needle: String) -> bool:
 func _print_report() -> void:
 	print("[P0Verify] PASS=%d FAIL=%d" % [pc, fc])
 	print("[P0Verify] RESULT=" + ("PASS" if fc == 0 else "FAIL"))
+	await preload("res://scripts/verify/CombatRegressionSupport.gd").finish(get_tree(), 0 if fc == 0 else 1)

@@ -6,7 +6,8 @@
 	"energy_per_turn": 3,
 	"draw_per_turn": 5,
 	"hand_max": 10,
-	"block_reset_each_turn": true
+	"block_reset_each_turn": true,
+	"auto_end_turn_without_energy_or_potions": true
   },
   "starting_deck": [
 	"strike",

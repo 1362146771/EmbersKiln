@@ -41,118 +41,84 @@ func _ready() -> void:
 
 
 func _build() -> void:
-	var scene_panel: Panel = get_node_or_null("Dim/Center/MainPanel")
-	if scene_panel != null:
-		choices = []
-		var choice_list: VBoxContainer = scene_panel.get_node("Content/CardScroll/Choices")
-		for child in choice_list.get_children():
-			child.queue_free()
-		for i in RunState.deck.size():
-			var entry: Dictionary = RunState.deck[i]
-			if not RunState.can_receive_run_enchant(entry):
-				continue
-			var card_data: CardData = GameData.get_card(StringName(entry["id"]))
-			if card_data == null:
-				continue
-			var enchant_id: StringName = RewardBuilder.roll_enchant_for_card(card_data)
-			if enchant_id == &"":
-				continue
-			var enchant_data = GameData.get_enchant(enchant_id)
-			var enchant_name: String = enchant_data.name if enchant_data != null else String(enchant_id)
-			var enchant_effect: String = enchant_data.description if enchant_data != null else ""
-			var choice := {"index": i, "eid": enchant_id, "card": card_data.name, "enchant": enchant_name, "effect": enchant_effect}
-			choices.append(choice)
-			var choice_button := Button.new()
-			choice_button.custom_minimum_size = Vector2(600, 150)
-			choice_button.add_theme_color_override("font_color", TEXT_COLOR)
-			choice_button.text = "%s\n附魔：%s\n%s" % [choice["card"], choice["enchant"], choice["effect"]]
-			choice_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			choice_button.add_theme_font_size_override("font_size", 20)
-			if enchant_data != null and enchant_data.icon != "":
-				choice_button.icon = GameData.icon_texture(enchant_data.icon)
-				choice_button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-			choice_button.pressed.connect(_on_pick.bind(choice))
-			choice_list.add_child(choice_button)
-		scene_panel.get_node("Content/EmptyHint").visible = choices.is_empty()
-		var skip_button: Button = scene_panel.get_node("Content/SkipButton")
-		if not skip_button.pressed.is_connected(_finish):
-			skip_button.pressed.connect(_finish)
-		return
-	for c in get_children():
-		c.queue_free()
-
-	add_child(_solid_bg(BG_DARK))
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(680, 1100)
-	center.add_child(panel)
-
-	var v := VBoxContainer.new()
-	v.set_anchors_preset(Control.PRESET_FULL_RECT)
-	v.add_theme_constant_override("margin_left", 24)
-	v.add_theme_constant_override("margin_right", 24)
-	v.add_theme_constant_override("margin_top", 24)
-	v.add_theme_constant_override("margin_bottom", 24)
-	v.add_theme_constant_override("separation", 16)
-	panel.add_child(v)
-
-	v.add_child(_label("附 魔 祭 坛", 40, ALTAR))
-	v.add_child(_label("选择一张未附魔的卡牌，免费获得一个附魔", 22, TEXT_COLOR))
-
-	# 预滚每个合法卡牌的附魔，保证「展示的附魔」与「实际套用的附魔」一致。
-	choices = []
+	if not has_node("Dim/Center/MainPanel"):
+		FormalUI.restore_layout(self, "res://scenes/map/AltarUI.tscn")
+	theme = FormalUI.theme()
+	var panel: Panel = get_node("Dim/Center/MainPanel")
+	panel.add_theme_stylebox_override("panel", FormalUI.stone("bd_stone_framed.png", 20))
+	var list: VBoxContainer = panel.get_node("Content/CardScroll/Choices")
+	for child in list.get_children():
+		list.remove_child(child)
+		child.queue_free()
+	choices.clear()
 	for i in RunState.deck.size():
 		var entry: Dictionary = RunState.deck[i]
-		if not RunState.can_receive_run_enchant(entry):
-			continue
-		var cd: CardData = GameData.get_card(StringName(entry["id"]))
-		if cd == null:
-			continue
-		var eid: StringName = RewardBuilder.roll_enchant_for_card(cd)
-		if eid == &"":
-			continue
-		var ed = GameData.get_enchant(eid)
-		var ename: String = ed.name if ed != null else String(eid)
-		var effect: String = ed.description if ed != null else ""
-		choices.append({"index": i, "eid": eid, "card": cd.name, "enchant": ename, "effect": effect})
+		if not RunState.can_receive_run_enchant(entry): continue
+		var cd := GameData.get_card(StringName(entry["id"]))
+		if cd == null: continue
+		var eid := RewardBuilder.roll_enchant_for_card(cd)
+		if eid == &"": continue
+		var ed := GameData.get_enchant(eid)
+		var card_name := preload("res://scripts/ui/CardBrowser.gd").card_name(entry)
+		var ch := {"index": i, "eid": eid, "card": card_name, "enchant": ed.name, "effect": ed.description}
+		choices.append(ch)
+		list.add_child(_choice_button(ch, entry, cd))
+	panel.get_node("Content/EmptyHint").visible = choices.is_empty()
+	var skip: Button = panel.get_node("Content/SkipButton")
+	if not skip.pressed.is_connected(_finish): skip.pressed.connect(_finish)
 
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	v.add_child(scroll)
 
-	var col := VBoxContainer.new()
-	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col.add_theme_constant_override("separation", 10)
-	scroll.add_child(col)
+func _choice_button(ch: Dictionary, entry: Dictionary, cd: CardData) -> Button:
+	var button := Button.new()
+	button.name = "CardChoice_%d" % int(ch.index)
+	button.custom_minimum_size = Vector2(0, 208)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.pressed.connect(_on_pick.bind(ch))
+	var margin := MarginContainer.new()
+	button.add_child(margin)
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for side in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 14)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 18)
+	margin.add_child(row)
+	var level := maxi(int(entry.get("upgrade_level", 0)), 1 if entry.get("upgraded", false) else 0)
+	var preview := entry.duplicate(true)
+	preview.merge({"display_name": ch.card, "cost": cd.resolved_cost(level)}, true)
+	var card := FormalUI.card_visual(preview)
+	card.fit_height_to_width = false
+	card.custom_minimum_size = Vector2(112, 180)
+	row.add_child(card)
+	var text := VBoxContainer.new()
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text.alignment = BoxContainer.ALIGNMENT_CENTER
+	text.add_theme_constant_override("separation", 9)
+	row.add_child(text)
+	var title := _label("%s  ·  牌组第 %d 张" % [ch.card, int(ch.index) + 1], 21, AMBER if level > 0 else TEXT_COLOR)
+	title.name = "InstanceTitle"
+	title.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	text.add_child(title)
+	var state := "已升级" if level > 0 else "未升级"
+	text.add_child(_label(state + " · 仅为这张卡附魔", 17, CREAM))
+	var enchant_row := HBoxContainer.new()
+	enchant_row.add_theme_constant_override("separation", 10)
+	var ed := GameData.get_enchant(StringName(ch.eid))
+	if ed != null and ed.icon != "": enchant_row.add_child(GameData.icon_rect(ed.icon, 30))
+	enchant_row.add_child(_label("附魔：%s" % ch.enchant, 21, ALTAR))
+	text.add_child(enchant_row)
+	var effect := _label(ch.effect, 19, TEXT_COLOR)
+	effect.language = "zh_CN"
+	effect.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	text.add_child(effect)
+	_ignore_pointer(margin)
+	margin.minimum_size_changed.connect(func(): button.custom_minimum_size.y = maxf(208, margin.get_combined_minimum_size().y))
+	return button
 
-	for ch in choices:
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(600, 150)
-		b.add_theme_color_override("font_color", TEXT_COLOR)
-		var effect: String = ch.get("effect", "")
-		b.text = "%s\n附魔：%s\n%s" % [ch["card"], ch["enchant"], effect]
-		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		b.add_theme_font_size_override("font_size", 20)
-		var ed := GameData.get_enchant(StringName(ch["eid"]))
-		if ed != null and ed.icon != "":
-			b.icon = GameData.icon_texture(ed.icon)
-			b.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.pressed.connect(_on_pick.bind(ch))
-		col.add_child(b)
 
-	if choices.is_empty():
-		v.add_child(_label("（当前没有可附魔的卡牌）", 22, RED))
-
-	var skip := Button.new()
-	skip.text = "跳过祭坛"
-	skip.custom_minimum_size = Vector2(300, 64)
-	skip.add_theme_font_size_override("font_size", 22)
-	skip.pressed.connect(_finish)
-	v.add_child(skip)
+func _ignore_pointer(node: Control) -> void:
+	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for child in node.get_children():
+		if child is Control: _ignore_pointer(child)
 
 
 func _on_pick(ch: Dictionary) -> void:

@@ -33,20 +33,25 @@ func _ready() -> void:
 	await capture("energy_zero")
 	ui._on_energy(ui.controller.max_energy, ui.controller.max_energy)
 	check(ui.player_energy.text == "%d" % ui.controller.max_energy and ui.player_energy.get_theme_color("font_color") == ui.CREAM, "positive energy restores light number")
-	check(ui.hand_container.get_global_rect().position.y >= 1080, "hand occupies bottom strip")
+	check(absf(ui.hand_container.global_position.y - 1061.0) <= 1.0, "hand uses authored 24px upward margin at y=1061")
 	check(ui.end_turn_btn.get_global_rect().end.x <= 721, "end turn stays inside viewport")
 	var potions: Control = ui.get_node("Safe/Layout/PotionBar")
 	var relics: Control = ui.get_node("Safe/Layout/TopRow/RelicBar")
 	check(potions.get_global_rect().position.y <= 4 and potions.get_global_rect().end.y <= 100, "potions occupy top frame")
 	check(relics.get_global_rect().position.y <= 8 and relics.get_global_rect().end.y <= 100, "relics occupy top frame")
-	check(ui.player_sprite.position.y >= ui.player_panel.get_global_rect().end.y
-		and ui.player_sprite.get_global_rect().end.y <= ui.hand_container.get_global_rect().position.y,
-		"player portrait fits between state frame and hand")
+	check(ui.player_sprite.position.is_equal_approx(Vector2(32, 773))
+		and ui.player_sprite.size.is_equal_approx(Vector2(208, 311)),
+		"idle portrait retains authored slot; raised hand overlaps its bottom 23px")
 	var player_shield: Control = ui.get_node("Safe/Layout/Bottom/PlayerPanel/Phbox/Plv/PlayerBlockShield")
 	check(energy_badge.get_global_rect().position.x < player_shield.get_global_rect().position.x
 		and player_shield.get_global_rect().position.x < ui.player_hp_bar.get_global_rect().position.x
-		and absf(energy_badge.get_global_rect().get_center().y - ui.player_hp_bar.get_global_rect().get_center().y) <= 2.0,
-		"energy badge, block shield and HP bar share one left-to-right row")
+		and absf(energy_badge.get_global_rect().get_center().y - ui.player_hp_bar.get_global_rect().get_center().y - 30.0) <= 2.0
+		and absf(player_shield.get_global_rect().get_center().y - ui.player_hp_bar.get_global_rect().get_center().y) <= 2.0,
+		"authored HUD: energy left and 30px lower; shield centered on HP")
+	check(not energy_badge.get_global_rect().intersects(player_shield.get_global_rect())
+		and ui.get_viewport_rect().encloses(energy_badge.get_global_rect()), "energy badge stays visible and clear of block shield")
+	check(relics.get_global_rect().position.x >= potions.get_global_rect().end.x
+		and ui.get_viewport_rect().encloses(relics.get_global_rect()), "relics stay right of potions inside the top frame")
 	check(player_shield.get_global_rect().position.x < ui.player_hp_bar.get_global_rect().position.x
 		and player_shield.get_global_rect().end.x - ui.player_hp_bar.get_global_rect().position.x >= 16.0, "player shield visibly overlaps HP bar left end")
 	check(ui.player_block.text == "%d" % ui.controller.player.block, "player block value renders on shield")
@@ -125,7 +130,7 @@ func _ready() -> void:
 	ui.queue_free()
 	await settle()
 	print("FORMAL_BATTLE_RESULT FAIL=%d" % failed)
-	get_tree().quit(0 if failed == 0 else 1)
+	await preload("res://scripts/verify/CombatRegressionSupport.gd").finish(get_tree(), 0 if failed == 0 else 1)
 
 func settle() -> void:
 	for i in 8: await get_tree().process_frame

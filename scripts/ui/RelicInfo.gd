@@ -41,7 +41,8 @@ static func attach(source: Control, relic_id: StringName) -> void:
 	button.mouse_filter = Control.MOUSE_FILTER_PASS
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	button.tooltip_text = source.tooltip_text
-	for state in ["normal", "hover", "pressed"]:
+	# Focus is drawn even on a flat button; inherited themed artwork must never cover the relic.
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
 	source.add_child(button)
 	button.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

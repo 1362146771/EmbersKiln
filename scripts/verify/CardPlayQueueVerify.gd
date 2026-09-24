@@ -164,4 +164,4 @@ func _ready() -> void:
 	OS.remove_logger(script_errors)
 	check(script_errors.messages.is_empty(), "input and queue emit no script errors: %s" % str(script_errors.messages))
 	print("CARD_QUEUE_RESULT:%s (%d checks, %d failures)" % ["PASS" if failures == 0 else "FAIL", checks, failures])
-	get_tree().quit(0 if failures == 0 else 1)
+	await preload("res://scripts/verify/CombatRegressionSupport.gd").finish(get_tree(), 0 if failures == 0 else 1)

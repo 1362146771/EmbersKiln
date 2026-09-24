@@ -94,7 +94,7 @@ func _ready() -> void:
 	await verify_exit({"id": &"bludgeon", "enchants": ["town_bludgeon_1"], "enchant_active": true}, true)
 	await verify_exit({"id": &"reaper", "enchants": ["town_reaper_1"], "enchant_active": true}, false)
 	print("CARD_PRESENTATION_RESULT:%s (%d checks, %d failures)" % ["PASS" if failures == 0 else "FAIL", checks, failures])
-	get_tree().quit(0 if failures == 0 else 1)
+	await preload("res://scripts/verify/CombatRegressionSupport.gd").finish(get_tree(), 0 if failures == 0 else 1)
 
 func _on_presented_hit(targets: Array[int]) -> void:
 	if first_hit_frame >= 0: return

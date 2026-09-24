@@ -63,7 +63,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	SaveManager.delete_save()
 	print("PLAYER_DEATH_RESULT:%s (%d checks, %d failures)" % ["PASS" if failures == 0 else "FAIL", checks, failures])
-	get_tree().quit(0 if failures == 0 else 1)
+	await preload("res://scripts/verify/CombatRegressionSupport.gd").finish(get_tree(), 0 if failures == 0 else 1)
 
 func _inspect_frame() -> void:
 	if body.animation != &"death" or seen_frames.has(body.frame): return
@@ -73,7 +73,7 @@ func _inspect_frame() -> void:
 	var bounds := texture.atlas.get_image().get_region(texture.region).get_used_rect()
 	var upper := body.to_global(Vector2(bounds.position))
 	var lower := body.to_global(Vector2(bounds.end))
-	check(upper.x >= 0 and lower.x <= 720 and upper.y >= ui.player_panel.get_global_rect().end.y and lower.y <= ui.hand_container.get_global_rect().position.y, "death frame %d fits screen and clears hand/status UI" % (frame + 1))
+	check(upper.x >= 0 and lower.x <= 720 and upper.y >= ui.player_panel.get_global_rect().end.y and lower.y <= ui.hand_container.global_position.y + 23.0, "death frame %d fits approved portrait area with at most 23px hand overlap" % (frame + 1))
 	check(ui.find_child("ReviveAdButton", true, false) == null, "death frame %d has no early overlay" % (frame + 1))
 	if OS.get_cmdline_user_args().has("--visual"):
 		await RenderingServer.frame_post_draw

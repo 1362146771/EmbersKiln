@@ -37,7 +37,7 @@ func play(id: StringName, target: int, cost_override := -999, energy := 5) -> vo
 		await feedback.hit_presented
 		var body: AnimatedSprite2D = ui.player_sprite.get_node("BodyAnimation")
 		await get_tree().process_frame
-		check(body.frame >= 2 and body.has_node("PlayerSlash"), "player slash accompanies impact")
+		check(body.frame >= 2 and body.has_node("PlayerSlash"), "player slash accompanies impact: %s (frame=%d, slash=%s)" % [id, body.frame, body.has_node("PlayerSlash")])
 
 func settled() -> void:
 	if feedback.playing_hits: await feedback.playback_finished
@@ -69,9 +69,9 @@ func _ready() -> void:
 	for enemy in ui.controller.enemies:
 		enemy.hp = 1000
 		enemy.max_hp = 1000
+	await settled()
 	var origins := [portrait(0).position,portrait(1).position,portrait(2).position]
 	var canvas_origin := get_viewport().canvas_transform.origin
-	await settled()
 	await play(&"strike",1)
 	check(is_equal_approx(player_body.get_playing_speed(), 1.0 / 0.7), "player attack actually runs at the configured faster speed")
 	check(receipt == [1,[1]], "single attack receipt uses real target and paid cost")
@@ -87,6 +87,9 @@ func _ready() -> void:
 	await settled()
 	check(absf(attack_finished - attack_started - 0.98) < 0.1, "real player animation completes in approximately 0.98 seconds")
 	check(portrait(1).position == origins[1] and not portrait(1).has_node("WhiteSlash"), "portrait restored and slash freed")
+	var status_origin := await status_layout_origin(0, &"bash")
+	check(not status_origin.is_equal_approx(origins[0]), "status icon creates a distinct legal portrait layout")
+	check(portrait(0).position.is_equal_approx(origins[0]), "removing reference status restores initial layout without hit drift")
 	await play(&"bash",0)
 	check(receipt == [2,[0]], "two-cost receipt")
 	await get_tree().create_timer(0.1).timeout
@@ -95,7 +98,18 @@ func _ready() -> void:
 	await play(&"bash",0)
 	await settled()
 	check(get_viewport().canvas_transform.origin == canvas_origin, "overlapping screen shakes restore original origin")
-	check(portrait(0).position == origins[0], "overlapping portrait shakes restore original origin")
+	check(portrait(0).position.is_equal_approx(status_origin), "repeated Bash returns to the independent status-layout origin")
+	# Restart the active hurt animation explicitly; this must not accumulate offsets.
+	var hit_before: int = portrait(0).hit_count
+	portrait(0).play_hit()
+	await get_tree().create_timer(0.05).timeout
+	check(portrait(0).hit_playing and not portrait(0).position.is_equal_approx(status_origin), "overlap fixture restarts an actually displaced portrait")
+	portrait(0).play_hit()
+	await settled()
+	check(portrait(0).hit_count == hit_before + 2 and not portrait(0).hit_playing
+		and portrait(0).position.is_equal_approx(status_origin)
+		and portrait(0).scale.is_equal_approx(Vector2.ONE) and is_zero_approx(portrait(0).rotation),
+		"overlapping hurt restarts restore position scale and rotation without drift")
 	await play(&"bash",0,1)
 	check(receipt[0]==1, "discount uses actual cost")
 	await get_tree().create_timer(0.08).timeout
@@ -134,6 +148,7 @@ func _ready() -> void:
 	presented.clear()
 	hit_times.clear()
 	var ghost := Control.new()
+	ghost.set_meta("discard_target", weakref(ui.discard_pile_view))
 	ui.drag_layer.add_child(ghost)
 	var cast_hp: int = ui.controller.enemies[1].hp
 	BattleDirector.play_card_cast(ghost, portrait(1), GameData.get_card(&"pummel"), 0, 1, ui.controller)
@@ -230,13 +245,16 @@ func _ready() -> void:
 	await get_tree().process_frame
 	check(get_viewport().canvas_transform.origin == canvas_origin, "scene exit clears screen shake")
 	print("FEEDBACK_RESULT:%s (%d checks, %d failures)" % ["PASS" if failures==0 else "FAIL",checks,failures])
-	get_tree().quit(0 if failures==0 else 1)
+	await preload("res://scripts/verify/CombatRegressionSupport.gd").finish(get_tree(), 0 if failures==0 else 1)
 
 func capture(label: String) -> void:
 	if not OS.get_cmdline_user_args().has("--visual"):
 		return
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png("res://Temp/%s.png" % label)
+	# Synchronous PNG encoding must not become the next animation's first delta.
+	await get_tree().process_frame
+	await get_tree().process_frame
 
 func on_hit(targets: Array[int]) -> void:
 	for target in targets:
@@ -259,6 +277,7 @@ func verify_enchanted_combo() -> void:
 	var fx := ui.get_node("EnchantAttackFX")
 	var before: int = fx.impact_count
 	var ghost := Control.new()
+	ghost.set_meta("discard_target", weakref(ui.discard_pile_view))
 	ui.drag_layer.add_child(ghost)
 	await BattleDirector.play_card_cast(ghost, portrait(1), GameData.get_card(&"fiend_fire"), 0, 1, ui.controller)
 	check(presented == [[1],[1],[1]], "enchanted Fiend Fire retains three separate enemy hits")
@@ -268,3 +287,20 @@ func verify_enchanted_combo() -> void:
 	check(player_slashes == 1, "enchanted combo plays player animation and slash only once")
 	check(not BattleDirector.input_locked, "enchanted combo unlocks after enemy impacts finish")
 	ghost.queue_free()
+
+func status_layout_origin(index: int, card_id: StringName) -> Vector2:
+	# Establish expected layout independently, before any hit can pollute its origin.
+	var enemy: CombatUnit = ui.controller.enemies[index]
+	var saved := enemy.statuses.duplicate(true)
+	var hit_before: int = portrait(index).hit_count
+	for effect in GameData.get_card(card_id).effects:
+		if effect.get("kind") == "apply_status" and effect.get("target") == "enemy":
+			enemy.statuses[StringName(effect["status"])] = int(effect["value"])
+	ui._enemy.refresh_enemy()
+	await settled()
+	var expected := portrait(index).position
+	check(portrait(index).hit_count == hit_before and not portrait(index).hit_playing, "status reference changes layout without playing a hit")
+	enemy.statuses.assign(saved)
+	ui._enemy.refresh_enemy()
+	await settled()
+	return expected

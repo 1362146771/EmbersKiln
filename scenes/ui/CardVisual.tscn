@@ -102,6 +102,7 @@ patch_margin_bottom = 28
 [node name="CardEnergyCost" parent="." instance=ExtResource("energy_cost")]
 
 [node name="RarityBadge" type="TextureRect" parent="."]
+layout_mode = 1
 texture_filter = 4
 anchor_top = 1.0
 anchor_right = 1.0
@@ -116,6 +117,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="TitleDivider" type="ColorRect" parent="."]
+layout_mode = 1
 anchor_right = 1.0
 offset_left = 12.0
 offset_top = 38.0
@@ -125,6 +127,7 @@ mouse_filter = 2
 color = Color(0.408, 0.4, 0.369, 1)
 
 [node name="RarityDivider" type="ColorRect" parent="."]
+layout_mode = 1
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0

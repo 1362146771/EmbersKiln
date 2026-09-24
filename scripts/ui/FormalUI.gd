@@ -244,6 +244,8 @@ static func fill_card_visual(visual: Control, card: Dictionary, defer_art: bool 
 		if child is Control:
 			child.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card_frame(visual, cd.type if cd != null else &"status")
+	# Keep the name above decorative artwork on small hand cards as well as previews.
+	visual.move_child(visual.get_node("Body"), visual.get_child_count() - 1)
 	card_energy(visual, int(card.get("cost", 0)), cd.playable if cd != null else true)
 
 
@@ -294,6 +296,7 @@ static func card_face(parent: Control, card: Dictionary, defer_art: bool = false
 	desc.add_theme_color_override("font_color", Color("f2e8d5"))
 	desc.add_theme_color_override("font_outline_color", Color("1b1612"))
 	desc.add_theme_constant_override("outline_size", 5)
+	desc.language = "zh_CN"
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	detail_scroll.add_child(desc)

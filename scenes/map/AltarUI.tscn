@@ -39,6 +39,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
 theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
@@ -55,11 +59,12 @@ text = "附 魔 祭 坛"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.949, 0.91, 0.835, 1)
 theme_override_font_sizes/font_size = 22
-text = "选择一张未附魔的卡牌，免费获得一个附魔"
+text = "选择一张卡，免费附魔一次。\n同名卡是独立副本，请按编号和升级状态选择。"
 autowrap_mode = 2
 
 [node name="CardScroll" type="ScrollContainer" parent="Dim/Center/MainPanel/Content"]
 layout_mode = 2
+horizontal_scroll_mode = 0
 size_flags_vertical = 3
 
 [node name="Choices" type="VBoxContainer" parent="Dim/Center/MainPanel/Content/CardScroll"]

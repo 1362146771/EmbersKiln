@@ -82,6 +82,9 @@ var _hand: HandView
 var _enemy: EnemyViewManager
 var _log_view: LogView
 var _targeting: TargetingController
+var _auto_end_turn_enabled := false
+var _reward_snapshot_requested := false
+var _reward_snapshot_ready := false
 
 
 func _ready() -> void:
@@ -134,8 +137,24 @@ func _ready() -> void:
 	# （编辑器预览 / 旧 verify）且 RunState 未置时回退到默认 pending_enemy_ids。
 	var launch_ids: Array = RunState.pending_combat_enemy_ids if RunState.pending_combat_enemy_ids.size() > 0 else pending_enemy_ids
 	controller.start_combat(launch_ids)
+	_auto_end_turn_enabled = bool(GameData.player_config().get("auto_end_turn_without_energy_or_potions", false))
 	_refresh_all()
 	print("[CombatUI] 界面构建完成，敌人=%d，手牌=%d" % [controller.enemies.size(), controller.hand.size()])
+
+
+func _process(_delta: float) -> void:
+	if _can_auto_end_turn():
+		_targeting.on_end_turn()
+
+
+func _can_auto_end_turn() -> bool:
+	if not _auto_end_turn_enabled or controller == null or combat_over or get_tree().paused or TransitionManager.is_transitioning:
+		return false
+	if controller.phase != CombatController.Phase.PLAYER or controller.energy > 0 or not RunState.potions.is_empty():
+		return false
+	if not controller.pending_card_choice.is_empty() or _casting or _drag_active or _play_queue.busy() or BattleDirector.input_locked or card_browser_open():
+		return false
+	return _transition_feedback_ready()
 
 
 # =====================================================================
@@ -599,13 +618,11 @@ func _on_turn_ended(is_player: bool) -> void:
 func _on_combat_end(victory: bool) -> void:
 	if TransitionManager.is_transitioning:
 		return
-	var gate := _transition_feedback_ready if victory else _player_death_animation_ready
+	var gate := _victory_backdrop_ready if victory else _player_death_animation_ready
 	var error := TransitionManager.change_scene_to_file("res://scenes/map/MapPlay.tscn", Callable(), VFXSystem.DEATH_DUR if victory else 0.0, &"fade", gate)
 	if error != OK:
 		return
 	FormalUI.combat_reward_pending = victory
-	if victory and DisplayServer.get_name() != "headless":
-		FormalUI.combat_reward_backdrop = ImageTexture.create_from_image(get_viewport().get_texture().get_image())
 	_close_card_browser()
 	combat_over = true
 	_hand.refresh_hand()
@@ -618,6 +635,24 @@ func _on_combat_end(victory: bool) -> void:
 	# combat_ended 仍由 CombatController 发出，SaveManager 的自动存档钩子照常生效。
 	RunState.last_combat_victory = victory
 	RunState.pending_post_combat = true
+
+
+func _victory_backdrop_ready() -> bool:
+	if not _transition_feedback_ready(): return false
+	if DisplayServer.get_name() == "headless": return true
+	if not _reward_snapshot_requested:
+		_reward_snapshot_requested = true
+		_capture_reward_backdrop()
+	return _reward_snapshot_ready
+
+
+func _capture_reward_backdrop() -> void:
+	# Wait for the settled victory HUD and all departing cards to reach the renderer.
+	_log("战斗胜利！")
+	await RenderingServer.frame_post_draw
+	if not is_inside_tree(): return
+	FormalUI.combat_reward_backdrop = ImageTexture.create_from_image(get_viewport().get_texture().get_image())
+	_reward_snapshot_ready = true
 
 
 func _transition_feedback_ready() -> bool:
