@@ -31,7 +31,7 @@ static func from_dict(d: Dictionary) -> PotionData:
 
 ## 是否为「持续型」药水（效果含施加状态者）。
 ## 即时型（heal / block / damage / draw / energy / aoe_damage）饮用即结算、无残留，
-## 不受 §1.5 互斥规则约束；此函数用于区分两类，驱动 use_potion 的互斥逻辑。
+## 仅作效果分类；持续型也允许同类叠加、异类共存，不限制饮用。
 func is_persistent() -> bool:
 	for eff in effects:
 		if not (eff is Dictionary):

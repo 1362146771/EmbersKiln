@@ -73,8 +73,6 @@ var _combat_active: bool = false
 
 ## 本场首张攻击牌是否已打出（劈薪斧遗物用）
 var _first_attack_done: bool = false
-## 当前由「持续型药水」施加的残留状态（§1.5 规则 2：新持续型顶旧持续型）
-var _active_potion_statuses: Array = []
 var _card_hp_loss_count := 0
 var _no_draw_this_turn := false
 var _temporary_strength := 0
@@ -1191,9 +1189,6 @@ func use_potion(slot_index: int, target_index: int = -1) -> bool:
 		&"all_enemies":
 			primary = null
 
-	if pd.is_persistent():
-		_clear_active_potion_statuses()
-
 	_resolve_effects(pd.effects.duplicate(), player, primary, true)
 
 	RunState.remove_potion_at(slot_index)
@@ -1204,27 +1199,11 @@ func use_potion(slot_index: int, target_index: int = -1) -> bool:
 	return true
 
 
-## 施加「由持续型药水」带来的状态，并记录以便规则 2 顶替。
+## 药水与其他来源共用状态叠加规则；连续饮用不清除之前的效果。
 func _apply_potion_status(unit: CombatUnit, status_id: StringName, amount: int) -> void:
 	if unit == null or status_id == &"":
 		return
-	if unit.get_status(status_id) > 0:
-		return
 	_status.apply_status(unit, status_id, amount)
-	_active_potion_statuses.append({"unit": unit, "status_id": status_id})
-
-
-## 规则 2：清除上一瓶持续型药水施加的全部残留状态（新的顶旧的）。
-func _clear_active_potion_statuses() -> void:
-	for rec in _active_potion_statuses:
-		var u: Variant = rec.get("unit")
-		var sid: StringName = rec.get("status_id", &"")
-		if u != null and is_instance_valid(u) and sid != &"":
-			var cu: CombatUnit = u as CombatUnit
-			var cur: int = cu.get_status(sid)
-			if cur > 0:
-				cu.add_status(sid, -cur)
-	_active_potion_statuses.clear()
 
 
 # =====================================================================
