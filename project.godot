@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="炽窑"
+config/version="0.3"
 config/description="《炽窑》Ember's Kiln — 2D 回合制卡组构筑 Roguelike（战士单职业）"
 run/main_scene="res://scenes/main/MainMenu.tscn"
 config/quit_on_go_back=false

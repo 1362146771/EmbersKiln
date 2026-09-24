@@ -20,6 +20,7 @@ python tools/build_android.py --godot F:/app/Godot_v4.7.1-stable_win64_console.e
 
 ## 内测配置
 
+- 当前内测版本：`0.3 内测版`，Android `version/code=3`，项目 `config/version=0.3`；沿用既有包名和本地签名。
 - 预设：`export_presets.cfg` 中的 Android；ARM64。
 - 应用图标：`art/icons/app/ICO_EmbersKiln.png`（用户确认的火种陶瓷面具图），项目图标、Android 主图标及自适应前景统一引用该文件。
 - 包名、版本及应用名称沿用 `export_presets.cfg` 当前设置；体积优化不覆盖这些字段。正式发行前确定最终包名、版本号、应用图标与发布签名。
